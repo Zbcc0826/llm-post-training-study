@@ -854,12 +854,37 @@ def build_bundle_html(catalog: dict, pdf_prefix: str, vendor_prefix: str) -> str
     border: 0;
     background: #fff;
   }}
-  @media (max-width: 640px) {{
+  @media (max-width: 760px) {{
+    .topbar {{
+      padding: 8px 12px;
+      gap: 6px 10px;
+    }}
+    .brand span {{ display: none; }}
+    .tabs {{
+      width: 100%;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      -webkit-overflow-scrolling: touch;
+    }}
+    .tab-btn {{ flex: 0 0 auto; padding: 5px 10px; font-size: 13.5px; }}
+    .quick-tools {{ width: 100%; }}
+    .search-input {{ flex: 1 1 110px; width: auto; }}
+    .paper-select {{ flex: 2 1 160px; max-width: none; }}
+    .mindmap-pane {{ padding: 14px 12px 64px; }}
+    .node {{ white-space: normal; flex-wrap: wrap; }}
+    article {{ padding: 18px 14px 72px; }}
+    h1 {{ font-size: 25px; }}
+    h2 {{ font-size: 20px; }}
+    h3 {{ font-size: 17px; }}
     .pdf-dock {{
       position: fixed;
-      inset: 58px 0 0 0;
+      inset: 0;
+      top: 0;
+      height: 100vh;
       width: 100%;
-      z-index: 40;
+      flex: 1 1 100%;
+      z-index: 60;
     }}
   }}
 </style>
@@ -996,10 +1021,11 @@ async function renderPdfPage(pageNum) {{
 async function openPaper(aid, customTitle) {{
   if (!aid) return;
   const title = customTitle || PAPER_CATALOG[aid] || ("arXiv:" + aid);
-  const pdfUrl = PDF_PREFIX + aid + ".pdf";
+  const localPdfUrl = PDF_PREFIX + aid + ".pdf";
+  const remotePdfUrl = "https://arxiv.org/pdf/" + aid + ".pdf";
   titleEl.textContent = title;
-  subEl.textContent = "arXiv:" + aid + " · 本地 PDF";
-  localLink.href = pdfUrl;
+  subEl.textContent = "arXiv:" + aid + " · 正在加载 PDF…";
+  localLink.href = remotePdfUrl;
   arxivLink.href = "https://arxiv.org/abs/" + aid;
   pickerEl.value = aid;
   dockEl.hidden = false;
@@ -1010,18 +1036,22 @@ async function openPaper(aid, customTitle) {{
       canvasEl.hidden = false;
       frameEl.hidden = true;
       pageIndEl.textContent = "加载中…";
-      currentPdf = await window.pdfjsLib.getDocument(pdfUrl).promise;
+      currentPdf = await window.pdfjsLib.getDocument(localPdfUrl).promise;
       totalPages = currentPdf.numPages;
+      localLink.href = localPdfUrl;
+      subEl.textContent = "arXiv:" + aid + " · 本地离线 PDF";
       await renderPdfPage(1);
       return;
     }} catch (err) {{
-      console.warn("PDF.js 回退到原生内嵌:", err);
+      console.warn("本地 PDF 未找到，自动切换 arXiv 在线 PDF:", err);
     }}
   }}
+  /* 手机单文件打开或无本地论文目录时，自动回退到 arXiv 在线 PDF */
   canvasEl.hidden = true;
   frameEl.hidden = false;
-  frameEl.src = pdfUrl;
-  pageIndEl.textContent = "原生视图";
+  subEl.textContent = "arXiv:" + aid + " · 在线 PDF（手机单文件模式）";
+  frameEl.src = remotePdfUrl;
+  pageIndEl.textContent = "在线 PDF";
 }}
 
 function closePaper() {{
