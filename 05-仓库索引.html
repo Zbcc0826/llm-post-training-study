@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>05-仓库索引 · 基模爷大学习</title>
+<link rel="stylesheet" href="笔记.css">
+</head>
+<body>
+<nav><a href="思维导图.html">导图</a><a href="README.html">总览</a><a href="01-后训练底层技术.html">后训练算法</a><a href="02-训练基础设施.html">训练基建</a><a href="03-工作链与落地.html">工作链与落地</a><a href="04-论文索引.html">论文库 (55)</a><a class="here" href="05-仓库索引.html">开源仓库</a><a href="release/基模爷大学习.html">合成单页版 ✦</a></nav>
+<div class="page-split" id="page-split">
+  <article><h1>仓库索引</h1>
+<p>下列地址在 2026-11-09 返回可打开的仓库页面。发生过跳转的，写的是跳转之后的地址。<code>NVIDIA/NeMo-Aligner</code> 仍可打开，但仓库标记为已归档，表里单独注明。</p>
+<h2>后训练与微调</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>仓库</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/huggingface/trl">huggingface/trl</a></td>
+<td>SFT、DPO、IPO、KTO、GRPO、RLOO 的训练器</td>
+</tr>
+<tr>
+<td><a href="https://github.com/huggingface/peft">huggingface/peft</a></td>
+<td>LoRA、DoRA、rsLoRA、AdaLoRA 等适配器</td>
+</tr>
+<tr>
+<td><a href="https://github.com/huggingface/accelerate">huggingface/accelerate</a></td>
+<td>单机到多机的启动与分布式封装</td>
+</tr>
+<tr>
+<td><a href="https://github.com/huggingface/alignment-handbook">huggingface/alignment-handbook</a></td>
+<td>监督微调与 DPO 的现成配方</td>
+</tr>
+<tr>
+<td><a href="https://github.com/huggingface/transformers">huggingface/transformers</a></td>
+<td>模型、分词器、聊天模板</td>
+</tr>
+<tr>
+<td><a href="https://github.com/hiyouga/LlamaFactory">hiyouga/LlamaFactory</a></td>
+<td>配置驱动的微调，仓库说明对应 ACL 2024</td>
+</tr>
+<tr>
+<td><a href="https://github.com/modelscope/ms-swift">modelscope/ms-swift</a></td>
+<td>CPT / SFT / DPO / GRPO，仓库说明对应 AAAI 2025</td>
+</tr>
+<tr>
+<td><a href="https://github.com/axolotl-ai-cloud/axolotl">axolotl-ai-cloud/axolotl</a></td>
+<td>YAML 微调</td>
+</tr>
+<tr>
+<td><a href="https://github.com/unslothai/unsloth">unslothai/unsloth</a></td>
+<td>单机 LoRA / QLoRA 速度</td>
+</tr>
+<tr>
+<td><a href="https://github.com/meta-pytorch/torchtune">meta-pytorch/torchtune</a></td>
+<td>PyTorch 原生配方</td>
+</tr>
+<tr>
+<td><a href="https://github.com/OpenRLHF/OpenRLHF">OpenRLHF/OpenRLHF</a></td>
+<td>基于 Ray 的 PPO、DAPO、REINFORCE++</td>
+</tr>
+<tr>
+<td><a href="https://github.com/verl-project/verl">verl-project/verl</a></td>
+<td>HybridFlow，大规模 RL 后训练</td>
+</tr>
+<tr>
+<td><a href="https://github.com/NVIDIA-NeMo/RL">NVIDIA-NeMo/RL</a></td>
+<td>NVIDIA 侧的强化学习工具包</td>
+</tr>
+<tr>
+<td><a href="https://github.com/NVIDIA/NeMo-Aligner">NVIDIA/NeMo-Aligner</a></td>
+<td>已归档的对齐工具包</td>
+</tr>
+<tr>
+<td><a href="https://github.com/BytedTsinghua-SIA/DAPO">BytedTsinghua-SIA/DAPO</a></td>
+<td>DAPO 开源系统</td>
+</tr>
+<tr>
+<td><a href="https://github.com/deepseek-ai/DeepSeek-Math">deepseek-ai/DeepSeek-Math</a></td>
+<td>GRPO 所在的技术报告仓库</td>
+</tr>
+<tr>
+<td><a href="https://github.com/deepseek-ai/DeepSeek-R1">deepseek-ai/DeepSeek-R1</a></td>
+<td>R1 技术报告与评测材料</td>
+</tr>
+</tbody>
+</table></div>
+<h2>算法的原始实现</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>仓库</th>
+<th>对应方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/microsoft/LoRA">microsoft/LoRA</a></td>
+<td>LoRA</td>
+</tr>
+<tr>
+<td><a href="https://github.com/artidoro/qlora">artidoro/qlora</a></td>
+<td>QLoRA</td>
+</tr>
+<tr>
+<td><a href="https://github.com/NVlabs/DoRA">NVlabs/DoRA</a></td>
+<td>DoRA</td>
+</tr>
+<tr>
+<td><a href="https://github.com/eric-mitchell/direct-preference-optimization">eric-mitchell/direct-preference-optimization</a></td>
+<td>DPO</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ContextualAI/HALOs">ContextualAI/HALOs</a></td>
+<td>KTO 等 HALO 目标</td>
+</tr>
+<tr>
+<td><a href="https://github.com/xfactlab/orpo">xfactlab/orpo</a></td>
+<td>ORPO</td>
+</tr>
+<tr>
+<td><a href="https://github.com/princeton-nlp/SimPO">princeton-nlp/SimPO</a></td>
+<td>SimPO</td>
+</tr>
+<tr>
+<td><a href="https://github.com/arcee-ai/mergekit">arcee-ai/mergekit</a></td>
+<td>TIES、DARE、SLERP</td>
+</tr>
+</tbody>
+</table></div>
+<h2>训练并行与内核</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>仓库</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/NVIDIA/Megatron-LM">NVIDIA/Megatron-LM</a></td>
+<td>张量并行、流水线并行、序列并行</td>
+</tr>
+<tr>
+<td><a href="https://github.com/NVIDIA-NeMo/Megatron-Bridge">NVIDIA-NeMo/Megatron-Bridge</a></td>
+<td>Megatron 与 Hugging Face 检查点互转</td>
+</tr>
+<tr>
+<td><a href="https://github.com/deepspeedai/DeepSpeed">deepspeedai/DeepSpeed</a></td>
+<td>ZeRO、Ulysses、DeepSpeed-Chat</td>
+</tr>
+<tr>
+<td><a href="https://github.com/pytorch/pytorch">pytorch/pytorch</a></td>
+<td>FSDP / FSDP2、DCP、torch.compile</td>
+</tr>
+<tr>
+<td><a href="https://github.com/pytorch/torchtitan">pytorch/torchtitan</a></td>
+<td>FSDP2、张量并行、上下文并行的组合示例</td>
+</tr>
+<tr>
+<td><a href="https://github.com/hpcaitech/ColossalAI">hpcaitech/ColossalAI</a></td>
+<td>另一套大规模并行训练</td>
+</tr>
+<tr>
+<td><a href="https://github.com/NVIDIA/nccl">NVIDIA/nccl</a></td>
+<td>集合通信</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Dao-AILab/flash-attention">Dao-AILab/flash-attention</a></td>
+<td>FlashAttention</td>
+</tr>
+<tr>
+<td><a href="https://github.com/zhuzilin/ring-flash-attention">zhuzilin/ring-flash-attention</a></td>
+<td>Ring Attention</td>
+</tr>
+<tr>
+<td><a href="https://github.com/NVIDIA/TransformerEngine">NVIDIA/TransformerEngine</a></td>
+<td>FP8 与融合算子</td>
+</tr>
+</tbody>
+</table></div>
+<h2>调度、观测、跨集群</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>仓库</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/SchedMD/slurm">SchedMD/slurm</a></td>
+<td>HPC 作业调度</td>
+</tr>
+<tr>
+<td><a href="https://github.com/kubernetes-sigs/kueue">kubernetes-sigs/kueue</a></td>
+<td>Kubernetes 配额与排队</td>
+</tr>
+<tr>
+<td><a href="https://github.com/volcano-sh/volcano">volcano-sh/volcano</a></td>
+<td>Kubernetes 批量调度</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ray-project/ray">ray-project/ray</a></td>
+<td>训练与推理进程编排</td>
+</tr>
+<tr>
+<td><a href="https://github.com/skypilot-org/skypilot">skypilot-org/skypilot</a></td>
+<td>跨集群提交</td>
+</tr>
+<tr>
+<td><a href="https://github.com/NVIDIA/DCGM">NVIDIA/DCGM</a></td>
+<td>GPU 指标</td>
+</tr>
+</tbody>
+</table></div>
+<h2>数据、实验记录、评测</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>仓库</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/argilla-io/distilabel">argilla-io/distilabel</a></td>
+<td>合成数据与偏好数据流水线</td>
+</tr>
+<tr>
+<td><a href="https://github.com/argilla-io/argilla">argilla-io/argilla</a></td>
+<td>标注</td>
+</tr>
+<tr>
+<td><a href="https://github.com/wandb/wandb">wandb/wandb</a></td>
+<td>实验记录</td>
+</tr>
+<tr>
+<td><a href="https://github.com/SwanHubX/SwanLab">SwanHubX/SwanLab</a></td>
+<td>实验记录</td>
+</tr>
+<tr>
+<td><a href="https://github.com/mlflow/mlflow">mlflow/mlflow</a></td>
+<td>实验记录与模型注册</td>
+</tr>
+<tr>
+<td><a href="https://github.com/EleutherAI/lm-evaluation-harness">EleutherAI/lm-evaluation-harness</a></td>
+<td>通用评测</td>
+</tr>
+<tr>
+<td><a href="https://github.com/open-compass/opencompass">open-compass/opencompass</a></td>
+<td>多数据集评测</td>
+</tr>
+<tr>
+<td><a href="https://github.com/modelscope/evalscope">modelscope/evalscope</a></td>
+<td>评测</td>
+</tr>
+<tr>
+<td><a href="https://github.com/UKGovernmentBEIS/inspect_ai">UKGovernmentBEIS/inspect_ai</a></td>
+<td>任务、求解器、评分</td>
+</tr>
+</tbody>
+</table></div>
+<h2>推理、量化、投机解码</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>仓库</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/vllm-project/vllm">vllm-project/vllm</a></td>
+<td>采样与在线服务</td>
+</tr>
+<tr>
+<td><a href="https://github.com/sgl-project/sglang">sgl-project/sglang</a></td>
+<td>采样与在线服务</td>
+</tr>
+<tr>
+<td><a href="https://github.com/NVIDIA/TensorRT-LLM">NVIDIA/TensorRT-LLM</a></td>
+<td>TensorRT 推理</td>
+</tr>
+<tr>
+<td><a href="https://github.com/InternLM/lmdeploy">InternLM/lmdeploy</a></td>
+<td>推理引擎</td>
+</tr>
+<tr>
+<td><a href="https://github.com/mit-han-lab/llm-awq">mit-han-lab/llm-awq</a></td>
+<td>AWQ</td>
+</tr>
+<tr>
+<td><a href="https://github.com/IST-DASLab/gptq">IST-DASLab/gptq</a></td>
+<td>GPTQ</td>
+</tr>
+<tr>
+<td><a href="https://github.com/AutoGPTQ/AutoGPTQ">AutoGPTQ/AutoGPTQ</a></td>
+<td>GPTQ 的常用封装</td>
+</tr>
+<tr>
+<td><a href="https://github.com/SafeAILab/EAGLE">SafeAILab/EAGLE</a></td>
+<td>投机解码草稿模型</td>
+</tr>
+</tbody>
+</table></div></article>
+  <aside class="inline-reader" id="inline-reader" hidden>
+    <div class="inline-reader-bar">
+      <strong id="ir-title">论文阅读</strong>
+      <div>
+        <a id="ir-open" href="#" target="_blank" rel="noopener">新窗口</a>
+        <button type="button" id="ir-close">关闭 ✕</button>
+      </div>
+    </div>
+    <iframe id="ir-frame" title="论文 PDF"></iframe>
+  </aside>
+</div>
+<script>
+document.addEventListener("click", (e) => {
+  const a = e.target.closest("a[data-paper]");
+  if (!a) return;
+  e.preventDefault();
+  const box = document.getElementById("inline-reader");
+  const frame = document.getElementById("ir-frame");
+  document.getElementById("ir-title").textContent = a.dataset.title || a.textContent;
+  document.getElementById("ir-open").href = a.getAttribute("href");
+  frame.src = a.getAttribute("href");
+  box.hidden = false;
+  document.getElementById("page-split").classList.add("has-reader");
+});
+document.getElementById("ir-close").addEventListener("click", () => {
+  document.getElementById("inline-reader").hidden = true;
+  document.getElementById("page-split").classList.remove("has-reader");
+});
+</script>
+</body>
+</html>

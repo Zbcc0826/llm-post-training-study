@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>01-后训练底层技术 · 基模爷大学习</title>
+<link rel="stylesheet" href="笔记.css">
+</head>
+<body>
+<nav><a href="思维导图.html">导图</a><a href="README.html">总览</a><a class="here" href="01-后训练底层技术.html">后训练算法</a><a href="02-训练基础设施.html">训练基建</a><a href="03-工作链与落地.html">工作链与落地</a><a href="04-论文索引.html">论文库 (55)</a><a href="05-仓库索引.html">开源仓库</a><a href="release/基模爷大学习.html">合成单页版 ✦</a></nav>
+<div class="page-split" id="page-split">
+  <article><h1>后训练底层技术</h1>
+<p>预训练做完的模型，本质上是一个很擅长「往下续写」的底座：你给它半段文章，它能接着写；但你直接问它一个问题，它可能会接着编十个同类问题，而不是老老实实回答。</p>
+<p>后训练（Post-Training）接在预训练检查点之后。它用更少、更干净、带好坏反馈的数据，把模型从「只会续写」改成「能听懂要求、会用工具、会一步步做题、知道什么话不能说」。算力开销通常只有预训练的零头，但模型上线后好不好用，几乎全看这一段。</p>
+<p><a id="pipeline"></a></p>
+<h2>链路</h2>
+<div class="flow"><p>基座检查点 → 监督微调</p><p>监督微调 → 离线偏好优化</p><p>监督微调 → 可验证奖励强化学习</p><p>离线偏好优化 → 评测与安全</p><p>可验证奖励强化学习 → 评测与安全</p><p>评测与安全 → 量化蒸馏上线</p><p>量化蒸馏上线 → 反馈回到数据</p><p>反馈回到数据 → 监督微调</p></div>
+
+<p>实际工程里最常用的两条配方：</p>
+<ul>
+<li><strong>通用对话</strong>：先做监督微调（学会问答格式），再做 DPO、IPO、KTO、ORPO、SimPO 或 PPO（学会哪种回答更讨人喜欢、更稳妥）。</li>
+<li><strong>推理与智能体</strong>：先用少量长思维链做冷启动监督微调（让模型知道可以把草稿写出来），再用 GRPO、DAPO 或 RLOO 做强化学习（由答案核对器、单元测试、编译器直接判对错），最后补一轮通用偏好对齐，让它既会做题，又能正常按要求说话。</li>
+</ul>
+<p><a id="sft"></a></p>
+<h2>监督微调</h2>
+<p>监督微调（SFT）就是拿标准答案带模型做一遍题。损失函数和预训练一样，仍然是<strong>下一词交叉熵</strong>——看模型预测下一个词的概率离标准答案差多远。</p>
+<p>区别只在一点：用户提问的那半截用 <strong>loss mask（损失掩码）</strong> 盖住，不计入损失，只让模型为「回答的那半截」负责。否则模型会把精力花在背诵「用户爱怎么提问」上。多轮对话、工具调用（JSON 参数）、长思维链，底层都是同一条交叉熵损失，差别只是塞进去的示范数据长什么样。</p>
+<p><strong>全参数微调</strong>直接更新所有权重，能力上限最高，适合作为后面偏好对齐和强化学习的起点。代价是显存占用大：除了权重和梯度，Adam 优化器还要为每个参数存一阶矩和二阶矩（两份状态），显存主要被这一块吃掉。</p>
+<p><a id="lora"></a></p>
+<h3>LoRA</h3>
+<p>大模型的权重矩阵虽然很大，但微调时真正发生的变化，往往集中在少数几个方向上。LoRA 的做法是：<strong>把原来的权重 <span class="math">W</span> 冻住不动，只在旁边挂两个很瘦的小矩阵 <span class="math">B</span> 和 <span class="math">A</span></strong>，只训练增量 <span class="math">Δ W = BA</span>。</p>
+<p>中间的秩 <span class="math">r</span> 远小于隐藏层维度，所以需要训练的参数量和 Adam 优化器状态都缩小了几个数量级。不同业务可以共用同一个底座、各自挂一份很小的适配器；上线推理前直接把 <span class="math">BA</span> 加回 <span class="math">W</span>，不会多花一分钱推理时延。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2106.09685.pdf" data-paper="2106.09685" data-title="LoRA: Low-Rank Adaptation of Large Language Models">LoRA: Low-Rank Adaptation of Large Language Models<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2106.09685">arXiv ↗</a></li>
+<li>原始实现：<a href="https://github.com/microsoft/LoRA">microsoft/LoRA</a></li>
+<li>现在最常用的入口：<a href="https://github.com/huggingface/peft">huggingface/peft</a></li>
+</ul>
+<p><a id="qlora"></a></p>
+<h3>QLoRA</h3>
+<p>LoRA 省掉了优化器状态，但被冻住的基座权重本身还占着不少显存。QLoRA 更进一步：<strong>把冻结的基座权重压成 4 bit（NF4 正态浮点格式），并做双重量化</strong>，再在上面挂 LoRA；前向反向时按需把那块权重临时解压成高精度算梯度，梯度只更新 LoRA 小矩阵。</p>
+<p>这样一来，原本要多卡才能塞下的模型，单张消费级或常规训练卡就能微调。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2305.14314.pdf" data-paper="2305.14314" data-title="QLoRA: Efficient Finetuning of Quantized LLMs">QLoRA: Efficient Finetuning of Quantized LLMs<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2305.14314">arXiv ↗</a></li>
+<li>原始实现：<a href="https://github.com/artidoro/qlora">artidoro/qlora</a></li>
+<li>单卡手写内核加速版：<a href="https://github.com/unslothai/unsloth">unslothai/unsloth</a></li>
+</ul>
+<p><a id="dora"></a></p>
+<h3>DoRA</h3>
+<p>把权重拆成「方向」和「长度（幅度）」两件事来看：全参数微调时，两者是分开变化的；而普通 LoRA 往往把两者绑在一起改。DoRA <strong>把幅度单独拎出来当成一个可训练向量，方向部分仍然交给 LoRA 做低秩更新</strong>。同样的秩 <span class="math">r</span> 下，训练表现通常更接近全参微调。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2402.09353.pdf" data-paper="2402.09353" data-title="DoRA: Weight-Decomposed Low-Rank Adaptation">DoRA: Weight-Decomposed Low-Rank Adaptation<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2402.09353">arXiv ↗</a></li>
+<li>原始实现：<a href="https://github.com/NVlabs/DoRA">NVlabs/DoRA</a></li>
+<li>训练入口：PEFT 已内置 DoRA 开关</li>
+</ul>
+<p><a id="rslora"></a></p>
+<h3>rsLoRA</h3>
+<p>普通 LoRA 在把增量加回主干时，习惯乘一个缩放系数 <span class="math">α / r</span>。这会带来一个怪现象：你想通过把秩 <span class="math">r</span> 调大来提升拟合能力，结果除数变大了，每一步的有效更新反而被压扁了。rsLoRA 把分母改成 <span class="math">√(r)</span>，<strong>乘 <span class="math">α / √(r)</span></strong>，让加大秩的时候梯度尺度依然稳定，大秩真正能发挥作用。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2312.03732.pdf" data-paper="2312.03732" data-title="A Rank Stabilization Scaling Factor for Fine-Tuning with LoRA">A Rank Stabilization Scaling Factor for Fine-Tuning with LoRA<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2312.03732">arXiv ↗</a></li>
+<li>代码入口：<a href="https://github.com/huggingface/peft">huggingface/peft</a></li>
+</ul>
+<p><a id="pissa"></a></p>
+<h3>PiSSA</h3>
+<p>普通 LoRA 用随机高斯和零矩阵初始化 <span class="math">A</span>、<span class="math">B</span>，训练刚开始时是在噪音方向上摸索。PiSSA 先对原权重矩阵做奇异值分解（SVD），<strong>把最重要的主奇异值和奇异向量直接放进可训练的 <span class="math">A</span>、<span class="math">B</span> 里</strong>，把次要的残差留在冻结矩阵里。相当于一上来就拧最关键的旋钮，收敛比随机起步更快。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2404.02948.pdf" data-paper="2404.02948" data-title="PiSSA: Principal Singular Values and Singular Vectors Adaptation of Large Language Models">PiSSA: Principal Singular Values and Singular Vectors Adaptation of Large Language Models<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2404.02948">arXiv ↗</a></li>
+<li>代码入口：PEFT、LlamaFactory、ms-swift</li>
+</ul>
+<p><a id="adalora"></a></p>
+<h3>AdaLoRA</h3>
+<p>不同层、不同矩阵（比如注意力里的 Value 矩阵和前馈层）对微调的敏感度完全不一样，每一层都分一样大的秩 <span class="math">r</span> 其实很浪费。AdaLoRA 把增量写成类 SVD 的形式，在训练过程中边跑边评估各个方向的重要性：<strong>不重要的方向直接剪掉，把省下来的参数预算分给更吃紧的层</strong>。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2303.10512.pdf" data-paper="2303.10512" data-title="AdaLoRA: Adaptive Budget Allocation for Parameter-Efficient Fine-Tuning">AdaLoRA: Adaptive Budget Allocation for Parameter-Efficient Fine-Tuning<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2303.10512">arXiv ↗</a></li>
+<li>代码入口：<a href="https://github.com/huggingface/peft">huggingface/peft</a></li>
+</ul>
+<p><a id="galore"></a></p>
+<h3>GaLore</h3>
+<p>如果你想保留「全参数都能更新」的上限，但显存又装不下全量 Adam 状态，可以用 GaLore。它不冻结原权重，而是利用「梯度矩阵本身也是低秩的」这一性质，<strong>先把梯度投影到低维子空间，只在这个小空间里维护 Adam 的一阶、二阶动量</strong>，更新时再投影回原尺寸加到全量权重上，并且隔一段步数换一次投影方向。它省的是优化器状态显存，模型本身仍是全参数训练。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2403.03507.pdf" data-paper="2403.03507" data-title="GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection">GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2403.03507">arXiv ↗</a></li>
+</ul>
+<p><a id="neftune"></a></p>
+<h3>NEFTune</h3>
+<p>指令微调数据集不大时，模型很容易死记硬背训练样本的句式。NEFTune 的做法极其简单：<strong>在训练的前向过程里，往词嵌入（Embedding）向量上加一点均匀分布的随机噪声</strong>，上线推理时关掉。就这么一步，能明显减轻对小样本的过拟合，让回答更放得开。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2310.05914.pdf" data-paper="2310.05914" data-title="NEFTune: Noisy Embeddings Improve Instruction Finetuning">NEFTune: Noisy Embeddings Improve Instruction Finetuning<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2310.05914">arXiv ↗</a></li>
+<li>代码入口：TRL、LlamaFactory、ms-swift 均提供参数开关</li>
+</ul>
+<p><a id="packing"></a></p>
+<h3>序列打包</h3>
+<p>监督微调的数据长短不一：有的只有几十个词，有的有几千个词。如果老老实实按最长样本补零（padding），GPU 一大半时间都在算无意义的零。</p>
+<p><strong>序列打包（Packing）</strong> 把多条短样本头尾相接拼进同一条长序列里，同时修改位置编号和注意力掩码（attention mask），保证第 2 条样本看不见第 1 条样本的内容。这是把 SFT 吞吐（每秒有效 token 数）拉起来的常规操作，TRL、LlamaFactory、ms-swift 都直接支持。</p>
+<p><a id="rft-star"></a></p>
+<h3>拒绝采样微调与 STaR</h3>
+<p>在数学和代码任务里，直接上强化学习之前，常常先做一轮<strong>拒绝采样微调（RFT）</strong>：拿当前模型对同一道题采样几十条解法，用答案核对器或单测筛掉错的，只留做对的轨迹当教材，再做一遍监督微调。</p>
+<p><strong>STaR</strong> 把这件事做成了循环自举：让模型先试着写推理步骤，做对的直接收进训练集；做错的，把标准答案塞给它当提示，让它「倒推」出合理的中间步骤，再收进训练集训练下一代。DeepSeek-R1 在正式强化学习前先用少量长思维链做冷启动，走的就是这个思路。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2203.14465.pdf" data-paper="2203.14465" data-title="STaR: Bootstrapping Reasoning With Reasoning">STaR: Bootstrapping Reasoning With Reasoning<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2203.14465">arXiv ↗</a></li>
+<li>推理模型里的冷启动用法见：<a class="paper-link" href="论文/2501.12948.pdf" data-paper="2501.12948" data-title="DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning">DeepSeek-R1<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2501.12948">arXiv ↗</a></li>
+</ul>
+<p><a id="distill"></a></p>
+<h3>蒸馏</h3>
+<p>大模型用强化学习把复杂推理能力跑通之后，怎么塞进线上跑得起的小模型？靠蒸馏。</p>
+<p>最直接的是<strong>序列级蒸馏</strong>：让教师模型生成回答或完整思维链，学生模型直接拿来做 SFT。但这有个隐患（暴露偏差）：学生训练时看的都是教师写好的完美上文，一旦上线自己生成，写错半句话就接不下去了。</p>
+<p><strong>MiniLLM</strong> 和 <strong>GKD（On-Policy 蒸馏）</strong> 改成让学生自己先生成回答，再让教师在学生的轨迹上逐词给出概率分布纠正（用逆向 KL 或广义 JSD 散度），治的就是「平时背标准答案挺熟，自己上考场就崩」。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2306.08543.pdf" data-paper="2306.08543" data-title="MiniLLM: On-Policy Distillation of Large Language Models">MiniLLM: On-Policy Distillation of Large Language Models<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2306.08543">arXiv ↗</a></li>
+<li>论文：<a class="paper-link" href="论文/2306.13649.pdf" data-paper="2306.13649" data-title="On-Policy Distillation of Language Models: Learning from Self-Generated Mistakes">On-Policy Distillation of Language Models: Learning from Self-Generated Mistakes<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2306.13649">arXiv ↗</a>（GKD）</li>
+</ul>
+<p><a id="self-instruct"></a></p>
+<h2>数据从哪来</h2>
+<p>算法再新，喂进去的数据脏、配比歪，训出来一样不能用。后训练的数据仓通常分成三类分开管：<strong>普通指令数据</strong>（SFT 用）、<strong>好坏对比数据</strong>（偏好优化用）、<strong>带标准答案或单测的题库</strong>（可验证强化学习用）。不管哪一类，都必须和评测集做严格的去重去污染，防止考题漏进教材。</p>
+<p><a id="self-instruct-method"></a></p>
+<h3>Self-Instruct</h3>
+<p>人工写指令又慢又贵。Self-Instruct 先准备一小撮人工写的种子指令，让模型模仿着生出新指令和对应回答，再用规则和相似度过滤掉重复、残缺的样本，塞回池子里继续滚雪球。它立下了一条规矩：<strong>合成数据能不能用，一半看生成，一半看清洗过滤</strong>。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2212.10560.pdf" data-paper="2212.10560" data-title="Self-Instruct: Aligning Language Models with Self-Generated Instructions">Self-Instruct: Aligning Language Models with Self-Generated Instructions<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2212.10560">arXiv ↗</a></li>
+</ul>
+<p><a id="evol-instruct"></a></p>
+<h3>Evol-Instruct</h3>
+<p>模型自己随便编的题往往太简单。WizardLM 提出的 Evol-Instruct 专门用提示词逼着模型把简单题「进化」成难题：要么<strong>加深</strong>（加约束、加推理步数、把概念具体化），要么<strong>拓宽</strong>（换同类的冷门场景），同时剔除进化失败的无解废题。需要强逻辑和复杂指令遵循时，这套改写法非常管用。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2304.12244.pdf" data-paper="2304.12244" data-title="WizardLM: Empowering large pre-trained language models to follow complex instructions">WizardLM: Empowering large pre-trained language models to follow complex instructions<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2304.12244">arXiv ↗</a></li>
+</ul>
+<p><a id="magpie"></a></p>
+<h3>Magpie</h3>
+<p>一个已经对齐好的聊天模型，当你只给它塞进「用户说话前的模板前缀」（比如 <code>&lt;|start_header_id|&gt;user&lt;|end_header_id|&gt;</code>），不给任何具体内容时，它会顺着自己学过的套路，自动往下编出一句像模像样的用户提问。Magpie 利用这个特性，<strong>连种子题都不用准备，直接从空模板里成批抽出高质量指令</strong>，再让模型自己作答。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2406.08464.pdf" data-paper="2406.08464" data-title="Magpie: Alignment Data Synthesis from Scratch by Prompting Aligned LLMs with Nothing">Magpie: Alignment Data Synthesis from Scratch by Prompting Aligned LLMs with Nothing<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2406.08464">arXiv ↗</a></li>
+<li>造数据与人工抽检工具：<a href="https://github.com/argilla-io/distilabel">argilla-io/distilabel</a>、<a href="https://github.com/argilla-io/argilla">argilla-io/argilla</a></li>
+</ul>
+<p><a id="bradley-terry"></a></p>
+<h2>离线偏好优化</h2>
+<p>做完 SFT，模型会答话了，但常常啰嗦、生硬，或者偶尔胡编。很多时候人们很难一笔一划写出「完美答案」，却很容易在两条回答里指出「A 比 B 更好」。偏好优化就是用这种比较信号来调整模型。</p>
+<p><a id="bradley-terry-model"></a></p>
+<h3>Bradley-Terry</h3>
+<p>这是整个偏好对齐的数学底座。假设每个回答背后有一个隐含的分数 <span class="math">r</span>，那么回答 <span class="math">y_w</span> 比 <span class="math">y_l</span> 更受青睐的概率，就等于两个分数之差经过 sigmoid 函数后的结果：<span class="math">σ(r(x, y_w) - r(x, y_l))</span>。后面的奖励模型训练和 DPO 推导，全是从这个式子长出来的。</p>
+<ul>
+<li>出处：Bradley, R. A. &amp; Terry, M. E. (1952). Rank analysis of incomplete block designs. <em>Biometrika</em>.</li>
+</ul>
+<p><a id="reward-model"></a></p>
+<h3>奖励模型</h3>
+<p>拿成对的「好回答 <span class="math">y_w</span> / 坏回答 <span class="math">y_l</span>」数据，按上面的 Bradley-Terry 公式训练一个打分网络，让它给好回答打的标量分高于坏回答。</p>
+<p>打分方式分两种：<strong>结果奖励模型（ORM）</strong> 只在整段话写完后给一个总分；<strong>过程奖励模型（PRM）</strong> 对推理的每一步分别打分。PRM 抓错抓得准，但标注成本高得多。</p>
+<ul>
+<li>过程监督代表作：<a class="paper-link" href="论文/2305.20050.pdf" data-paper="2305.20050" data-title="Let&#x27;s Verify Step by Step">Let's Verify Step by Step<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2305.20050">arXiv ↗</a></li>
+<li>把 SFT、奖励模型、PPO 串成标准三步走的奠基论文：<a class="paper-link" href="论文/2203.02155.pdf" data-paper="2203.02155" data-title="Training language models to follow instructions with human feedback">Training language models to follow instructions with human feedback<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2203.02155">arXiv ↗</a>（InstructGPT）</li>
+</ul>
+<p><a id="ppo-rlhf"></a></p>
+<h3>PPO</h3>
+<p>经典 RLHF 的主力算法。训练时模型自己针对提示词生成回答，奖励模型给分；为了防止模型为了骗高分把语言说崩（Reward Hacking），还要拿一个冻住的 SFT 模型当<strong>参考模型（Reference）</strong>，一旦新模型偏离参考模型太远（KL 散度过大）就扣分；同时用一个<strong>价值模型（Critic）</strong>配合广义优势估计（GAE）来算每一步到底比预期好多少，最后用带裁剪（Clipping）的策略梯度稳步更新。</p>
+<p>代价很直观：显存和集群里要同时摆下<strong>策略、参考、奖励、价值四个大模型</strong>，工程同步重，但多轮复杂任务里上限依然很扎实。</p>
+<ul>
+<li>算法原论文：<a class="paper-link" href="论文/1707.06347.pdf" data-paper="1707.06347" data-title="Proximal Policy Optimization Algorithms">Proximal Policy Optimization Algorithms<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/1707.06347">arXiv ↗</a></li>
+<li>语言模型完整落地：InstructGPT（见上）</li>
+<li>早期开源参考：DeepSpeed-Chat，位于 <a href="https://github.com/deepspeedai/DeepSpeed">deepspeedai/DeepSpeed</a></li>
+<li>现在的主力大规模框架：<a href="https://github.com/OpenRLHF/OpenRLHF">OpenRLHF/OpenRLHF</a>、<a href="https://github.com/verl-project/verl">verl-project/verl</a>、<a href="https://github.com/NVIDIA-NeMo/RL">NVIDIA-NeMo/RL</a></li>
+</ul>
+<p><a id="dpo"></a></p>
+<h3>DPO</h3>
+<p>PPO 要养四个模型太折腾。DPO 的作者注意到一个数学事实：在「最大化奖励 + 限制相对参考模型的 KL 散度」这个目标下，最优策略 <span class="math">π<em></span> 和奖励函数 <span class="math">r</span> 之间其实可以互相反解——也就是说，</em><em>语言模型自己除以参考模型的对数概率比 <span class="math">β log  fracπ_θ(y|x)pi_ref(y|x)</span>，本身就已经是一个隐式的奖励函数</em>*。</p>
+<p>把它直接代回 Bradley-Terry 公式，就彻底省掉了单独训练奖励模型和在线采样：只要拿现成的「好回答 / 坏回答」对比数据，算一次分类式的交叉熵损失，就能直接推高好回答概率、压低坏回答概率。<span class="math">β</span> 用来控制离参考模型有多远。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2305.18290.pdf" data-paper="2305.18290" data-title="Direct Preference Optimization: Your Language Model is Secretly a Reward Model">Direct Preference Optimization: Your Language Model is Secretly a Reward Model<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2305.18290">arXiv ↗</a></li>
+<li>原始实现：<a href="https://github.com/eric-mitchell/direct-preference-optimization">eric-mitchell/direct-preference-optimization</a></li>
+<li>工程配方：<a href="https://github.com/huggingface/alignment-handbook">huggingface/alignment-handbook</a>、<a href="https://github.com/huggingface/trl">huggingface/trl</a></li>
+</ul>
+<p><a id="ipo"></a></p>
+<h3>IPO</h3>
+<p>DPO 有一个隐含毛病：如果在训练集里某条回答每次都赢，Bradley-Terry 目标会要求好坏回答的对数概率差奔着无穷大去，哪怕 KL 惩罚系数 <span class="math">β</span> 设得不小，也容易在有限偏好数据上过拟合。</p>
+<p>IPO（Identity Preference Optimization）把這一整类方法抽象成 <span class="math">Ψ</span>PO 框架，改用平方损失让好坏回答的对数概率比<strong>稳定在一个有限的目标间隔附近</strong>，不再无休止地拉大差距，在偏好数据有噪声或量不够时更抗过拟合。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2310.12036.pdf" data-paper="2310.12036" data-title="A General Theoretical Paradigm to Understand Learning from Human Preferences">A General Theoretical Paradigm to Understand Learning from Human Preferences<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2310.12036">arXiv ↗</a></li>
+<li>代码入口：<a href="https://github.com/huggingface/trl">huggingface/trl</a></li>
+</ul>
+<p><a id="kto"></a></p>
+<h3>KTO</h3>
+<p>现实业务里，攒「同一个问题下的一好一坏两条回答」并不容易，更多时候后台日志里只有用户点的「赞」或「踩」——也就是单条样本的好坏二元标签。</p>
+<p>KTO 借用了行为经济学里的前景理论（人对损失比对等量收益更敏感），<strong>不用成对数据，单靠「这条回答合格 / 不合格」就能做对齐</strong>。数据准备成本比 DPO 低一大截。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2402.01306.pdf" data-paper="2402.01306" data-title="KTO: Model Alignment as Prospect Theoretic Optimization">KTO: Model Alignment as Prospect Theoretic Optimization<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2402.01306">arXiv ↗</a></li>
+<li>原始实现：<a href="https://github.com/ContextualAI/HALOs">ContextualAI/HALOs</a></li>
+<li>代码入口：TRL</li>
+</ul>
+<p><a id="orpo"></a></p>
+<h3>ORPO</h3>
+<p>传统流程要先做一轮 SFT，存下检查点当参考模型，再开一轮 DPO。ORPO 把两步并成一步：<strong>在正常 SFT 交叉熵损失后面，直接加上一项好坏回答的「优势比（Odds Ratio）」惩罚项</strong>。既不用训两轮，也不用加载那份冻结的参考模型，显存和流程都省了一半。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2403.07691.pdf" data-paper="2403.07691" data-title="ORPO: Monolithic Preference Optimization without Reference Model">ORPO: Monolithic Preference Optimization without Reference Model<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2403.07691">arXiv ↗</a></li>
+<li>原始实现：<a href="https://github.com/xfactlab/orpo">xfactlab/orpo</a></li>
+</ul>
+<p><a id="simpo"></a></p>
+<h3>SimPO</h3>
+<p>DPO 训练时优化的是「相对参考模型的概率比」，但上线推理时根本没有参考模型参与，只看模型自己算出来的序列概率，这叫训推不一致；而且长句子的词多，对数概率加起来天生吃亏或占便宜。</p>
+<p>SimPO 直接<strong>拿回答中每个词的「平均对数概率（长度归一化）」当隐式奖励</strong>，并加上一个固定胜出间隔 <span class="math">γ</span>。同样不需要参考模型，而且直接治了模型爱靠凑字数刷分的问题。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2405.14734.pdf" data-paper="2405.14734" data-title="SimPO: Simple Preference Optimization with a Reference-Free Reward">SimPO: Simple Preference Optimization with a Reference-Free Reward<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2405.14734">arXiv ↗</a></li>
+<li>原始实现：<a href="https://github.com/princeton-nlp/SimPO">princeton-nlp/SimPO</a></li>
+</ul>
+<p><a id="online-dpo"></a></p>
+<h3>在线偏好</h3>
+<p>纯离线 DPO 最大的短板是「教材过期」：训到半路，模型自己的说话分布已经变了，但喂给它的还是旧模型当年写出来的正反例。</p>
+<p>在线偏好（如 OAIF）改成<strong>边训边让当前模型自己采样写几条回答，交给奖励模型或更强的裁判模型当场判出高下，立刻拿来做 DPO 更新</strong>。它花掉了在线采样的钱，但把离线 DPO 的上限往上抬了一大截。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2402.04792.pdf" data-paper="2402.04792" data-title="Direct Language Model Alignment from Online AI Feedback">Direct Language Model Alignment from Online AI Feedback<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2402.04792">arXiv ↗</a></li>
+</ul>
+<p><a id="cai"></a></p>
+<h3>宪法式 AI</h3>
+<p>安全对齐如果全靠人工一条条写拒答、标好坏，既慢又容易标准不一。宪法式 AI（Constitutional AI / RLAIF）的做法是先写好十几条明文原则（也就是「宪法」）：第一步让模型按原则自我批评、自己改写出更安全礼貌的回答，拿来做 SFT；第二步让模型按原则对两条回答打分做偏好对比，训练偏好或奖励模型。人工从「苦力标注员」变成了「定规则和抽检的人」。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2212.08073.pdf" data-paper="2212.08073" data-title="Constitutional AI: Harmlessness from AI Feedback">Constitutional AI: Harmlessness from AI Feedback<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2212.08073">arXiv ↗</a></li>
+</ul>
+<p><a id="prm"></a></p>
+<h3>过程奖励</h3>
+<p>一道十步的数学题，最后一步算错了，结果奖励（ORM）只能冷冰冰地给个 0 分，模型并不知道前八步其实是对的、错在第九步。过程奖励模型（PRM）专门给每一个推理步骤打分，不仅训练时信用分配更清楚，推理时配合多路采样搜索（Best-of-N 或树搜索）挑答案也明显更准。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2305.20050.pdf" data-paper="2305.20050" data-title="Let&#x27;s Verify Step by Step">Let's Verify Step by Step<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2305.20050">arXiv ↗</a></li>
+</ul>
+<p><a id="grpo"></a></p>
+<h2>可验证奖励强化学习</h2>
+<p>当任务变成解数学题、写代码、调工具时，答案对不对根本不用请人类或大模型猜——拿标准答案核对、跑一遍单元测试、过一遍编译器，立刻就能给出板上钉钉的 0 或 1。</p>
+<p>把这种<strong>程序可核对的硬信号直接当成强化学习奖励</strong>，就是 <strong>RLVR（可验证奖励强化学习）</strong>。因为裁判不会被模型花言巧语糊弄，模型在海量采样里会自己摸索出验算、反思、换思路等长思维链行为。</p>
+<p><a id="grpo-algo"></a></p>
+<h3>GRPO</h3>
+<p>PPO 最占显存、最难调的就是那个和主模型一样大的价值网络（Critic）。DeepSeekMath 提出的 GRPO 干脆把 Critic 砍掉了：</p>
+<p>针对同一道题，让当前模型一次采样一组回答（比如 <span class="math">G=8</span> 或 <span class="math">16</span> 条），拿验证器给每条打分 <span class="math">r_1, …, r_G</span>，然后直接用<strong>这组分数自己的均值和标准差做标准化</strong>，算出来的相对高低就是每条回答的优势（Advantage）。比同组平均分高的就鼓励，低的就压制，再配上 PPO 式的裁剪和 KL 约束。省掉一整套价值网络后，显存和跨卡同步立刻轻松了很多。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2402.03300.pdf" data-paper="2402.03300" data-title="DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models">DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2402.03300">arXiv ↗</a></li>
+<li>报告仓库：<a href="https://github.com/deepseek-ai/DeepSeek-Math">deepseek-ai/DeepSeek-Math</a></li>
+<li>训练系统：<a href="https://github.com/verl-project/verl">verl-project/verl</a>、<a href="https://github.com/OpenRLHF/OpenRLHF">OpenRLHF/OpenRLHF</a>、<a href="https://github.com/huggingface/trl">huggingface/trl</a>、<a href="https://github.com/modelscope/ms-swift">modelscope/ms-swift</a></li>
+</ul>
+<p><a id="rloo"></a></p>
+<h3>RLOO</h3>
+<p>同样是砍掉 Critic 的思路。RLOO（Leave-One-Out REINFORCE）对同一道题采样 <span class="math">K</span> 条回答，算第 <span class="math">i</span> 条回答的基线（Baseline）时，直接取<strong>同组里其余 <span class="math">K-1</span> 条回答的平均分</strong>。数学上这是无偏估计，方差又比原始 REINFORCE 小得多，实现起来比 PPO 干净得多。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2402.14740.pdf" data-paper="2402.14740" data-title="Back to Basics: Revisiting REINFORCE Style Optimization for Learning from Human Feedback in LLMs">Back to Basics: Revisiting REINFORCE Style Optimization for Learning from Human Feedback in LLMs<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2402.14740">arXiv ↗</a></li>
+<li>代码入口：TRL、OpenRLHF</li>
+</ul>
+<p><a id="reinforce-pp"></a></p>
+<h3>REINFORCE++</h3>
+<p>如果每道题只采样一两条，组内均值就不稳了。REINFORCE++ 同样不用 Critic，但它把参考模型的 KL 惩罚直接折算进奖励，并在<strong>整个全局批次（Global Batch）上做优势归一化</strong>，配合裁剪，在单样本或小分组采样时比朴素方法更稳。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2501.03262.pdf" data-paper="2501.03262" data-title="REINFORCE++: Stabilizing Critic-Free Policy Optimization with Global Advantage Normalization">REINFORCE++: Stabilizing Critic-Free Policy Optimization with Global Advantage Normalization<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2501.03262">arXiv ↗</a></li>
+<li>实现：<a href="https://github.com/OpenRLHF/OpenRLHF">OpenRLHF/OpenRLHF</a></li>
+</ul>
+<p><a id="dapo"></a></p>
+<h3>DAPO</h3>
+<p>把 GRPO 放到大规模长思维链训练里真刀真枪跑起来时，会遇到熵坍缩（越训越死板）、长答案梯度被稀释、全对全错空转等问题。字节与清华开源的 DAPO 对症改了四处：</p>
+<ol>
+<li><strong>Clip-Higher（上下裁剪解耦）</strong>：把上界裁剪 <span class="math">varepsilon_high</span> 放宽，给原本概率很低的探索性词留出涨起来的空间，防止过早失去多样性。</li>
+<li><strong>Dynamic Sampling（动态采样）</strong>：如果一道题采出来的一组回答「全对」或「全错」，组内标准差就是 0，算不出梯度；DAPO 直接丢掉这种无效组继续补采，保证每个批次都有真实学习信号。</li>
+<li><strong>Token-Level Loss（词级损失）</strong>：不再先按每条回答平均再按组平均，而是按所有 token 统一加权，免得高质量的长推理链因为词数多、单个词权重被摊薄，或者超长废话逃避惩罚。</li>
+<li><strong>Overlong Reward Shaping（超长平滑惩罚）</strong>：对接近或撞上长度上限的截断样本做平滑扣分，而不是一刀切硬塞噪点。</li>
+</ol>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2503.14476.pdf" data-paper="2503.14476" data-title="DAPO: An Open-Source LLM Reinforcement Learning System at Scale">DAPO: An Open-Source LLM Reinforcement Learning System at Scale<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2503.14476">arXiv ↗</a></li>
+<li>官方系统：<a href="https://github.com/BytedTsinghua-SIA/DAPO">BytedTsinghua-SIA/DAPO</a></li>
+<li>同款配方在 verl、OpenRLHF 中均可直接开启</li>
+</ul>
+<p><a id="gspo"></a></p>
+<h3>GSPO</h3>
+<p>GRPO 与 DAPO 在算新旧策略概率比（重要性采样比率）和裁剪时，是在每个 token 上分别算的，但奖励却是整道题做完才给一个总分，粒度和方差并不完全匹配。GSPO 把重要性采样比率和裁剪<strong>整体抬到序列（整段回答）级别</strong>，用几何平均的序列似然比来做裁剪和更新，在大规模以及混合专家（MoE）模型的强化学习里训练更稳。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2507.18071.pdf" data-paper="2507.18071" data-title="Group Sequence Policy Optimization">Group Sequence Policy Optimization<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2507.18071">arXiv ↗</a></li>
+<li>代码：见论文页面及 verl / OpenRLHF / ms-swift 中跟进的实现</li>
+</ul>
+<p><a id="r1"></a></p>
+<h3>DeepSeek-R1 配方</h3>
+<p>DeepSeek-R1 把怎么训出强推理模型写成了一套公开的四阶段工程蓝图：</p>
+<ol>
+<li>先用几千条高质量长思维链做冷启动 SFT，让模型输出格式规整、可读；</li>
+<li>上可验证奖励的 GRPO 强化学习，把数学、代码等硬推理能力拉满；</li>
+<li>在强化学习收敛后，通过拒绝采样收集推理轨迹，并混入写作、问答等通用数据做新一轮 SFT；</li>
+<li>最后做一轮兼顾有用性与安全性的全场景强化学习对齐。</li>
+</ol>
+<p>同时它证明了：把大模型的推理轨迹直接蒸馏给小模型，比让小模型自己从头跑强化学习划算得多。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2501.12948.pdf" data-paper="2501.12948" data-title="DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning">DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2501.12948">arXiv ↗</a></li>
+<li>报告仓库：<a href="https://github.com/deepseek-ai/DeepSeek-R1">deepseek-ai/DeepSeek-R1</a></li>
+<li>承载这类大规模 RL 数据流的系统论文：<a class="paper-link" href="论文/2409.19256.pdf" data-paper="2409.19256" data-title="HybridFlow: A Flexible and Efficient RLHF Framework">HybridFlow: A Flexible and Efficient RLHF Framework<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2409.19256">arXiv ↗</a>，对应开源仓 <a href="https://github.com/verl-project/verl">verl-project/verl</a></li>
+</ul>
+<p><a id="yarn"></a></p>
+<h2>长上下文、合并、框架怎么选</h2>
+<p><a id="rope"></a></p>
+<h3>旋转位置编码与外推</h3>
+<p>现在主流模型都用 <strong>RoPE（旋转位置编码）</strong>：按词所在的位置，把 Query 和 Key 向量在复平面上转一个角度，词与词的距离自然体现在角度差里。不同维度转得快慢不同（高频分量看局部，低频分量看远距）。</p>
+<p>如果训练只见过 4K 长度，直接喂 32K，没见过的大角度会让注意力分数彻底乱掉。把上下文拉长常用这几招：</p>
+<ul>
+<li><strong>位置插值（PI）</strong>：把长位置按比例压缩回原来训练见过的范围，再做少量微调。论文：<a class="paper-link" href="论文/2306.15595.pdf" data-paper="2306.15595" data-title="Extending Context Window of Large Language Models via Positional Interpolation">Extending Context Window of Large Language Models via Positional Interpolation<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2306.15595">arXiv ↗</a></li>
+<li><strong>YaRN</strong>：一刀切压缩会把局部高频细节挤糊。YaRN 按频率分段处理——高频不动以保住局部敏锐度，低频做插值，并配一个注意力温度缩放。论文：<a class="paper-link" href="论文/2309.00071.pdf" data-paper="2309.00071" data-title="YaRN: Efficient Context Window Extension of Large Language Models">YaRN: Efficient Context Window Extension of Large Language Models<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2309.00071">arXiv ↗</a></li>
+<li><strong>调大基频（ABF）</strong>：Code Llama 等直接把 RoPE 的底数从 10000 调大到百万级，再做长文本继续训练。论文：<a class="paper-link" href="论文/2308.12950.pdf" data-paper="2308.12950" data-title="Code Llama: Open Foundation Models for Code">Code Llama: Open Foundation Models for Code<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2308.12950">arXiv ↗</a></li>
+<li><strong>LongRoPE</strong>：用搜索找每一维最合适的非均匀缩放比例，把窗口推到百万词级。论文：<a class="paper-link" href="论文/2402.13753.pdf" data-paper="2402.13753" data-title="LongRoPE: Extending LLM Context Window Beyond 2 Million Tokens">LongRoPE: Extending LLM Context Window Beyond 2 Million Tokens<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2402.13753">arXiv ↗</a></li>
+<li>RoPE 原论文：<a class="paper-link" href="论文/2104.09864.pdf" data-paper="2104.09864" data-title="RoFormer: Enhanced Transformer with Rotary Position Embedding">RoFormer: Enhanced Transformer with Rotary Position Embedding<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2104.09864">arXiv ↗</a></li>
+</ul>
+<p><a id="merging"></a></p>
+<h3>权重合并</h3>
+<p>如果手头基于同一个底座分别训了「代码强」、「数学强」、「说话好听」三个检查点，可以不用重训，直接在参数空间把它们合成一个模型：</p>
+<ul>
+<li><strong>SLERP</strong>：在球面上对两个模型的权重做平滑插值，比简单加权平均更能保住向量的模长。</li>
+<li><strong>TIES-Merging</strong>：多个模型往一块合时，先把变化很小的冗余增量清零，再投票统一正负号方向，最后对方向一致的参数求平均，避免互相抵消。</li>
+<li><strong>DARE</strong>：微调产生的增量 <span class="math">Δ W</span> 其实非常稀疏。先把绝大部分增量随机丢掉（置零），再把剩下的按比例放大，这样多个专项模型合在一起时几乎不打架。</li>
+</ul>
+<p>合并适合把现成专项能力叠到一起；但要凭空长出硬核推理能力，还是得靠带验证器的训练。</p>
+<ul>
+<li>论文：<a class="paper-link" href="论文/2306.01708.pdf" data-paper="2306.01708" data-title="TIES-Merging: Resolving Interference When Merging Models">TIES-Merging: Resolving Interference When Merging Models<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2306.01708">arXiv ↗</a></li>
+<li>论文：<a class="paper-link" href="论文/2311.03099.pdf" data-paper="2311.03099" data-title="Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch">Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2311.03099">arXiv ↗</a>（DARE）</li>
+<li>合并工具箱：<a href="https://github.com/arcee-ai/mergekit">arcee-ai/mergekit</a></li>
+</ul>
+<p><a id="tool-choice"></a></p>
+<h3>框架怎么选</h3>
+<p>先把团队内部的数据格式统一起来，再按手头的卡数选框架，不要为每个框架各写一套数据清洗脚本：</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>仓库</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>单机到八卡快速试 SFT、DPO、IPO、KTO、GRPO</td>
+<td><a href="https://github.com/huggingface/trl">huggingface/trl</a> + <a href="https://github.com/huggingface/peft">peft</a> + <a href="https://github.com/huggingface/accelerate">accelerate</a></td>
+</tr>
+<tr>
+<td>官方对齐配方参考</td>
+<td><a href="https://github.com/huggingface/alignment-handbook">huggingface/alignment-handbook</a></td>
+</tr>
+<tr>
+<td>改配置文件就能跑，国内模型适配最全</td>
+<td><a href="https://github.com/hiyouga/LlamaFactory">hiyouga/LlamaFactory</a>、<a href="https://github.com/modelscope/ms-swift">modelscope/ms-swift</a></td>
+</tr>
+<tr>
+<td>YAML 配置驱动微调</td>
+<td><a href="https://github.com/axolotl-ai-cloud/axolotl">axolotl-ai-cloud/axolotl</a></td>
+</tr>
+<tr>
+<td>单卡 LoRA / QLoRA 追求省显存和速度</td>
+<td><a href="https://github.com/unslothai/unsloth">unslothai/unsloth</a></td>
+</tr>
+<tr>
+<td>代码干净、PyTorch 原生风格</td>
+<td><a href="https://github.com/meta-pytorch/torchtune">meta-pytorch/torchtune</a></td>
+</tr>
+<tr>
+<td>多机生产级 PPO / GRPO / DAPO</td>
+<td><a href="https://github.com/verl-project/verl">verl-project/verl</a>、<a href="https://github.com/OpenRLHF/OpenRLHF">OpenRLHF/OpenRLHF</a>、<a href="https://github.com/NVIDIA-NeMo/RL">NVIDIA-NeMo/RL</a></td>
+</tr>
+<tr>
+<td>强化学习采样（Rollout）引擎</td>
+<td><a href="https://github.com/vllm-project/vllm">vllm-project/vllm</a>、<a href="https://github.com/sgl-project/sglang">sgl-project/sglang</a></td>
+</tr>
+<tr>
+<td>百亿到千亿全参 3D 并行</td>
+<td><a href="https://github.com/NVIDIA/Megatron-LM">NVIDIA/Megatron-LM</a>、<a href="https://github.com/NVIDIA-NeMo/Megatron-Bridge">NVIDIA-NeMo/Megatron-Bridge</a></td>
+</tr>
+</tbody>
+</table></div></article>
+  <aside class="inline-reader" id="inline-reader" hidden>
+    <div class="inline-reader-bar">
+      <strong id="ir-title">论文阅读</strong>
+      <div>
+        <a id="ir-open" href="#" target="_blank" rel="noopener">新窗口</a>
+        <button type="button" id="ir-close">关闭 ✕</button>
+      </div>
+    </div>
+    <iframe id="ir-frame" title="论文 PDF"></iframe>
+  </aside>
+</div>
+<script>
+document.addEventListener("click", (e) => {
+  const a = e.target.closest("a[data-paper]");
+  if (!a) return;
+  e.preventDefault();
+  const box = document.getElementById("inline-reader");
+  const frame = document.getElementById("ir-frame");
+  document.getElementById("ir-title").textContent = a.dataset.title || a.textContent;
+  document.getElementById("ir-open").href = a.getAttribute("href");
+  frame.src = a.getAttribute("href");
+  box.hidden = false;
+  document.getElementById("page-split").classList.add("has-reader");
+});
+document.getElementById("ir-close").addEventListener("click", () => {
+  document.getElementById("inline-reader").hidden = true;
+  document.getElementById("page-split").classList.remove("has-reader");
+});
+</script>
+</body>
+</html>

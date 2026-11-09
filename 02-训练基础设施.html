@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>02-训练基础设施 · 基模爷大学习</title>
+<link rel="stylesheet" href="笔记.css">
+</head>
+<body>
+<nav><a href="思维导图.html">导图</a><a href="README.html">总览</a><a href="01-后训练底层技术.html">后训练算法</a><a class="here" href="02-训练基础设施.html">训练基建</a><a href="03-工作链与落地.html">工作链与落地</a><a href="04-论文索引.html">论文库 (55)</a><a href="05-仓库索引.html">开源仓库</a><a href="release/基模爷大学习.html">合成单页版 ✦</a></nav>
+<div class="page-split" id="page-split">
+  <article><h1>训练基础设施</h1>
+<p>如果算法决定了「训什么」，训练基础设施（AI Infra）决定的就是<strong>能不能塞进显存、多卡会不会互相干等、机器坏一张卡会不会全盘白跑</strong>。</p>
+<p>检验一套训练基建合不合格，标准很实在：同一份训练作业，换个队列、换套并行切分，它的 <strong>MFU（模型算力利用率）</strong>、每张卡每秒处理的 token 数、以及损失下降曲线，都还落在极小的误差范围内。</p>
+<p>下面把提问里的「现存优化」还原为<strong>显存优化</strong>，「算自由化」展开为<strong>算力池化、作业可迁移与算子加速</strong>。</p>
+<p><a id="cluster"></a></p>
+<h2>集群</h2>
+<p>一台合格的训练节点，不是只看插了几张 GPU，而是三件事配平：</p>
+<ol>
+<li><strong>加速卡与机内高速互联</strong>：H100 / H200 / B200 或同档算力卡，同一台机器内部用 NVLink / NVSwitch 连起来（带宽通常在数百 GB/s 级），专门伺候通信最密集的张量并行。</li>
+<li><strong>机间 RDMA 网络</strong>：机器和机器之间用 InfiniBand（NDR / XDR）或无损 RoCEv2，并且打开 <strong>GPUDirect RDMA</strong>——让网卡直接读写 GPU 显存，数据不用先绕回 CPU 内存兜一圈。</li>
+<li><strong>CPU 与存储</strong>：足够多的 CPU 核负责实时解码和拼装数据，节点本地配 NVMe 固态盘做检查点缓存；底层挂并行文件系统（Lustre、GPFS、3FS 等）。存储带宽的硬指标就一条：<strong>全量模型加优化器状态的检查点，必须在几分钟内写完</strong>，否则存盘时间会把训练步时拖垮。</li>
+</ol>
+<p>网络拓扑一般按轨优化（Rail-Optimized）设计：同一个并行通信组尽量落在同一台叶交换机下面，少跨脊交换机绕远路。</p>
+<p><a id="schedule"></a></p>
+<h2>调度</h2>
+<p>训练作业和普通网页服务完全不同：一个 64 卡的 3D 并行训练作业，<strong>少一张卡都没法开工</strong>。所以调度器必须支持<strong>成组调度（Gang Scheduling）</strong>——要么 64 张卡同时就位一起拉起，要么就先排队，绝不能先占着 60 张卡干等剩下 4 张。</p>
+<p>同时还要做到：整节点独占、GPU 和对应 CPU NUMA 节点及网卡就近绑定、把同批次同型号的机器分在一组、某台机器掉线后自动剔除坏节点并从最近一次检查点重新拉起。</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>调度与编排工具</th>
+<th>仓库</th>
+<th>适合什么场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Slurm</td>
+<td><a href="https://github.com/SchedMD/slurm">SchedMD/slurm</a></td>
+<td>传统超算与大模型专有集群，成组调度、优先级与抢占最成熟</td>
+</tr>
+<tr>
+<td>Kueue</td>
+<td><a href="https://github.com/kubernetes-sigs/kueue">kubernetes-sigs/kueue</a></td>
+<td>Kubernetes 原生作业排队、配额借用与成组准入</td>
+</tr>
+<tr>
+<td>Volcano</td>
+<td><a href="https://github.com/volcano-sh/volcano">volcano-sh/volcano</a></td>
+<td>Kubernetes 批量调度与网络拓扑感知</td>
+</tr>
+<tr>
+<td>Ray</td>
+<td><a href="https://github.com/ray-project/ray">ray-project/ray</a></td>
+<td>强化学习后训练首选：方便把「训练进程组」和「推理采样进程组」放在同一套脚本里编排</td>
+</tr>
+<tr>
+<td>SkyPilot</td>
+<td><a href="https://github.com/skypilot-org/skypilot">skypilot-org/skypilot</a></td>
+<td>用同一份 YAML 把作业提交到不同云厂商或本地集群</td>
+</tr>
+</tbody>
+</table></div>
+<p><a id="memory"></a></p>
+<h2>显存</h2>
+<p>训练时显存里到底装了什么？主要有四块：<strong>模型权重、梯度、优化器状态（Adam 要存一阶和二阶动量，占大头）、前向激活值（留着给反向传播算梯度用）</strong>。</p>
+<p>拆解显存墙，工程上固定按下面这个顺序动手：</p>
+<ol>
+<li><strong>混合精度（BF16 / FP8）</strong>：权重和激活平时用 BF16 算，省一半显存且不容易溢出；优化器里的主权重和累加仍然保留 FP32，保住微小更新不丢失。支持 FP8 的卡可以用 Transformer Engine 在线性层前向反向进一步提速省显存。</li>
+<li><strong>激活检查点（Activation Checkpointing / 重计算）</strong>：前向传播时不把每一层的中间激活都傻傻存下来，只存几个关键节点（或者只存注意力层里算起来最费劲的那部分，叫<strong>选择性重计算</strong>），反向传播需要用到时再当场重算一遍——拿一点点计算时间，换回大把显存。</li>
+<li><strong>ZeRO 与 FSDP（把冗余状态切开）</strong>：普通数据并行里，每张卡都完整复制了一份权重、梯度和优化器状态，太浪费。ZeRO 的三档切法非常直观：<strong>ZeRO-1 只把优化器状态按卡切开</strong>；<strong>ZeRO-2 连梯度也一起切开</strong>；<strong>ZeRO-3（对应 PyTorch 的 FSDP / FSDP2）连模型权重本身也切开</strong>，哪一层要算了再临时从别的卡拼回来，算完立刻释放。</li>
+<li><strong>序列并行（SP）与上下文并行（CP）</strong>：当上下文拉长到几万甚至几十万词时，单条样本的激活值就能把显存撑爆。序列并行把 LayerNorm、Dropout 等沿着序列长度维度切到不同卡上；上下文并行把注意力本身也沿序列维度切开。</li>
+<li><strong>专家并行（EP）</strong>：MoE 模型里不同专家分到不同卡上，token 通过 all-to-all 通信去找对应的专家计算。</li>
+<li><strong>CPU / NVMe 卸载（Offload）</strong>：实在塞不下时，把平时不用的优化器状态甚至权重挪到主机内存或 NVMe 硬盘里。注意这能救命，但 PCIe 带宽远慢于显存，吞吐会掉一截，能不卸载尽量不卸载。</li>
+</ol>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>技术</th>
+<th>论文</th>
+<th>代码入口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>张量并行（把单层矩阵横切或竖切到多卡）</td>
+<td><a class="paper-link" href="论文/1909.08053.pdf" data-paper="1909.08053" data-title="Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism">Megatron-LM<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/1909.08053">arXiv ↗</a></td>
+<td><a href="https://github.com/NVIDIA/Megatron-LM">NVIDIA/Megatron-LM</a></td>
+</tr>
+<tr>
+<td>数据 + 张量 + 流水线 3D 并行与 1F1B 调度</td>
+<td><a class="paper-link" href="论文/2104.04473.pdf" data-paper="2104.04473" data-title="Efficient Large-Scale Language Model Training on GPU Clusters Using Megatron-LM">Efficient Large-Scale Language Model Training on GPU Clusters Using Megatron-LM<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2104.04473">arXiv ↗</a></td>
+<td>同上</td>
+</tr>
+<tr>
+<td>ZeRO 三阶段显存切分</td>
+<td><a class="paper-link" href="论文/1910.02054.pdf" data-paper="1910.02054" data-title="ZeRO: Memory Optimizations Toward Training Trillion Parameter Models">ZeRO<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/1910.02054">arXiv ↗</a></td>
+<td><a href="https://github.com/deepspeedai/DeepSpeed">deepspeedai/DeepSpeed</a></td>
+</tr>
+<tr>
+<td>优化器状态卸载到 CPU</td>
+<td><a class="paper-link" href="论文/2101.06840.pdf" data-paper="2101.06840" data-title="ZeRO-Offload: Democratizing Billion-Scale Model Training">ZeRO-Offload<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2101.06840">arXiv ↗</a></td>
+<td>DeepSpeed</td>
+</tr>
+<tr>
+<td>参数与状态卸载到 NVMe</td>
+<td><a class="paper-link" href="论文/2104.07857.pdf" data-paper="2104.07857" data-title="ZeRO-Infinity: Breaking the GPU Memory Wall for Extreme Scale Deep Learning">ZeRO-Infinity<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2104.07857">arXiv ↗</a></td>
+<td>DeepSpeed</td>
+</tr>
+<tr>
+<td>PyTorch 原生全分片数据并行</td>
+<td><a class="paper-link" href="论文/2304.11277.pdf" data-paper="2304.11277" data-title="PyTorch FSDP: Experiences on Scaling Fully Sharded Data Parallel">PyTorch FSDP<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2304.11277">arXiv ↗</a></td>
+<td><a href="https://github.com/pytorch/pytorch">pytorch/pytorch</a>、<a href="https://github.com/pytorch/torchtitan">pytorch/torchtitan</a></td>
+</tr>
+<tr>
+<td>选择性激活重计算 + 序列并行</td>
+<td><a class="paper-link" href="论文/2205.05198.pdf" data-paper="2205.05198" data-title="Reducing Activation Recomputation in Large Transformer Models">Reducing Activation Recomputation in Large Transformer Models<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2205.05198">arXiv ↗</a></td>
+<td>Megatron-LM</td>
+</tr>
+<tr>
+<td>另一套多维并行训练库</td>
+<td>—</td>
+<td><a href="https://github.com/hpcaitech/ColossalAI">hpcaitech/ColossalAI</a></td>
+</tr>
+</tbody>
+</table></div>
+<p><a id="comm"></a></p>
+<h2>通信</h2>
+<p>多卡训练最怕「卡在等网卡」。通信优化的核心就一句话：<strong>把通信藏进计算里（Overlap），并且每次尽量传整块大消息，少发零碎小消息</strong>。</p>
+<ul>
+<li><strong>集合通信与桶合并</strong>：底层靠 <a href="https://github.com/NVIDIA/nccl">NVIDIA/nccl</a>。数据并行反向传播时，后一层梯度刚算完，立刻打进固定大小的通信桶（Bucket）开始做 All-Reduce，同时 GPU 继续往前算前一层的梯度，两边同时干活。</li>
+<li><strong>并行位置摆放</strong>：张量并行（TP）每一层都要做 All-Reduce 或 All-Gather + Reduce-Scatter，不能藏，必须放在机内 NVLink 里；流水线并行（PP）只传层间激活，通信量最小，适合跨机器；数据并行（DP）可以做通信重叠，也适合跨机器。</li>
+<li><strong>流水线消除气泡</strong>：把模型按层切成几段分给不同卡时，如果等一整个批次前向跑完再跑反向，大部分卡都在空等（这叫流水线气泡）。工程上用 <strong>1F1B（一前向一反向交替）</strong> 和交错式虚拟流水线把气泡压小；更激进的 <strong>Zero Bubble（零气泡流水线）</strong> 把反向拆成「对输入的梯度」和「对权重的梯度」两步，拿后者去填补空隙，几乎可以把气泡消干净。</li>
+</ul>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>流水线与长序列通信</th>
+<th>论文</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPipe：微批次切分流水线</td>
+<td><a class="paper-link" href="论文/1811.06965.pdf" data-paper="1811.06965" data-title="GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism">GPipe<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/1811.06965">arXiv ↗</a></td>
+</tr>
+<tr>
+<td>PipeDream：前向反向交错流水线</td>
+<td><a class="paper-link" href="论文/1806.03377.pdf" data-paper="1806.03377" data-title="PipeDream: Fast and Efficient Pipeline Parallel DNN Training">PipeDream<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/1806.03377">arXiv ↗</a></td>
+</tr>
+<tr>
+<td>Megatron 1F1B 与交错式流水线</td>
+<td><a class="paper-link" href="论文/2104.04473.pdf" data-paper="2104.04473" data-title="Efficient Large-Scale Language Model Training on GPU Clusters Using Megatron-LM">Megatron 集群训练<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2104.04473">arXiv ↗</a></td>
+</tr>
+<tr>
+<td>零气泡流水线（拆开激活梯度与权重梯度）</td>
+<td><a class="paper-link" href="论文/2401.10241.pdf" data-paper="2401.10241" data-title="Zero Bubble Pipeline Parallelism">Zero Bubble Pipeline Parallelism<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2401.10241">arXiv ↗</a></td>
+</tr>
+</tbody>
+</table></div>
+<p>长序列训练时，单张卡放不下完整序列，有两种正交的切法：</p>
+<ul>
+<li><strong>Ring Attention</strong>：把长序列切成几段分给不同卡，计算注意力时，Query 留在本地，Key 和 Value 像击鼓传花一样在卡间按环状传一圈，边传边算，把通信完全藏进注意力计算里。论文：<a class="paper-link" href="论文/2310.01889.pdf" data-paper="2310.01889" data-title="Ring Attention with Blockwise Transformers for Near-Infinite Context">Ring Attention with Blockwise Transformers for Near-Infinite Context<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2310.01889">arXiv ↗</a>，参考实现：<a href="https://github.com/zhuzilin/ring-flash-attention">zhuzilin/ring-flash-attention</a>。</li>
+<li><strong>DeepSpeed Ulysses</strong>：在做注意力前，用一次 All-to-All 通信把「按序列切分」瞬间转置成「按注意力头（Head）切分」，每张卡拿齐完整序列的几个头独立算完注意力，再 All-to-All 转回来。通信量小、实现干净。论文：<a class="paper-link" href="论文/2309.14509.pdf" data-paper="2309.14509" data-title="DeepSpeed Ulysses: System Optimizations for Enabling Training of Extreme Long Sequence Transformer Models">DeepSpeed Ulysses<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2309.14509">arXiv ↗</a>。</li>
+</ul>
+<p><a id="compute-pool"></a></p>
+<h2>算力自由化</h2>
+<p>什么叫「算力自由化」？就是<strong>训练作业不再死死绑在某几台固定机器、某一种固定并行度、或者某一个手搭环境上</strong>。今天给 32 张卡能跑，明天调度器挪到另一个池子给 64 张卡，改个配置接着检查点就能继续跑。要做到这件事，靠四块基建：</p>
+<ol>
+<li><strong>统一作业描述</strong>：数据版本、检查点路径、并行切分、容器镜像哈希、队列优先级全写在一份标准配置里，底层不管是 Slurm 还是 K8s 都能一键拉起（例如用 SkyPilot 或内部统一提交器）。</li>
+<li><strong>资源池化与弹性配额</strong>：业务团队申请的是「GPU 小时数」和优先级，高优任务来了可以抢占低优实验，闲时算力自动借给批量采样或合成数据任务。</li>
+<li><strong>分布式检查点可重切分（Resharding）</strong>：以前用 <code>TP=4, PP=2</code> 存下的检查点，换机器后想改成 <code>TP=8, PP=1</code> 就加载不了。现在用 PyTorch DCP（Distributed Checkpoint）或 Megatron 分布式检查点，存盘时保存逻辑张量坐标，加载时自动按新的并行度重新切分；<a href="https://github.com/NVIDIA-NeMo/Megatron-Bridge">Megatron-Bridge</a> 则专门负责 Megatron 格式与 Hugging Face 格式双向无损互转。</li>
+<li><strong>异步检查点与秒级恢复</strong>：先把检查点飞快拷到主机内存，训练进程立刻继续跑下一步，后台线程慢慢往分布式存储里写。作业一旦被抢占或遇到机器故障，重新拉起时只丢最后几分钟进度。</li>
+</ol>
+<p>注意：同一个 3D 并行作业内部，不建议把不同代、不同显存的卡混在一起跑（木桶效应会让快卡干等慢卡）；算力池化真正的落点是「同代卡池内任意成组、不同阶段的训练/采样/评测按需分到最合适的卡池」。</p>
+<p><a id="throughput"></a></p>
+<h2>算子与吞吐</h2>
+<p>看集群跑得快不快，不要看 <code>nvidia-smi</code> 里那个 <code>GPU-Util 99%</code>——哪怕只有 1 个线程在死循环等显存，那个数字也是 100%。真正硬核的北向指标是 <strong>MFU（Model FLOPs Utilization，模型算力利用率）</strong>：模型理论上每一步最少要算的浮点运算次数，除以显卡标称峰值算力。这个口径由 PaLM 论文确立：<a class="paper-link" href="论文/2204.02311.pdf" data-paper="2204.02311" data-title="PaLM: Scaling Language Modeling with Pathways">PaLM: Scaling Language Modeling with Pathways<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2204.02311">arXiv ↗</a>。</p>
+<p>要把吞吐和 MFU 榨出来，核心是解决<strong>显存带宽瓶颈（Memory-Bound）</strong>：GPU 算乘法极快，但把中间结果从高带宽显存（HBM）搬进片上高速缓存（SRAM）再搬回去极慢。</p>
+<ul>
+<li><strong>FlashAttention 系列</strong>：以前算注意力，要把巨大的 <span class="math">N × N</span> 注意力矩阵写回 HBM 再读出来算 Softmax，全卡在读写显存上。FlashAttention 把输入分块放进片上 SRAM，利用在线 Softmax 技巧在片上一次性算完，根本不把中间大矩阵写回显存；FA-2 优化了线程块并行划分；FA-3 进一步用上了 Hopper 架构的异步指令与 FP8 低精度。</li>
+<li><strong>算子融合与编译</strong>：把 RMSNorm、RoPE、SwiGLU 激活、交叉熵损失里的多次零碎显存读写融合成一个内核（用 Triton 手写或开 <code>torch.compile</code>），再用 <strong>CUDA Graph</strong> 把一长串内核发射打包成一次提交，省掉 CPU 逐个唤醒 GPU 的开销。</li>
+<li><strong>FP8 混合精度</strong>：在支持的显卡上用 Transformer Engine 开启 FP8 矩阵乘，吞吐能再上一个台阶，但要盯紧损失曲线有没有因为精度变低而跑偏。</li>
+</ul>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>算子与精度</th>
+<th>论文</th>
+<th>代码</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FlashAttention（分块 IO 感知精确注意力）</td>
+<td><a class="paper-link" href="论文/2205.14135.pdf" data-paper="2205.14135" data-title="FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness">FlashAttention<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2205.14135">arXiv ↗</a></td>
+<td><a href="https://github.com/Dao-AILab/flash-attention">Dao-AILab/flash-attention</a></td>
+</tr>
+<tr>
+<td>FlashAttention-2（并行度与工作划分优化）</td>
+<td><a class="paper-link" href="论文/2307.08691.pdf" data-paper="2307.08691" data-title="FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning">FlashAttention-2<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2307.08691">arXiv ↗</a></td>
+<td>同上</td>
+</tr>
+<tr>
+<td>FlashAttention-3（异步流水与低精度）</td>
+<td><a class="paper-link" href="论文/2407.08608.pdf" data-paper="2407.08608" data-title="FlashAttention-3: Fast and Accurate Attention with Asynchrony and Low-precision">FlashAttention-3<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2407.08608">arXiv ↗</a></td>
+<td>同上</td>
+</tr>
+<tr>
+<td>FP8 训练格式（E4M3 / E5M2）</td>
+<td><a class="paper-link" href="论文/2209.05433.pdf" data-paper="2209.05433" data-title="FP8 Formats for Deep Learning">FP8 Formats for Deep Learning<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2209.05433">arXiv ↗</a></td>
+<td><a href="https://github.com/NVIDIA/TransformerEngine">NVIDIA/TransformerEngine</a></td>
+</tr>
+</tbody>
+</table></div>
+<p>日常调优时，把每一步耗时拆成七段看：前向、反向、优化器更新、数据加载、通信等待、写检查点、RL 采样。用 <strong>Nsight Systems</strong> 看通信和计算有没有严丝合缝叠在一起，用 <strong>PyTorch Profiler</strong> 抓哪个算子在拖后腿。每次升级驱动、CUDA、NCCL 或训练镜像，都先跑一遍固定的「黄金基准配置」，MFU 一掉立刻拦截。</p>
+<p><a id="rl-system"></a></p>
+<h2>强化学习运行时</h2>
+<p>跑 GRPO、DAPO、PPO 这类在线后训练时，最大的性能瓶颈根本不在反向传播，而在<strong>自己跟自己对话生成答案的那一步（Rollout 采样）</strong>——往往 70% 以上的时间都花在等模型把几千字的长思维链一个词一个词蹦出来。</p>
+<p>所以一套现代 RL 后训练系统，标准架构是这五件套协同：</p>
+<ol>
+<li><strong>训练端（Actor / Reference）</strong>：用 FSDP2 或 Megatron 切分，专门负责算对数概率和反向传播更新权重。</li>
+<li><strong>推理采样端（Rollout Engine）</strong>：专门用 <a href="https://github.com/vllm-project/vllm">vLLM</a> 或 <a href="https://github.com/sgl-project/sglang">SGLang</a> 跑连续批处理（Continuous Batching）和 PagedAttention；对同一道题采样 16 条回答时，打开<strong>前缀缓存（Prefix Caching / RadixAttention）</strong>，提示词的 KV Cache 只算一次。</li>
+<li><strong>毫秒级权重同步</strong>：每训完一步，策略权重变了，得立刻把新权重从训练态的并行切分，通过 NCCL 广播或同机显存共享（IPC）重新拼好刷进 vLLM / SGLang 里，绝不能傻傻写硬盘再重读。</li>
+<li><strong>独立验证器服务（Verifier / Sandbox）</strong>：跑代码单测、数学符号化简、编译器检查全部丢给独立的 CPU 容器池并发执行，绝不让慢吞吞的沙箱把昂贵的 GPU 挂起干等。</li>
+<li><strong>长尾缓解与轨迹缓存</strong>：同一批里 15 条回答 2 秒写完，偏偏有 1 条写了三万字还在磨蹭，整批卡就得陪着等。工程上通过偏异步采样、分段截断续写、以及把已打分轨迹落盘缓存（崩了重启不重采）来消掉这个长尾。</li>
+</ol>
+<p><strong>HybridFlow（即开源的 verl）</strong> 把这套复杂的跨集群数据流抽象成了单控制器调度 + 多进程组协同，是目前最清晰的工业级范本。</p>
+<ul>
+<li>系统论文：<a class="paper-link" href="论文/2409.19256.pdf" data-paper="2409.19256" data-title="HybridFlow: A Flexible and Efficient RLHF Framework">HybridFlow: A Flexible and Efficient RLHF Framework<span class="read-pill">页内读 PDF</span></a> <a class="arxiv" target="_blank" rel="noopener" href="https://arxiv.org/abs/2409.19256">arXiv ↗</a></li>
+<li>核心仓库：<a href="https://github.com/verl-project/verl">verl-project/verl</a>、<a href="https://github.com/OpenRLHF/OpenRLHF">OpenRLHF/OpenRLHF</a>、<a href="https://github.com/NVIDIA-NeMo/RL">NVIDIA-NeMo/RL</a></li>
+</ul>
+<p><a id="observe"></a></p>
+<h2>观测与故障</h2>
+<p>规模一上百卡千卡，硬件出小毛病是家常便饭。靠人盯日志根本忙不过来，必须配齐四类自动巡检：</p>
+<ul>
+<li><strong>GPU 硬件健康</strong>：用 <a href="https://github.com/NVIDIA/DCGM">NVIDIA/DCGM</a> 持续采集显存 ECC 纠错计数、温度降频、NVLink 错误和 Xid 硬件报错。</li>
+<li><strong>网络健康</strong>：盯住网卡丢包、PFC 死锁、RDMA 重传计数。</li>
+<li><strong>慢节点（Straggler）抓捕</strong>：所有卡在集合通信前都要互相等待，只要有一张卡因为散热或网卡降速慢了 20%，整个千卡集群就跟着慢 20%。对比各 Rank 的计算耗时与入队时间差，就能把拖后腿的那台机器揪出来。</li>
+<li><strong>通信超时定位到具体 Rank</strong>：NCCL 一旦超时报错，系统要能直接指出是哪两个 Rank 之间握手卡死，自动隔离机器并从异步检查点重拉作业，而不是让人对着几千行一样的报错堆栈发呆。</li>
+</ul></article>
+  <aside class="inline-reader" id="inline-reader" hidden>
+    <div class="inline-reader-bar">
+      <strong id="ir-title">论文阅读</strong>
+      <div>
+        <a id="ir-open" href="#" target="_blank" rel="noopener">新窗口</a>
+        <button type="button" id="ir-close">关闭 ✕</button>
+      </div>
+    </div>
+    <iframe id="ir-frame" title="论文 PDF"></iframe>
+  </aside>
+</div>
+<script>
+document.addEventListener("click", (e) => {
+  const a = e.target.closest("a[data-paper]");
+  if (!a) return;
+  e.preventDefault();
+  const box = document.getElementById("inline-reader");
+  const frame = document.getElementById("ir-frame");
+  document.getElementById("ir-title").textContent = a.dataset.title || a.textContent;
+  document.getElementById("ir-open").href = a.getAttribute("href");
+  frame.src = a.getAttribute("href");
+  box.hidden = false;
+  document.getElementById("page-split").classList.add("has-reader");
+});
+document.getElementById("ir-close").addEventListener("click", () => {
+  document.getElementById("inline-reader").hidden = true;
+  document.getElementById("page-split").classList.remove("has-reader");
+});
+</script>
+</body>
+</html>
