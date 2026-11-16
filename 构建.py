@@ -446,7 +446,18 @@ def render_section_body(src_name: str, catalog: dict, pdf_prefix: str, for_bundl
     return decorate_rendered_html(body, catalog=catalog, for_bundle=for_bundle)
 
 
-def build_bundle_html(catalog: dict, pdf_prefix: str, vendor_prefix: str) -> str:
+def load_gloss() -> dict:
+    """读入手写译文。文件在 论文/译文/<arxiv-id>.json。"""
+    gloss = {}
+    folder = PAPER_DIR / "译文"
+    if not folder.exists():
+        return gloss
+    for path in sorted(folder.glob("*.json")):
+        gloss[path.stem] = json.loads(path.read_text(encoding="utf-8"))
+    return gloss
+
+
+def build_bundle_html(catalog: dict, pdf_prefix: str, vendor_prefix: str, gloss: dict) -> str:
     panes = []
     for key, src_name, _ in SECTIONS:
         body = render_section_body(
@@ -485,6 +496,7 @@ def build_bundle_html(catalog: dict, pdf_prefix: str, vendor_prefix: str) -> str
 
     tree_json = json.dumps(MINDMAP_TREE, ensure_ascii=False)
     catalog_json = json.dumps(catalog, ensure_ascii=False)
+    gloss_json = json.dumps(gloss, ensure_ascii=False).replace("</", "<\\/")
 
     # 内联 pdf.min.js，确保单文件直接打开即可用 Canvas 逐页渲染 PDF
     pdfjs_code = ""
@@ -786,6 +798,8 @@ def build_bundle_html(catalog: dict, pdf_prefix: str, vendor_prefix: str) -> str
     background: #2b2927;
     color: #f6f2eb;
     border-left: 1px solid var(--line);
+    overflow: hidden;
+    overscroll-behavior: contain;
   }}
   .pdf-dock[hidden] {{ display: none; }}
   .pdf-bar {{
@@ -834,25 +848,97 @@ def build_bundle_html(catalog: dict, pdf_prefix: str, vendor_prefix: str) -> str
   .pdf-actions a:hover, .pdf-actions button:hover {{ background: #47433d; }}
   .pdf-stage {{
     flex: 1;
+    min-height: 0;
     overflow: auto;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
+    overscroll-behavior: contain;
     background: #3a3734;
   }}
+  .pdf-scroll {{
+    position: relative;
+    width: 100%;
+  }}
+  .pdf-stage.is-frame {{
+    display: flex;
+    flex-direction: column;
+  }}
+  .pdf-stage.is-frame .pdf-scroll {{ display: none; }}
   .pdf-stage canvas {{
-    max-width: 100%;
-    height: auto;
+    display: block;
+    width: 100%;
+    height: 100%;
     background: #fff;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
   }}
   .pdf-frame {{
     width: 100%;
     height: 100%;
     border: 0;
     background: #fff;
+  }}
+  .pdf-page-wrap {{
+    position: absolute;
+    line-height: 0;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+  }}
+  .pdf-page-overlay {{
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }}
+  .para-hit {{
+    position: absolute;
+    pointer-events: auto;
+    border-radius: 3px;
+    cursor: help;
+  }}
+  .para-hit.is-hot {{
+    background: rgba(212, 148, 58, 0.38);
+    box-shadow: inset 0 0 0 2px rgba(140, 58, 30, 0.9);
+  }}
+  #zh-float {{
+    position: fixed;
+    z-index: 80;
+    top: 86px;
+    left: 28px;
+    width: min(400px, calc(100vw - 20px));
+    max-height: min(72vh, 560px);
+    display: flex;
+    flex-direction: column;
+    background: #fffdf8;
+    color: #1c1915;
+    border: 1px solid #d9d0c2;
+    border-radius: 12px;
+    box-shadow: 0 16px 42px rgba(40, 24, 8, 0.2);
+  }}
+  #zh-float[hidden] {{ display: none; }}
+  #zh-float-handle {{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 10px 8px 12px;
+    cursor: grab;
+    user-select: none;
+    border-bottom: 1px solid #efe6da;
+    font-size: 12px;
+    color: #6d645a;
+  }}
+  #zh-float-handle:active {{ cursor: grabbing; }}
+  #zh-float-close {{
+    font: inherit;
+    font-size: 12px;
+    border: 0;
+    background: transparent;
+    color: #6d645a;
+    cursor: pointer;
+  }}
+  #zh-float-body {{
+    margin: 0;
+    padding: 14px 16px 16px;
+    overflow: auto;
+    font-size: 16px;
+    line-height: 1.8;
+    letter-spacing: 0.01em;
   }}
   @media (max-width: 760px) {{
     .topbar {{
@@ -938,10 +1024,17 @@ def build_bundle_html(catalog: dict, pdf_prefix: str, vendor_prefix: str) -> str
       </div>
     </div>
     <div class="pdf-stage" id="pdf-stage">
-      <canvas id="pdf-canvas"></canvas>
+      <div class="pdf-scroll" id="pdf-scroll"></div>
       <iframe class="pdf-frame" id="pdf-frame" title="论文 PDF 阅读器" hidden></iframe>
     </div>
   </aside>
+</div>
+<div id="zh-float" hidden>
+  <header id="zh-float-handle">
+    <span id="zh-float-kicker">译文 · 按住这里拖动</span>
+    <button type="button" id="zh-float-close">关闭</button>
+  </header>
+  <p id="zh-float-body"></p>
 </div>
 
 <script>{pdfjs_code}</script>
@@ -951,6 +1044,7 @@ const PAPER_CATALOG = {catalog_json};
 const PDF_PREFIX = {json.dumps(pdf_prefix)};
 const VENDOR_PREFIX = {json.dumps(vendor_prefix)};
 const HTML_TO_TAB = {json.dumps(HTML_TO_TAB, ensure_ascii=False)};
+const GLOSS = {gloss_json};
 
 if (window.pdfjsLib) {{
   window.pdfjsLib.GlobalWorkerOptions.workerSrc = VENDOR_PREFIX + "pdf.worker.min.js";
@@ -958,7 +1052,6 @@ if (window.pdfjsLib) {{
 
 const mapEl = document.getElementById("map");
 const dockEl = document.getElementById("pdf-dock");
-const canvasEl = document.getElementById("pdf-canvas");
 const frameEl = document.getElementById("pdf-frame");
 const titleEl = document.getElementById("pdf-title");
 const subEl = document.getElementById("pdf-sub");
@@ -971,6 +1064,14 @@ const searchEl = document.getElementById("search-box");
 let currentPdf = null;
 let currentPage = 1;
 let totalPages = 1;
+let currentAid = "";
+let glossPlaced = false;
+let pdfRenderGen = 0;
+/** 每一页在卷轴里的排版尺寸。只画视口附近的页，避免长论文一次铺开。 */
+let pageLayouts = [];
+let pdfLayoutWidth = 0;
+const mountedPages = new Map();
+const PDF_PAGE_GAP = 14;
 
 function parseTarget(href) {{
   if (!href) return {{ tab: "overview", anchor: "" }};
@@ -1006,16 +1107,254 @@ function activateTab(tabKey, anchor) {{
   window.scrollTo({{ top: 0, behavior: "smooth" }});
 }}
 
-async function renderPdfPage(pageNum) {{
-  if (!currentPdf) return;
-  currentPage = Math.max(1, Math.min(pageNum, totalPages));
+function pdfStage() {{
+  return document.getElementById("pdf-stage");
+}}
+
+function pdfScrollEl() {{
+  return document.getElementById("pdf-scroll");
+}}
+
+/** 丢掉已经画出来的页。换论文或重排宽度时调用，不改渲染代号。 */
+function dropMountedPages() {{
+  mountedPages.forEach((rec) => {{
+    if (rec.task) {{
+      try {{ rec.task.cancel(); }} catch (err) {{ /* 取消进行中的绘制 */ }}
+    }}
+    rec.wrap.remove();
+  }});
+  mountedPages.clear();
+  const scroll = pdfScrollEl();
+  if (scroll) {{
+    scroll.replaceChildren();
+    scroll.style.height = "0px";
+  }}
+}}
+
+/** 第 pageNum 页顶端在卷轴里的位置。页码从 1 开始。 */
+function pageTop(pageNum) {{
+  let y = PDF_PAGE_GAP;
+  const last = Math.min(pageNum, pageLayouts.length + 1);
+  for (let i = 0; i < last - 1; i++) y += pageLayouts[i].cssHeight + PDF_PAGE_GAP;
+  return y;
+}}
+
+/** 阅读区顶端正对着的那一页，用来更新页码。 */
+function pageAtScroll() {{
+  if (!pageLayouts.length) return 1;
+  const y = pdfStage().scrollTop + 24;
+  let acc = PDF_PAGE_GAP;
+  for (let i = 0; i < pageLayouts.length; i++) {{
+    const bottom = acc + pageLayouts[i].cssHeight;
+    if (y < bottom) return i + 1;
+    acc = bottom + PDF_PAGE_GAP;
+  }}
+  return pageLayouts.length;
+}}
+
+function updatePageIndicator() {{
+  if (!pageLayouts.length) return;
+  currentPage = pageAtScroll();
   pageIndEl.textContent = currentPage + " / " + totalPages;
-  const page = await currentPdf.getPage(currentPage);
-  const baseVp = page.getViewport({{ scale: 1.35 }});
-  const ctx = canvasEl.getContext("2d");
-  canvasEl.width = baseVp.width;
-  canvasEl.height = baseVp.height;
-  await page.render({{ canvasContext: ctx, viewport: baseVp }}).promise;
+}}
+
+function applyScrollHeight() {{
+  if (!pageLayouts.length) return;
+  const last = pageLayouts.length;
+  pdfScrollEl().style.height = (pageTop(last) + pageLayouts[last - 1].cssHeight + PDF_PAGE_GAP) + "px";
+}}
+
+/** 按论文栏宽度量出每一页的显示高度，先不画内容。 */
+async function measurePdfPages(gen) {{
+  const width = Math.max(220, pdfStage().clientWidth - 28);
+  pdfLayoutWidth = width;
+  const layouts = new Array(totalPages);
+  let cursor = 1;
+  async function worker() {{
+    while (cursor <= totalPages) {{
+      const n = cursor++;
+      if (gen !== pdfRenderGen || !currentPdf) return;
+      const page = await currentPdf.getPage(n);
+      if (gen !== pdfRenderGen) return;
+      const base = page.getViewport({{ scale: 1 }});
+      const scale = width / base.width;
+      layouts[n - 1] = {{ cssWidth: width, cssHeight: base.height * scale, scale }};
+    }}
+  }}
+  const workers = [];
+  for (let i = 0; i < Math.min(4, totalPages); i++) workers.push(worker());
+  await Promise.all(workers);
+  if (gen !== pdfRenderGen || layouts.some((item) => !item)) return false;
+  pageLayouts = layouts;
+  applyScrollHeight();
+  return true;
+}}
+
+function visiblePageRange() {{
+  const stage = pdfStage();
+  const top = stage.scrollTop - stage.clientHeight * 0.75;
+  const bottom = stage.scrollTop + stage.clientHeight * 1.75;
+  let first = 0;
+  let last = 0;
+  let acc = PDF_PAGE_GAP;
+  for (let i = 0; i < pageLayouts.length; i++) {{
+    const pageBottom = acc + pageLayouts[i].cssHeight;
+    if (pageBottom >= top && acc <= bottom) {{
+      if (!first) first = i + 1;
+      last = i + 1;
+    }}
+    acc = pageBottom + PDF_PAGE_GAP;
+  }}
+  if (!first) {{
+    const n = pageAtScroll();
+    return [n, n];
+  }}
+  return [first, last];
+}}
+
+function renderVisiblePages() {{
+  if (!pageLayouts.length || !currentPdf) return;
+  const [first, last] = visiblePageRange();
+  for (const n of [...mountedPages.keys()]) {{
+    if (n < first || n > last) unmountPdfPage(n);
+  }}
+  for (let n = first; n <= last; n++) mountPdfPage(n);
+  updatePageIndicator();
+}}
+
+function unmountPdfPage(n) {{
+  const rec = mountedPages.get(n);
+  if (!rec) return;
+  mountedPages.delete(n);
+  if (rec.task) {{
+    try {{ rec.task.cancel(); }} catch (err) {{ /* 页已经离开视口 */ }}
+  }}
+  rec.wrap.remove();
+}}
+
+function drawParagraphHits(pageNum, overlay, vp) {{
+  overlay.replaceChildren();
+  const paras = glossParas(currentAid, pageNum).filter((para) => para.zh);
+  paras.forEach((para, index) => {{
+    const rect = vp.convertToViewportRectangle([
+      para.x, para.y, para.x + para.w, para.y + para.h,
+    ]);
+    const left = Math.min(rect[0], rect[2]);
+    const top = Math.min(rect[1], rect[3]);
+    const width = Math.abs(rect[2] - rect[0]);
+    const height = Math.abs(rect[3] - rect[1]);
+    const hit = document.createElement("div");
+    hit.className = "para-hit";
+    hit.style.left = (left / vp.width * 100) + "%";
+    hit.style.top = (top / vp.height * 100) + "%";
+    hit.style.width = (width / vp.width * 100) + "%";
+    hit.style.height = (height / vp.height * 100) + "%";
+    hit.title = "看这段译文";
+    const show = () => showGloss(hit, para, index, pageNum);
+    hit.addEventListener("mouseenter", show);
+    hit.addEventListener("click", show);
+    overlay.appendChild(hit);
+  }});
+}}
+
+/** 画一页。离开视口时 unmount 会取消还没画完的任务。 */
+function mountPdfPage(n) {{
+  if (mountedPages.has(n) || !pageLayouts[n - 1]) return;
+  const layout = pageLayouts[n - 1];
+  const wrap = document.createElement("div");
+  wrap.className = "pdf-page-wrap";
+  wrap.style.top = pageTop(n) + "px";
+  wrap.style.width = layout.cssWidth + "px";
+  wrap.style.height = layout.cssHeight + "px";
+  wrap.style.left = "50%";
+  wrap.style.transform = "translateX(-50%)";
+  const canvas = document.createElement("canvas");
+  const overlay = document.createElement("div");
+  overlay.className = "pdf-page-overlay";
+  wrap.append(canvas, overlay);
+  pdfScrollEl().appendChild(wrap);
+  const rec = {{ wrap, task: null }};
+  mountedPages.set(n, rec);
+  const gen = pdfRenderGen;
+  paintPdfPage(n, rec, gen, layout);
+}}
+
+async function paintPdfPage(n, rec, gen, layout) {{
+  try {{
+    const page = await currentPdf.getPage(n);
+    if (gen !== pdfRenderGen || mountedPages.get(n) !== rec) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const paint = page.getViewport({{ scale: layout.scale * dpr }});
+    const cssVp = page.getViewport({{ scale: layout.scale }});
+    const canvas = rec.wrap.querySelector("canvas");
+    const overlay = rec.wrap.querySelector(".pdf-page-overlay");
+    canvas.width = Math.floor(paint.width);
+    canvas.height = Math.floor(paint.height);
+    const task = page.render({{ canvasContext: canvas.getContext("2d"), viewport: paint }});
+    rec.task = task;
+    await task.promise;
+    if (gen !== pdfRenderGen || mountedPages.get(n) !== rec) return;
+    drawParagraphHits(n, overlay, cssVp);
+  }} catch (err) {{
+    if (gen !== pdfRenderGen) return;
+    if (err && err.name === "RenderingCancelledException") return;
+    console.warn("绘制 PDF 页失败", n, err);
+  }}
+}}
+
+function scrollToPdfPage(pageNum) {{
+  if (!pageLayouts.length) return;
+  const n = Math.max(1, Math.min(pageNum, totalPages));
+  pdfStage().scrollTo({{ top: Math.max(0, pageTop(n) - PDF_PAGE_GAP), behavior: "smooth" }});
+}}
+
+/** 宽度变了以后按同一页的相对位置重排整条卷轴。 */
+async function rebuildPdfLayout() {{
+  if (!currentPdf || !frameEl.hidden || !pageLayouts.length) return;
+  const width = Math.max(220, pdfStage().clientWidth - 28);
+  if (Math.abs(width - pdfLayoutWidth) < 2) return;
+  const stage = pdfStage();
+  const keepPage = pageAtScroll();
+  const oldHeight = pageLayouts[keepPage - 1].cssHeight || 1;
+  const offset = stage.scrollTop - pageTop(keepPage);
+  const gen = ++pdfRenderGen;
+  dropMountedPages();
+  pageLayouts = [];
+  const ok = await measurePdfPages(gen);
+  if (!ok) return;
+  const ratio = offset / oldHeight;
+  stage.scrollTop = pageTop(keepPage) + ratio * pageLayouts[keepPage - 1].cssHeight;
+  renderVisiblePages();
+}}
+
+async function buildContinuousPdf(gen) {{
+  dropMountedPages();
+  pageLayouts = [];
+  const ok = await measurePdfPages(gen);
+  if (!ok) return;
+  pdfStage().scrollTop = 0;
+  renderVisiblePages();
+}}
+
+function glossParas(aid, pageNum) {{
+  const paper = GLOSS[aid];
+  if (!paper || !paper.pages) return [];
+  return paper.pages[String(pageNum)] || [];
+}}
+
+function showGloss(hit, para, index, pageNum) {{
+  document.querySelectorAll(".para-hit.is-hot").forEach((el) => el.classList.remove("is-hot"));
+  hit.classList.add("is-hot");
+  const floatEl = document.getElementById("zh-float");
+  document.getElementById("zh-float-kicker").textContent =
+    "第 " + (pageNum || currentPage) + " 页 · 第 " + (index + 1) + " 段 · 按住这里拖动";
+  document.getElementById("zh-float-body").textContent = para.zh;
+  if (!glossPlaced) {{
+    floatEl.style.left = "28px";
+    floatEl.style.top = "86px";
+    glossPlaced = true;
+  }}
+  floatEl.hidden = false;
 }}
 
 async function openPaper(aid, customTitle) {{
@@ -1023,31 +1362,50 @@ async function openPaper(aid, customTitle) {{
   const title = customTitle || PAPER_CATALOG[aid] || ("arXiv:" + aid);
   const localPdfUrl = PDF_PREFIX + aid + ".pdf";
   const remotePdfUrl = "https://arxiv.org/pdf/" + aid + ".pdf";
+  currentAid = aid;
   titleEl.textContent = title;
-  subEl.textContent = "arXiv:" + aid + " · 正在加载 PDF…";
+  subEl.textContent = "arXiv:" + aid + " · 悬停橙色区域可看手写译文";
   localLink.href = remotePdfUrl;
   arxivLink.href = "https://arxiv.org/abs/" + aid;
   pickerEl.value = aid;
   dockEl.hidden = false;
   document.body.classList.add("reader-open");
 
+  let gen = pdfRenderGen;
   if (window.pdfjsLib && location.protocol !== "file:") {{
     try {{
-      canvasEl.hidden = false;
+      gen = ++pdfRenderGen;
+      if (currentPdf) {{
+        const oldPdf = currentPdf;
+        currentPdf = null;
+        try {{ oldPdf.destroy(); }} catch (err) {{ /* 上一份文档已经关掉 */ }}
+      }}
+      dropMountedPages();
+      pageLayouts = [];
+      pdfScrollEl().hidden = false;
+      pdfStage().classList.remove("is-frame");
       frameEl.hidden = true;
       pageIndEl.textContent = "加载中…";
-      currentPdf = await window.pdfjsLib.getDocument(localPdfUrl).promise;
+      const pdf = await window.pdfjsLib.getDocument(localPdfUrl).promise;
+      if (gen !== pdfRenderGen) {{
+        try {{ pdf.destroy(); }} catch (err) {{ /* 已经换成另一篇 */ }}
+        return;
+      }}
+      currentPdf = pdf;
       totalPages = currentPdf.numPages;
       localLink.href = localPdfUrl;
-      subEl.textContent = "arXiv:" + aid + " · 本地离线 PDF";
-      await renderPdfPage(1);
+      subEl.textContent = "arXiv:" + aid + " · 本地离线 PDF · 连续滚动";
+      await buildContinuousPdf(gen);
       return;
     }} catch (err) {{
+      if (gen !== pdfRenderGen) return;
       console.warn("本地 PDF 未找到，自动切换 arXiv 在线 PDF:", err);
     }}
   }}
+  if (gen !== pdfRenderGen) return;
   /* 手机单文件打开或无本地论文目录时，自动回退到 arXiv 在线 PDF */
-  canvasEl.hidden = true;
+  pdfScrollEl().hidden = true;
+  pdfStage().classList.add("is-frame");
   frameEl.hidden = false;
   subEl.textContent = "arXiv:" + aid + " · 在线 PDF（手机单文件模式）";
   frameEl.src = remotePdfUrl;
@@ -1168,9 +1526,74 @@ pickerEl.addEventListener("change", () => {{
   if (pickerEl.value) openPaper(pickerEl.value);
 }});
 
-document.getElementById("pdf-prev").addEventListener("click", () => renderPdfPage(currentPage - 1));
-document.getElementById("pdf-next").addEventListener("click", () => renderPdfPage(currentPage + 1));
+document.getElementById("pdf-prev").addEventListener("click", () => scrollToPdfPage(pageAtScroll() - 1));
+document.getElementById("pdf-next").addEventListener("click", () => scrollToPdfPage(pageAtScroll() + 1));
 document.getElementById("pdf-close").addEventListener("click", closePaper);
+
+let pdfScrollRaf = 0;
+pdfStage().addEventListener("scroll", () => {{
+  if (pdfScrollRaf) return;
+  pdfScrollRaf = requestAnimationFrame(() => {{
+    pdfScrollRaf = 0;
+    renderVisiblePages();
+  }});
+}}, {{ passive: true }});
+
+/** 滚轮只推动论文卷轴。整篇滚到头也不把左边笔记带走。 */
+document.getElementById("pdf-dock").addEventListener("wheel", (event) => {{
+  if (event.ctrlKey || event.metaKey) return;
+  event.preventDefault();
+  if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+  if (!currentPdf || !frameEl.hidden || !pageLayouts.length) return;
+  const stage = pdfStage();
+  let delta = event.deltaY;
+  if (event.deltaMode === 1) delta *= 16;
+  else if (event.deltaMode === 2) delta *= stage.clientHeight || 1;
+  stage.scrollTop += delta;
+}}, {{ passive: false }});
+
+let pdfResizeTimer = 0;
+if (window.ResizeObserver) {{
+  new ResizeObserver(() => {{
+    clearTimeout(pdfResizeTimer);
+    pdfResizeTimer = setTimeout(rebuildPdfLayout, 120);
+  }}).observe(pdfStage());
+}}
+
+const zhFloat = document.getElementById("zh-float");
+const zhHandle = document.getElementById("zh-float-handle");
+let zhDrag = null;
+zhHandle.addEventListener("pointerdown", (event) => {{
+  if (event.target.id === "zh-float-close") return;
+  const rect = zhFloat.getBoundingClientRect();
+  zhDrag = {{ dx: event.clientX - rect.left, dy: event.clientY - rect.top }};
+  zhHandle.setPointerCapture(event.pointerId);
+}});
+zhHandle.addEventListener("pointermove", (event) => {{
+  if (!zhDrag) return;
+  const maxLeft = Math.max(8, window.innerWidth - zhFloat.offsetWidth - 8);
+  const maxTop = Math.max(8, window.innerHeight - 48);
+  const left = Math.min(maxLeft, Math.max(8, event.clientX - zhDrag.dx));
+  const top = Math.min(maxTop, Math.max(8, event.clientY - zhDrag.dy));
+  zhFloat.style.left = left + "px";
+  zhFloat.style.top = top + "px";
+}});
+zhHandle.addEventListener("pointerup", () => {{ zhDrag = null; }});
+
+/** 收起译文浮窗，并清掉当前段落高亮。 */
+function hideGloss() {{
+  zhFloat.hidden = true;
+  document.querySelectorAll(".para-hit.is-hot").forEach((el) => el.classList.remove("is-hot"));
+}}
+
+document.getElementById("zh-float-close").addEventListener("click", hideGloss);
+
+// 单击浮窗和段落热区以外的地方就收起。点另一段仍由热区自己换译文。
+document.addEventListener("click", (event) => {{
+  if (zhFloat.hidden) return;
+  if (event.target.closest("#zh-float, .para-hit")) return;
+  hideGloss();
+}});
 
 let wideMode = false;
 document.getElementById("pdf-wide").addEventListener("click", () => {{
@@ -1263,15 +1686,16 @@ def render_all():
     catalog = parse_paper_catalog()
     RELEASE_DIR.mkdir(exist_ok=True)
 
+    gloss = load_gloss()
     release_html = build_bundle_html(
-        catalog=catalog, pdf_prefix="../论文/", vendor_prefix="../vendor/"
+        catalog=catalog, pdf_prefix="../论文/", vendor_prefix="../vendor/", gloss=gloss
     )
     release_file = RELEASE_DIR / "基模爷大学习.html"
     release_file.write_text(release_html, encoding="utf-8")
     print("render", release_file.relative_to(ROOT), len(release_html), flush=True)
 
     root_bundle = build_bundle_html(
-        catalog=catalog, pdf_prefix="论文/", vendor_prefix="vendor/"
+        catalog=catalog, pdf_prefix="论文/", vendor_prefix="vendor/", gloss=gloss
     )
     (ROOT / "index.html").write_text(root_bundle, encoding="utf-8")
     (ROOT / "思维导图.html").write_text(root_bundle, encoding="utf-8")

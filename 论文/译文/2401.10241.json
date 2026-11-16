@@ -1,0 +1,941 @@
+{
+  "id": "2401.10241",
+  "title": "2401.10241",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "Penghui Qi , Xinyi Wan , Guangxing Huang & Min Lin",
+        "x": 114,
+        "y": 667.6,
+        "w": 235,
+        "h": 10,
+        "zh": "Penghui Qi、Xinyi Wan、Guangxing Huang 与 Min Lin"
+      },
+      {
+        "text": "Pipeline parallelism is one of the key components for large-scale distributed training, yet its efficiency suffers from pipeline bubbles which were deemed inevitable. In this work, we introduce a scheduling strategy that, to our knowledge, is the first to successfully achieve zero pipeline bubbles under synchronous training semantics. The key idea behind this improvement is to split the backward computation into two parts, one that computes gradient for the input and another that computes for the parameters. Based on this idea, we handcraft novel pipeline schedules that significantly outperform the baseline methods. velop an algorithm that automatically finds an optimal schedule based on specific model configuration and memory limit. Additionally, to truly achieve zero bubble, we introduce a novel technique to bypass synchronizations during the optimizer step. Experimental evaluations show that our method outperforms the 1F1B schedule up to 23% in throughput under a similar memory limit. This number can be further pushed to 31% when the memory constraint is relaxed. We believe our results mark a major step forward in harnessing the true potential of pipeline parallelism. We open sourced our implementation based on the popular Megatron-LM repository on https://github.com/sail-sg/ zero-bubble-pipeline-parallelism.",
+        "x": 143.9,
+        "y": 393.5,
+        "w": 324.3,
+        "h": 196.3,
+        "zh": "流水线并行是大规模分布式训练的关键组成部分之一，但它的效率受制于曾被认为不可避免的流水线气泡。本文提出一种调度策略。据我们所知，它首次在同步训练语义下成功做到了零流水线气泡。这一改进的核心想法，是把反向计算拆成两部分：一部分计算输入的梯度，另一部分计算参数的梯度。基于这一想法，我们手工设计出明显优于基线方法的新流水线调度。我们还开发了一种算法，能够根据具体的模型配置和内存上限自动找出最优调度。此外，为了真正实现零气泡，我们提出一种新技术，用来绕过优化器步骤中的同步。实验评估表明，在相近的内存上限下，我们的方法相对 1F1B 调度，吞吐最多高出 23%。把内存约束放宽之后，这个数字还可以进一步推到 31%。我们相信，这些结果是朝着发挥流水线并行真正潜力迈出的重要一步。我们基于广为使用的 Megatron-LM 仓库开源了实现，地址为 https://github.com/sail-sg/zero-bubble-pipeline-parallelism。"
+      },
+      {
+        "text": "The realm of distributed model training has become a focal point in the deep learning community, especially with the advent of increasingly large and intricate models. Training these behemoths often requires a vast amount of GPUs interconnected with various topologies. Various parallelism techniques have been proposed for training DNN in the past years. Data parallelism (DP) (Goyal et al., 2017; Li et al., 2020) is the default strategy for models of small to moderate sizes due to its simplicity. Beyond a model size, it is no longer possible to fit the model parameters in one single GPU. This is when model parallelism comes to the rescue (Harlap et al., 2018; Huang et al., 2019; Fan et al., 2021; Zheng et al., 2022). There are two main model parallel schemes, tensor parallelism (TP) and pipeline parallelism (PP). TP splits the matrix multiplication in one layer to",
+        "x": 108,
+        "y": 246.6,
+        "w": 396,
+        "h": 97.6,
+        "zh": "分布式模型训练已经成为深度学习社区的焦点，尤其是在模型越来越大、结构越来越复杂之后。训练这些庞然大物，往往需要大量以各种拓扑互联起来的 GPU。过去几年里，人们提出了多种训练 DNN 的并行技术。数据并行（DP）（Goyal et al., 2017; Li et al., 2020）因为简单，是中小规模模型的默认策略。模型再大一些，单个 GPU 就放不下全部参数。这时就要靠模型并行（Harlap et al., 2018; Huang et al., 2019; Fan et al., 2021; Zheng et al., 2022）。模型并行主要有两种方案：张量并行（TP）和流水线并行（PP）。TP 把一层里的矩阵乘法拆到"
+      },
+      {
+        "text": "across different devices. Notably, ZeRO (Rajbhandari et al., 2020) provides a strong alternative to model parallelism by sharding parameters across devices, while keeping the simplicity of DP. Recent research indicates that achieving optimal performance in large-scale training scenarios requires a non-trivial interaction of DP, TP and PP strategies. In the abundance of interconnection resources, e.g. NVLink between GPUs within one compute node, a hybrid of DP, TP and ZeRO strategies works efficiently. Whereas there are numerous empirical evidences Fan et al. (2021); Zheng et al. (2022); Narayanan et al. (2021) showing PP is particularly advantageous for utilizing cross-server connections, especially at the scale of thousands of GPUs. This highlights the primary aim of our work: enhancing the efficiency of PP. Going deeper into the intricacies of PP, the efficiency of its implementation relies heavily on the amount of device idle time referred to as pipeline bubbles. Due to the dependency between layers, bubbles seem inevitable. A prominent early work to address this issue is GPipe (Huang et al., 2019), which attempts to reduce the bubble ratio by increasing the number of concurrent batches",
+        "x": 108,
+        "y": 81.2,
+        "w": 396,
+        "h": 153.4,
+        "zh": "不同的设备上。值得注意的是，ZeRO（Rajbhandari et al., 2020）把参数切分到各个设备，既保持了 DP 的简洁，又为模型并行提供了一种很强的替代。近期研究表明，要在大规模训练里取得最优性能，DP、TP 和 PP 之间需要非平凡的配合。当互连资源充足时，例如同一计算节点内 GPU 之间的 NVLink，DP、TP 与 ZeRO 混合起来可以高效工作。而大量经验证据（Fan et al., 2021; Zheng et al., 2022; Narayanan et al., 2021）表明，PP 特别利于利用跨服务器的连接，尤其是到了数千块 GPU 的规模。这正是本文的首要目标：提高 PP 的效率。再往下看 PP 的细节，它的实现效率很大程度上取决于设备的空闲时间，也就是流水线气泡。由于层与层之间有依赖，气泡似乎不可避免。针对这个问题，早期的代表工作是 GPipe（Huang et al., 2019）。它试图通过增加并发 batch 的数量来降低气泡比例，这些 batch 位于"
+      }
+    ],
+    "2": [
+      {
+        "text": "in the pipeline. However, a direct consequence of this is an increase in peak memory demands. To mitigate this, GPipe discards part of the intermediate activations while recomputing them during the backward pass. Yet, this approach introduced a computation overhead of around 20% (Fan et al., 2021). One line of work that improves over GPipe focuses on asynchronous PP, including PipeDream (Harlap et al., 2018), PipeMare (Yang et al., 2021). Asynchronous PP is theoretically bubble free, they greatly improve pipeline efficiency, however, at the sacrifice of exact optimization semantics. On the other hand, improvements are also made under synchronous settings. A notable scheduling strategy to address the limitation of GPipe is called one-forward-one-backward (1F1B). It was first proposed in PipeDream (Harlap et al., 2018) under the asynchronous setting, and later introduced under synchronous settings (Fan et al., 2021; Narayanan et al., 2021). 1F1B offers faster memory clearance by early scheduling the backward passes. With the same number of microbatches, it yields similar bubble ratios but with a distinct advantage in peak memory. Based on 1F1B, Narayanan et al. (2021) introduced the 1F1B interleaved strategy. By assigning multiple stages to the same device, it further reduces the bubble size at the cost of more communication and",
+        "x": 108,
+        "y": 557.7,
+        "w": 396,
+        "h": 152.4,
+        "zh": "流水线之中。然而，这样做的直接后果是峰值内存需求上升。为了缓解这一点，GPipe 丢弃一部分中间激活，在反向传播时再重新计算。不过，这种方法引入了大约 20% 的计算开销（Fan et al., 2021）。另一条改进 GPipe 的工作关注异步 PP，包括 PipeDream（Harlap et al., 2018）和 PipeMare（Yang et al., 2021）。异步 PP 在理论上没有气泡，因而能大幅提高流水线效率，但代价是牺牲精确的优化语义。另一方面，同步设定下同样有改进。一种针对 GPipe 局限的著名调度策略称为 one-forward-one-backward（1F1B）。它最早由 PipeDream（Harlap et al., 2018）在异步设定下提出，后来被引入同步设定（Fan et al., 2021; Narayanan et al., 2021）。1F1B 通过提前调度反向传播，让内存更快释放。在微批次数量相同的情况下，气泡比例相近，但峰值内存有明显优势。基于 1F1B，Narayanan et al. (2021) 提出了交错 1F1B 策略。它把多个 stage 分配给同一设备，从而进一步缩小气泡，代价是更多的通信以及"
+      },
+      {
+        "text": "Despite various efforts, to this date the remaining bubbles still pose the largest issue for PP under synchronous training semantics. In this work, we spotted the opportunity that PP can be further optimized by representing and scheduling the computation graph at a finer granularity. Classical deep learning frameworks are designed at the granularity of layers, whereas modern deep learning compilers use different intermediate representations for optimizations at various levels. (Chen et al., 2018; Roesch et al., 2018; Sabne, 2020; Tillet et al., 2019; Lattner et al., 2020). Although a finer granularity always means a larger space for searching, it is often impeded by the lack of optimization tools to navigate the space. Therefore, choosing a suitable granularity is crucial.",
+        "x": 108,
+        "y": 453.1,
+        "w": 396,
+        "h": 86.7,
+        "zh": "尽管已经做了种种努力，直到今天，剩下的气泡仍然是同步训练语义下 PP 最大的问题。本文看到一个机会：如果用更细的粒度来表示和调度计算图，PP 还可以再优化。经典深度学习框架是按层来设计的，而现代深度学习编译器会使用不同的中间表示，在各个层次上做优化（Chen et al., 2018; Roesch et al., 2018; Sabne, 2020; Tillet et al., 2019; Lattner et al., 2020）。更细的粒度总意味着更大的搜索空间，但往往因为缺少能在这个空间里导航的优化工具而难以推进。因此，选择合适的粒度至关重要。"
+      },
+      {
+        "text": "Traditionally, neural networks are granularized as stacked layers. There are two functions associated with each layer, forward and backward. In the forward pass, the input x is transformed into the output y with the parameterized mapping f(x, W). The backward pass, crucial for training, involves",
+        "x": 108,
+        "y": 191.6,
+        "w": 396,
+        "h": 31.9,
+        "zh": "传统上，神经网络按堆叠的层来划分粒度。每一层有两个相关函数：前向和反向。前向传播时，输入 x 通过带参数的映射 f(x, W) 变成输出 y。训练所依赖的反向传播则涉及"
+      },
+      {
+        "text": "gradient with respect to the input x and the layer’s parameters W. For convenience, we use single letters B and W to denote these two computations respectively, and F to denote forward pass (Figure 1). Traditionally, B and W are grouped and provided as a single backward function. This design is conceptually friendly to the user, and it happens to work well for DP, because the communication of the weights’ gradient at layer i can be overlapped with the backward computation at layer i − 1. However, in PP, this design unnecessarily increases the sequentially dependent computations, i.e. B at the layer i − 1 depends on W at the layer i, which is usually detrimental for the efficiency of the",
+        "x": 108,
+        "y": 101,
+        "w": 396,
+        "h": 75.7,
+        "zh": "对输入 x 以及该层参数 W 的梯度。为方便起见，我们分别用字母 B 和 W 表示这两种计算，用 F 表示前向传播（图 1）。传统做法把 B 和 W 捆在一起，当成一个反向函数交给用户。这样设计在概念上比较友好，而且恰好适合 DP，因为第 i 层权重梯度的通信可以和第 i − 1 层的反向计算重叠。可是在 PP 里，这种设计会不必要地拉长必须串行的计算，也就是第 i − 1 层的 B 要依赖第 i 层的 W，这通常会损害效率。"
+      },
+      {
+        "text": "Based on split B and W, we present new pipeline schedules that greatly improve pipeline efficiency. The remainder of this paper is organized as follows: In Section 2, we introduce handcrafted sched-",
+        "x": 108,
+        "y": 62.1,
+        "w": 396,
+        "h": 20.9,
+        "zh": "在把 B 和 W 拆开的基础上，我们给出能大幅提高流水线效率的新调度。本文其余部分安排如下：第 2 节介绍手工设计的、"
+      }
+    ],
+    "3": [
+      {
+        "text": "ules based on an ideal assumption that the execution times of F, B and W are identical. Subsequently, in Section 3, we remove this assumption and propose an automatic scheduling algorithm that works under more realistic conditions. To achieve zero bubble, Section 4 details a method that sidesteps the need for synchronization during the optimizer step, yet preserves synchronous training semantics. We conduct empirical evaluations of our methods against baseline methods under diverse settings in Section 5. In addition, to further reduce the memory requirements to achieve zero bubble, we propose a novel scheduling mechanism, and evaluate its performance in Section 6. We should note that we do not aim to explore general mixed strategies for large scale distributed training. Instead, we specifically target to improve the efficiency of pipeline scheduling, supported with apple to apple comparisons with baselines. Our method is orthogonal to DP, TP and ZeRO strategies, and it can be used as a parallel replacement for the PP part in large scale training.",
+        "x": 108,
+        "y": 584.6,
+        "w": 396,
+        "h": 125.5,
+        "zh": "以 F、B 和 W 执行时间相同为理想假设的调度。随后在第 3 节，我们去掉这个假设，提出一种在更现实条件下也能用的自动调度算法。为了做到零气泡，第 4 节给出一种办法，避开优化器步骤里的同步，同时保留同步训练语义。第 5 节在多种设定下，把我们的方法和基线做了实证比较。另外，为了进一步降低做到零气泡所需的内存，我们提出一种新的调度机制，并在第 6 节评估它的表现。需要说明的是，我们并不打算讨论大规模分布式训练里一般性的混合策略。我们专门要提高的是流水线调度的效率，并与基线做对等比较来说明这一点。我们的方法与 DP、TP 和 ZeRO 是正交的，在大规模训练里可以用来替换其中的 PP 部分。"
+      },
+      {
+        "text": "Based on the key observation that splitting B and W could reduce sequential dependency and thus improve efficiency, we redesign the pipeline starting from the commonly utilized 1F1B schedule. As depicted in Figure 2, 1F1B initiates with a warm-up phase. In this phase, workers conduct varying numbers of forward passes, with each stage typically performing one more forward pass than its immediately subsequent stage. Following the warm-up phase, each worker transits to a steady state where they alternately execute one forward pass and one backward pass, ensuring an even workload distribution among stages. In the final phase, each worker processes the backward passes for the outstanding in-flight microbatches, completing the batch. In our improved version we split the backward pass into B and W passes, it is imperative that F and B from the same microbatch must still remain sequentially dependent across pipeline stages. However, W can be flexibly scheduled anywhere after the corresponding B of the same stage. This allows for strategic placement of W to fill the pipeline bubbles. There are many possible schedules that improve over 1F1B, trading off differently on the bubble size and the memory footprint. We introduce two particularly interesting handcrafted schedules in this section to show the great potential of finer granularity at reducing pipeline bubbles (see Figure 3). For the sake of clarity in our initial design, we assume that the time costs for F, B, and W are identical, an assumption shared by earlier studies (Narayanan et al., 2021; Huang et al., 2019). However, in Section 3, we re-evaluate this assumption to optimize scheduling efficiency in real-world scenarios.",
+        "x": 108,
+        "y": 332.1,
+        "w": 396,
+        "h": 202.2,
+        "zh": "关键观察是：把 B 和 W 拆开可以减少顺序依赖，从而提高效率。据此，我们从常用的 1F1B 调度出发重新设计流水线。如图 2 所示，1F1B 先进入预热阶段。这一阶段里，各个 worker 做的前向次数不一样，每个 stage 通常比紧挨着的下一个 stage 多做一次前向。预热结束后，每个 worker 进入稳态，交替做一次前向和一次反向，让各 stage 的工作量保持均匀。最后阶段，每个 worker 把还在飞行中的微批次的反向做完，从而结束这个 batch。在改进后的版本里，我们把反向拆成 B 和 W。同一个微批次的 F 和 B，在流水线各个 stage 之间仍然必须按顺序依赖。不过 W 可以灵活地排在同一 stage 上、对应的 B 之后的任何位置。这样就能有意地把 W 放到气泡里。比 1F1B 更好的调度有很多，它们在气泡大小和内存占用上的取舍各不相同。本节给出两种特别值得注意的手工调度，用来说明更细的粒度在减少流水线气泡上很有潜力（见图 3）。为了让最初的设计更清楚，我们假设 F、B、W 的耗时相同，早期工作也是这样假设的（Narayanan et al., 2021; Huang et al., 2019）。到了第 3 节，我们会重新审视这个假设，以便在真实场景里把调度效率做得更高。"
+      },
+      {
+        "text": "1 1 5 2 2 6 3 3 7 4 4 8 5 5 6 6 7 7 8 8 1 4 2 1 5 3 2 6 4 3 7 5 4 8 6 5 7 6 8 7 8 1 3 2 4 3 1 5 4 2 6 5 3 7 6 4 8 7 5 8 6 7 8 1 1 2 2 3 3 4 4 1 5 5 2 6 6 3 7 7 4 8 8 5 6 7 8",
+        "x": 173.5,
+        "y": 168.8,
+        "w": 205.2,
+        "h": 30.8,
+        "zh": ""
+      },
+      {
+        "text": "1 2 3 4 5 6 7 1 1 8 2 2 3 1 2 3 4 5 1 6 2 7 3 1 8 4 2 5 3 6 4 7 5 8 6 7 8",
+        "x": 155.9,
+        "y": 133.5,
+        "w": 328.7,
+        "h": 13.2,
+        "zh": ""
+      },
+      {
+        "text": "1 2 3 4 5 1 6 2 7 3 1 8 1 2 3 1 4 2 5 3 6 4 7 5 1 8 6 2 7 3 8 4 5 6 7 8",
+        "x": 164.7,
+        "y": 124.7,
+        "w": 319.9,
+        "h": 13.2,
+        "zh": ""
+      },
+      {
+        "text": "1 2 3 1 4 2 5 3 6 4 7 1 1 2 2 3 3 4 4 5 5 6 6 7 7 1 8 8 2 3 4 5 6 7 8",
+        "x": 173.5,
+        "y": 115.9,
+        "w": 311,
+        "h": 13.2,
+        "zh": ""
+      }
+    ],
+    "4": [
+      {
+        "text": "Our first handcrafted schedule, named ZB-H1, ensures that the maximum peak memory usage over all workers doesn’t exceed that of 1F1B. ZB-H1 generally follows the 1F1B schedule, but it adjusts the starting points of W depending on the number of warm-up microbatches. This ensures all workers maintain the same number of in-flight microbatches. As a result, as seen in Figure 3 (top), the bubble size is reduced to a third of 1F1B’s size. This reduction is because B is initiated earlier across all workers compared to 1F1B, and the tail-end bubbles are filled by the later-starting W passes. As W typically uses less memory than B (Table 1), the first worker has the maximum peak memory",
+        "x": 108,
+        "y": 613.6,
+        "w": 396,
+        "h": 75.7,
+        "zh": "我们的第一种手工调度叫 ZB-H1。它保证所有 worker 里最大的峰值内存不超过 1F1B。ZB-H1 大体沿用 1F1B，但会按预热微批次的数量来调整 W 从哪里开始。这样，所有 worker 保持同样数量的在途微批次。于是如图 3（上）所示，气泡大小变成 1F1B 的三分之一。能缩小，是因为和 1F1B 相比，所有 worker 都更早开始做 B，而尾部的气泡由更晚开始的 W 填上。W 通常比 B 更省内存（表 1），所以第一个 worker 的峰值内存最大"
+      },
+      {
+        "text": "When we permit a larger memory footprint than 1F1B and have a sufficient number of microbatches, it’s possible to achieve a zero bubble schedule, which we label as ZB-H2. As illustrated in Figure 3 (bottom), we introduce more F passes during the warm-up phase to fill the bubble preceding the initial B. We also reorder the W passes at the tail, which changes the layout from trapezoid into a parallelogram, eliminating all the bubbles in the pipeline. It is important to highlight that the synchronization between the optimizer steps is removed here, we discuss how this is safely done in",
+        "x": 108,
+        "y": 501.3,
+        "w": 396,
+        "h": 64.8,
+        "zh": "如果允许比 1F1B 更大的内存占用，并且微批次足够多，就可以做出零气泡的调度，我们称之为 ZB-H2。如图 3（下）所示，预热阶段我们放入更多的 F，用来填第一个 B 前面的气泡。我们还把尾部的 W 重新排序，让形状从梯形变成平行四边形，从而把流水线里的气泡全部消掉。这里要强调，优化器步骤之间的同步被去掉了，如何安全地做到这一点，我们会加以讨论。"
+      },
+      {
+        "text": "We use p to denote the number of stages and b to denote the size of each microbatch. For transformer architecture, we denote the number of attention heads as a, the sequence length as s and the hidden dimension size as h. We use the notations MB/MW to represent the memory required to store activations for one B/W pass, and TF /TB/TW to represent the running time for one F/B/W pass. For simplicity, we only do quantitative analyses on transformer architecture (Vaswani et al., 2017), using a typical setting similar to GPT-3 (Brown et al., 2020) where the hidden dimension size inside feedforward is 4h and the dimension size for each attention head is h/a. As in Narayanan et al. (2021), we only consider matmul operations when calculating FLOPs because they contribute most of the computations in a transformer layer. For each matmul operation in the forward pass, there are two matmul operations with the same FLOPs in corresponding backward pass (see Figure 1), each of which belongs to either B or W. The approximate formula for calculating the FLOPs of a transformer layer is in Table 1. We can see that TW < TF < TB and TB + TW = 2TF . We use the same method in Korthikanti et al. (2023) to estimate activations memory required for B. After B completes, it releases some activations not used anymore but keeps some extra gradients (∇zL in Figure 1) for W. The total memory required by W, as in Table 1, is less than B.",
+        "x": 108,
+        "y": 283,
+        "w": 396,
+        "h": 170.9,
+        "zh": "我们用 p 表示 stage 的个数，用 b 表示每个微批次的大小。对 Transformer，用 a 表示注意力头的个数，s 表示序列长度，h 表示隐藏维度。记号 MB/MW 表示一次 B/W 要存下的激活内存，TF/TB/TW 表示一次 F/B/W 的运行时间。为了简单，定量分析只针对 Transformer 结构（Vaswani et al., 2017），并采用和 GPT-3（Brown et al., 2020）类似的典型设定：前馈网络内部的隐藏维度是 4h，每个注意力头的维度是 h/a。和 Narayanan et al. (2021) 一样，算 FLOPs 时只计 matmul，因为它们占了 Transformer 层里的大部分计算。前向中的每个 matmul，在对应的反向里都有两个 FLOPs 相同的 matmul（见图 1），分别属于 B 或 W。Transformer 层 FLOPs 的近似公式见表 1。可以看到 TW < TF < TB，并且 TB + TW = 2TF。估计 B 所需的激活内存时，我们用的方法和 Korthikanti et al. (2023) 相同。B 做完之后会释放一些不再使用的激活，但会给 W 留下一些额外梯度（图 1 里的 ∇zL）。如表 1 所示，W 需要的总内存比 B 少。"
+      },
+      {
+        "text": "Table 1: FLOPs and activations memory required per transformer layer for each pass",
+        "x": 137,
+        "y": 252.9,
+        "w": 338,
+        "h": 10,
+        "zh": "表 1：每个 Transformer 层在各次传播中所需的 FLOPs 和激活内存"
+      },
+      {
+        "text": "Without the assumption of TF = TB = TW , the peak activations memory and bubble size of ZBH1 and ZB-H2 are quantified in Table 2. Notably, the activations memory of worker i is (p − i + 1)MB + (i − 1)MW for ZB-H1 and (2p − 2i + 1)MB + (2i − 2)MW for ZB-H2. As in Table 1, the activations memory required for W is smaller than that for B. Therefore, the peak activations memory is pMB and (2p − 1)MB, for ZB-H1 and ZB-H2 respectively.",
+        "x": 108,
+        "y": 125.3,
+        "w": 396,
+        "h": 55.3,
+        "zh": "去掉 TF = TB = TW 这个假设之后，ZB-H1 和 ZB-H2 的峰值激活内存与气泡大小由表 2 给出。具体而言，ZB-H1 中 worker i 的激活内存是 (p − i + 1)MB + (i − 1)MW，ZB-H2 中则是 (2p − 2i + 1)MB + (2i − 2)MW。如表 1 所示，W 所需的激活内存小于 B。因此 ZB-H1 和 ZB-H2 的峰值激活内存分别是 pMB 和 (2p − 1)MB。"
+      },
+      {
+        "text": "While handcrafted schedules offer simplicity and better comprehensibility, they face several issues in practical applications. For one, scheduling under the assumption that TF = TB = TW introduces",
+        "x": 108,
+        "y": 60.6,
+        "w": 396,
+        "h": 22.4,
+        "zh": "手工调度简单，也更容易理解，但实际用起来会碰到几个问题。一个问题是，在 TF = TB = TW 的假设下做调度会引入"
+      }
+    ],
+    "5": [
+      {
+        "text": "Table 2: Comparison between 1F1B and our handcrafted schedules.",
+        "x": 170.9,
+        "y": 693.4,
+        "w": 270.1,
+        "h": 10,
+        "zh": "表 2：1F1B 与我们的手工调度之间的比较。"
+      },
+      {
+        "text": "Peak activations memory (p − 1)(TF + TB + TW ) (p − 1)(TF + TB − TW ) (p − 1)(TF + TB − 2TW )",
+        "x": 220.6,
+        "y": 639.6,
+        "w": 219.2,
+        "h": 47.5,
+        "zh": ""
+      },
+      {
+        "text": "unwanted bubbles, especially for models where these values differ significantly. Moreover, communication time (denoted as Tcomm) required to transfer activation/gradient between stages is often ignored in handcrafted schedules, leading to noticeable latencies in the pipeline stream. Finally, striking a balance between minimizing bubble size and adhering to memory limit becomes particularly challenging when the available memory is insufficient to accommodate enough microbatches",
+        "x": 108,
+        "y": 556.4,
+        "w": 396,
+        "h": 53.8,
+        "zh": "并不想要的气泡，在这些数值相差很大的模型上尤其如此。另外，stage 之间传递激活或梯度所需的通信时间（记为 Tcomm）在手工调度里常常被忽略，流水线因此会出现明显的延迟。最后，当现有内存装不下足够多的微批次时，既要把气泡压小、又要守住内存上限，就变得特别难"
+      },
+      {
+        "text": "To address these challenges and ensure generalization to practical scenarios, we propose algorithms to automatically search the optimal schedule given the number of pipeline stages p, the number of microbatches m, the activations memory limit Mlimit, and the running time estimations TF , TB, TW and Tcomm. We design a heuristic strategy, which always generates an optimal or near optimal solution especially when m is large enough. We also systematically formulate the problem as Integer Linear Programming (for more details see Appendix G), which can be solved by an off-the-shelf ILP solver (Forrest & Lougee-Heimer, 2005) when the problem is under a certain scale. These two approaches can be combined: first, use the heuristic solution as initialization, and then optimize it",
+        "x": 108,
+        "y": 451.8,
+        "w": 396,
+        "h": 86.7,
+        "zh": "为了解决这些问题，并让方法能用到实际场景，我们提出自动搜索最优调度的算法。给定的条件包括流水线 stage 数 p、微批次数 m、激活内存上限 Mlimit，以及运行时间的估计 TF、TB、TW 和 Tcomm。我们设计了一种启发式策略。只要 m 足够大，它给出的解总是最优或接近最优。我们还把这个问题系统地写成整数线性规划（详见附录 G）。问题规模落在一定范围之内时，可以用现成的 ILP 求解器来解（Forrest & Lougee-Heimer, 2005）。两种做法可以合在一起：先拿启发式的解当作初始值，再继续优化"
+      },
+      {
+        "text": "We present our heuristic algorithm in the following steps:",
+        "x": 108,
+        "y": 391.6,
+        "w": 229.2,
+        "h": 10,
+        "zh": "启发式算法按下面几步进行："
+      },
+      {
+        "text": "• In the warm-up phase, within the memory limit, we schedule as many F passes as possible to minimize the bubble before the first B. The resulting schedule may still have a small bubble (less than TF ) before the first B if not reaching memory limit, where scheduling another F may delay the following B. We use a binary hyperparameter to control whether to do it or not. • After the warm-up phase, we adhere to the pattern where one F and one B are scheduled iteratively. We insert W to fill the bubble when there is a gap larger than TW . When a bubble occurs but the size is less than TW , we still insert a W if the current bubble makes the largest cumulative bubble size among all stages become larger. We also insert W to recycle some memory when the memory limit is hit. Typically, our heuristic strategy enters a steady state that follows 1F-1B-1W",
+        "x": 113.7,
+        "y": 274,
+        "w": 390.3,
+        "h": 103.9,
+        "zh": "• 预热阶段，在内存上限之内尽量多排 F，把第一个 B 之前的气泡压到最小。如果还没触及内存上限，排出来的调度在第一个 B 之前仍可能留一个小气泡（小于 TF），因为再排一次 F 可能会把后面的 B 推迟。我们用一个二元超参数控制要不要这么做。• 预热之后，我们保持一次 F、一次 B 交替排列。空隙大于 TW 时，就插入 W 来填气泡。如果出现了气泡但长度小于 TW，只要它会让所有 stage 中最大的累计气泡变得更大，我们仍然插入一个 W。内存到达上限时，也插入 W，以便回收一些内存。通常，启发式会进入 1F-1B-1W 这样的稳态"
+      },
+      {
+        "text": "• Throughout this process, pipeline stage i is always guaranteed to schedule at least one more F than stage i + 1 anytime before F is used up. When this difference exceeds one, we use another binary hyperparameter to decide whether to skip one F in pipeline stage i if it doesn’t cause more bubbles. We perform a grid search to find the best combination of hyperparameters. • In each stage, when F and B passes run out, we schedule all the left W passes one by one.",
+        "x": 113.7,
+        "y": 195.6,
+        "w": 390.3,
+        "h": 60.1,
+        "zh": "• 在整个过程中，F 还没用完的任何时刻，流水线 stage i 排上的 F 总是至少比 stage i + 1 多一个。当这个差超过 1 时，我们用另一个二元超参数来决定：如果不会制造更多气泡，要不要让 stage i 少排一次 F。我们用网格搜索找超参数的最佳组合。• 每个 stage 上，F 和 B 都排完之后，剩下的 W 就一个一个排完。"
+      },
+      {
+        "text": "In most practices of PP, synchronizations over pipeline stages are usually performed in optimizer step for the sake of numerical robustness. For example, a global gradient norm needs to be computed for gradient norm clipping (Pascanu et al., 2013); a global check for NAN and INF values are performed in the mixed precision settings (Micikevicius et al., 2017); both of them require an all-reduce communication across all stages. However, synchronization at the optimizer step destroys the parallelogram (Figure 3) and makes zero bubble impossible. In this section, we propose an alternative mechanism to bypass these synchronizations, while still maintaining a synchronous",
+        "x": 108,
+        "y": 73.1,
+        "w": 396,
+        "h": 75.7,
+        "zh": "在 PP 的常见做法里，为了数值稳健，通常会在优化器步骤对各个流水线 stage 做同步。例如，梯度范数裁剪需要算一个全局梯度范数（Pascanu et al., 2013）；混合精度设定下还要全局检查 NAN 和 INF（Micikevicius et al., 2017）。这两件事都需要跨所有 stage 做 all-reduce。可是，在优化器步骤做同步会破坏那个平行四边形（图 3），零气泡就不可能了。本节提出另一种机制来绕过这些同步，同时仍然保持同步"
+      }
+    ],
+    "6": [
+      {
+        "text": "In existing implementations, an all-reduce communication is first launched to collect the global states, followed by the optimizer steps which are conditioned on the global states. However, we noticed that most of the time the global states have no effects, e.g., the global check for NAN and INF rarely trigger because in a robust setting most iterations shouldn’t have numerical issues; the gradient clipping rate is also quite low empirically to justify a synchronization of global gradient",
+        "x": 108,
+        "y": 656.3,
+        "w": 396,
+        "h": 53.8,
+        "zh": "现有实现会先发起一次 all-reduce，把全局状态收集起来，再根据这些全局状态做优化器步骤。不过我们注意到，大多数时候全局状态其实不起作用。比如，对 NAN 和 INF 的全局检查很少被触发，因为在稳健的设定下，大多数迭代不该出现数值问题；经验上梯度裁剪的发生率也很低，并不足以说明为了全局梯度再同步一次是值得的"
+      },
+      {
+        "text": "Based on these observations, we propose to replace the before-hand synchronizations with a post update validation. The idea is illustrated in Figure 4, at each stage before the optimizer step, a partially reduced global state is received from the previous stage, combined with the current stage’s local state, and passed on to the next stage. The optimizer step of each stage is controlled by the partially reduced state, e.g. skip the update when a NAN is spotted or the partially reduced gradient norm exceeds the clipping threshold. During the warm-up phase of the next iteration, the fully reduced global state is then propagated back from the last stage to first stage. Upon receiving the global state, each stage performs a validation to decide whether the previous optimizer step is legitimate. If an amendment to the gradient is required, a rollback will be issued (for more details see Appendix C) and then we redo the optimizer step based on the fully reduced global state.",
+        "x": 108,
+        "y": 529.8,
+        "w": 396,
+        "h": 108.6,
+        "zh": "基于这些观察，我们建议用更新之后的校验代替事先同步。思路如图 4：每个 stage 在做优化器步骤之前，从上一 stage 收到一份部分归约过的全局状态，和本 stage 的局部状态合在一起，再传给下一 stage。各 stage 的优化器步骤由这份部分归约状态控制，例如发现 NAN，或者部分归约后的梯度范数超过裁剪阈值，就跳过更新。到下一次迭代的预热阶段，完全归约好的全局状态再从最后一个 stage 传回第一个 stage。每个 stage 收到全局状态后做一次校验，判断上一次优化器步骤是否合法。如果梯度需要修正，就执行回滚（详见附录 C），然后按完全归约的全局状态把优化器步骤重做一遍。"
+      },
+      {
+        "text": "We base our implementation on the open-source Megatron-LM project (Narayanan et al., 2021) and assess its performance using models analogous to GPT-3 (Brown et al., 2020), as detailed in Table 3. During our experiments, we first conducted a specific number of iterations for profiling, collecting empirical measurements for TF , TB, TW , and Tcomm. After obtaining these values, we fed them into our automatic pipeline scheduling algorithm to determine the optimal schedule. It’s worth noting that both the initial and final pipeline stages possess one fewer transformer layer compared to the intermediate stages. This design is to compensate for the extra embedding lookup and loss computations in the initial and final stages so that they won’t become the bottleneck and cause",
+        "x": 108,
+        "y": 267.8,
+        "w": 396,
+        "h": 86.7,
+        "zh": "实现基于开源的 Megatron-LM（Narayanan et al., 2021），并用与 GPT-3 类似的模型来评估性能（Brown et al., 2020），细节见表 3。实验时，我们先跑一定次数的迭代做 profiling，测出 TF、TB、TW 和 Tcomm。得到这些值之后，送进自动流水线调度算法，确定最优调度。需要注意，流水线的头尾两个 stage 都比中间 stage 少一层 Transformer。这样安排，是为了补上首尾 stage 多出来的 embedding 查找和损失计算，免得它们成为瓶颈"
+      },
+      {
+        "text": "Table 3: Models and fixed settings used in experiments",
+        "x": 196.4,
+        "y": 227.1,
+        "w": 219.2,
+        "h": 10,
+        "zh": "表 3：实验使用的模型与固定设定"
+      },
+      {
+        "text": "• ZB-1p: Automatically searched schedule with the activation memory limited to pMB, which theoretically has the same peak memory as 1F1B. • ZB-2p: Automatically searched schedule with the activation memory limited to 2pMB, which is the least amount of memory to empirically achieve close to zero bubble (see Figure 7).",
+        "x": 113.7,
+        "y": 62.1,
+        "w": 390.3,
+        "h": 46.3,
+        "zh": "• ZB-1p：自动搜索得到的调度，激活内存限制为 pMB，理论上峰值内存与 1F1B 相同。• ZB-2p：自动搜索得到的调度，激活内存限制为 2pMB，这是经验上做到接近零气泡所需的最少内存（见图 7）。"
+      }
+    ],
+    "7": [
+      {
+        "text": "• 1F1B and 1F1B-I: 1F1B and interleaved 1F1B methods introduced by Harlap et al. (2018) and Narayanan et al. (2021) with implementation from Megatron-LM. For interleaved 1F1B, the entire model is divided into a sequence of chunks, which are cyclically taken by each stage, forming an interleaved pipeline. In our interleaved experiments, we always use the maximum number of chunks to ensure least bubble, i.e. each transformer layer serves as a chunk.",
+        "x": 113.7,
+        "y": 656.3,
+        "w": 390.3,
+        "h": 53.8,
+        "zh": "• 1F1B 与 1F1B-I：Harlap et al. (2018) 和 Narayanan et al. (2021) 提出的 1F1B 以及交错 1F1B，实现来自 Megatron-LM。交错 1F1B 把整个模型分成一串 chunk，由各个 stage 轮流领取，形成交错流水线。在交错实验里，我们始终用最多的 chunk 数，以便气泡最小，也就是每一层 Transformer 单独作为一个 chunk。"
+      },
+      {
+        "text": "Our experiments utilize up to 32 NVIDIA A100 SXM 80G GPUs distributed across 4 nodes interconnected by a RoCE RDMA network. The running time of each iteration is recorded after several warm-up iterations. Thanks to the reproducibility provided by Megatron-LM implementation, we can verify the correctness of ZB-1p and ZB-2p without running models until convergence. We use a fixed random seed to initialize the model, record the loss after every iteration for ZB-1p, ZB-2p, and 1F1B, and then verify that they’re bit-to-bit identical.",
+        "x": 108,
+        "y": 580.3,
+        "w": 396,
+        "h": 64.8,
+        "zh": "实验最多用到 32 块 NVIDIA A100 SXM 80G GPU，分布在 4 个节点上，节点之间用 RoCE RDMA 网络相连。每次迭代的时间在若干次预热迭代之后记录。Megatron-LM 的实现可以复现，因此我们不必把模型训到收敛，就能检查 ZB-1p 和 ZB-2p 是否正确。我们用固定随机种子初始化模型，记下 ZB-1p、ZB-2p 和 1F1B 每一步之后的损失，并确认它们逐比特相同。"
+      },
+      {
+        "text": "14.5 14.8 14.9 4.32 4.35 4.39 1.81 1.83 1.85 0.99 1.00 1.00 12.9 13.4 14.2 3.88 4.00 4.20 1.61 1.67 1.76 0.87 0.90 0.96 11.8 12.5 13.6 3.50 3.70 4.03 1.40 1.49 1.64 0.76 0.80 0.88 13.1 13.4 13.9 4.01 4.08 4.19 1.54 1.59 1.66 0.82 0.85 0.90",
+        "x": 221.3,
+        "y": 192.1,
+        "w": 275.6,
+        "h": 49.6,
+        "zh": ""
+      },
+      {
+        "text": "We present the throughput of all methods in Figure 5, and leave the additional details for each setup in Table 4. Our experiments demonstrate that ZB-2p consistently outperforms all other methods across various settings. Notably, the throughput of 1F1B, 1F1B-I and ZB-1p show a strong positive correlation with the number of microbatches. In contrast, ZB-2p maintains the efficiency even with fewer microbatches. This is because the bubble rate in ZB-2p has almost reached zero (Table 5),",
+        "x": 108,
+        "y": 62.1,
+        "w": 396,
+        "h": 53.8,
+        "zh": "图 5 给出了所有方法的吞吐，每种设定的更多细节见表 4。实验表明，ZB-2p 在各种设定下都稳定地好于其他方法。值得注意的是，1F1B、1F1B-I 和 ZB-1p 的吞吐与微批次数量有很强的正相关。ZB-2p 即使微批次不多，效率也保持得住。这是因为 ZB-2p 的气泡率已经几乎到了零（表 5），"
+      }
+    ],
+    "8": [
+      {
+        "text": "and its throughput is already close to the upper bound. Here the upper bound is roughly estimated by multiplying the throughput of 1F1B and As mentioned before, the improved efficiency of ZB-2p comes at the cost of a higher memory consumption compared to the 1F1B baseline. We also compare ZB-2p with 1F1B under the same memory consumption in Appendix F, and the experimental results also show that ZB-2p achieves a higher throughput even with half microbatch size compared to 1F1B. In contrast, ZB-1p is designed to have a peak memory cost similar to the 1F1B baseline. It shows a comparable throughput to 1F1B-I in the 8 GPUs setups. In multi-node setups where communication bandwidth is more of a bottleneck, ZB-1p clearly outperforms 1F1B-I, highlighting its advantage in reducing pipeline bubbles without incurring extra communication cost. In most of our settings we set number of microbatches m larger than number of stages p because they’re more common use cases of pipeline parallelism. However we conducted experiments listed in Appendix H for m ≤ p cases which shows 20% to 30% improvements with a similar memory",
+        "x": 108,
+        "y": 555.6,
+        "w": 396,
+        "h": 154.5,
+        "zh": "它的吞吐也已经接近上界。这里的上界，大致是用 1F1B 的吞吐去乘得到的。如前所述，ZB-2p 效率更高，代价是比 1F1B 基线更费内存。附录 F 在相同内存消耗下比较了 ZB-2p 和 1F1B，结果同样表明：微批次大小即使只有一半，ZB-2p 的吞吐仍然更高。ZB-1p 则被设计成峰值内存与 1F1B 基线相近。在 8 块 GPU 上，它的吞吐和 1F1B-I 差不多。到了多节点、通信带宽更成瓶颈的时候，ZB-1p 明显好于 1F1B-I，说明它能减少流水线气泡，又不必付出额外的通信代价。我们的大多数设定里，微批次数 m 大于 stage 数 p，因为这是流水线并行更常见的用法。附录 H 则列出了 m ≤ p 的实验，在相近的内存下有 20% 到 30% 的提升"
+      },
+      {
+        "text": "Table 5: Bubble rates of 1F1B, 1F1B-I, ZB-H1, ZB-H2, ZB-1p, ZB-2p under different settings.",
+        "x": 116,
+        "y": 477.6,
+        "w": 380,
+        "h": 10,
+        "zh": "表 5：不同设定下 1F1B、1F1B-I、ZB-H1、ZB-H2、ZB-1p、ZB-2p 的气泡率。"
+      },
+      {
+        "text": "We study the efficiency of the schedules generated from our automatic scheduling algorithm. The same setups as our main experiments are used, however, since our purpose is to study the efficiency of the automatic scheduling algorithm, the numbers here are based on theoretical calculations instead of real experiments. To quantify the efficiency of a pipeline schedule, we introduce the concept of bubble rate, which is calculated as (cost − m(TF + TB + TW ))/cost. The cost here is defined as the largest execution time of all stages, calculated for each schedule using profiled TF , TB, TW and Tcomm values. The m(TF + TB + TW ) is the optimal execution time when all communications are overlapped with computations and hence no bubbles in the pipeline. The bubble rates for different schedules are presented in Table 5. We include the handcrafted schedules ZB-H1 and ZB-H2 as baselines to the automatically searched schedules. In most of the settings, ZB-2p produces a bubble rate of less than 1%, which is the best among all schedules. In contrast, ZB-H2 consistently performs worse than ZB-2p. This provides a strong evidence that our automatic scheduling algorithm adapts better to realistic scenarios by using more accurate estimates of TF , TB, TW and Tcomm. On the contrary, this improvement is not observed in ZB-1p vs ZB-H1, hypothetically because the memory limit becomes the dominate factor. Notably, all of our methods",
+        "x": 108,
+        "y": 122.9,
+        "w": 396,
+        "h": 169.4,
+        "zh": "我们考察自动调度算法生成的调度有多高效。设定和主实验一样；不过这里的目的是看算法本身，所以数字来自理论计算，不是真实跑出来的。为了衡量一种流水线调度的效率，我们定义气泡率，算式是 (cost − m(TF + TB + TW))/cost。cost 是所有 stage 里最长的执行时间，每个调度都用 profiling 得到的 TF、TB、TW 和 Tcomm 来算。m(TF + TB + TW) 是通信全部和计算重叠、流水线里没有气泡时的最优执行时间。各调度的气泡率见表 5。手工调度 ZB-H1 和 ZB-H2 被当作自动搜索结果的基线。大多数设定下，ZB-2p 的气泡率低于 1%，是所有调度里最好的。ZB-H2 则始终不如 ZB-2p。这说明自动调度算法用了更准确的 TF、TB、TW 和 Tcomm 估计，更能适应真实情况。反过来，ZB-1p 相对 ZB-H1 没有这种提升，我们推测是内存上限成了主导因素。值得注意的是，我们的所有方法"
+      },
+      {
+        "text": "We also plot ZB-2p and its profiled real execution on 16 GPUs to provide a direct visual evidence that it is truly a zero bubble schedule. As shown in Figure 6, the automatically generated ZB-2p schedule has almost no bubble. The profiled execution has slightly more bubbles but retains a good",
+        "x": 108,
+        "y": 73.1,
+        "w": 396,
+        "h": 31.9,
+        "zh": "我们还把 ZB-2p 以及它在 16 块 GPU 上 profiling 得到的真实执行画了出来，用来直接说明它确实是零气泡调度。如图 6，自动生成的 ZB-2p 调度几乎没有气泡。profiling 看到的执行气泡稍多一点，但仍然保持得不错"
+      }
+    ],
+    "9": [
+      {
+        "text": "Figure 6: A schedule produced by ZB-2p (top) and its profiled execution process (bottom).",
+        "x": 125.2,
+        "y": 453.4,
+        "w": 361.7,
+        "h": 10,
+        "zh": "图 6：ZB-2p 生成的调度（上）以及 profiling 得到的执行过程（下）。"
+      },
+      {
+        "text": "Figure 7: The relation between memory limit and bubble rate using our heuristic algorithm.",
+        "x": 123.7,
+        "y": 337.3,
+        "w": 364.6,
+        "h": 10,
+        "zh": "图 7：用我们的启发式算法时，内存上限和气泡率的关系。"
+      },
+      {
+        "text": "To better understand the effect of memory limit, we study the relationship of the bubble rate to Mlimit. We run our heuristic algorithm with a series of Mlimit and plot them in Figure 7. Initially, the bubble rate shows a close-to-linear decreasing trend as we increase the value of Mlimit. Theoretically,",
+        "x": 108,
+        "y": 259.2,
+        "w": 396,
+        "h": 33.4,
+        "zh": "为了看清内存上限的影响，我们研究气泡率怎样随 Mlimit 变化。我们用一系列 Mlimit 跑启发式算法，并画在图 7 里。一开始，Mlimit 增大时，气泡率接近线性下降。理论上，"
+      },
+      {
+        "text": "MB. Empirically, we find 2pMB a good threshold for achieving close to zero bubble rate when TF ≈ TB and Tcomm is relatively small. Beyond the inflection point, although a sufficiently large memory limit does result in a theoretically zero bubble rate, in general the cost outweighs the gain. For more details see Appendix B.",
+        "x": 108,
+        "y": 213.4,
+        "w": 396,
+        "h": 44.1,
+        "zh": "MB。经验上，当 TF ≈ TB 且 Tcomm 比较小的时候，2pMB 是一个合适的阈值，可以让气泡率接近零。过了拐点，内存上限再大，理论上虽然能把气泡率降到零，但总体上代价大于收益。更多细节见附录 B。"
+      },
+      {
+        "text": "1 2 3 4 5 6 7 1 1 1 2 2 2 3 3 3 4 4 4 8 1 1 5 5 5 2 1 2 3 4 5 1 6 2 1 1 3 2 2 4 3 3 7 1 1 5 4 4 8 2 2 6 5 5 3 3 7 6 6 4 4 8 7 7 5 8 6 5 7 8 8 6 7 8",
+        "x": 148,
+        "y": 145.7,
+        "w": 339.4,
+        "h": 12.7,
+        "zh": ""
+      },
+      {
+        "text": "1 2 3 4 5 1 6 2 1 1 3 2 2 4 3 3 7 1 1 5 4 4 8 2 2 1 2 3 1 4 2 5 3 1 1 4 2 2 6 1 1 5 3 3 7 2 2 6 4 4 8 3 3 7 5 5 4 4 8 6 6 5 7 6 8 7 5 8 7 6 8 7 8",
+        "x": 152.5,
+        "y": 137.2,
+        "w": 335,
+        "h": 12.7,
+        "zh": ""
+      },
+      {
+        "text": "1 2 3 1 4 2 5 3 1 1 4 2 2 6 1 1 5 3 3 7 2 2 6 4 1 1 2 2 3 3 4 4 1 1 5 1 1 5 2 2 6 2 2 6 3 3 7 3 3 7 4 4 8 4 4 8 5 5 5 6 6 7 7 8 8 5 6 6 7 7 8 8",
+        "x": 156.9,
+        "y": 128.8,
+        "w": 330.6,
+        "h": 12.7,
+        "zh": ""
+      },
+      {
+        "text": "Figure 8: ZB-V schedule. Each device is assigned to exactly 2 chunks, where white text colors represent the first chunk and black text colors represent the second chunk. The sequence of dependencies among model chunks follows a ”V” shape pattern for both the forward and backward passes.",
+        "x": 108,
+        "y": 64.3,
+        "w": 396,
+        "h": 31.9,
+        "zh": "图 8：ZB-V 调度。每个设备恰好分到 2 个 chunk，白色文字是第一个 chunk，黑色文字是第二个 chunk。模型各个 chunk 之间的依赖，前向和反向都排成一个 “V” 形。"
+      }
+    ],
+    "10": [
+      {
+        "text": "While ZB-2p can effectively achieve nearly zero bubble, it comes at the cost of doubling the memory consumption compared to 1F1B. This increased memory requirement poses limitations on its practical applicability in real-world scenarios. To address this concern, we design ZB-V, a scheduling approach that achieves minimal idle time within the same memory constraints as 1F1B. Inspired by the interleaved 1F1B strategy proposed by Narayanan et al. (2021), our method evenly divides the entire model into exactly 2p chunks, assigning two chunks to each worker. In contrast to an interleaved scheme, our method involves sequentially allocating model chunks to workers, starting from the first worker and progressing to the last, then reversing the order from the last worker back to the first, creating a distinctive ”V” shape (see the forward passes of the first microbatch in Figure 8). For instance, in partitioning a 16-layer transformer model for a 4-stage pipeline, we allocate layers 1-2 and layers 15-16 to worker 1, layers 3-4 and layers 13-14 to worker 2, and so forth. This approach ensures that both the forward pass and backward pass for each microbatch originate from the same worker, which differentiates from previous methods like 1F1B and interleaved 1F1B, where the forward pass starts from the first worker while the backward pass begins from the last worker. This distinction offers two notable advantages: firstly, the first worker can initiate the backward pass promptly without waiting for backward passes from the last worker to return, resulting in faster memory clearance and reduced memory requirements to achieve minimal idle time. Under the condition TF = TB = TW , ZB-V achieves zero bubble with a peak activations memory of pMB, aligning with the maximum peak memory usage of 1F1B. Notably, this is nearly half the memory requirement compared to ZB-H2, which utilizes (2p − 1)MB. Secondly, the peak memory usage is inherently balanced across all workers. This equilibrium arises due to uniform computation workloads and consistent memory consumption across all model chunks. In Figure 8, the scheduling strategy of ZB-V unfolds in three distinct phases. In the initial warm-up phase, each worker (denoted as i) performs a total of 2p − 1 forward passes, comprising 2p − i passes for the first chunk and i−1 passes for the second chunk. Following the warm-up, all workers transition into a steady phase characterized by a repetitive 1F-1B-1W pattern. During the steady phase, workers execute groups of computations, specifically F-B-W, with each group corresponding to a specific chunk. For a given worker i, the process initiates with the execution of p − i groups for the second chunk. Subsequently, the worker alternates between processing one group for the second chunk and one group for the first chunk. This pattern continues until all forward passes are processed. In the final phase, each worker focuses on handling the remaining B and W computations, with B being prioritized and W filling the bubbles. We employ a similar heuristic algorithm as described in Section 3.1 to automatically search for the optimal schedule, considering parameters such as the number of pipeline stages p, the number of microbatches m, the activations memory limit Mlimit, and the profiled running times TF , TB, TW , and Tcomm. As the memory distribution is inherently balanced across all workers during the warm-up and steady phases, we can straightforwardly shift all W to the right, within the memory constraint. This modification enables the effective utilization of additional W to fill the bubbles in the schedule’s tail, primarily arising from the comparatively shorter duration of W compared to F and B (for more details see Appendix D).",
+        "x": 108,
+        "y": 254.8,
+        "w": 396,
+        "h": 455.3,
+        "zh": "虽然 ZB-2p 可以有效地把气泡降到接近零，但内存消耗是 1F1B 的两倍。更高的内存需求限制了它在真实场景里的使用。为此我们设计了 ZB-V，一种在和 1F1B 相同的内存约束下把空闲时间压到最少的调度。它受到 Narayanan et al. (2021) 交错 1F1B 的启发，把整个模型均匀分成恰好 2p 个 chunk，每个 worker 分到两个。和交错方案不同，chunk 是按顺序分下去的：从第一个 worker 分到最后一个，再从最后一个倒序分回第一个，形成一个 “V”（见图 8 里第一个微批次的前向）。例如把 16 层 Transformer 分到 4 个 stage 时，第 1–2 层和第 15–16 层给 worker 1，第 3–4 层和第 13–14 层给 worker 2，以此类推。这样，每个微批次的前向和反向都从同一个 worker 出发。以前的 1F1B 和交错 1F1B 不是这样：前向从第一个 worker 开始，反向从最后一个 worker 开始。这个差别有两个好处。第一，第一个 worker 可以马上开始反向，不用等最后一个 worker 的反向传回来，内存因此释放得更快，做到最少空闲所需的内存也更少。在 TF = TB = TW 时，ZB-V 用峰值激活内存 pMB 就能做到零气泡，和 1F1B 的最大峰值内存一致。这大约只有 ZB-H2 的一半，ZB-H2 用的是 (2p − 1)MB。第二，各 worker 的峰值内存天然是均衡的，因为每个模型 chunk 的计算量和内存消耗都一样。图 8 里，ZB-V 分成三个阶段。预热阶段，worker i 一共做 2p − 1 次前向，其中第一个 chunk 做 2p − i 次，第二个 chunk 做 i − 1 次。预热之后进入稳态，重复 1F-1B-1W。稳态里按组做计算，每一组是 F-B-W，对应某一个 chunk。对 worker i，先为第二个 chunk 做 p − i 组，然后在第二个 chunk 的一组和第一个 chunk 的一组之间交替，直到前向全部做完。最后阶段，每个 worker 处理剩下的 B 和 W，先做 B，用 W 去填气泡。我们用和第 3.1 节类似的启发式自动搜索最优调度，考虑的量包括 stage 数 p、微批次数 m、激活内存上限 Mlimit，以及 profiling 得到的 TF、TB、TW 和 Tcomm。预热和稳态时各 worker 的内存本来就是均衡的，所以可以在内存约束内把所有 W 直接右移。这样，多出来的 W 就能填上调度尾部的气泡。这些气泡主要是因为 W 比 F 和 B 更短（详见附录 D）。"
+      },
+      {
+        "text": "In Table 6, we conduct a comprehensive performance comparison among 1F1B, ZB-1p, ZB-2p and ZB-V. To ensure fair memory consumption assessments, we adjust the ZB-2p configuration by halving the microbatch size and doubling the number of microbatches (denoted as ZB-2p*), thus maintaining a consistent global batch size across all methods. The experimental results indicate that ZB-V consistently outperforms 1F1B and ZB-1p across diverse settings, demonstrating comparable performance with ZB-2p*.",
+        "x": 108,
+        "y": 127.9,
+        "w": 396,
+        "h": 70.7,
+        "zh": "表 6 里，我们全面比较了 1F1B、ZB-1p、ZB-2p 和 ZB-V 的性能。为了让内存消耗的比较公平，ZB-2p 的配置被调整为微批次大小减半、微批次数量加倍（记为 ZB-2p*），这样所有方法的全局 batch 大小一致。结果表明，在各种设定下 ZB-V 都稳定好于 1F1B 和 ZB-1p，并且和 ZB-2p* 差不多。"
+      },
+      {
+        "text": "To delve deeper into the comparison between ZB-2p* and ZB-V, we conduct an ablation study examining how throughput changes with increasing the microbatch size in Table 7. Larger batch sizes empirically enhance GPU utilization and overall efficiency. The results show a noteworthy 8% improvement for the 14.6B and 28.3B models when increasing the microbatch size from 1 to 2. However, the improvement is more modest (less than 3%) for the 6.2B model, as the microbatch size is already sufficiently large. This explains why ZB-2p* outperforms ZB-V in this scenario. In conclusion, there exists a trade-off",
+        "x": 108,
+        "y": 62.1,
+        "w": 396,
+        "h": 75.7,
+        "zh": "为了把 ZB-2p* 和 ZB-V 比得更清楚，表 7 做了消融，看微批次变大时吞吐怎么变。经验上，更大的 batch 会提高 GPU 利用率和整体效率。微批次大小从 1 增到 2 时，14.6B 和 28.3B 模型有值得注意的 8% 提升。6.2B 模型的提升则比较有限（不到 3%），因为它的微批次本来就已经够大。这也说明了为什么在这个情形里 ZB-2p* 会好于 ZB-V。总之，需要权衡"
+      }
+    ],
+    "11": [
+      {
+        "text": "Table 6: Comparison between 1F1B, ZB-1p, ZB-2p and ZB-V under the same memory consumption. It’s important to note that we adopt a distinct configuration for ZB-2p, where we set the microbatch size as b/2 and the number of microbatches as 2m. To emphasize this variation, we denote this particular setting as ZB-2p*.",
+        "x": 108,
+        "y": 660.5,
+        "w": 396,
+        "h": 42.8,
+        "zh": "表 6：在相同内存消耗下比较 1F1B、ZB-1p、ZB-2p 和 ZB-V。需要注意，ZB-2p 用了另一套配置：微批次大小为 b/2，微批次数量为 2m。为了标出这个差别，我们把该设定记为 ZB-2p*。"
+      },
+      {
+        "text": "Table 7: Improvement when double the size of each microbatch.",
+        "x": 177.9,
+        "y": 456.2,
+        "w": 256.3,
+        "h": 10,
+        "zh": "表 7：把每个微批次的大小加倍之后的提升。"
+      },
+      {
+        "text": "between a larger microbatch size and a reduced bubble rate. When the benefit of a smaller bubble rate outweighs that of a larger microbatch size, sacrificing the latter may be a strategic choice.",
+        "x": 108,
+        "y": 305.9,
+        "w": 396,
+        "h": 20.9,
+        "zh": "更大的微批次和更低的气泡率。如果更低气泡率的收益超过更大微批次的收益，舍弃后者可以是一种有意的选择。"
+      },
+      {
+        "text": "Table 8: Bubble rates of 1F1B, 1F1B-I, ZB-H1, ZB-H2 and ZB-V under different settings.",
+        "x": 125.7,
+        "y": 245.6,
+        "w": 360.7,
+        "h": 10,
+        "zh": "表 8：不同设定下 1F1B、1F1B-I、ZB-H1、ZB-H2 和 ZB-V 的气泡率。"
+      },
+      {
+        "text": "In Table 8, we calculate the bubble rate, as introduced in Section 5.3, for 1F1B, 1F1B-I, ZB-H1, ZBH2, and ZB-V. The calculations are based on the profiled values of TF , TB, TW , and Tcomm obtained in the experiments for ZB-V. The results indicate that the bubble rate of ZB-V is significantly smaller than that of 1F1B, 1F1B-I, and ZB-H1. Moreover, it is comparable to ZB-H2 but with only half the",
+        "x": 108,
+        "y": 62.1,
+        "w": 396,
+        "h": 42.8,
+        "zh": "表 8 按第 5.3 节的定义，计算了 1F1B、1F1B-I、ZB-H1、ZB-H2 和 ZB-V 的气泡率。用的是 ZB-V 实验里 profiling 得到的 TF、TB、TW 和 Tcomm。结果表明，ZB-V 的气泡率明显小于 1F1B、1F1B-I 和 ZB-H1，并且和 ZB-H2 相当，但只有一半的"
+      }
+    ],
+    "12": [
+      {
+        "text": "Figure 9: The relation between memory limit and bubble rate for ZB-V, compared with the heuristic",
+        "x": 108,
+        "y": 407.1,
+        "w": 396,
+        "h": 10,
+        "zh": "图 9：ZB-V 的内存上限与气泡率的关系，并与启发式方法相比较"
+      },
+      {
+        "text": "memory consumption. Notably, in this comparison, 1F1B, ZB-H1, and ZB-V have similar memory consumption, while 1F1B-I and ZB-H2 require more memory compared to the other methods. In Figure 9, we explore the relationship between the bubble rate and the memory limit. Our observations align with the trends presented in Section 5.4. Initially, the bubble rate exhibits a close-to-linear decrease as the value of Mlimit increases, eventually reaching a plateau close to zero bubble rate beyond a certain threshold. Notably, when the memory limit is below 2pMB, ZB-V demonstrates a significant advantage compared to the heuristic algorithm that does not leverage ZB-V(denoted as",
+        "x": 108,
+        "y": 294,
+        "w": 396,
+        "h": 81.7,
+        "zh": "内存消耗。值得注意的是，这次比较里 1F1B、ZB-H1 和 ZB-V 的内存消耗相近，1F1B-I 和 ZB-H2 则比其他方法更费内存。图 9 考察气泡率和内存上限的关系。看到的趋势和第 5.4 节一致。一开始，Mlimit 增大时气泡率接近线性下降，过了某个阈值之后进入接近零气泡率的平台。尤其当内存上限低于 2pMB 时，和并不采用 ZB-V 的启发式算法相比，ZB-V 有明显优势（记为"
+      },
+      {
+        "text": "In this work, we introduced a novel strategy to improve the efficiency of pipeline parallelism by splitting the activation gradient and parameter gradient in backward computation, and we design an automatic pipeline scheduling algorithm that can minimize the pipeline bubble rate under different memory budgets. The schedules produced by this algorithm consistently outperform 1F1B and even achieve close to zero bubble rate. To further reduce the memory consumption, we proposed a novel scheduling mechanism named ZB-V, capable of achieving zero bubble when TF = TB = TW , while adhering to the same memory limit as 1F1B. Another advantage of our methods is that it can achieve optimal efficiency with a smaller number of microbatches (typically 3p is enough), which means more microbatches can be partitioned over data parallelism dimension. This brings a better",
+        "x": 108,
+        "y": 142.2,
+        "w": 396,
+        "h": 97.6,
+        "zh": "本文提出一种新的做法来提高流水线并行的效率：在反向计算里把激活梯度和参数梯度拆开，并设计了自动流水线调度算法，能在不同的内存预算下把流水线气泡率降到最低。这个算法给出的调度稳定地好于 1F1B，甚至能把气泡率降到接近零。为了进一步省内存，我们提出名为 ZB-V 的调度机制。在 TF = TB = TW 时，它可以做到零气泡，同时守住和 1F1B 一样的内存上限。这些方法还有一个好处：微批次不用很多就能达到最优效率（通常 3p 就够），于是可以把更多微批次分到数据并行那一维。这会带来更好的"
+      },
+      {
+        "text": "scalability for the training of large models.",
+        "x": 108,
+        "y": 131.2,
+        "w": 170,
+        "h": 10,
+        "zh": "大模型训练可扩展性。"
+      },
+      {
+        "text": "Tom Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared D Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, et al. Language models are few-shot learners. Advances in neural information processing systems, 33:1877–1901, 2020.",
+        "x": 108,
+        "y": 62.1,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Tom Brown、Benjamin Mann、Nick Ryder、Melanie Subbiah、Jared D Kaplan、Prafulla Dhariwal、Arvind Neelakantan、Pranav Shyam、Girish Sastry、Amanda Askell 等。语言模型是少样本学习者。Advances in Neural Information Processing Systems，33:1877–1901，2020。"
+      }
+    ],
+    "13": [
+      {
+        "text": "Tianqi Chen, Thierry Moreau, Ziheng Jiang, Lianmin Zheng, Eddie Yan, Haichen Shen, Meghan Cowan, Leyuan Wang, Yuwei Hu, Luis Ceze, et al. {TVM}: An automated {End-to-End} optimizing compiler for deep learning. In 13th USENIX Symposium on Operating Systems Design and Implementation (OSDI 18), pp. 578–594, 2018.",
+        "x": 108,
+        "y": 667.3,
+        "w": 396,
+        "h": 42.8,
+        "zh": "Tianqi Chen、Thierry Moreau、Ziheng Jiang、Lianmin Zheng、Eddie Yan、Haichen Shen、Meghan Cowan、Leyuan Wang、Yuwei Hu、Luis Ceze 等。TVM：面向深度学习的自动化端到端优化编译器。收录于 13th USENIX Symposium on Operating Systems Design and Implementation（OSDI 18），第 578–594 页，2018。"
+      },
+      {
+        "text": "Shiqing Fan, Yi Rong, Chen Meng, Zongyan Cao, Siyu Wang, Zhen Zheng, Chuan Wu, Guoping Long, Jun Yang, Lixue Xia, et al. Dapple: A pipelined data parallel approach for training large models. In Proceedings of the 26th ACM SIGPLAN Symposium on Principles and Practice of Parallel Programming, pp. 431–445, 2021.",
+        "x": 108,
+        "y": 614.7,
+        "w": 396,
+        "h": 42.8,
+        "zh": "Shiqing Fan、Yi Rong、Chen Meng、Zongyan Cao、Siyu Wang、Zhen Zheng、Chuan Wu、Guoping Long、Jun Yang、Lixue Xia 等。DAPPLE：一种用流水线式数据并行训练大模型的方法。收录于 Proceedings of the 26th ACM SIGPLAN Symposium on Principles and Practice of Parallel Programming，第 431–445 页，2021。"
+      },
+      {
+        "text": "John Forrest and Robin Lougee-Heimer. Cbc user guide. In Emerging theory, methods, and applications, pp. 257–277. INFORMS, 2005.",
+        "x": 108,
+        "y": 584,
+        "w": 396,
+        "h": 20.9,
+        "zh": "John Forrest 与 Robin Lougee-Heimer。CBC 用户指南。收录于 Emerging Theory, Methods, and Applications，第 257–277 页。INFORMS，2005。"
+      },
+      {
+        "text": "Priya Goyal, Piotr Doll´ar, Ross Girshick, Pieter Noordhuis, Lukasz Wesolowski, Aapo Kyrola, Andrew Tulloch, Yangqing Jia, and Kaiming He. Accurate, large minibatch sgd: Training imagenet in 1 hour. arXiv preprint arXiv:1706.02677, 2017.",
+        "x": 108,
+        "y": 542.3,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Priya Goyal、Piotr Dollár、Ross Girshick、Pieter Noordhuis、Lukasz Wesolowski、Aapo Kyrola、Andrew Tulloch、Yangqing Jia 与 Kaiming He。准确的大批量 SGD：一小时训练 ImageNet。arXiv 预印本 arXiv:1706.02677，2017。"
+      },
+      {
+        "text": "Aaron Harlap, Deepak Narayanan, Amar Phanishayee, Vivek Seshadri, Nikhil Devanur, Greg Ganger, and Phil Gibbons. Pipedream: Fast and efficient pipeline parallel dnn training. arXiv preprint arXiv:1806.03377, 2018.",
+        "x": 108,
+        "y": 500.7,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Aaron Harlap、Deepak Narayanan、Amar Phanishayee、Vivek Seshadri、Nikhil Devanur、Greg Ganger 与 Phil Gibbons。PipeDream：快速高效的流水线并行 DNN 训练。arXiv 预印本 arXiv:1806.03377，2018。"
+      },
+      {
+        "text": "Yanping Huang, Youlong Cheng, Ankur Bapna, Orhan Firat, Dehao Chen, Mia Chen, HyoukJoong Lee, Jiquan Ngiam, Quoc V Le, Yonghui Wu, et al. Gpipe: Efficient training of giant neural networks using pipeline parallelism. Advances in neural information processing systems, 32,",
+        "x": 108,
+        "y": 459,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Yanping Huang、Youlong Cheng、Ankur Bapna、Orhan Firat、Dehao Chen、Mia Chen、HyoukJoong Lee、Jiquan Ngiam、Quoc V Le、Yonghui Wu 等。GPipe：用流水线并行高效训练巨型神经网络。Advances in Neural Information Processing Systems，32，"
+      },
+      {
+        "text": "Vijay Anand Korthikanti, Jared Casper, Sangkug Lym, Lawrence McAfee, Michael Andersch, Mohammad Shoeybi, and Bryan Catanzaro. Reducing activation recomputation in large transformer models. Proceedings of Machine Learning and Systems, 5, 2023.",
+        "x": 108,
+        "y": 406.4,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Vijay Anand Korthikanti、Jared Casper、Sangkug Lym、Lawrence McAfee、Michael Andersch、Mohammad Shoeybi 与 Bryan Catanzaro。减少大型 Transformer 模型里的激活重计算。Proceedings of Machine Learning and Systems，5，2023。"
+      },
+      {
+        "text": "Chris Lattner, Mehdi Amini, Uday Bondhugula, Albert Cohen, Andy Davis, Jacques Pienaar, River Riddle, Tatiana Shpeisman, Nicolas Vasilache, and Oleksandr Zinenko. Mlir: A compiler infrastructure for the end of moore’s law. arXiv preprint arXiv:2002.11054, 2020.",
+        "x": 108,
+        "y": 364.7,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Chris Lattner、Mehdi Amini、Uday Bondhugula、Albert Cohen、Andy Davis、Jacques Pienaar、River Riddle、Tatiana Shpeisman、Nicolas Vasilache 与 Oleksandr Zinenko。MLIR：面向摩尔定律终结的编译器基础设施。arXiv 预印本 arXiv:2002.11054，2020。"
+      },
+      {
+        "text": "Shen Li, Yanli Zhao, Rohan Varma, Omkar Salpekar, Pieter Noordhuis, Teng Li, Adam Paszke, Jeff Smith, Brian Vaughan, Pritam Damania, et al. Pytorch distributed: Experiences on accelerating data parallel training. arXiv preprint arXiv:2006.15704, 2020.",
+        "x": 108,
+        "y": 323.1,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Shen Li、Yanli Zhao、Rohan Varma、Omkar Salpekar、Pieter Noordhuis、Teng Li、Adam Paszke、Jeff Smith、Brian Vaughan、Pritam Damania 等。PyTorch Distributed：加速数据并行训练的经验。arXiv 预印本 arXiv:2006.15704，2020。"
+      },
+      {
+        "text": "Decoupled weight decay regularization. arXiv:1711.05101, 2017.",
+        "x": 118,
+        "y": 292.4,
+        "w": 314.4,
+        "h": 20.9,
+        "zh": "解耦的权重衰减正则化。arXiv:1711.05101，2017。"
+      },
+      {
+        "text": "Paulius Micikevicius, Sharan Narang, Jonah Alben, Gregory Diamos, Erich Elsen, David Garcia, Boris Ginsburg, Michael Houston, Oleksii Kuchaiev, Ganesh Venkatesh, et al. Mixed precision training. arXiv preprint arXiv:1710.03740, 2017.",
+        "x": 108,
+        "y": 250.7,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Paulius Micikevicius、Sharan Narang、Jonah Alben、Gregory Diamos、Erich Elsen、David Garcia、Boris Ginsburg、Michael Houston、Oleksii Kuchaiev、Ganesh Venkatesh 等。混合精度训练。arXiv 预印本 arXiv:1710.03740，2017。"
+      },
+      {
+        "text": "Deepak Narayanan, Mohammad Shoeybi, Jared Casper, Patrick LeGresley, Mostofa Patwary, Vijay Korthikanti, Dmitri Vainbrand, Prethvi Kashinkunti, Julie Bernauer, Bryan Catanzaro, et al. Efficient large-scale language model training on gpu clusters using megatron-lm. In Proceedings of the International Conference for High Performance Computing, Networking, Storage and Analysis, pp. 1–15, 2021.",
+        "x": 108,
+        "y": 187.1,
+        "w": 396,
+        "h": 53.8,
+        "zh": "Deepak Narayanan、Mohammad Shoeybi、Jared Casper、Patrick LeGresley、Mostofa Patwary、Vijay Korthikanti、Dmitri Vainbrand、Prethvi Kashinkunti、Julie Bernauer、Bryan Catanzaro 等。用 Megatron-LM 在 GPU 集群上高效训练大规模语言模型。收录于 Proceedings of the International Conference for High Performance Computing, Networking, Storage and Analysis，第 1–15 页，2021。"
+      },
+      {
+        "text": "Razvan Pascanu, Tomas Mikolov, and Yoshua Bengio. On the difficulty of training recurrent neural networks. In International conference on machine learning, pp. 1310–1318. Pmlr, 2013.",
+        "x": 108,
+        "y": 156.4,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Razvan Pascanu、Tomas Mikolov 与 Yoshua Bengio。论训练循环神经网络的困难。收录于 International Conference on Machine Learning，第 1310–1318 页。PMLR，2013。"
+      },
+      {
+        "text": "Samyam Rajbhandari, Jeff Rasley, Olatunji Ruwase, and Yuxiong He. Zero: Memory optimizations toward training trillion parameter models. In SC20: International Conference for High Performance Computing, Networking, Storage and Analysis, pp. 1–16. IEEE, 2020.",
+        "x": 108,
+        "y": 114.8,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Samyam Rajbhandari、Jeff Rasley、Olatunji Ruwase 与 Yuxiong He。ZeRO：迈向万亿参数模型训练的内存优化。收录于 SC20: International Conference for High Performance Computing, Networking, Storage and Analysis，第 1–16 页。IEEE，2020。"
+      },
+      {
+        "text": "Jared Roesch, Steven Lyubomirsky, Logan Weber, Josh Pollock, Marisa Kirisame, Tianqi Chen, and Zachary Tatlock. Relay: A new ir for machine learning frameworks. In Proceedings of the 2nd ACM SIGPLAN international workshop on machine learning and programming languages, pp.",
+        "x": 108,
+        "y": 73.1,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Jared Roesch、Steven Lyubomirsky、Logan Weber、Josh Pollock、Marisa Kirisame、Tianqi Chen 与 Zachary Tatlock。Relay：机器学习框架的一种新 IR。收录于 Proceedings of the 2nd ACM SIGPLAN International Workshop on Machine Learning and Programming Languages，第"
+      }
+    ],
+    "14": [
+      {
+        "text": "Amit Sabne. Xla : Compiling machine learning for peak performance, 2020.",
+        "x": 108,
+        "y": 700.2,
+        "w": 305.8,
+        "h": 10,
+        "zh": "Amit Sabne。XLA：为峰值性能编译机器学习，2020。"
+      },
+      {
+        "text": "Philippe Tillet, Hsiang-Tsung Kung, and David Cox. Triton: an intermediate language and compiler for tiled neural network computations. In Proceedings of the 3rd ACM SIGPLAN International Workshop on Machine Learning and Programming Languages, pp. 10–19, 2019.",
+        "x": 108,
+        "y": 659.3,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Philippe Tillet、Hsiang-Tsung Kung 与 David Cox。Triton：面向分块神经网络计算的中间语言和编译器。收录于 Proceedings of the 3rd ACM SIGPLAN International Workshop on Machine Learning and Programming Languages，第 10–19 页，2019。"
+      },
+      {
+        "text": "Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin. Attention is all you need. Advances in neural information processing systems, 30, 2017.",
+        "x": 108,
+        "y": 618.5,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Ashish Vaswani、Noam Shazeer、Niki Parmar、Jakob Uszkoreit、Llion Jones、Aidan N Gomez、Łukasz Kaiser 与 Illia Polosukhin。注意力就是你所需要的一切。Advances in Neural Information Processing Systems，30，2017。"
+      },
+      {
+        "text": "Bowen Yang, Jian Zhang, Jonathan Li, Christopher R´e, Christopher Aberger, and Christopher De Sa. Pipemare: Asynchronous pipeline parallel dnn training. Proceedings of Machine Learning and Systems, 3:269–296, 2021.",
+        "x": 108,
+        "y": 577.6,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Bowen Yang、Jian Zhang、Jonathan Li、Christopher Ré、Christopher Aberger 与 Christopher De Sa。PipeMare：异步流水线并行 DNN 训练。Proceedings of Machine Learning and Systems，3:269–296，2021。"
+      },
+      {
+        "text": "Lianmin Zheng, Zhuohan Li, Hao Zhang, Yonghao Zhuang, Zhifeng Chen, Yanping Huang, Yida Wang, Yuanzhong Xu, Danyang Zhuo, Eric P Xing, et al. Alpa: Automating inter-and {IntraOperator} parallelism for distributed deep learning. In 16th USENIX Symposium on Operating Systems Design and Implementation (OSDI 22), pp. 559–578, 2022.",
+        "x": 108,
+        "y": 525.8,
+        "w": 396,
+        "h": 42.8,
+        "zh": "Lianmin Zheng、Zhuohan Li、Hao Zhang、Yonghao Zhuang、Zhifeng Chen、Yanping Huang、Yida Wang、Yuanzhong Xu、Danyang Zhuo、Eric P Xing 等。Alpa：自动编排分布式深度学习中的算子间与算子内并行。收录于 16th USENIX Symposium on Operating Systems Design and Implementation（OSDI 22），第 559–578 页，2022。"
+      }
+    ],
+    "15": [
+      {
+        "text": "OVERLAP COMMUNICATION IN DATA PARALLELISM",
+        "x": 129.5,
+        "y": 700.2,
+        "w": 263.1,
+        "h": 12,
+        "zh": "数据并行中的通信重叠"
+      },
+      {
+        "text": "When data parallelism is taken into consideration, an all-reduce communication is launched to collect gradients before optimizer step. Generally, such communication is poorly overlapped with computation pass, resulting in a latency especially when the communication bandwidth is limited. As in Figure 3, usually a number of W passes are scheduled at the tail of an iteration. For each W pass, it consists of several independent computations calculating gradients for different parameters. As in Figure 10, We can reorder all of these computations to cluster those calculating the gradients for the same parameter, thus achieving the optimal overlapping between computation and communication.",
+        "x": 108,
+        "y": 608.4,
+        "w": 396,
+        "h": 75.7,
+        "zh": "把数据并行考虑进来之后，优化器步骤之前会发起一次 all-reduce 来收集梯度。一般这种通信很难和计算重叠好，带宽有限时延迟就更明显。如图 3，一次迭代的尾部通常会排上若干次 W。每一次 W 由几段相互独立的计算组成，分别给不同参数算梯度。如图 10，可以把这些计算重新排序，把算同一参数梯度的那些放到一起，从而让计算和通信重叠到最优。"
+      },
+      {
+        "text": "Figure 10: Comparison between the original schedule grouped by W with poor overlapping (top) and the reordered schedule grouped by parameters with optimal overlapping (bottom). The number i represents the computation belongs to i-th W, and different colors represent computations for",
+        "x": 108,
+        "y": 483.8,
+        "w": 396,
+        "h": 31.9,
+        "zh": "图 10：上面是按 W 分组、重叠较差的原始调度，下面是按参数分组、重叠达到最优的重排调度。数字 i 表示这次计算属于第 i 个 W，不同颜色表示各自对应的计算"
+      },
+      {
+        "text": "THE MEMORY LIMIT FOR AUTOMATIC SCHEDULING ALGORITHM",
+        "x": 128.8,
+        "y": 430.5,
+        "w": 325.6,
+        "h": 12,
+        "zh": "自动调度算法的内存上限"
+      },
+      {
+        "text": "The relation between memory limit and bubble rate is highly affected by the bubbles preceding the first B in the initial stage. For the first microbatch, the forward pass needs to go through from the initial stage to final stage, and the backward pass reverses this process until it eventually goes back to the initial stage. The total time for the first microbatch from start to complete takes at least p(TF + TB) + 2(p − 1)Tcomm and it can not be squeezed due to the dependency chains. We denote the number of F passes as k(≥ 1) and the bubble size as β(≥ 0), preceding the first B pass in the",
+        "x": 108,
+        "y": 349.7,
+        "w": 396,
+        "h": 64.8,
+        "zh": "内存上限和气泡率的关系，很大程度上取决于初始 stage 里、第一个 B 之前的那些气泡。对第一个微批次来说，前向要从初始 stage 走到最终 stage，反向再把这条路倒着走回来。第一个微批次从开始到做完，至少要花 p(TF + TB) + 2(p − 1)Tcomm，而且由于依赖链，这段时间无法再压缩。我们把第一个 B 之前的 F 次数记为 k（≥ 1），气泡大小记为 β（≥ 0）。"
+      },
+      {
+        "text": "β ≥ p(TF + TB) + 2(p − 1)Tcomm − kTF − TB = (p − 1)(TB + 2Tcomm) + (p − k)TF",
+        "x": 122.7,
+        "y": 301.8,
+        "w": 353.3,
+        "h": 11.5,
+        "zh": ""
+      },
+      {
+        "text": "The lower bound of Mlimit is in proportion to k (see Formula 1), and β is inversely proportional to k (see Formula 2). When increasing k and keeping k < ⌊ meanwhile the lower bound of Mlimit increases linearly. When k = ⌊ reaches its minimum value without delaying B and its value is less than TF , with a peak activation",
+        "x": 108,
+        "y": 239.5,
+        "w": 396,
+        "h": 52.4,
+        "zh": "Mlimit 的下界与 k 成正比（见公式 1），β 则与 k 成反比（见公式 2）。增大 k 并保持 k < ⌊ 时，Mlimit 的下界线性上升。当 k = ⌊ 时，气泡在不推迟 B 的前提下达到最小，而且这个值小于 TF，此时的峰值激活"
+      },
+      {
+        "text": "⌋, β decreases linearly, (p−1)(TB+2Tcomm)+pTF",
+        "x": 400.1,
+        "y": 257,
+        "w": 103.9,
+        "h": 21.6,
+        "zh": ""
+      },
+      {
+        "text": "⌋MB. Beyond this point, further reducing pipeline bubbles",
+        "x": 267.3,
+        "y": 226.2,
+        "w": 236.7,
+        "h": 11.5,
+        "zh": "⌋MB。过了这一点，若还想进一步把流水线气泡"
+      },
+      {
+        "text": "to zero is not easy. This is because there is a small bubble less than TF in each stage (see Figure 6), and scheduling another F will delay the starting time of B thus causing more requirements on F in previous stages. Theoretically, another p − 1 F passes are required in the initial stage to fully eliminate bubbles preceding the first B for all stages (see Figure 11), which also means a total activation memory usage at least ⌊",
+        "x": 108,
+        "y": 169.4,
+        "w": 396,
+        "h": 56.1,
+        "zh": "降到零，并不容易。因为每个 stage 都有一个小于 TF 的小气泡（见图 6），再排一次 F 就会推迟 B 的开始时间，前面的 stage 也就需要更多的 F。理论上，要完全去掉所有 stage 里第一个 B 之前的气泡，初始 stage 还得再有 p − 1 次 F（见图 11），这也意味着激活内存总量至少是 ⌊"
+      }
+    ],
+    "16": [
+      {
+        "text": "When we need to rollback an optimizer step, a typical method is to store a historic version of parameters and optimizer states, and revert to this historic version when needed. However, this method is memory inefficient and lots of copy operations are needed, which definitely hurts the training performance. For most optimizers, we notice that the step function is arithmetically reversible. Under this observation, we propose a novel technique to perform in-place optimizer rollback, which avoids allocating extra memory and requires extra computations only when the rollback is performed. As in Algorithm 1, we show how to rollback the step function for AdamW optimizer (Loshchilov &",
+        "x": 108,
+        "y": 609.6,
+        "w": 396,
+        "h": 75.7,
+        "zh": "要回滚一次优化器步骤时，通常的办法是存下参数和优化器状态的历史版本，需要时再退回去。可是这很费内存，还要做大量拷贝，一定会拖慢训练。对大多数优化器，step 函数在算术上是可逆的。据此，我们提出一种就地回滚优化器的办法：不额外分配内存，只有真的回滚时才多做计算。算法 1 说明了怎样回滚 AdamW 的 step 函数（Loshchilov 等）。"
+      },
+      {
+        "text": "Algorithm 1 In-place rollback for AdamW 1: Optimizer States:",
+        "x": 108,
+        "y": 560.1,
+        "w": 172.4,
+        "h": 23.4,
+        "zh": "算法 1　AdamW 的就地回滚。1：优化器状态："
+      },
+      {
+        "text": "γ(lr), β1, β2(betas), ϵ (epsilon), λ(weight decay), m (first moment), v ( second moment), θ (parameters),",
+        "x": 144.9,
+        "y": 538.2,
+        "w": 224.2,
+        "h": 20.9,
+        "zh": "γ（学习率 lr）、β1、β2（betas）、ϵ（epsilon）、λ（权重衰减）、m（一阶矩）、v（二阶矩）、θ（参数），"
+      },
+      {
+        "text": "m = (m − (1 − β1)g)/β1 v = (v − (1 − β2)g )/β2",
+        "x": 139.9,
+        "y": 368.8,
+        "w": 105.4,
+        "h": 22.4,
+        "zh": ""
+      },
+      {
+        "text": "For the experiments in Section 5, we record the profiled time of TF , TB, TW , and Tcomm in ZB-2p across different settings. These values are then used to calculate bubble rates for all the methods",
+        "x": 108,
+        "y": 271.3,
+        "w": 396,
+        "h": 20.9,
+        "zh": "对第 5 节的实验，我们记下了不同设定下 ZB-2p 中 TF、TB、TW 和 Tcomm 的 profiling 时间。这些值用来计算所有方法的气泡率，"
+      },
+      {
+        "text": "considered in Section 5.3 and 5.4. These values can be found in Table 9.",
+        "x": 108,
+        "y": 260.3,
+        "w": 288.1,
+        "h": 10,
+        "zh": "也就是第 5.3 节和第 5.4 节里考虑的那些方法。具体数值见表 9。"
+      },
+      {
+        "text": "Table 9: Profiled time of TF , TB, TW , and Tcomm.",
+        "x": 207.4,
+        "y": 228.1,
+        "w": 197.2,
+        "h": 11.5,
+        "zh": "表 9：TF、TB、TW 和 Tcomm 的 profiling 时间。"
+      }
+    ],
+    "17": [
+      {
+        "text": "ABLATION STUDY ON OPTIMIZER POST-VALIDATION STRATEGY",
+        "x": 128.2,
+        "y": 700.2,
+        "w": 319.8,
+        "h": 12,
+        "zh": "优化器事后校验策略的消融"
+      },
+      {
+        "text": "In this section, we provide an ablation study on the effectiveness of the optimizer post-validation strategy. The study compares the throughput of ZB-2p under two conditions: with post-validation and with all-reduce synchronization. According to the experimental results in Table 7, the synchronized version of ZB-2p demonstrates a performance decrease of approximately 8% compared to ZB-2p with optimizer post-validation.",
+        "x": 108,
+        "y": 631,
+        "w": 396,
+        "h": 53.8,
+        "zh": "本节用消融来看优化器事后校验是否有效。比较的是 ZB-2p 在两种条件下的吞吐：带事后校验，以及带 all-reduce 同步。从表 7 的结果看，同步版的 ZB-2p 相对带优化器事后校验的 ZB-2p，性能大约低 8%。"
+      },
+      {
+        "text": "Table 10: Throughput (Samples per GPU per second) comparison between ZB-2p and synchronized",
+        "x": 108,
+        "y": 597.7,
+        "w": 396,
+        "h": 10,
+        "zh": "表 10：ZB-2p 与同步版本的吞吐比较（每块 GPU 每秒样本数）"
+      },
+      {
+        "text": "COMPARE ZB-2P WITH 1F1B UNDER THE SAME MEMORY CONSUMPTION",
+        "x": 127.5,
+        "y": 476.4,
+        "w": 371,
+        "h": 12,
+        "zh": "在相同内存消耗下比较 ZB-2p 与 1F1B"
+      },
+      {
+        "text": "Under the same memory consumption, we double the size of each microbatch for 1F1B and ZB-1p and compare their throughput with ZB-2p in Table 11. The experimental results show that ZB-2p also holds a better performance even with a half microbatch size compared to 1F1B. Empirically, a larger batch size increases the utilization rate of GPU and thus improves the efficiency. However, it is less of a concern for large models because the hidden dimension is large enough to saturate device utilization. Based on this consideration and our experimental results, we believe ZB-2p is more preferred than increasing the batch size for 1F1B. In some experiments where the device utilization is less saturated and m/p is relatively large, ZB-1p with a doubled microbatch size may slightly outperform than ZB-2p.",
+        "x": 108,
+        "y": 363.4,
+        "w": 396,
+        "h": 97.6,
+        "zh": "在相同的内存消耗下，我们把 1F1B 和 ZB-1p 每个微批次的大小加倍，并在表 11 里和 ZB-2p 比吞吐。结果表明，即使微批次只有一半大，ZB-2p 仍然好于 1F1B。经验上，更大的 batch 会提高 GPU 利用率，从而更高效。对大模型这不太要紧，因为隐藏维度已经大到足以把设备打满。据此和实验结果，我们认为与其给 1F1B 加大 batch，不如用 ZB-2p。在设备还没打满、而且 m/p 比较大的一些实验里，微批次加倍之后的 ZB-1p 可能略好于 ZB-2p。"
+      },
+      {
+        "text": "Any pass in the pipeline can be uniquely indexed by (i, j, c), where i ∈ {1, 2, ..., p} indexes the stage, j ∈ {1, 2, ..., m} indexes the microbatch, and c ∈ {F, B, W} denotes the specific pass of the microbatch. We define the variable T(i,j,c) as the time cost and E(i,j,c) as the ending time of a pass. We introduce ∆M(i,j,c) to denote the memory increment incurred by the pass (i, j, c). For example, ∆M(·,·,F) = MB because the forward pass leads to a net increase of MB of activation stored for the backward pass. ∆M(·,·,B) = MW − MB which removes the memory stored for B while adding those required by W, and ∆M(·,·,W) = −MW . Finally, the variable that we want to search is the ordering of the passes in the schedule, for which we introduce the variable O(i,j,c)→(i,j′,c′) ∈ {0, 1}, which is an indicator whether the pass index by (i, j, c) is scheduled before (i, j , c ).",
+        "x": 108,
+        "y": 215.6,
+        "w": 396,
+        "h": 100.8,
+        "zh": "流水线里的任意一次传播都可以用 (i, j, c) 唯一标出。i ∈ {1, 2, ..., p} 是 stage，j ∈ {1, 2, ..., m} 是微批次，c ∈ {F, B, W} 是这次微批次的哪一种传播。变量 T(i,j,c) 是这次传播的耗时，E(i,j,c) 是它的结束时间。∆M(i,j,c) 表示传播 (i, j, c) 带来的内存增量。例如 ∆M(·,·,F) = MB，因为前向会让为反向保存的激活净增 MB。∆M(·,·,B) = MW − MB，它释放为 B 留着的内存，同时加上 W 需要的内存；∆M(·,·,W) = −MW。最后要搜索的是调度里各次传播的先后。我们用变量 O(i,j,c)→(i,j′,c′) ∈ {0, 1} 表示由 (i, j, c) 标出的传播是否排在 (i, j′, c′) 之前。"
+      },
+      {
+        "text": "E(i,j,F) ≥ E(i−1,j,F) + Tcomm + T(i,j,F) E(i,j,B) ≥ E(i+1,j,B) + Tcomm + T(i,j,B) E(i,j,c) ≥ E(i,j′,c′) + T(i,j,c) − O(i,j,c)→(i,j′,c′)∞ Mlimit ≥ ∆M(i,j′,c′) +",
+        "x": 209,
+        "y": 124.6,
+        "w": 201,
+        "h": 60.1,
+        "zh": ""
+      },
+      {
+        "text": "Overall, the optimization target (3) is to minimize the time spent by the longest stage. Constraints (4) and (5) add the sequential dependency requirements on the F and B passes of the same microbatch in adjacent stages. Additionally, (6) adds the dependency constraint imposed by our decision of the scheduling order. Finally, (7) limits the peak activations memory to be below Mlimit.",
+        "x": 108,
+        "y": 60.6,
+        "w": 396,
+        "h": 44.3,
+        "zh": "总的来说，优化目标 (3) 是让耗时最长的 stage 所用的时间最小。约束 (4) 和 (5) 要求同一微批次的 F 和 B 在相邻 stage 上保持顺序依赖。约束 (6) 则加上由调度顺序本身决定的依赖。最后，约束 (7) 要求峰值激活内存不超过 Mlimit。"
+      }
+    ],
+    "18": [
+      {
+        "text": "Table 11: Comparison between 1F1B, ZB-1p and ZB-2p under the same memory consumption.",
+        "x": 115.7,
+        "y": 693.4,
+        "w": 380.6,
+        "h": 10,
+        "zh": "表 11：在相同内存消耗下比较 1F1B、ZB-1p 和 ZB-2p。"
+      },
+      {
+        "text": "COMPARE ZB METHODS WITH 1F1B ON SMALL NUMBER OF",
+        "x": 129.5,
+        "y": 240.5,
+        "w": 305.8,
+        "h": 12,
+        "zh": "在数量较少时比较 ZB 方法与 1F1B"
+      },
+      {
+        "text": "By nature of PP when the number of microbatches m is less then number of stages p, there’ll be a large bubble rate. However zerobubble methods can still boost performance under these rare settings by approximately 20% to 30%. In a rough analysis ignoring communication and assuming m <= p and TW < TB, an 1F1B iteration takes (m + p − 1) ∗ (TF + TB + TW ) to complete, while a ZB iteration takes (m + p − 1) ∗ (TF + TB) + TW . The experiment result is shown in Table 12. Noticeably when m <= p ZB-1p and ZB-2p are essentially the same and consumes similar memory",
+        "x": 108,
+        "y": 148.1,
+        "w": 396,
+        "h": 64.8,
+        "zh": "就 PP 的性质来说，微批次数 m 小于 stage 数 p 时，气泡率会很大。不过在这些少见的设定下，零气泡方法仍然能把性能提高大约 20% 到 30%。粗略分析里先忽略通信，并假设 m <= p 且 TW < TB，那么一次 1F1B 迭代要花 (m + p − 1) ∗ (TF + TB + TW) 才能做完，一次 ZB 迭代则要花 (m + p − 1) ∗ (TF + TB) + TW。实验结果见表 12。值得注意的是，m <= p 时 ZB-1p 和 ZB-2p 本质上相同，占用的内存也相近"
+      }
+    ],
+    "19": [
+      {
+        "text": "Table 12: Comparison between 1F1B and ZB-2p on small number of microbatches.",
+        "x": 139.5,
+        "y": 490.4,
+        "w": 333,
+        "h": 10,
+        "zh": "表 12：微批次数量较少时 1F1B 与 ZB-2p 的比较。"
+      }
+    ]
+  }
+}

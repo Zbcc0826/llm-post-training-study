@@ -1,0 +1,2875 @@
+{
+  "id": "2205.14135",
+  "title": "2205.14135",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "FlashAttention: Fast and Memory-Efficient Exact Attention",
+        "x": 75.9,
+        "y": 667.3,
+        "w": 460.2,
+        "h": 17.2,
+        "zh": "FlashAttention：快速且省内存的精确注意力"
+      },
+      {
+        "text": "Tri Dao , Daniel Y. Fu , Stefano Ermon , Atri Rudra , and Christopher Ré",
+        "x": 109.4,
+        "y": 616.5,
+        "w": 388.2,
+        "h": 12,
+        "zh": "Tri Dao、Daniel Y. Fu、Stefano Ermon、Atri Rudra 与 Christopher Ré"
+      },
+      {
+        "text": "Department of Computer Science, Stanford University Department of Computer Science and Engineering, University at Buffalo, SUNY {trid,danfu}@cs.stanford.edu, ermon@stanford.edu, atri@buffalo.edu,",
+        "x": 102.4,
+        "y": 560.7,
+        "w": 412.4,
+        "h": 43.8,
+        "zh": "斯坦福大学计算机科学系；纽约州立大学布法罗分校计算机科学与工程系。{trid,danfu}@cs.stanford.edu，ermon@stanford.edu，atri@buffalo.edu，"
+      },
+      {
+        "text": "Transformers are slow and memory-hungry on long sequences, since the time and memory complexity of self-attention are quadratic in sequence length. Approximate attention methods have attempted to address this problem by trading off model quality to reduce the compute complexity, but often do not achieve wall-clock speedup. We argue that a missing principle is making attention algorithms IOaware—accounting for reads and writes between levels of GPU memory. We propose FlashAttention, an IO-aware exact attention algorithm that uses tiling to reduce the number of memory reads/writes between GPU high bandwidth memory (HBM) and GPU on-chip SRAM. We analyze the IO complexity of FlashAttention, showing that it requires fewer HBM accesses than standard attention, and is optimal for a range of SRAM sizes. We also extend FlashAttention to block-sparse attention, yielding an approximate attention algorithm that is faster than any existing approximate attention method. FlashAttention trains Transformers faster than existing baselines: 15% end-to-end wall-clock speedup on BERT-large (seq. length 512) compared to the MLPerf 1.1 training speed record, 3\u0002 speedup on GPT-2 (seq. length 1K), and 2.4\u0002 speedup on long-range arena (seq. length 1K-4K). FlashAttention and block-sparse FlashAttention enable longer context in Transformers, yielding higher quality models (0.7 better perplexity on GPT-2 and 6.4 points of lift on long-document classification) and entirely new capabilities: the first Transformers to achieve better-than-chance performance on the Path-X challenge (seq. length 16K, 61.4% accuracy) and Path-256 (seq. length 64K, 63.1% accuracy).",
+        "x": 95.8,
+        "y": 293,
+        "w": 421.1,
+        "h": 184.3,
+        "zh": "Transformer 在长序列上又慢又吃内存，因为自注意力的时间和内存复杂度都随序列长度呈二次增长。近似注意力方法试图靠牺牲模型质量来降低计算复杂度，从而缓解这个问题，但往往得不到墙钟加速。我们认为，缺的一条原则是让注意力算法成为 IO 感知的——把 GPU 各级内存之间的读写都算进去。我们提出 FlashAttention，一种 IO 感知的精确注意力算法，用分块（tiling）减少 GPU 高带宽内存（HBM）与 GPU 片上 SRAM 之间的读写次数。我们分析了 FlashAttention 的 IO 复杂度，表明它比标准注意力更少访问 HBM，并且对一段 SRAM 容量范围是最优的。我们还把 FlashAttention 推广到块稀疏注意力，得到一种比任何现有近似注意力方法都更快的近似注意力算法。FlashAttention 训练 Transformer 比现有基线更快：在 BERT-large（序列长度 512）上，端到端墙钟时间比 MLPerf 1.1 的训练速度纪录快 15%；在 GPT-2（序列长度 1K）上加速 3 倍；在 long-range arena（序列长度 1K–4K）上加速 2.4 倍。FlashAttention 和块稀疏 FlashAttention 让 Transformer 能使用更长的上下文，从而得到更高质量的模型（GPT-2 上困惑度好 0.7，长文档分类上提升 6.4 个点），并带来全新能力：第一批在 Path-X 挑战（序列长度 16K，准确率 61.4%）和 Path-256（序列长度 64K，准确率 63.1%）上超过随机水平的 Transformer。"
+      },
+      {
+        "text": "Transformer models [82] have emerged as the most widely used architecture in applications such as natural language processing and image classification. Transformers have grown larger [5] and deeper [83], but equipping them with longer context remains difficult [80], since the self-attention module at their heart has time and memory complexity quadratic in sequence length. An important question is whether making attention faster and more memory-efficient can help Transformer models address their runtime and memory challenges for long sequences. Many approximate attention methods have aimed to reduce the compute and memory requirements of attention. These methods range from sparse-approximation [51, 74] to low-rank approximation [12, 50, 84], and their combinations [3, 9, 92]. Although these methods reduce the compute requirements to linear or near-linear in sequence length, many of them do not display wall-clock speedup against standard attention and have not gained wide adoption. One main reason is that they focus on FLOP reduction (which may not correlate with wall-clock speed) and tend to ignore overheads from memory access (IO). In this paper, we argue that a missing principle is making attention algorithms IO-aware [1]—that is, carefully accounting for reads and writes to different levels of fast and slow memory (e.g., between fast GPU on-chip SRAM and relatively slow GPU high bandwidth memory, or HBM [45], Figure 1 left). On modern",
+        "x": 71.6,
+        "y": 71.1,
+        "w": 469.7,
+        "h": 177.3,
+        "zh": "Transformer 模型 [82] 已成为自然语言处理和图像分类等应用中最广泛使用的架构。Transformer 越做越大 [5]、越做越深 [83]，但给它们配上更长的上下文仍然很难 [80]，因为其核心的自注意力模块在时间和内存上的复杂度都随序列长度呈二次增长。一个重要的问题是：把注意力做得更快、更省内存，能否帮助 Transformer 应对长序列带来的运行时间和内存挑战。许多近似注意力方法旨在降低注意力的计算量和内存需求。这些方法从稀疏近似 [51, 74] 到低秩近似 [12, 50, 84]，以及二者的组合 [3, 9, 92]。尽管它们把计算量降到随序列长度线性或近线性，其中许多相对标准注意力并没有表现出墙钟加速，也没有被广泛采用。一个主要原因是，它们关注 FLOP 的减少（这未必与墙钟速度相关），并往往忽略内存访问（IO）的开销。本文认为，缺的一条原则是让注意力算法具备 IO 感知 [1]，也就是仔细计入对不同快慢层级内存的读写（例如较快的 GPU 片上 SRAM 与相对较慢的 GPU 高带宽内存 HBM [45] 之间，见图 1 左）。在现代"
+      }
+    ],
+    "2": [
+      {
+        "text": "Memory Hierarchy with Bandwidth & Memory Size",
+        "x": 123.1,
+        "y": 592.3,
+        "w": 91.1,
+        "h": 17.6,
+        "zh": "内存层次：带宽与容量"
+      },
+      {
+        "text": "Figure 1: Left: FlashAttention uses tiling to prevent materialization of the large 𝑁 \u0002 𝑁 attention matrix (dotted box) on (relatively) slow GPU HBM. In the outer loop (red arrows), FlashAttention loops through blocks of the K and V matrices and loads them to fast on-chip SRAM. In each block, FlashAttention loops over blocks of Q matrix (blue arrows), loading them to SRAM, and writing the output of the attention computation back to HBM. Right: Speedup over the PyTorch implementation of attention on GPT-2. FlashAttention does not read and write the large 𝑁 \u0002 𝑁 attention matrix to HBM, resulting in an 7.6\u0002",
+        "x": 70.8,
+        "y": 486.2,
+        "w": 471.1,
+        "h": 69.7,
+        "zh": "图 1：左：FlashAttention 用分块避免在（相对）较慢的 GPU HBM 上物化巨大的 N×N 注意力矩阵（虚线框）。在外层循环（红色箭头）中，FlashAttention 遍历 K 和 V 矩阵的各个块，并把它们载入较快的片上 SRAM。在每个块内，FlashAttention 再遍历 Q 矩阵的块（蓝色箭头），把它们载入 SRAM，并把注意力计算的输出写回 HBM。右：相对 PyTorch 注意力实现、在 GPT-2 上的加速。FlashAttention 不把巨大的 N×N 注意力矩阵读出或写入 HBM，从而得到 7.6×"
+      },
+      {
+        "text": "GPUs, compute speed has out-paced memory speed [61, 62, 63], and most operations in Transformers are bottlenecked by memory accesses [43]. IO-aware algorithms have been critical for similar memory-bound operations, when reading and writing data can account for a large portion of the runtime—such as database joins [71], image processing [70], numerical linear algebra [4], and more [40, 85]. However, common Python interfaces to deep learning such as PyTorch and Tensorflow do not allow fine-grained control of memory",
+        "x": 72,
+        "y": 393,
+        "w": 468.4,
+        "h": 57.8,
+        "zh": "GPU 上，计算速度的提升已经超过内存速度 [61, 62, 63]，Transformer 中的大多数运算都受内存访问制约 [43]。当读写数据会占掉运行时间的很大一部分时，IO 感知算法对这类内存受限运算一直很关键，例如数据库连接 [71]、图像处理 [70]、数值线性代数 [4]，以及其他工作 [40, 85]。然而，PyTorch 和 Tensorflow 这类常见的深度学习 Python 接口，并不允许对内存做细粒度控制。"
+      },
+      {
+        "text": "We propose FlashAttention, a new attention algorithm that computes exact attention with far fewer memory accesses. Our main goal is to avoid reading and writing the attention matrix to and from HBM. This requires (i) computing the softmax reduction without access to the whole input (ii) not storing the large intermediate attention matrix for the backward pass. We apply two well-established techniques to address these challenges. (i) We restructure the attention computation to split the input into blocks and make several passes over input blocks, thus incrementally performing the softmax reduction (also known as tiling). (ii) We store the softmax normalization factor from the forward pass to quickly recompute attention on-chip in the backward pass, which is faster than the standard approach of reading the intermediate attention matrix from HBM. We implement FlashAttention in CUDA to achieve fine-grained control over memory access and fuse all the attention operations into one GPU kernel. Even with the increased FLOPs due to recomputation, our algorithm both runs faster (up to 7.6x on GPT-2 [67], Figure 1 right) and uses less memory—linear in sequence length—than standard attention, thanks to the massively reduced amount of HBM access. We analyze the IO complexity [1] of FlashAttention, proving that it requires 𝑂¹𝑁 𝑑 𝑀 accesses where 𝑑 is the head dimension and 𝑀 is the size of SRAM, as compared to Ω¹𝑁 𝑑 ¸ 𝑁 º of standard attention. For typical values of 𝑑 and 𝑀, FlashAttention requires many times fewer HBM accesses compared to standard attention (up to 9\u0002 fewer, as shown in Fig. 2). Moreover, we provide a lower bound, showing that no exact attention algorithm can asymptotically improve on the number of HBM accesses over",
+        "x": 71.6,
+        "y": 177.8,
+        "w": 470.3,
+        "h": 201.2,
+        "zh": "我们提出 FlashAttention，一种新的注意力算法，它以少得多的内存访问来计算精确注意力。主要目标是避免把注意力矩阵读出 HBM 或写入 HBM。这要求：（i）在接触不到全部输入的情况下完成 softmax 归约；（ii）不为反向传播保存巨大的中间注意力矩阵。我们用两项成熟技术应对这些挑战。（i）重组注意力计算，把输入切成块，并对输入块做多遍扫描，从而增量地完成 softmax 归约（也就是分块，tiling）。（ii）保存前向传播得到的 softmax 归一化因子，以便在反向传播时于片上快速重算注意力；这比从 HBM 读取中间注意力矩阵的标准做法更快。我们用 CUDA 实现 FlashAttention，以便细粒度控制内存访问，并把全部注意力运算融合成一个 GPU kernel。即便重计算增加了 FLOP，由于 HBM 访问量大幅下降，该算法仍然跑得更快（在 GPT-2 [67] 上最高 7.6 倍，见图 1 右），内存占用也随序列长度线性增长，低于标准注意力。我们分析 FlashAttention 的 IO 复杂度 [1]，证明它需要 O(N d M) 次访问，其中 d 是头维度，M 是 SRAM 容量；作为对照，标准注意力是 Ω(N d + N)。对典型的 d 和 M，FlashAttention 所需的 HBM 访问比标准注意力少许多倍（最多少 9 倍，如图 2）。此外，我们给出一个下界，表明没有任何精确注意力算法能在 HBM 访问次数上渐近地改进到超过"
+      },
+      {
+        "text": "We also show that FlashAttention can serve as a useful primitive for realizing the potential of approximate attention algorithms by overcoming their issues with memory access overhead. As a proof of concept, we implement block-sparse FlashAttention, a sparse attention algorithm that is 2-4\u0002 faster than even FlashAttention, scaling up to sequence length of 64k. We prove that block-sparse FlashAttention has better IO complexity than FlashAttention by a factor proportional to the sparsity ratio. We discuss further extensions to other operations (attention on multi-GPU, kernel regression, block-sparse matrix",
+        "x": 72,
+        "y": 94.1,
+        "w": 468.3,
+        "h": 69.7,
+        "zh": "我们还表明，FlashAttention 可以作为一种有用的原语，帮助近似注意力算法克服内存访问开销，从而发挥潜力。作为概念验证，我们实现了块稀疏 FlashAttention，这是一种稀疏注意力算法，甚至比 FlashAttention 还快 2–4 倍，并可扩展到序列长度 64k。我们证明，块稀疏 FlashAttention 的 IO 复杂度优于 FlashAttention，改进的倍数与稀疏率成比例。我们还讨论向其他运算的进一步推广（多 GPU 上的注意力、核回归、块稀疏矩阵"
+      }
+    ],
+    "3": [
+      {
+        "text": "multiply) in Section 5. We open-source FlashAttention to make it easier to build on this primitive. We empirically validate that FlashAttention speeds up model training and improves model quality by modeling longer context. We also benchmark the runtime and memory footprint of FlashAttention and block-sparse FlashAttention compared to prior attention implementations. • Faster Model Training. FlashAttention trains Transformer models faster in wall-clock time. We train BERT-large (seq. length 512) 15% faster than the training speed record in MLPerf 1.1 [58], GPT2 (seq. length 1K) 3\u0002 faster than baseline implementations from HuggingFace [87] and Megatron-LM [77],",
+        "x": 72,
+        "y": 637.4,
+        "w": 469.4,
+        "h": 81.7,
+        "zh": "乘法），见第 5 节。我们开源 FlashAttention，以便更容易在这个原语上继续构建。实验表明，FlashAttention 能加快模型训练，并通过建模更长的上下文提升模型质量。我们也对比了 FlashAttention、块稀疏 FlashAttention 与先前注意力实现的运行时间和内存占用。• 更快的模型训练。FlashAttention 以更短的墙钟时间训练 Transformer。我们训练 BERT-large（序列长度 512）比 MLPerf 1.1 [58] 的训练速度纪录快 15%，训练 GPT-2（序列长度 1K）比 HuggingFace [87] 和 Megatron-LM [77] 的基线实现快 3 倍，"
+      },
+      {
+        "text": "and long-range arena (seq. length 1K-4K) 2.4\u0002 faster than baselines.",
+        "x": 82,
+        "y": 625.5,
+        "w": 299.4,
+        "h": 10,
+        "zh": "训练 long-range arena（序列长度 1K–4K）比基线快 2.4 倍。"
+      },
+      {
+        "text": "• Higher Quality Models. FlashAttention scales Transformers to longer sequences, which improves their quality and enables new capabilities. We observe a 0.7 improvement in perplexity on GPT-2 and 6.4 points of lift from modeling longer sequences on long-document classification [13]. FlashAttention enables the first Transformer that can achieve better-than-chance performance on the Path-X [80] challenge, solely from using a longer sequence length (16K). Block-sparse FlashAttention enables a Transformer to scale to even longer sequences (64K), resulting in the first model that can achieve better-than-chance",
+        "x": 72,
+        "y": 549.7,
+        "w": 469.4,
+        "h": 69.7,
+        "zh": "• 更高质量的模型。FlashAttention 把 Transformer 扩展到更长的序列，从而提升质量并带来新能力。我们在 GPT-2 上观察到困惑度改善 0.7，在长文档分类 [13] 上，因建模更长序列而提升 6.4 个点。FlashAttention 使第一个仅靠更长序列（16K）就能在 Path-X [80] 挑战上超过随机水平的 Transformer 成为可能。块稀疏 FlashAttention 让 Transformer 扩展到更长的序列（64K），从而得到第一个能够超过随机水平的模型"
+      },
+      {
+        "text": "• Benchmarking Attention. FlashAttention is up to 3\u0002 faster than the standard attention implementation across common sequence lengths from 128 to 2K and scales up to 64K. Up to sequence length of 512, FlashAttention is both faster and more memory-efficient than any existing attention method, whereas for sequence length beyond 1K, some approximate attention methods (e.g., Linformer) start to become faster. On the other hand, block-sparse FlashAttention is faster than all existing approximate attention",
+        "x": 72,
+        "y": 473.9,
+        "w": 469.7,
+        "h": 57.8,
+        "zh": "• 注意力基准。在 128 到 2K 这些常见序列长度上，FlashAttention 比标准注意力实现最多快 3 倍，并可扩展到 64K。序列长度不超过 512 时，FlashAttention 比任何现有注意力方法都更快、也更省内存；序列长度超过 1K 之后，一些近似注意力方法（例如 Linformer）开始变得更快。另一方面，块稀疏 FlashAttention 比所有现有的近似注意力都更快"
+      },
+      {
+        "text": "We provide some background on the performance characteristics of common deep learning operations on modern hardware (GPUs). We also describe the standard implementation of attention.",
+        "x": 71.5,
+        "y": 395.2,
+        "w": 468.5,
+        "h": 21.9,
+        "zh": "我们介绍现代硬件（GPU）上常见深度学习运算的性能特征，并描述注意力的标准实现。"
+      },
+      {
+        "text": "We focus here on GPUs. Performance on other hardware accelerators are similar [46, 48]. GPU Memory Hierarchy. The GPU memory hierarchy (Fig. 1 left) comprises multiple forms of memory of different sizes and speeds, with smaller memory being faster. As an example, the A100 GPU has 40-80GB of high bandwidth memory (HBM) with bandwidth 1.5-2.0TB/s and 192KB of on-chip SRAM per each of 108 streaming multiprocessors with bandwidth estimated around 19TB/s [44, 45]. The on-chip SRAM is an order of magnitude faster than HBM but many orders of magnitude smaller in size. As compute has gotten faster relative to memory speed [61, 62, 63], operations are increasingly bottlenecked by memory",
+        "x": 71.5,
+        "y": 277.2,
+        "w": 468.9,
+        "h": 81.7,
+        "zh": "这里聚焦 GPU。其他硬件加速器上的性能表现类似 [46, 48]。GPU 内存层次。GPU 内存层次（图 1 左）包含多种容量和速度不同的内存，更小的内存更快。例如，A100 GPU 有 40–80GB 高带宽内存（HBM），带宽为 1.5–2.0TB/s；108 个流多处理器各自有 192KB 片上 SRAM，带宽估计约为 19TB/s [44, 45]。片上 SRAM 比 HBM 快一个数量级，但容量要小许多个数量级。随着计算相对内存速度变得更快 [61, 62, 63]，运算越来越受内存"
+      },
+      {
+        "text": "(HBM) accesses. Thus exploiting fast SRAM becomes more important.",
+        "x": 70.8,
+        "y": 265.2,
+        "w": 310.8,
+        "h": 10,
+        "zh": "（HBM）访问的制约。因此，用好更快的 SRAM 变得更加重要。"
+      },
+      {
+        "text": "Execution Model. GPUs have a massive number of threads to execute an operation (called a kernel). Each kernel loads inputs from HBM to registers and SRAM, computes, then writes outputs to HBM. Performance characteristics. Depending on the balance of computation and memory accesses, operations can be classified as either compute-bound or memory-bound. This is commonly measured by the arithmetic intensity [85], which is the number of arithmetic operations per byte of memory access. 1. Compute-bound: the time taken by the operation is determined by how many arithmetic operations there are, while time accessing HBM is much smaller. Typical examples are matrix multiply with large inner",
+        "x": 71.2,
+        "y": 181.5,
+        "w": 470.7,
+        "h": 81.7,
+        "zh": "执行模型。GPU 用大量线程执行一次运算（称为一个 kernel）。每个 kernel 把输入从 HBM 载入寄存器和 SRAM，完成计算，再把输出写回 HBM。性能特征。按计算与内存访问的相对比重，运算可分为计算受限或内存受限。这通常用算术强度 [85] 来衡量，即每访问一字节内存所做的算术运算次数。1. 计算受限：运算耗时由算术运算的数量决定，访问 HBM 的时间小得多。典型例子是内维很大的矩阵乘法，"
+      },
+      {
+        "text": "dimension, and convolution with large number of channels.",
+        "x": 84.7,
+        "y": 169.6,
+        "w": 256.9,
+        "h": 10,
+        "zh": "以及通道数很多的卷积。"
+      },
+      {
+        "text": "2. Memory-bound: the time taken by the operation is determined by the number of memory accesses, while time spent in computation is much smaller. Examples include most other operations: elementwise (e.g., activation, dropout), and reduction (e.g., sum, softmax, batch norm, layer norm). Kernel fusion. The most common approach to accelerate memory-bound operations is kernel fusion: if there are multiple operations applied to the same input, the input can be loaded once from HBM, instead of multiple times for each operation. Compilers can automatically fuse many elementwise operations [53, 65, 75].",
+        "x": 72,
+        "y": 93.8,
+        "w": 469.9,
+        "h": 69.7,
+        "zh": "2. 内存受限：运算耗时由内存访问次数决定，花在计算上的时间小得多。例子包括其余大多数运算：逐元素运算（如激活、dropout）和归约（如求和、softmax、batch norm、layer norm）。核融合。加速内存受限运算最常见的办法是核融合：若多个运算作用在同一输入上，该输入只需从 HBM 载入一次，而不必为每个运算各载入一次。编译器可以自动融合许多逐元素运算 [53, 65, 75]。"
+      }
+    ],
+    "4": [
+      {
+        "text": "However, in the context of model training, the intermediate values still need to be written to HBM to save",
+        "x": 72,
+        "y": 709.2,
+        "w": 468,
+        "h": 10,
+        "zh": "然而，在模型训练中，中间值仍然必须写入 HBM 才能留存，"
+      },
+      {
+        "text": "for the backward pass, reducing the effectiveness of naive kernel fusion.",
+        "x": 72,
+        "y": 697.2,
+        "w": 310.5,
+        "h": 10,
+        "zh": "供反向传播使用，这会削弱朴素核融合的效果。"
+      },
+      {
+        "text": "Standard Attention Implementation Given input sequences Q K V 2 R to compute the attention output O 2 R",
+        "x": 72,
+        "y": 639,
+        "w": 242.8,
+        "h": 42.3,
+        "zh": "标准注意力实现。给定输入序列 Q、K、V ∈ R，用以计算注意力输出 O ∈ R。"
+      },
+      {
+        "text": "where 𝑁 is the sequence length and 𝑑 is the head dimension, we want",
+        "x": 240.8,
+        "y": 650.9,
+        "w": 299.5,
+        "h": 10,
+        "zh": "其中 N 是序列长度，d 是头维度，我们希望"
+      },
+      {
+        "text": "Standard attention implementations materialize the matrices S and P to HBM, which takes 𝑂¹𝑁 º memory. Often 𝑁 \u001d 𝑑 (e.g., for GPT2, 𝑁 = 1024 and 𝑑 = 64). We describe the standard attention implementation in Algorithm 0. As some or most of the operations are memory-bound (e.g., softmax), the large number of",
+        "x": 72,
+        "y": 559.3,
+        "w": 469.9,
+        "h": 33.9,
+        "zh": "标准注意力实现会把矩阵 S 和 P 物化到 HBM，这占用 O(N) 的内存。常常有 N ≫ d（例如对 GPT-2，N = 1024，d = 64）。我们在算法 0 中描述标准注意力实现。由于其中一部分乃至大部分运算是内存受限的（例如 softmax），大量的"
+      },
+      {
+        "text": "memory accesses translates to slow wall-clock time.",
+        "x": 72,
+        "y": 547.3,
+        "w": 223.9,
+        "h": 10,
+        "zh": "内存访问就转化成了缓慢的墙钟时间。"
+      },
+      {
+        "text": "This problem is exacerbated by other elementwise operations applied to the attention matrix, such as masking applied to S or dropout applied to P. As a result, there have been many attempts to fuse several",
+        "x": 72,
+        "y": 523.4,
+        "w": 468,
+        "h": 21.9,
+        "zh": "作用在注意力矩阵上的其他逐元素运算会加剧这个问题，例如对 S 施加掩码，或对 P 施加 dropout。因此已有许多工作试图融合若干"
+      },
+      {
+        "text": "elementwise operations, such as fusing masking with softmax [77].",
+        "x": 72,
+        "y": 511.5,
+        "w": 287.6,
+        "h": 10,
+        "zh": "逐元素运算，例如把掩码与 softmax 融合 [77]。"
+      },
+      {
+        "text": "In Section 3.2, we will show that the standard attention implementation performs HBM accesses quadratic in the sequence length 𝑁. We also compare the number of FLOPs and number of HBM accesses of standard",
+        "x": 72,
+        "y": 487.6,
+        "w": 468,
+        "h": 21.9,
+        "zh": "在第 3.2 节我们将说明，标准注意力实现对 HBM 的访问次数随序列长度 N 呈二次增长。我们也比较标准"
+      },
+      {
+        "text": "attention and of our method (FlashAttention).",
+        "x": 72,
+        "y": 475.6,
+        "w": 219.1,
+        "h": 10,
+        "zh": "注意力与我们的方法（FlashAttention）的 FLOP 数量和 HBM 访问次数。"
+      },
+      {
+        "text": "Algorithm 0 Standard Attention Implementation Require: Matrices Q K V 2 R 1: Load Q K by blocks from HBM, compute S = QK , write S to HBM. 2: Read S from HBM, compute P = softmax¹Sº, write P to HBM. 3: Load P and V by blocks from HBM, compute O = PV, write O to HBM.",
+        "x": 71.6,
+        "y": 402.8,
+        "w": 334.9,
+        "h": 62.7,
+        "zh": "算法 0　标准注意力实现。输入：矩阵 Q、K、V ∈ R。1：按块从 HBM 载入 Q、K，计算 S = QK，把 S 写入 HBM。2：从 HBM 读入 S，计算 P = softmax(S)，把 P 写入 HBM。3：按块从 HBM 载入 P 和 V，计算 O = PV，把 O 写入 HBM。"
+      },
+      {
+        "text": "FlashAttention: Algorithm, Analysis, and Extensions",
+        "x": 95.7,
+        "y": 351.5,
+        "w": 387.8,
+        "h": 14.3,
+        "zh": "FlashAttention：算法、分析与扩展"
+      },
+      {
+        "text": "We show how to compute exact attention with fewer HBM reads/writes and without storing large intermediate matrices for the backward pass. This yields an attention algorithm that is both memory efficient and faster in wall-clock time. We analyze its IO complexity, showing that our method requires much fewer HBM accesses compared to standard attention. We further show that FlashAttention can serve as a useful primitive by",
+        "x": 71.5,
+        "y": 293.8,
+        "w": 468.9,
+        "h": 45.8,
+        "zh": "我们说明如何用更少的 HBM 读写来计算精确注意力，并且不为反向传播保存巨大的中间矩阵。由此得到一种既省内存、墙钟时间也更快的注意力算法。我们分析它的 IO 复杂度，表明相对标准注意力，该方法所需的 HBM 访问少得多。我们进一步表明，FlashAttention 可以作为一种有用的原语，办法是"
+      },
+      {
+        "text": "extending it to handle block-sparse attention.",
+        "x": 72,
+        "y": 281.9,
+        "w": 198.5,
+        "h": 10,
+        "zh": "把它扩展到能够处理块稀疏注意力。"
+      },
+      {
+        "text": "We focus here on the forward pass for ease of exposition; Appendix B contains details for the backward.",
+        "x": 86.9,
+        "y": 269.9,
+        "w": 454.7,
+        "h": 10,
+        "zh": "为便于阐述，这里聚焦前向传播；附录 B 给出反向传播的细节。"
+      },
+      {
+        "text": "An Efficient Attention Algorithm With Tiling and Recomputation",
+        "x": 102.6,
+        "y": 242,
+        "w": 390.8,
+        "h": 12,
+        "zh": "用分块与重计算实现的高效注意力算法"
+      },
+      {
+        "text": "in HBM, we aim to compute the attention output O 2 R HBM. Our goal is to reduce the amount of HBM accesses (to sub-quadratic in 𝑁). We apply two established techniques (tiling, recomputation) to overcome the technical challenge of computing exact attention in sub-quadratic HBM accesses. We describe this in Algorithm 1. The main idea is that we split the inputs Q K V into blocks, load them from slow HBM to fast SRAM, then compute the attention output with respect to those blocks. By scaling the output of each block by the right normalization",
+        "x": 72,
+        "y": 163.9,
+        "w": 468,
+        "h": 69.7,
+        "zh": "在 HBM 中，我们旨在计算注意力输出 O ∈ R，并放在 HBM 中。目标是把 HBM 访问量降到随 N 亚二次。我们用两项已有技术（分块、重计算）来克服这一技术挑战：以亚二次的 HBM 访问计算精确注意力。这一点写在算法 1 中。主要想法是把输入 Q、K、V 分成块，从慢速 HBM 载入快速 SRAM，再针对这些块计算注意力输出。只要在把各块输出加总之前，用正确的归一化"
+      },
+      {
+        "text": "factor before adding them up, we get the correct result at the end.",
+        "x": 72,
+        "y": 151.9,
+        "w": 290.7,
+        "h": 10,
+        "zh": "因子去缩放，最后就能得到正确结果。"
+      },
+      {
+        "text": "Tiling. We compute attention by blocks. Softmax couples columns of K, so we decompose the large",
+        "x": 86.9,
+        "y": 139.9,
+        "w": 453.1,
+        "h": 10,
+        "zh": "分块。我们按块计算注意力。Softmax 会把 K 的各列耦合在一起，因此我们分解这个很大的"
+      },
+      {
+        "text": "For numerical stability, the softmax of vector 𝑥 2 R",
+        "x": 224.3,
+        "y": 128,
+        "w": 223.2,
+        "h": 10,
+        "zh": "为了数值稳定性，向量 x ∈ R 的 softmax"
+      }
+    ],
+    "5": [
+      {
+        "text": "2 R , we can decompose the softmax of the concatenated 𝑥 = 𝑥",
+        "x": 162.4,
+        "y": 709.1,
+        "w": 279.1,
+        "h": 10,
+        "zh": "∈ R。于是我们可以分解拼接之后的 x = x 的 softmax。"
+      },
+      {
+        "text": "Therefore if we keep track of some extra statistics (𝑚¹𝑥º ℓ¹𝑥º), we can compute softmax one block at a time. We thus split the inputs Q K V into blocks (Algorithm 1 line 3), compute the softmax values along with extra statistics (Algorithm 1 line 10), and combine the results (Algorithm 1 line 12). Recomputation. One of our goals is to not store 𝑂¹𝑁 º intermediate values for the backward pass. The backward pass typically requires the matrices S P 2 R",
+        "x": 71.5,
+        "y": 590.6,
+        "w": 468.5,
+        "h": 57.8,
+        "zh": "因此，只要跟踪一些额外统计量（m(x)、ℓ(x)），就可以一次一块地计算 softmax。于是我们把输入 Q、K、V 分成块（算法 1 第 3 行），在算出 softmax 值的同时维护额外统计量（算法 1 第 10 行），再把结果合并（算法 1 第 12 行）。重计算。目标之一是不为反向传播保存 O(N) 规模的中间值。反向传播通常需要矩阵 S、P ∈ R，"
+      },
+      {
+        "text": "to compute the gradients with respect to Q K V. However, by storing the output O and the softmax normalization statistics ¹𝑚 ℓº, we can recompute the attention matrix S and P easily in the backward pass from blocks of Q K V in SRAM. This can be seen as a form of selective gradient checkpointing [10, 34]. While gradient checkpointing has been suggested to reduce the maximum amount of memory required [66], all implementations (that we know off) have to trade speed for memory. In contrast, even with more FLOPs, our recomputation speeds up the backward pass due to reduced HBM accesses (Fig. 2). The full backward pass description is in Appendix B. Implementation details:",
+        "x": 72,
+        "y": 507,
+        "w": 469.9,
+        "h": 93.6,
+        "zh": "才能计算关于 Q、K、V 的梯度。然而，只要保存输出 O 以及 softmax 归一化统计量 (m, ℓ)，就可以在反向传播中，用 SRAM 里 Q、K、V 的块轻松重算出注意力矩阵 S 和 P。这可以看成选择性梯度检查点的一种形式 [10, 34]。梯度检查点曾被用来降低所需的峰值内存 [66]，但（我们所知道的）所有实现都得用速度换内存。与之不同，即便 FLOP 更多，我们的重计算仍因 HBM 访问减少而加快了反向传播（图 2）。完整的反向传播描述见附录 B。实现细节："
+      },
+      {
+        "text": "Tiling enables us to implement our algorithm in one CUDA kernel, loading input from HBM, performing all the computation steps (matrix multiply, softmax, optionally masking and dropout, matrix multiply), then write the result back to HBM (masking and dropout in Appendix B). This avoids repeatedly reading and writing of inputs and outputs from and to HBM.",
+        "x": 72,
+        "y": 471.1,
+        "w": 469.4,
+        "h": 45.8,
+        "zh": "分块使我们能在一个 CUDA kernel 里实现该算法：从 HBM 载入输入，完成全部计算步骤（矩阵乘法、softmax，以及可选的掩码和 dropout，再做一次矩阵乘法），然后把结果写回 HBM（掩码和 dropout 见附录 B）。这样就避免了把输入和输出反复地从 HBM 读出、再写回 HBM。"
+      },
+      {
+        "text": "Algorithm 1 FlashAttention Require: Matrices Q K\u0006 V\u00072 R",
+        "x": 71.6,
+        "y": 431.7,
+        "w": 138.8,
+        "h": 30.7,
+        "zh": "算法 1　FlashAttention。输入：矩阵 Q、K、V ∈ R。"
+      },
+      {
+        "text": "in HBM, on-chip SRAM of size\u0000\u0006 1: Set block sizes 𝐵𝑐 = 2: Initialize O = ¹0º𝑁\u0002𝑑l 2 mR",
+        "x": 77.4,
+        "y": 407.1,
+        "w": 288.8,
+        "h": 38.5,
+        "zh": ""
+      },
+      {
+        "text": " ℓ = ¹0º𝑁 2 R  𝑚 = ¹\u00001º𝑁 2 R 3: Divide Q into 𝑇𝑟 =",
+        "x": 77.4,
+        "y": 394.6,
+        "w": 274,
+        "h": 26,
+        "zh": "ℓ = (0)_N ∈ R，m = (−1)_N ∈ R。3：把 Q 分成 T_r ="
+      },
+      {
+        "text": "blocks Q1     Q𝑇𝑟 of size 𝐵𝑟 \u0002 𝑑 each, and divide K V in to 𝑇𝑐 = K1     K𝑇𝑐 and V1     V𝑇𝑐, of size 𝐵𝑐 \u0002 𝑑 each. 4: Divide O into 𝑇𝑟 blocks O𝑖     O𝑇𝑟 of size 𝐵𝑟 \u0002 𝑑 each, divide ℓ into 𝑇𝑟 blocks ℓ𝑖     ℓ𝑇𝑟 of size 𝐵𝑟 each, divide 𝑚 into 𝑇𝑟 blocks 𝑚1     𝑚𝑇𝑟 of size 𝐵𝑟 each. 5: for 1 \u0014 𝑗 \u0014 𝑇𝑐 do Load K𝑗 V𝑗 from HBM to on-chip SRAM. for 1 \u0014 𝑖 \u0014 𝑇𝑟 do Load Q𝑖 O𝑖 ℓ𝑖 𝑚𝑖 from HBM to on-chip SRAM. On chip, compute S𝑖 𝑗 = Q𝑖K𝑇 2 R𝐵𝑟\u0002𝐵𝑐. On chip, compute 𝑚˜𝑖 𝑗 = rowmax¹S𝑖 𝑗º 2 R𝐵𝑟 , P˜𝑖 𝑗 = exp¹S𝑖 𝑗 \u0000 𝑚˜𝑖 𝑗º 2 R𝐵𝑟\u0002𝐵𝑐 (pointwise), ℓ˜𝑖 𝑗 = rowsum¹P˜𝑖 𝑗º 2 R𝐵𝑟 . On chip, compute 𝑚new = max¹𝑚𝑖 𝑚˜𝑖 𝑗º 2 R𝐵𝑟 , ℓnew = 𝑒𝑚𝑖\u0000𝑚𝑖",
+        "x": 77.4,
+        "y": 255.3,
+        "w": 464,
+        "h": 150.7,
+        "zh": "大小各为 B_r × d 的块 Q_1, …, Q_{T_r}，并把 K、V 分成 T_c 块，即大小各为 B_c × d 的 K_1, …, K_{T_c} 与 V_1, …, V_{T_c}。4：把 O 分成 T_r 个大小为 B_r × d 的块 O_i, …, O_{T_r}，把 ℓ 分成 T_r 个大小为 B_r 的块 ℓ_i, …, ℓ_{T_r}，把 m 分成 T_r 个大小为 B_r 的块 m_1, …, m_{T_r}。5：对 1 ≤ j ≤ T_c，把 K_j、V_j 从 HBM 载入片上 SRAM。对 1 ≤ i ≤ T_r，把 Q_i、O_i、ℓ_i、m_i 从 HBM 载入片上 SRAM。在片上计算 S_{ij} = Q_i K^T ∈ R^{B_r × B_c}。在片上计算 m̃_{ij} = rowmax(S_{ij}) ∈ R^{B_r}，P̃_{ij} = exp(S_{ij} − m̃_{ij}) ∈ R^{B_r × B_c}（逐点），ℓ̃_{ij} = rowsum(P̃_{ij}) ∈ R^{B_r}。在片上计算 m_new = max(m_i, m̃_{ij}) ∈ R^{B_r}，ℓ_new = e^{m_i − m_i}"
+      },
+      {
+        "text": "We show FlashAttention’s correctness, runtime, and memory requirement (proof in Appendix C). Theorem 1. Algorithm 1 returns O = softmax¹QK ºV with 𝑂¹𝑁 𝑑º FLOPs and requires 𝑂¹𝑁º additional memory beyond inputs and output.",
+        "x": 71.3,
+        "y": 144.8,
+        "w": 468.4,
+        "h": 38.8,
+        "zh": "我们给出 FlashAttention 的正确性、运行时间和内存需求（证明见附录 C）。定理 1。算法 1 返回 O = softmax(QK) V，FLOP 数为 O(N d)，并且除输入和输出之外，还需要 O(N) 的额外内存。"
+      },
+      {
+        "text": "Analysis: IO Complexity of FlashAttention We analyze the IO complexity of FlashAttention, showing significant reduction in HBM accesses compared to standard attention. We also provide a lower bound, proving that no exact attention algorithm can",
+        "x": 71.5,
+        "y": 87.3,
+        "w": 468.5,
+        "h": 42.3,
+        "zh": "分析：FlashAttention 的 IO 复杂度。我们分析 FlashAttention 的 IO 复杂度，表明相对标准注意力，HBM 访问显著减少。我们还给出一个下界，证明没有任何精确注意力算法能够"
+      }
+    ],
+    "6": [
+      {
+        "text": "Left: Forward + backward runtime of standard attention and FlashAttention for GPT-2 medium (seq. length 1024, head dim. 64, 16 heads, batch size 64) on A100 GPU. HBM access is the primary factor affecting runtime. Middle: Forward runtime of FlashAttention (seq. length 1024, head dim. 64, 16 heads, batch size 64) on A100 GPU. Fewer HBM accesses result in faster runtime, up to a point. Right: The runtime (for seq. length 4K) of block-sparse FlashAttention is faster than FlashAttention by a factor proportional to the sparsity.",
+        "x": 70.9,
+        "y": 584.8,
+        "w": 469.1,
+        "h": 52.8,
+        "zh": "左：标准注意力与 FlashAttention 在 GPT-2 medium 上的前向加反向运行时间（序列长度 1024，头维度 64，16 个头，批大小 64），测于 A100 GPU。HBM 访问是影响运行时间的首要因素。中：FlashAttention 的前向运行时间（序列长度 1024，头维度 64，16 个头，批大小 64），测于 A100 GPU。HBM 访问更少会带来更快的运行时间，直到某个转折点为止。右：块稀疏 FlashAttention 的运行时间（序列长度为 4K）比 FlashAttention 更快，加快的倍数与稀疏度成比例。"
+      },
+      {
+        "text": "asymptotically improve on HBM accesses over all SRAM sizes. Proofs are in Appendix C. Theorem 2. Let 𝑁 be the sequence length, 𝑑 be the head dimension, and 𝑀 be size of SRAM with 𝑑 \u0014 𝑀 \u0014 𝑁 𝑑. Standard attention (Algorithm 0) requires Θ¹𝑁 𝑑 ¸ 𝑁 º HBM accesses, while FlashAttention (Algorithm 1)",
+        "x": 71.5,
+        "y": 534,
+        "w": 470,
+        "h": 39.7,
+        "zh": "在所有 SRAM 容量上对 HBM 访问次数做出渐近改进。证明见附录 C。定理 2。设 N 为序列长度，d 为头维度，M 为 SRAM 容量，且 d ≤ M ≤ N d。标准注意力（算法 0）需要 Θ(N d + N) 次 HBM 访问，而 FlashAttention（算法 1）"
+      },
+      {
+        "text": "is many times smaller than 𝑀, and thus FlashAttention requires many times fewer HBM accesses than standard implementation. This leads to both faster execution and lower memory footprint, which we validate in Section 4.3. The main idea of the proof is that given the SRAM size of 𝑀, we can load blocks of K V of size Θ¹𝑀º each (Algorithm 1 line 6). For each block of K and V, we iterate over all blocks of Q (Algorithm 1 line 8) to compute the intermediate values, resulting in Θ¹𝑁 𝑑𝑀",
+        "x": 70.8,
+        "y": 444.5,
+        "w": 469.2,
+        "h": 69.7,
+        "zh": "比 M 小许多倍，因此 FlashAttention 所需的 HBM 访问比标准实现少许多倍。这同时带来更快的执行和更低的内存占用，我们在第 4.3 节加以验证。证明的主要想法是：给定 SRAM 容量 M，可以每次载入大小为 Θ(M) 的 K、V 块（算法 1 第 6 行）。对每一块 K 和 V，遍历 Q 的所有块（算法 1 第 8 行）来计算中间值，从而得到 Θ(N d M)"
+      },
+      {
+        "text": "For typical values of 𝑑 (64-128) and 𝑀 (around 100KB), 𝑑",
+        "x": 86.9,
+        "y": 504.3,
+        "w": 263.2,
+        "h": 10,
+        "zh": "对 d 的典型取值（64–128）和 M（约 100KB）而言，d"
+      },
+      {
+        "text": "º passes over Q. Each pass loads Θ¹𝑁 𝑑º elements, which amounts to Θ¹𝑁 𝑑 𝑀",
+        "x": 72,
+        "y": 432.5,
+        "w": 468,
+        "h": 21.9,
+        "zh": "）遍扫描 Q。每一遍载入 Θ(N d) 个元素，合计为 Θ(N d M)"
+      },
+      {
+        "text": "º HBM accesses. We similarly prove that the backward pass of standard attention requires Θ¹𝑁 𝑑 ¸ 𝑁 º HBM accesses while the backward pass of FlashAttention requires Θ¹𝑁 𝑑 𝑀 HBM accesses (Appendix B). We prove a lower-bound: one cannot asymptotically improve on the number of HBM accesses for all values of 𝑀 (the SRAM size) when computing exact attention. Proposition 3. Let 𝑁 be the sequence length, 𝑑 be the head dimension, and 𝑀 be size of SRAM with 𝑑 \u0014 𝑀 \u0014 𝑁 𝑑. There does not exist an algorithm to compute exact attention with 𝑜¹𝑁 𝑑 𝑀 for all 𝑀 in the range »𝑑 𝑁 𝑑¼. The proof relies on the fact that for 𝑀 = Θ¹𝑁 𝑑º any algorithm must perform Ω¹𝑁 𝑑 𝑀 HBM accesses. This type of lower bound over a subrange of 𝑀 is common in the streaming algorithms literature [88]. We leave proving parameterized complexity [27] lower bounds in terms of 𝑀 as exciting future",
+        "x": 71.7,
+        "y": 301.3,
+        "w": 468.3,
+        "h": 141.2,
+        "zh": "次 HBM 访问。我们类似地证明：标准注意力的反向传播需要 Θ(N d + N) 次 HBM 访问，而 FlashAttention 的反向传播需要 Θ(N d M) 次 HBM 访问（附录 B）。我们证明一条下界：在计算精确注意力时，不可能对所有的 M（SRAM 容量）都在 HBM 访问次数上取得渐近改进。命题 3。设 N 为序列长度，d 为头维度，M 为 SRAM 容量，且 d ≤ M ≤ N d。不存在一种计算精确注意力的算法，能对区间 [d, N d] 中的每一个 M 都只用 o(N d M) 次访问。证明依赖于如下事实：当 M = Θ(N d) 时，任何算法都必须进行 Ω(N d M) 次 HBM 访问。这类针对 M 的一个子区间给出的下界，在流算法文献中很常见 [88]。我们把证明以 M 为参数的参数化复杂度 [27] 下界，留作令人期待的未来"
+      },
+      {
+        "text": "We validate that the number of HBM accesses is the main determining factor of attention run-time. In Fig. 2 (left), we see that even though FlashAttention has higher FLOP count compared to standard attention (due to recomputation in the backward pass), it has much fewer HBM accesses, resulting in much faster runtime. In Fig. 2 (middle), we vary the block size 𝐵𝑐 of FlashAttention, which results in different amounts of HBM accesses, and measure the runtime of the forward pass. As block size increases, the number of HBM accesses decreases (as we make fewer passes over the input), and runtime decreases. For large enough block size (beyond 256), the runtime is then bottlenecked by other factors (e.g., arithmetic operations). Moreover, larger block size will not fit into the small SRAM size.",
+        "x": 72,
+        "y": 193.7,
+        "w": 469.9,
+        "h": 93.6,
+        "zh": "我们验证：HBM 访问次数是决定注意力运行时间的主要因素。图 2（左）表明，尽管 FlashAttention 的 FLOP 数高于标准注意力（因为反向传播中做了重计算），它的 HBM 访问少得多，因而运行时间快得多。图 2（中）里，我们改变 FlashAttention 的块大小 B_c，从而得到不同的 HBM 访问量，并测量前向运行时间。随着块增大，HBM 访问次数下降（因为对输入的扫描遍数更少），运行时间也随之下降。当块足够大（超过 256）时，运行时间转而受其他因素制约（例如算术运算）。而且，更大的块将无法放进较小的 SRAM。"
+      },
+      {
+        "text": "Extension: Block-Sparse FlashAttention We extend FlashAttention to approximate attention: we propose block-sparse FlashAttention, whose IO complexity is smaller than FlashAttention by a factor proportional to the sparsity. Given inputs Q K V 2 R𝑁\u0002𝑑 and a mask matrix M˜ 2 f0 1g𝑁\u0002𝑁 , we want to compute:",
+        "x": 71.5,
+        "y": 124,
+        "w": 468.5,
+        "h": 54.3,
+        "zh": "扩展：块稀疏 FlashAttention。我们把 FlashAttention 扩展到近似注意力：提出块稀疏 FlashAttention，其 IO 复杂度比 FlashAttention 更小，缩小的倍数与稀疏度成比例。给定输入 Q、K、V ∈ R^{N×d}，以及掩码矩阵 M̃ ∈ {0, 1}^{N×N}，我们希望计算："
+      },
+      {
+        "text": "𝟙M˜ º𝑘𝑙 = S𝑘𝑙 if M˜ 𝑘𝑙 = 1 and \u00001 if M𝑘𝑙 = 0. We require M˜ to have block form: for some block sizes 𝐵𝑟 𝐵𝑐, for all 𝑘 𝑙, M˜ 𝑘𝑙 = M𝑖 𝑗 with 𝑖 = b𝑘𝐵𝑟c 𝑗 = b𝑙𝐵𝑐c for some M 2 f0 1g𝑁𝐵𝑟\u0002𝑁𝐵𝑐.",
+        "x": 72.4,
+        "y": 69.6,
+        "w": 467.6,
+        "h": 27.2,
+        "zh": "当 M̃_{kl} = 1 时，(1_{M̃})_{kl} = S_{kl}；当 M_{kl} = 0 时，取 −1。我们要求 M̃ 具有块形式：对某些块大小 B_r、B_c，对所有 k、l，有 M̃_{k,l} = M_{ij}，其中 i = ⌊k / B_r⌋，j = ⌊l / B_c⌋，而某个 M ∈ {0, 1}^{N/B_r × N/B_c}。"
+      }
+    ],
+    "7": [
+      {
+        "text": "we can easily adapt Algorithm 1 to only compute the nonzero blocks of the attention matrix. The algorithm is identical to Algorithm 1, except we skip zero blocks. We reproduce the algorithm description in Algorithm 5 in Appendix B. We also analyze the IO complexity of block-sparse FlashAttention.",
+        "x": 72,
+        "y": 673.3,
+        "w": 468.4,
+        "h": 45.8,
+        "zh": "我们可以很容易地改写算法 1，只计算注意力矩阵中的非零块。算法与算法 1 相同，只是跳过零块。我们在附录 B 的算法 5 中重述该算法，并分析块稀疏 FlashAttention 的 IO 复杂度。"
+      },
+      {
+        "text": "Given a predefined block sparsity mask M 2 f0 1g",
+        "x": 86.9,
+        "y": 709.2,
+        "w": 224.3,
+        "h": 10,
+        "zh": "给定预先定义的块稀疏掩码 M ∈ {0, 1}，"
+      },
+      {
+        "text": "Proposition 4. Let 𝑁 be the sequence length, 𝑑 be the head dimension, and 𝑀 be size of SRAM with 𝑑 \u0014 𝑀 \u0014 𝑁 𝑑. Block-sparse FlashAttention (Algorithm 5) requires Θ¹𝑁 𝑑 ¸ 𝑁 𝑑 𝑀 where 𝑠 is the fraction of nonzero blocks in the block-sparsity mask.",
+        "x": 71.3,
+        "y": 630,
+        "w": 468.7,
+        "h": 33.9,
+        "zh": "命题 4。设 N 为序列长度，d 为头维度，M 为 SRAM 容量，且 d ≤ M ≤ N d。块稀疏 FlashAttention（算法 5）需要 Θ(N d + N d M) 次访问，其中 s 是块稀疏掩码中非零块所占的比例。"
+      },
+      {
+        "text": "We see that applying block-sparsity yields a direct improvement by the sparsity to the larger term in the IO complexity. For large sequence lengthsp",
+        "x": 72,
+        "y": 594.9,
+        "w": 468,
+        "h": 25.7,
+        "zh": "可以看到，施加块稀疏会直接按稀疏度改进 IO 复杂度里较大的那一项。对很长的序列而言，"
+      },
+      {
+        "text": "log 𝑁 [3, 17, 92], resulting 𝑁º or Θ¹𝑁 log 𝑁º IO complexity. For downstream experiments, we use the fixed butterfly sparsity pattern [17], which has been shown to be able to approximate arbitrary sparsity [16]. In Fig. 2 (right), we validate that as the sparsity increases, the runtime of block-sparse FlashAttention improves proportionally. On the LRA benchmark, block-sparse FlashAttention achieves 2.8\u0002 speedup, while performing on par with standard attention (Section 4).",
+        "x": 71.6,
+        "y": 538.8,
+        "w": 469.7,
+        "h": 69.7,
+        "zh": "log N [3, 17, 92]，从而得到 N，或 Θ(N log N) 的 IO 复杂度。在下游实验中，我们使用固定的 butterfly 稀疏模式 [17]；已有工作表明，它能够逼近任意稀疏模式 [16]。图 2（右）验证：随着稀疏度提高，块稀疏 FlashAttention 的运行时间成比例地改善。在 LRA 基准上，块稀疏 FlashAttention 取得 2.8 倍加速，同时表现与标准注意力相当（第 4 节）。"
+      },
+      {
+        "text": "We evaluate the impact of using FlashAttention to train Transformer models. We validate two claims about training time and model accuracy, and report attention runtime and memory benchmarks. • Training Speed. FlashAttention outperforms the MLPerf 1.1 [58] speed record for BERT by 15%, and speeds up GPT-2 up to 3\u0002 over HuggingFace [87] and 18\u0002 over Megatron [77] over standard Transformers. FlashAttention speeds up the long-range arena (LRA) benchmark 2.4\u0002. • Quality. FlashAttention scales Transformers to longer sequences, yielding higher quality. FlashAttention trains GPT-2 with context length 4K faster than Megatron trains GPT-2 with context length 1K, while achieving 0.7 better perplexity. Modeling longer sequences yields 6.4 points of lift on two longdocument classification tasks. Finally, FlashAttention yields the first Transformer that can achieve better-than-random performance on the challenging Path-X task (sequence length 16K), and block-sparse FlashAttention yields the first sequence model that we know of that can achieve better-than-random performance on Path-256 (sequence length 64K). • Benchmarking Attention. We measure the runtime and memory performance of FlashAttention and block-sparse FlashAttention based on sequence length. We confirm that the memory footprint of FlashAttention scales linearly with seq. length and is up to 3\u0002 faster than standard attention for common seq. lengths (up to 2K). We confirm that runtime of block-sparse FlashAttention scales linearly in seq. length and is faster than all existing approximate attention baselines. Additional experiment details are in Appendix E.",
+        "x": 71.5,
+        "y": 273,
+        "w": 470.4,
+        "h": 221.1,
+        "zh": "我们评估用 FlashAttention 训练 Transformer 模型的影响。我们验证关于训练时间和模型精度的两个论断，并报告注意力的运行时间与内存基准。• 训练速度。FlashAttention 比 BERT 的 MLPerf 1.1 [58] 速度纪录高 15%，并相对标准 Transformer，把 GPT-2 加速到 HuggingFace [87] 的最多 3 倍、Megatron [77] 的 1.8 倍。FlashAttention 把 long-range arena（LRA）基准加速 2.4 倍。• 质量。FlashAttention 把 Transformer 扩展到更长序列，从而得到更高质量。用 FlashAttention、以 4K 上下文训练 GPT-2，比 Megatron 以 1K 上下文训练 GPT-2 更快，同时困惑度好 0.7。建模更长序列，在两个长文档分类任务上带来 6.4 个点的提升。最后，FlashAttention 给出了第一个能在困难的 Path-X 任务（序列长度 16K）上好于随机的 Transformer；块稀疏 FlashAttention 则给出了我们所知道的、第一个能在 Path-256（序列长度 64K）上好于随机的序列模型。• 注意力基准。我们按序列长度测量 FlashAttention 和块稀疏 FlashAttention 的运行时间与内存。我们确认 FlashAttention 的内存占用随序列长度线性增长，并且在常见序列长度（不超过 2K）上比标准注意力最多快 3 倍。我们确认块稀疏 FlashAttention 的运行时间随序列长度线性增长，并且快于所有现有的近似注意力基线。更多实验细节见附录 E。"
+      },
+      {
+        "text": "Faster Models with FlashAttention FlashAttention yields the fastest single-node BERT training speed that we know of. We train a BERT-large [22] model with FlashAttention on Wikipedia. Table 1 compares our training time to the implementation from Nvidia that set the training speed record for MLPerf 1.1 [58]. Our implementation is",
+        "x": 72,
+        "y": 202.9,
+        "w": 468,
+        "h": 54.3,
+        "zh": "用 FlashAttention 得到更快的模型。就我们所知，FlashAttention 给出了最快的单机 BERT 训练速度。我们在 Wikipedia 上用 FlashAttention 训练 BERT-large [22]。表 1 把我们的训练时间与 Nvidia 在 MLPerf 1.1 [58] 中创下训练速度纪录的实现相比较。我们的实现是"
+      },
+      {
+        "text": "Table 1: Training time of BERT-large, starting from the same initialization provided by the MLPerf benchmark, to reach the target accuracy of 72.0% on masked language modeling. Averaged over 10 runs on 8\u0002A100 GPUs.",
+        "x": 71.7,
+        "y": 169.3,
+        "w": 468.3,
+        "h": 19.9,
+        "zh": "表 1：BERT-large 的训练时间。从 MLPerf 基准提供的同一份初始化出发，在掩码语言建模上达到目标准确率 72.0%。在 8×A100 GPU 上对 10 次运行取平均。"
+      },
+      {
+        "text": "Training time (minutes) Nvidia MLPerf 1.1 [58] FlashAttention (ours)",
+        "x": 198,
+        "y": 126.1,
+        "w": 209.9,
+        "h": 31.3,
+        "zh": "训练时间（分钟）。Nvidia MLPerf 1.1 [58]。FlashAttention（本文）"
+      },
+      {
+        "text": "FlashAttention yields faster training times for GPT-2 [67] on the large OpenWebtext dataset [32] than the widely used HuggingFace [87] and Megatron-LM [77] implementations. Table 2 shows up to 3\u0002 endto-end speedup compared to Huggingface and 1.7\u0002 speedup compared to Megatron-LM. FlashAttention",
+        "x": 72,
+        "y": 71.1,
+        "w": 469.7,
+        "h": 33.9,
+        "zh": "在大规模 OpenWebtext 数据集 [32] 上，FlashAttention 训练 GPT-2 [67] 的时间快于广泛使用的 HuggingFace [87] 和 Megatron-LM [77] 实现。表 2 显示，相对 HuggingFace 的端到端加速最多为 3 倍，相对 Megatron-LM 为 1.7 倍。FlashAttention"
+      }
+    ],
+    "8": [
+      {
+        "text": "achieves the same perplexity as the other two implementations, as we do not change the model definition. Appendix E includes plots of the validation perplexity throughout training, confirming that FlashAttention is as numerically stable as the baselines and produces the same training / validation curves. Table 2: GPT-2 small and medium using FlashAttention achieve up to 3\u0002 speed up compared to Huggingface implementation and up to 1.7\u0002 compared to Megatron-LM. Training time reported on 8\u0002A100s GPUs.",
+        "x": 71.6,
+        "y": 661.8,
+        "w": 470.3,
+        "h": 57.4,
+        "zh": "达到与另外两种实现相同的困惑度，因为我们没有改动模型定义。附录 E 给出训练过程中的验证困惑度曲线，确认 FlashAttention 与基线一样数值稳定，并产生相同的训练 / 验证曲线。表 2：使用 FlashAttention 的 GPT-2 small 和 medium，相对 HuggingFace 实现最多加速 3 倍，相对 Megatron-LM 最多加速 1.7 倍。训练时间在 8×A100 GPU 上测得。"
+      },
+      {
+        "text": "Training time (speedup) GPT-2 small - Huggingface [87] GPT-2 small - Megatron-LM [77] GPT-2 small - FlashAttention GPT-2 medium - Huggingface [87] GPT-2 medium - Megatron-LM [77] GPT-2 medium - FlashAttention",
+        "x": 130.7,
+        "y": 574.3,
+        "w": 344.4,
+        "h": 75.5,
+        "zh": "训练时间（加速比）。GPT-2 small - HuggingFace [87]。GPT-2 small - Megatron-LM [77]。GPT-2 small - FlashAttention。GPT-2 medium - HuggingFace [87]。GPT-2 medium - Megatron-LM [77]。GPT-2 medium - FlashAttention"
+      },
+      {
+        "text": "We compare vanilla Transformer (with either standard implementation or FlashAttention) on the long-range arena (LRA [80]) benchmark. We measure accuracy, throughput, and training time of all models. Each task has a different sequence length varying between 1024 and 4096. We follow the implementation and experimental setting in Tay et al. [80]and Xiong et al. [90].",
+        "x": 71.7,
+        "y": 514.1,
+        "w": 470.2,
+        "h": 45.8,
+        "zh": "我们在 long-range arena（LRA [80]）基准上比较普通 Transformer（使用标准实现或 FlashAttention）。我们测量所有模型的准确率、吞吐量和训练时间。每个任务的序列长度不同，介于 1024 与 4096 之间。我们遵循 Tay 等人 [80] 和 Xiong 等人 [90] 的实现与实验设定。"
+      },
+      {
+        "text": "Table 3 shows that FlashAttention achieves up 2.4\u0002 speed-up compared to standard attention. Block-sparse FlashAttention is faster than all of the approximate attention methods that we have tested. Table 3: The performance of standard attention, FlashAttention, block-sparse FlashAttention, and approximate attention baselines on the Long-Range-Arena benchmarks.",
+        "x": 71.7,
+        "y": 468,
+        "w": 470.2,
+        "h": 56.1,
+        "zh": "表 3 表明，FlashAttention 相对标准注意力取得高达 2.4 倍的加速。块稀疏 FlashAttention 快于我们测试过的所有近似注意力方法。表 3：标准注意力、FlashAttention、块稀疏 FlashAttention 以及近似注意力基线在 Long-Range Arena 基准上的表现。"
+      },
+      {
+        "text": "Better Models with Longer Sequences Language Modeling with Long Context.",
+        "x": 72,
+        "y": 297.8,
+        "w": 254.8,
+        "h": 30.3,
+        "zh": "用更长序列得到更好的模型。长上下文语言建模。"
+      },
+      {
+        "text": "The runtime and memory-efficiency of FlashAttention allow us to increase the context length of GPT-2 by 4\u0002 while still running faster than the optimized implementation from Megatron-LM. Table 4 shows that that GPT-2 with FlashAttention and context length 4K is still 30% faster than GPT-2 from Megatron with context length 1K, while achieving 0.7 better",
+        "x": 72,
+        "y": 261.9,
+        "w": 468.3,
+        "h": 45.8,
+        "zh": "FlashAttention 在运行时间和内存上的效率，使我们能把 GPT-2 的上下文长度增加到 4 倍，同时仍然比 Megatron-LM 的优化实现跑得更快。表 4 表明，使用 FlashAttention、上下文长度为 4K 的 GPT-2，仍比 Megatron 中上下文长度为 1K 的 GPT-2 快 30%，同时好 0.7。"
+      },
+      {
+        "text": "Table 4: GPT-2 small with FlashAttention, with 4\u0002 larger context length compared to Megatron-LM, is still 30% faster while achieving 0.7 better perplexity. Training time on 8\u0002A100 GPUs is reported.",
+        "x": 71.7,
+        "y": 226.3,
+        "w": 468.7,
+        "h": 19.9,
+        "zh": "表 4：使用 FlashAttention 的 GPT-2 small，上下文长度是 Megatron-LM 的 4 倍，仍然快 30%，同时困惑度好 0.7。训练时间在 8×A100 GPU 上测得。"
+      },
+      {
+        "text": "Training time (speedup) GPT-2 small - Megatron-LM GPT-2 small - FlashAttention GPT-2 small - FlashAttention GPT-2 small - FlashAttention",
+        "x": 98.7,
+        "y": 152,
+        "w": 403.6,
+        "h": 53.2,
+        "zh": "训练时间（加速比）。GPT-2 small - Megatron-LM。GPT-2 small - FlashAttention。GPT-2 small - FlashAttention。GPT-2 small - FlashAttention"
+      },
+      {
+        "text": "Training Transformers with longer sequences with FlashAttention improves performance on the MIMIC-III [47] and ECtHR [6, 7] datasets. MIMIC-III contains intensive care unit patient discharge summaries, each annotated with multiple labels. ECtHR contains legal cases from the",
+        "x": 72,
+        "y": 97.9,
+        "w": 468,
+        "h": 33.9,
+        "zh": "用 FlashAttention 以更长序列训练 Transformer，能改善 MIMIC-III [47] 和 ECtHR [6, 7] 数据集上的表现。MIMIC-III 包含重症监护患者的出院摘要，每条带有多个标签。ECtHR 包含来自"
+      },
+      {
+        "text": "LRA accuracy results are known to be highly dependent on the tuning procedure [90]. Our reproduced baselines perform better than as reported in the original comparison [80].",
+        "x": 72,
+        "y": 71.1,
+        "w": 468,
+        "h": 17.4,
+        "zh": "LRA 的准确率结果已知高度依赖于调参过程 [90]。我们复现的基线好于原始对比 [80] 中所报告的结果。"
+      }
+    ],
+    "9": [
+      {
+        "text": "Figure 3: Left: runtime of forward pass + backward pass. Right: attention memory usage.",
+        "x": 104.5,
+        "y": 580.3,
+        "w": 403.1,
+        "h": 10,
+        "zh": "图 3：左：前向传播加反向传播的运行时间。右：注意力的内存占用。"
+      },
+      {
+        "text": "European Court of Human Rights, each of which is mapped to articles of the Convention of Human Rights that were allegedly violaged. Both of these datasets contain very long text documents; the average number of tokens in MIMIC is 2,395 tokens, and the longest document contains 14,562 tokens, while the average and longest numbers in ECtHR are 2,197 and 49,392, respectively. We evaluate lift from increasing the sequence length of a pretrained RoBERTa model [56] (we repeat the positional embeddings, as in Beltagy et al. [3]). Table 5 shows that sequence length 16K outperforms length 512 by 4.3 points on MIMIC, and that length 8K outperforms length 512 by 8.5 points on ECtHR. The discrepancies may be due to subtle distribution shifts: MIMIC-III contains specialized medical text and thus may be more susceptible to a distribution shift in the document length, whereas ECtHR contains general language.",
+        "x": 72,
+        "y": 451.1,
+        "w": 468.3,
+        "h": 105.6,
+        "zh": "欧洲人权法院，其中每一件都被映射到据称遭到违反的《人权公约》条款。这两个数据集都包含很长的文本文档：MIMIC 的平均 token 数为 2,395，最长文档含 14,562 个 token；ECtHR 的平均数和最长数分别为 2,197 和 49,392。我们评估加长预训练 RoBERTa 模型 [56] 的序列长度所带来的提升（位置编码按 Beltagy 等人 [3] 的做法加以重复）。表 5 表明，在 MIMIC 上序列长度 16K 比 512 高出 4.3 个点，在 ECtHR 上长度 8K 比 512 高出 8.5 个点。这种差别可能来自细微的分布偏移：MIMIC-III 是专门的医学文本，因此更容易受到文档长度上分布偏移的影响，而 ECtHR 是通用语言。"
+      },
+      {
+        "text": "Table 6: We report the first Transformer model that can achieve non-random performance on Path-X and Path-256.",
+        "x": 316.2,
+        "y": 417.6,
+        "w": 181.9,
+        "h": 30.9,
+        "zh": "表 6：我们报告第一个能在 Path-X 和 Path-256 上取得非随机表现的 Transformer 模型。"
+      },
+      {
+        "text": "Table 5: Long Document performance (micro 𝐹1) at different sequence lengths using",
+        "x": 115.1,
+        "y": 399.5,
+        "w": 181.9,
+        "h": 21.3,
+        "zh": "表 5：不同序列长度下的长文档表现（micro F_1），使用"
+      },
+      {
+        "text": "The Path-X and Path-256 benchmarks are challenging tasks from the long-range arena benchmark designed to test long context. The task is to classify whether two points in a black and white 128\u0002128 (or 256\u0002256) image have a path connecting them, and the images are fed to the transformer one pixel at a time. In prior work, all transformer models have either run out of memory, or only achieved random performance [80]. There has been a search for alternative architectures that can model such long context [37]. We present here the first result of Transformer models being able to solve Path-X and Path-256 (Table 6). We pretrain a transformer on Path-64, and then transfer to Path-X by spatially interpolating the positional embeddings. FlashAttention achieves 61.4 accuracy on Path-X. Additionally, block-sparse FlashAttention enables the Transformers to scale to sequence length 64K, achieving 63.1 accuracy on",
+        "x": 70.8,
+        "y": 202.4,
+        "w": 469.4,
+        "h": 105.6,
+        "zh": "Path-X 和 Path-256 是 long-range arena 基准中用来考验长上下文的困难任务。任务是判断一张黑白的 128×128（或 256×256）图像中的两个点是否有路径相连，图像按每次一个像素送入 transformer。在先前工作中，所有 transformer 模型要么内存耗尽，要么只达到随机表现 [80]。人们一直在寻找能够建模这种长上下文的其他架构 [37]。这里我们给出 Transformer 模型能够求解 Path-X 和 Path-256 的第一个结果（表 6）。我们先在 Path-64 上预训练一个 transformer，再通过对位置编码做空间插值迁移到 Path-X。FlashAttention 在 Path-X 上达到 61.4 的准确率。此外，块稀疏 FlashAttention 使 Transformer 能够扩展到序列长度 64K，并取得 63.1 的准确率。"
+      },
+      {
+        "text": "We vary sequence length and measure runtime and memory usage of FlashAttention and block-sparse FlashAttention against various attention baselines on one A100 GPU with 40 GB HBM, with dropout and a padding mask. We compare against reference implementations for exact attention, approximate attention, and sparse attention. We report a subset of baselines in the main body; Appendix E contains more baselines",
+        "x": 71.5,
+        "y": 108.3,
+        "w": 469.9,
+        "h": 45.8,
+        "zh": "我们改变序列长度，在一块带 40 GB HBM 的 A100 GPU 上，在带有 dropout 和 padding 掩码的设定下，测量 FlashAttention 与块稀疏 FlashAttention 相对多种注意力基线的运行时间和内存占用。比较对象包括精确注意力、近似注意力和稀疏注意力的参考实现。正文只报告一部分基线；附录 E 给出更多基线。"
+      }
+    ],
+    "10": [
+      {
+        "text": "Figure 3 (left) reports the runtime in milliseconds of the forward + backward pass of FlashAttention and block-sparse FlashAttention compared to the baselines in exact, approximate, and sparse attention (exact numbers in Appendix E). Runtime grows quadratically with sequence length, but FlashAttention runs significantly faster than exact attention baselines, up to 3\u0002 faster than the PyTorch implementation. The runtimes of many approximate/sparse attention mechanisms grow linearly with sequence length, but FlashAttention still runs faster than approximate and sparse attention for short sequences due to fewer memory accesses. The approximate attention runtimes begin to cross over with FlashAttention at sequences between 512 and 1024. On the other hand, block-sparse FlashAttention is faster than all implementations of exact, sparse, and approximate attention that we know of, across all",
+        "x": 71.7,
+        "y": 613.5,
+        "w": 470.2,
+        "h": 105.6,
+        "zh": "图 3（左）以毫秒为单位，给出 FlashAttention 和块稀疏 FlashAttention 相对精确、近似和稀疏注意力基线的前向加反向运行时间（确切数字见附录 E）。运行时间随序列长度二次增长，但 FlashAttention 明显快于精确注意力基线，相对 PyTorch 实现最多快 3 倍。许多近似或稀疏注意力机制的运行时间随序列长度线性增长；由于内存访问更少，FlashAttention 在短序列上仍然快于近似注意力和稀疏注意力。近似注意力的运行时间大约在序列长度 512 到 1024 之间开始与 FlashAttention 交叉。另一方面，块稀疏 FlashAttention 快于我们所知道的全部精确、稀疏和近似注意力实现，并且在所有"
+      },
+      {
+        "text": "Figure 3 (right) shows the memory footprint of FlashAttention and block-sparse FlashAttention compared to various exact, approximate, and sparse attention baselines. FlashAttention and block-sparse FlashAttention have the same memory footprint, which grows linearly with sequence length. FlashAttention is up to 20\u0002 more memory efficient than exact attention baselines, and is more memory-efficient than the approximate attention baselines. All other algorithms except for Linformer run out of memory on an A100 GPU before 64K, and FlashAttention is still 2\u0002 more efficient than Linformer.",
+        "x": 72,
+        "y": 516.2,
+        "w": 469.9,
+        "h": 69.7,
+        "zh": "图 3（右）给出 FlashAttention 和块稀疏 FlashAttention 相对多种精确、近似和稀疏注意力基线的内存占用。二者的内存占用相同，并随序列长度线性增长。FlashAttention 的内存效率最高可比精确注意力基线高出 20 倍，也比近似注意力基线更省内存。除 Linformer 之外，其他算法在 A100 GPU 上还没到 64K 就会耗尽内存，而 FlashAttention 的内存效率仍然比 Linformer 高 2 倍。"
+      },
+      {
+        "text": "We discuss limitations of our approach and future directions. Related work is given in Appendix A. Compiling to CUDA. Our current approach to building IO-aware implementations of attention requires writing a new CUDA kernel for each new attention implementation. This requires writing the attention algorithm in a considerably lower-level language than PyTorch, and requires significant engineering effort. Implementations may also not be transferrable across GPU architectures. These limitations suggest the need for a method that supports writing attention algorithms in a high-level language (e.g., PyTorch), and compiling to IO-aware implementations in CUDA—similar to efforts such as Halide in image processing [70]. IO-Aware Deep Learning. We believe that the IO-aware approach can extend beyond attention. Attention is the most memory-intensive computation in Transformers, but every layer in a deep network touches GPU HBM. We hope our work inspires IO-aware implementations of additional modules. We discuss",
+        "x": 71.5,
+        "y": 354.2,
+        "w": 470.4,
+        "h": 117.6,
+        "zh": "我们讨论本方法的局限和未来方向。相关工作放在附录 A。编译到 CUDA。目前，要为注意力做出 IO 感知的实现，就得为每一种新的注意力另写一个 CUDA kernel。这意味着要用比 PyTorch 低得多的语言来写注意力算法，工程量也很大。实现还可能无法在不同 GPU 架构之间迁移。这些局限说明，需要一种方法，能用高层语言（例如 PyTorch）编写注意力算法，再编译成 CUDA 里的 IO 感知实现——类似于图像处理中 Halide 所做的努力 [70]。IO 感知的深度学习。我们相信 IO 感知的思路可以延伸到注意力之外。注意力是 Transformer 里最吃内存的计算，但深度网络的每一层都会触及 GPU HBM。我们希望这项工作能推动更多模块做出 IO 感知的实现。我们在"
+      },
+      {
+        "text": "these potential extensions in Appendix D.",
+        "x": 72,
+        "y": 342.2,
+        "w": 183.2,
+        "h": 10,
+        "zh": "附录 D 中讨论这些可能的扩展。"
+      },
+      {
+        "text": "Multi-GPU IO-Aware Methods. Our IO-aware implementation of attention is optimal within constants for computing attention on a single GPU. However, the attention computation may be parallelizable across multiple GPUs [72]. Using multiple GPUs adds an additional layer to IO analysis—accounting for data transfer between GPUs. We hope our work inspires future work in this direction.",
+        "x": 72,
+        "y": 294.4,
+        "w": 469.7,
+        "h": 45.8,
+        "zh": "多 GPU 的 IO 感知方法。我们这种 IO 感知的注意力实现，在单块 GPU 上计算注意力时，在常数因子的意义下是最优的。不过，注意力计算或许可以在多块 GPU 之间并行 [72]。使用多块 GPU 会给 IO 分析再加一层：需要计入 GPU 之间的数据传输。我们希望这项工作能推动这个方向上的后续研究。"
+      },
+      {
+        "text": "Our implementation uses Apex’s FMHA code (https://github.com/NVIDIA/apex/tree/master/apex/ contrib/csrc/fmha) as a starting point. We thank Young-Jun Ko for the in-depth explanation of his FMHA implementation and for his thoughtful answers to our questions about CUDA. We thank Sabri Eyuboglu, Megan Leszczynski, Laurel Orr, Yuhuai Wu, Beidi Chen, and Xun Huang for their constructive feedback and suggestions on early drafts of the paper. We thank Markus Rabe and Charles Staats for helpful discussion of",
+        "x": 72,
+        "y": 202.6,
+        "w": 469.4,
+        "h": 57.8,
+        "zh": "我们的实现以 Apex 的 FMHA 代码（https://github.com/NVIDIA/apex/tree/master/apex/ contrib/csrc/fmha）为起点。感谢 Young-Jun Ko 深入讲解他的 FMHA 实现，并认真回答我们关于 CUDA 的问题。感谢 Sabri Eyuboglu、Megan Leszczynski、Laurel Orr、Yuhuai Wu、Beidi Chen 和 Xun Huang 对论文初稿给出的建设性意见。感谢 Markus Rabe 和 Charles Staats 所作的有益讨论。"
+      },
+      {
+        "text": "We gratefully acknowledge the support of NIH under No. U54EB020405 (Mobilize), NSF under Nos. CCF1763315 (Beyond Sparsity), CCF1563078 (Volume to Velocity), and 1937301 (RTML); ARL under No. W911NF-21-2-0251 (Interactive Human-AI Teaming); ONR under No. N000141712266 (Unifying Weak Supervision); ONR N00014-20-1-2480: Understanding and Applying Non-Euclidean Geometry in Machine Learning; N000142012275 (NEPTUNE); NXP, Xilinx, LETI-CEA, Intel, IBM, Microsoft, NEC, Toshiba, TSMC, ARM, Hitachi, BASF, Accenture, Ericsson, Qualcomm, Analog Devices, Google Cloud, Salesforce, Total, the HAI-GCP & HAI-Azure Cloud Credits for Research program, the Stanford Data Science Initiative (SDSI), Department of Defense (DoD) through the National Defense Science and Engineering Graduate Fellowship (NDSEG) Program, and members of the Stanford DAWN project: Facebook, Google, and VMWare. The U.S. Government is authorized to reproduce and distribute reprints for Governmental purposes",
+        "x": 70.8,
+        "y": 71.1,
+        "w": 471.1,
+        "h": 117.6,
+        "zh": "我们衷心感谢以下支持：NIH，编号 U54EB020405（Mobilize）；NSF，编号 CCF1763315（Beyond Sparsity）、CCF1563078（Volume to Velocity）以及 1937301（RTML）；ARL，编号 W911NF-21-2-0251（Interactive Human-AI Teaming）；ONR，编号 N000141712266（Unifying Weak Supervision）；ONR N00014-20-1-2480：理解并把非欧几何用到机器学习中；N000142012275（NEPTUNE）；以及 NXP、Xilinx、LETI-CEA、Intel、IBM、Microsoft、NEC、Toshiba、TSMC、ARM、Hitachi、BASF、Accenture、Ericsson、Qualcomm、Analog Devices、Google Cloud、Salesforce、Total、HAI-GCP 与 HAI-Azure 研究用云额度计划、斯坦福数据科学计划（SDSI）、美国国防部（DoD）通过国家国防科学与工程研究生奖学金（NDSEG）计划，以及斯坦福 DAWN 项目的成员 Facebook、Google 和 VMWare。美国政府获授权为政府目的复制并分发重印本，"
+      }
+    ],
+    "11": [
+      {
+        "text": "notwithstanding any copyright notation thereon. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the authors and do not necessarily reflect the views, policies, or endorsements, either expressed or implied, of NIH, ONR, or the U.S. Government. Atri Rudra’s research is",
+        "x": 72,
+        "y": 685.3,
+        "w": 468.2,
+        "h": 33.9,
+        "zh": "不论其上是否另有版权标记。本材料中表达的任何意见、发现、结论或建议都属于作者，并不必然反映 NIH、ONR 或美国政府的观点、政策或背书，无论这些态度是明示还是暗示。Atri Rudra 的研究得到"
+      },
+      {
+        "text": "[1] Alok Aggarwal and S Vitter, Jeffrey. The input/output complexity of sorting and related problems.",
+        "x": 77,
+        "y": 618.5,
+        "w": 465,
+        "h": 10,
+        "zh": "[1] Alok Aggarwal 与 S. Vitter, Jeffrey。排序及相关问题的输入/输出复杂度。"
+      },
+      {
+        "text": "Communications of the ACM, 31(9):1116–1127, 1988.",
+        "x": 91.3,
+        "y": 606.6,
+        "w": 233,
+        "h": 10,
+        "zh": "Communications of the ACM，31(9):1116–1127，1988。"
+      },
+      {
+        "text": "[2] Irwan Bello. LambdaNetworks: Modeling long-range interactions without attention. arXiv preprint",
+        "x": 77,
+        "y": 586.7,
+        "w": 463,
+        "h": 10,
+        "zh": "[2] Irwan Bello。LambdaNetworks：不用注意力来建模长程交互。arXiv 预印本"
+      },
+      {
+        "text": "[3] Iz Beltagy, Matthew E Peters, and Arman Cohan. Longformer: The long-document transformer. arXiv",
+        "x": 77,
+        "y": 554.8,
+        "w": 462.9,
+        "h": 10,
+        "zh": "[3] Iz Beltagy、Matthew E. Peters 与 Arman Cohan。Longformer：面向长文档的 Transformer。arXiv"
+      },
+      {
+        "text": "[4] L Susan Blackford, Antoine Petitet, Roldan Pozo, Karin Remington, R Clint Whaley, James Demmel, Jack Dongarra, Iain Duff, Sven Hammarling, Greg Henry, et al. An updated set of basic linear algebra subprograms (blas). ACM Transactions on Mathematical Software, 28(2):135–151, 2002.",
+        "x": 77,
+        "y": 499,
+        "w": 464.4,
+        "h": 33.9,
+        "zh": "[4] L. Susan Blackford、Antoine Petitet、Roldan Pozo、Karin Remington、R. Clint Whaley、James Demmel、Jack Dongarra、Iain Duff、Sven Hammarling、Greg Henry 等。一套更新后的基础线性代数子程序（BLAS）。ACM Transactions on Mathematical Software，28(2):135–151，2002。"
+      },
+      {
+        "text": "[5] Tom Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared D Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, et al. Language models are few-shot learners. Advances in neural information processing systems, 33:1877–1901, 2020.",
+        "x": 77,
+        "y": 455.2,
+        "w": 464.9,
+        "h": 33.9,
+        "zh": "[5] Tom Brown、Benjamin Mann、Nick Ryder、Melanie Subbiah、Jared D. Kaplan、Prafulla Dhariwal、Arvind Neelakantan、Pranav Shyam、Girish Sastry、Amanda Askell 等。语言模型是少样本学习者。Advances in Neural Information Processing Systems，33:1877–1901，2020。"
+      },
+      {
+        "text": "[6] Ilias Chalkidis, Ion Androutsopoulos, and Nikolaos Aletras. Neural legal judgment prediction in English. In Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics, pages 4317–4323, Florence, Italy, 2019. Association for Computational Linguistics. doi: 10.18653/v1/P19-1424.",
+        "x": 77,
+        "y": 411.3,
+        "w": 464.9,
+        "h": 33.9,
+        "zh": "[6] Ilias Chalkidis、Ion Androutsopoulos 与 Nikolaos Aletras。英语法律判决的神经预测。见《第 57 届计算语言学协会年会论文集》，第 4317–4323 页，意大利佛罗伦萨，2019。Association for Computational Linguistics。doi: 10.18653/v1/P19-1424。"
+      },
+      {
+        "text": "URL https://www.aclweb.org/anthology/P19-1424.",
+        "x": 92.5,
+        "y": 399.4,
+        "w": 242,
+        "h": 10,
+        "zh": "网址 https://www.aclweb.org/anthology/P19-1424。"
+      },
+      {
+        "text": "[7] Ilias Chalkidis, Manos Fergadiotis, Dimitrios Tsarapatsanis, Nikolaos Aletras, Ion Androutsopoulos, and Prodromos Malakasiotis. Paragraph-level rationale extraction through regularization: A case study on european court of human rights cases. In Proceedings of the Annual Conference of the North American Chapter of the Association for Computational Linguistics, Mexico City, Mexico, 2021. Association for",
+        "x": 77,
+        "y": 343.6,
+        "w": 463.2,
+        "h": 45.8,
+        "zh": "[7] Ilias Chalkidis、Manos Fergadiotis、Dimitrios Tsarapatsanis、Nikolaos Aletras、Ion Androutsopoulos 与 Prodromos Malakasiotis。通过正则化抽取段落级依据：欧洲人权法院案件上的一项案例研究。见计算语言学协会北美分会年会论文集，墨西哥墨西哥城，2021。Association for"
+      },
+      {
+        "text": "[8] Benjamin Charlier, Jean Feydy, Joan Alexis Glaunès, François-David Collin, and Ghislain Durif. Kernel operations on the gpu, with autodiff, without memory overflows. Journal of Machine Learning Research, 22(74):1–6, 2021. URL http://jmlr.org/papers/v22/20-275.html.",
+        "x": 77,
+        "y": 287.8,
+        "w": 464.4,
+        "h": 33.9,
+        "zh": "[8] Benjamin Charlier、Jean Feydy、Joan Alexis Glaunès、François-David Collin 与 Ghislain Durif。在 GPU 上做核运算：带自动微分，且不会把内存撑爆。Journal of Machine Learning Research，22(74):1–6，2021。网址 http://jmlr.org/papers/v22/20-275.html。"
+      },
+      {
+        "text": "[9] Beidi Chen, Tri Dao, Eric Winsor, Zhao Song, Atri Rudra, and Christopher Ré. Scatterbrain: Unifying sparse and low-rank attention. In Advances in Neural Information Processing Systems (NeurIPS), 2021.",
+        "x": 77,
+        "y": 255.9,
+        "w": 464.7,
+        "h": 21.9,
+        "zh": "[9] Beidi Chen、Tri Dao、Eric Winsor、Zhao Song、Atri Rudra 与 Christopher Ré。Scatterbrain：把稀疏注意力和低秩注意力统一起来。见 Advances in Neural Information Processing Systems (NeurIPS)，2021。"
+      },
+      {
+        "text": "[10] Tianqi Chen, Bing Xu, Chiyuan Zhang, and Carlos Guestrin. Training deep nets with sublinear memory",
+        "x": 72,
+        "y": 236,
+        "w": 468.4,
+        "h": 10,
+        "zh": "[10] Tianqi Chen、Bing Xu、Chiyuan Zhang 与 Carlos Guestrin。以亚线性内存训练深度网络"
+      },
+      {
+        "text": "cost. arXiv preprint arXiv:1604.06174, 2016.",
+        "x": 92.5,
+        "y": 224,
+        "w": 195.5,
+        "h": 10,
+        "zh": "的代价。arXiv 预印本 arXiv:1604.06174，2016。"
+      },
+      {
+        "text": "[11] Rewon Child, Scott Gray, Alec Radford, and Ilya Sutskever. Generating long sequences with sparse",
+        "x": 72,
+        "y": 204.1,
+        "w": 468,
+        "h": 10,
+        "zh": "[11] Rewon Child、Scott Gray、Alec Radford 与 Ilya Sutskever。用稀疏方式生成长序列"
+      },
+      {
+        "text": "transformers. arXiv preprint arXiv:1904.10509, 2019.",
+        "x": 92.5,
+        "y": 192.1,
+        "w": 233,
+        "h": 10,
+        "zh": "Transformer。arXiv 预印本 arXiv:1904.10509，2019。"
+      },
+      {
+        "text": "[12] Krzysztof Marcin Choromanski, Valerii Likhosherstov, David Dohan, Xingyou Song, Andreea Gane, Tamas Sarlos, Peter Hawkins, Jared Quincy Davis, Afroz Mohiuddin, Lukasz Kaiser, et al. Rethinking attention with performers. In International Conference on Learning Representations (ICLR), 2020.",
+        "x": 72,
+        "y": 148.3,
+        "w": 469.4,
+        "h": 33.9,
+        "zh": "[12] Krzysztof Marcin Choromanski、Valerii Likhosherstov、David Dohan、Xingyou Song、Andreea Gane、Tamas Sarlos、Peter Hawkins、Jared Quincy Davis、Afroz Mohiuddin、Lukasz Kaiser 等。用 Performer 重新思考注意力。见 International Conference on Learning Representations (ICLR)，2020。"
+      },
+      {
+        "text": "[13] Xiang Dai, Ilias Chalkidis, Sune Darkner, and Desmond Elliott. Revisiting transformer-based models for long document classification. arXiv preprint arXiv:2204.06683, 2022.",
+        "x": 72,
+        "y": 116.4,
+        "w": 468.2,
+        "h": 21.9,
+        "zh": "[13] Xiang Dai、Ilias Chalkidis、Sune Darkner 与 Desmond Elliott。重新审视基于 Transformer 的长文档分类模型。arXiv 预印本 arXiv:2204.06683，2022。"
+      },
+      {
+        "text": "[14] Zihang Dai, Zhilin Yang, Yiming Yang, Jaime G Carbonell, Quoc Le, and Ruslan Salakhutdinov. Transformer-XL: Attentive language models beyond a fixed-length context. In Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics, pages 2978–2988, 2019.",
+        "x": 72,
+        "y": 72.6,
+        "w": 469.9,
+        "h": 33.9,
+        "zh": "[14] Zihang Dai、Zhilin Yang、Yiming Yang、Jaime G. Carbonell、Quoc Le 与 Ruslan Salakhutdinov。Transformer-XL：超出固定长度上下文的注意力语言模型。见《第 57 届计算语言学协会年会论文集》，第 2978–2988 页，2019。"
+      }
+    ],
+    "12": [
+      {
+        "text": "[15] Tri Dao, Albert Gu, Matthew Eichhorn, Atri Rudra, and Christopher Ré. Learning fast algorithms for linear transforms using butterfly factorizations. In International Conference on Machine Learning",
+        "x": 72,
+        "y": 697.2,
+        "w": 468,
+        "h": 21.9,
+        "zh": "[15] Tri Dao、Albert Gu、Matthew Eichhorn、Atri Rudra 与 Christopher Ré。用 butterfly 分解学习线性变换的快速算法。见 International Conference on Machine Learning"
+      },
+      {
+        "text": "[16] Tri Dao, Nimit Sohoni, Albert Gu, Matthew Eichhorn, Amit Blonder, Megan Leszczynski, Atri Rudra, and Christopher Ré. Kaleidoscope: An efficient, learnable representation for all structured linear maps. In International Conference on Learning Representations (ICLR), 2020.",
+        "x": 72,
+        "y": 641.4,
+        "w": 469.9,
+        "h": 33.9,
+        "zh": "[16] Tri Dao、Nimit Sohoni、Albert Gu、Matthew Eichhorn、Amit Blonder、Megan Leszczynski、Atri Rudra 与 Christopher Ré。Kaleidoscope：所有结构化线性映射的一种高效、可学习表示。见 International Conference on Learning Representations (ICLR)，2020。"
+      },
+      {
+        "text": "[17] Tri Dao, Beidi Chen, Kaizhao Liang, Jiaming Yang, Zhao Song, Atri Rudra, and Christopher Ré. Pixelated butterfly: Simple and efficient sparse training for neural network models. In International",
+        "x": 72,
+        "y": 609.5,
+        "w": 469.9,
+        "h": 21.9,
+        "zh": "[17] Tri Dao、Beidi Chen、Kaizhao Liang、Jiaming Yang、Zhao Song、Atri Rudra 与 Christopher Ré。Pixelated butterfly：神经网络模型上简单而高效的稀疏训练。见 International"
+      },
+      {
+        "text": "Conference on Learning Representations (ICLR), 2022.",
+        "x": 91.3,
+        "y": 597.6,
+        "w": 240.7,
+        "h": 10,
+        "zh": "Conference on Learning Representations (ICLR)，2022。"
+      },
+      {
+        "text": "[18] Tri Dao, Beidi Chen, Nimit Sohoni, Arjun Desai, Michael Poli, Jessica Grogan, Alexander Liu, Aniruddh Rao, Atri Rudra, and Christopher Ré. Monarch: Expressive structured matrices for efficient and accurate training. In International Conference on Machine Learning (ICML), 2022.",
+        "x": 72,
+        "y": 553.8,
+        "w": 468,
+        "h": 33.9,
+        "zh": "[18] Tri Dao、Beidi Chen、Nimit Sohoni、Arjun Desai、Michael Poli、Jessica Grogan、Alexander Liu、Aniruddh Rao、Atri Rudra 与 Christopher Ré。Monarch：供高效且准确训练使用的、表达能力强的结构化矩阵。见 International Conference on Machine Learning (ICML)，2022。"
+      },
+      {
+        "text": "[19] Giannis Daras, Nikita Kitaev, Augustus Odena, and Alexandros G Dimakis. Smyrf-efficient attention using asymmetric clustering. Advances in Neural Information Processing Systems, 33:6476–6489, 2020.",
+        "x": 72,
+        "y": 521.9,
+        "w": 468.6,
+        "h": 21.9,
+        "zh": "[19] Giannis Daras、Nikita Kitaev、Augustus Odena 与 Alexandros G. Dimakis。Smyrf：用非对称聚类做高效注意力。Advances in Neural Information Processing Systems，33:6476–6489，2020。"
+      },
+      {
+        "text": "[20] Christopher De Sa, Albert Gu, Rohan Puttagunta, Christopher Ré, and Atri Rudra. A two-pronged progress in structured dense matrix vector multiplication. In Proceedings of the Twenty-Ninth Annual ACM-SIAM Symposium on Discrete Algorithms, pages 1060–1079. SIAM, 2018.",
+        "x": 72,
+        "y": 478,
+        "w": 468,
+        "h": 33.9,
+        "zh": "[20] Christopher De Sa、Albert Gu、Rohan Puttagunta、Christopher Ré 与 Atri Rudra。结构化稠密矩阵–向量乘法上的双向进展。见《第 29 届 ACM-SIAM 离散算法研讨会论文集》，第 1060–1079 页。SIAM，2018。"
+      },
+      {
+        "text": "[21] Peter J Denning. The working set model for program behavior. Communications of the ACM, 11(5):",
+        "x": 72,
+        "y": 458.1,
+        "w": 469.4,
+        "h": 10,
+        "zh": "[21] Peter J. Denning。程序行为的工作集模型。Communications of the ACM，11(5)："
+      },
+      {
+        "text": "[22] Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. BERT: Pre-training of deep",
+        "x": 72,
+        "y": 426.2,
+        "w": 468,
+        "h": 10,
+        "zh": "[22] Jacob Devlin、Ming-Wei Chang、Kenton Lee 与 Kristina Toutanova。BERT：对深度"
+      },
+      {
+        "text": "bidirectional transformers for language understanding. 2019.",
+        "x": 92.5,
+        "y": 414.3,
+        "w": 264.3,
+        "h": 10,
+        "zh": "双向 Transformer 做预训练，以理解语言。2019。"
+      },
+      {
+        "text": "[23] Xin Dong, Shangyu Chen, and Sinno Jialin Pan. Learning to prune deep neural networks via layer-wise",
+        "x": 72,
+        "y": 394.4,
+        "w": 468,
+        "h": 10,
+        "zh": "[23] Xin Dong、Shangyu Chen 与 Sinno Jialin Pan。通过逐层的方式学习剪枝深度神经网络，借助于"
+      },
+      {
+        "text": "optimal brain surgeon. arXiv preprint arXiv:1705.07565, 2017.",
+        "x": 92.5,
+        "y": 382.4,
+        "w": 274.1,
+        "h": 10,
+        "zh": "最优脑外科（optimal brain surgeon）。arXiv 预印本 arXiv:1705.07565，2017。"
+      },
+      {
+        "text": "[24] Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, Dirk Weissenborn, Xiaohua Zhai, Thomas Unterthiner, Mostafa Dehghani, Matthias Minderer, Georg Heigold, Sylvain Gelly, et al. An image is worth 16x16 words: Transformers for image recognition at scale. In International Conference on Learning",
+        "x": 72,
+        "y": 338.6,
+        "w": 468,
+        "h": 33.9,
+        "zh": "[24] Alexey Dosovitskiy、Lucas Beyer、Alexander Kolesnikov、Dirk Weissenborn、Xiaohua Zhai、Thomas Unterthiner、Mostafa Dehghani、Matthias Minderer、Georg Heigold、Sylvain Gelly 等。一张图像抵得上 16×16 个词：大规模图像识别所用的 Transformer。见 International Conference on Learning"
+      },
+      {
+        "text": "[25] Y Eidelman and I Gohberg. On a new class of structured matrices. Integral Equations and Operator",
+        "x": 72,
+        "y": 306.7,
+        "w": 467.8,
+        "h": 10,
+        "zh": "[25] Y. Eidelman 与 I. Gohberg。论一类新的结构化矩阵。Integral Equations and Operator"
+      },
+      {
+        "text": "[26] Jean Feydy, Joan Glaunès, Benjamin Charlier, and Michael Bronstein. Fast geometric learning with symbolic matrices. Advances in Neural Information Processing Systems, 33, 2020.",
+        "x": 72,
+        "y": 262.8,
+        "w": 468,
+        "h": 21.9,
+        "zh": "[26] Jean Feydy、Joan Glaunès、Benjamin Charlier 与 Michael Bronstein。用符号矩阵做快速几何学习。Advances in Neural Information Processing Systems，33，2020。"
+      },
+      {
+        "text": "[27] Jörg Flum and Martin Grohe. Parameterized Complexity Theory. Springer, 2006.",
+        "x": 72,
+        "y": 242.9,
+        "w": 376.1,
+        "h": 10,
+        "zh": "[27] Jörg Flum 与 Martin Grohe。《参数化复杂度理论》。Springer，2006。"
+      },
+      {
+        "text": "[28] Jonathan Frankle and Michael Carbin. The lottery ticket hypothesis: Finding sparse, trainable neural networks. In International Conference on Learning Representations, 2018.",
+        "x": 72,
+        "y": 211,
+        "w": 468,
+        "h": 21.9,
+        "zh": "[28] Jonathan Frankle 与 Michael Carbin。彩票假设：寻找稀疏、可训练的神经网络。见 International Conference on Learning Representations，2018。"
+      },
+      {
+        "text": "[29] Jonathan Frankle, Gintare Karolina Dziugaite, Daniel M Roy, and Michael Carbin. Stabilizing the",
+        "x": 72,
+        "y": 191.1,
+        "w": 468,
+        "h": 10,
+        "zh": "[29] Jonathan Frankle、Gintare Karolina Dziugaite、Daniel M. Roy 与 Michael Carbin。把"
+      },
+      {
+        "text": "lottery ticket hypothesis. arXiv preprint arXiv:1903.01611, 2019.",
+        "x": 92.5,
+        "y": 179.2,
+        "w": 283.8,
+        "h": 10,
+        "zh": "彩票假设稳定下来。arXiv 预印本 arXiv:1903.01611，2019。"
+      },
+      {
+        "text": "[30] Jonathan Frankle, Gintare Karolina Dziugaite, Daniel Roy, and Michael Carbin. Linear mode connectivity and the lottery ticket hypothesis. In International Conference on Machine Learning, pages 3259–3269.",
+        "x": 72,
+        "y": 147.3,
+        "w": 469.9,
+        "h": 21.9,
+        "zh": "[30] Jonathan Frankle、Gintare Karolina Dziugaite、Daniel Roy 与 Michael Carbin。线性模式连通性与彩票假设。见 International Conference on Machine Learning，第 3259–3269 页。"
+      },
+      {
+        "text": "[31] Karan Goel, Albert Gu, Chris Donahue, and Christopher Ré. It’s raw! audio generation with state-space models. In International Conference on Machine Learning (ICML), 2022.",
+        "x": 72,
+        "y": 103.4,
+        "w": 468,
+        "h": 21.9,
+        "zh": "[31] Karan Goel、Albert Gu、Chris Donahue 与 Christopher Ré。It’s raw! 用状态空间模型生成音频。见 International Conference on Machine Learning (ICML)，2022。"
+      },
+      {
+        "text": "[32] Aaron Gokaslan, Vanya Cohen, Pavlick Ellie, and Stefanie Tellex. Openwebtext corpus, 2019.",
+        "x": 72,
+        "y": 83.5,
+        "w": 429.1,
+        "h": 10,
+        "zh": "[32] Aaron Gokaslan、Vanya Cohen、Pavlick Ellie 与 Stefanie Tellex。Openwebtext 语料库，2019。"
+      }
+    ],
+    "13": [
+      {
+        "text": "[33] Jim Gray, Surajit Chaudhuri, Adam Bosworth, Andrew Layman, Don Reichart, Murali Venkatrao, Frank Pellow, and Hamid Pirahesh. Data cube: A relational aggregation operator generalizing group-by, cross-tab, and sub-totals. Data mining and knowledge discovery, 1(1):29–53, 1997.",
+        "x": 72,
+        "y": 685.3,
+        "w": 469.4,
+        "h": 33.9,
+        "zh": "[33] Jim Gray、Surajit Chaudhuri、Adam Bosworth、Andrew Layman、Don Reichart、Murali Venkatrao、Frank Pellow 与 Hamid Pirahesh。数据立方体：一种把 group-by、交叉表和小计加以推广的关系聚合算子。Data Mining and Knowledge Discovery，1(1):29–53，1997。"
+      },
+      {
+        "text": "[34] Andreas Griewank and Andrea Walther. Evaluating derivatives: principles and techniques of algorithmic",
+        "x": 72,
+        "y": 665.3,
+        "w": 468,
+        "h": 10,
+        "zh": "[34] Andreas Griewank 与 Andrea Walther。计算导数：算法化做法的原理与技术"
+      },
+      {
+        "text": "[35] Albert Gu, Tri Dao, Stefano Ermon, Atri Rudra, and Christopher Ré. Hippo: Recurrent memory with optimal polynomial projections. In Advances in neural information processing systems (NeurIPS), 2020.",
+        "x": 72,
+        "y": 621.5,
+        "w": 469.9,
+        "h": 21.9,
+        "zh": "[35] Albert Gu、Tri Dao、Stefano Ermon、Atri Rudra 与 Christopher Ré。Hippo：带最优多项式投影的循环记忆。见 Advances in Neural Information Processing Systems (NeurIPS)，2020。"
+      },
+      {
+        "text": "[36] Albert Gu, Isys Johnson, Karan Goel, Khaled Saab, Tri Dao, Atri Rudra, and Christopher Ré. Combining recurrent, convolutional, and continuous-time models with linear state space layers. Advances in Neural",
+        "x": 72,
+        "y": 589.6,
+        "w": 468,
+        "h": 21.9,
+        "zh": "[36] Albert Gu、Isys Johnson、Karan Goel、Khaled Saab、Tri Dao、Atri Rudra 与 Christopher Ré。用线性状态空间层把循环模型、卷积模型和连续时间模型结合起来。Advances in Neural"
+      },
+      {
+        "text": "Information Processing Systems, 34, 2021.",
+        "x": 91.9,
+        "y": 577.7,
+        "w": 183.7,
+        "h": 10,
+        "zh": "Information Processing Systems，34，2021。"
+      },
+      {
+        "text": "[37] Albert Gu, Karan Goel, and Christopher Ré. Efficiently modeling long sequences with structured state spaces. In The International Conference on Learning Representations (ICLR), 2022.",
+        "x": 72,
+        "y": 545.8,
+        "w": 468,
+        "h": 21.9,
+        "zh": "[37] Albert Gu、Karan Goel 与 Christopher Ré。用结构化状态空间高效地建模长序列。见 The International Conference on Learning Representations (ICLR)，2022。"
+      },
+      {
+        "text": "[38] Song Han, Jeff Pool, John Tran, and William J Dally. Learning both weights and connections for efficient",
+        "x": 72,
+        "y": 525.9,
+        "w": 468.3,
+        "h": 10,
+        "zh": "[38] Song Han、Jeff Pool、John Tran 与 William J. Dally。同时学习权重和连接，以得到高效的"
+      },
+      {
+        "text": "neural networks. arXiv preprint arXiv:1506.02626, 2015.",
+        "x": 92.5,
+        "y": 513.9,
+        "w": 247.3,
+        "h": 10,
+        "zh": "神经网络。arXiv 预印本 arXiv:1506.02626，2015。"
+      },
+      {
+        "text": "[39] Song Han, Huizi Mao, and William J Dally. Deep compression: Compressing deep neural networks with pruning, trained quantization and huffman coding. In International Conference on Learning",
+        "x": 72,
+        "y": 482,
+        "w": 468,
+        "h": 21.9,
+        "zh": "[39] Song Han、Huizi Mao 与 William J. Dally。深度压缩：用剪枝、训练式量化和 Huffman 编码来压缩深度神经网络。见 International Conference on Learning"
+      },
+      {
+        "text": "[40] John Hennessy and David Patterson. Memory hierarchy design. Computer Architecture: A Quantitative",
+        "x": 72,
+        "y": 450.1,
+        "w": 468,
+        "h": 10,
+        "zh": "[40] John Hennessy 与 David Patterson。内存层次设计。《计算机体系结构：一种量化的"
+      },
+      {
+        "text": "[41] Sara Hooker. The hardware lottery. arXiv preprint arXiv:2009.06489, 2020.",
+        "x": 72,
+        "y": 418.3,
+        "w": 351.9,
+        "h": 10,
+        "zh": "[41] Sara Hooker。硬件彩票。arXiv 预印本 arXiv:2009.06489，2020。"
+      },
+      {
+        "text": "[42] Weizhe Hua, Zihang Dai, Hanxiao Liu, and Quoc V Le. Transformer quality in linear time. arXiv",
+        "x": 72,
+        "y": 398.3,
+        "w": 467.9,
+        "h": 10,
+        "zh": "[42] Weizhe Hua、Zihang Dai、Hanxiao Liu 与 Quoc V. Le。线性时间内的 Transformer 质量。arXiv"
+      },
+      {
+        "text": "[43] Andrei Ivanov, Nikoli Dryden, Tal Ben-Nun, Shigang Li, and Torsten Hoefler. Data movement is all you need: A case study on optimizing transformers. Proceedings of Machine Learning and Systems, 3:",
+        "x": 72,
+        "y": 354.5,
+        "w": 469.4,
+        "h": 21.9,
+        "zh": "[43] Andrei Ivanov、Nikoli Dryden、Tal Ben-Nun、Shigang Li 与 Torsten Hoefler。你所需要的只是数据搬运：优化 Transformer 的一项案例研究。Proceedings of Machine Learning and Systems，3："
+      },
+      {
+        "text": "[44] Zhe Jia and Peter Van Sandt. Dissecting the Ampere GPU architecture via microbenchmarking. GPU",
+        "x": 72,
+        "y": 322.6,
+        "w": 468,
+        "h": 10,
+        "zh": "[44] Zhe Jia 与 Peter Van Sandt。用微基准测试剖析 Ampere GPU 架构。GPU"
+      },
+      {
+        "text": "[45] Zhe Jia, Marco Maggioni, Benjamin Staiger, and Daniele P Scarpazza. Dissecting the nvidia Volta GPU architecture via microbenchmarking. arXiv preprint arXiv:1804.06826, 2018.",
+        "x": 72,
+        "y": 278.8,
+        "w": 468,
+        "h": 21.9,
+        "zh": "[45] Zhe Jia、Marco Maggioni、Benjamin Staiger 与 Daniele P. Scarpazza。用微基准测试剖析 Nvidia Volta GPU 架构。arXiv 预印本 arXiv:1804.06826，2018。"
+      },
+      {
+        "text": "[46] Zhe Jia, Blake Tillman, Marco Maggioni, and Daniele Paolo Scarpazza. Dissecting the graphcore IPU architecture via microbenchmarking. arXiv preprint arXiv:1912.03413, 2019.",
+        "x": 72,
+        "y": 246.9,
+        "w": 468,
+        "h": 21.9,
+        "zh": "[46] Zhe Jia、Blake Tillman、Marco Maggioni 与 Daniele Paolo Scarpazza。用微基准测试剖析 Graphcore IPU 架构。arXiv 预印本 arXiv:1912.03413，2019。"
+      },
+      {
+        "text": "[47] Alistair EW Johnson, Tom J Pollard, Lu Shen, Li-wei H Lehman, Mengling Feng, Mohammad Ghassemi, Benjamin Moody, Peter Szolovits, Leo Anthony Celi, and Roger G Mark. Mimic-iii, a freely accessible",
+        "x": 72,
+        "y": 215,
+        "w": 469.4,
+        "h": 21.9,
+        "zh": "[47] Alistair E. W. Johnson、Tom J. Pollard、Lu Shen、Li-wei H. Lehman、Mengling Feng、Mohammad Ghassemi、Benjamin Moody、Peter Szolovits、Leo Anthony Celi 与 Roger G. Mark。MIMIC-III，一个可以自由访问的"
+      },
+      {
+        "text": "critical care database. Scientific data, 3(1):1–9, 2016.",
+        "x": 92.5,
+        "y": 203.1,
+        "w": 232.1,
+        "h": 10,
+        "zh": "重症监护数据库。Scientific Data，3(1):1–9，2016。"
+      },
+      {
+        "text": "[48] Norman P Jouppi, Cliff Young, Nishant Patil, David Patterson, Gaurav Agrawal, Raminder Bajwa, Sarah Bates, Suresh Bhatia, Nan Boden, Al Borchers, et al. In-datacenter performance analysis of a tensor processing unit. In Proceedings of the 44th annual international symposium on computer architecture,",
+        "x": 72,
+        "y": 159.2,
+        "w": 469.4,
+        "h": 33.9,
+        "zh": "[48] Norman P. Jouppi、Cliff Young、Nishant Patil、David Patterson、Gaurav Agrawal、Raminder Bajwa、Sarah Bates、Suresh Bhatia、Nan Boden、Al Borchers 等。张量处理单元在数据中心里的性能分析。见第 44 届计算机体系结构国际研讨会论文集，"
+      },
+      {
+        "text": "[49] Thomas Kailath, Sun-Yuan Kung, and Martin Morf. Displacement ranks of matrices and linear equations. Journal of Mathematical Analysis and Applications, 68(2):395–407, 1979.",
+        "x": 72,
+        "y": 115.4,
+        "w": 469.9,
+        "h": 21.9,
+        "zh": "[49] Thomas Kailath、Sun-Yuan Kung 与 Martin Morf。矩阵与线性方程的位移秩。Journal of Mathematical Analysis and Applications，68(2):395–407，1979。"
+      },
+      {
+        "text": "[50] Angelos Katharopoulos, Apoorv Vyas, Nikolaos Pappas, and François Fleuret. Transformers are RNNs: Fast autoregressive transformers with linear attention. In International Conference on Machine Learning,",
+        "x": 72,
+        "y": 83.5,
+        "w": 469.4,
+        "h": 21.9,
+        "zh": "[50] Angelos Katharopoulos、Apoorv Vyas、Nikolaos Pappas 与 François Fleuret。Transformer 就是 RNN：带线性注意力的快速自回归 Transformer。见 International Conference on Machine Learning，"
+      }
+    ],
+    "14": [
+      {
+        "text": "[51] Nikita Kitaev, Łukasz Kaiser, and Anselm Levskaya. Reformer: The efficient transformer. In The",
+        "x": 72,
+        "y": 709.2,
+        "w": 468,
+        "h": 10,
+        "zh": "[51] Nikita Kitaev、Łukasz Kaiser 与 Anselm Levskaya。Reformer：高效的 Transformer。见 The"
+      },
+      {
+        "text": "International Conference on Machine Learning (ICML), 2020.",
+        "x": 91.9,
+        "y": 697.2,
+        "w": 271.3,
+        "h": 10,
+        "zh": "International Conference on Machine Learning (ICML)，2020。"
+      },
+      {
+        "text": "[52] Zhenzhong Lan, Mingda Chen, Sebastian Goodman, Kevin Gimpel, Piyush Sharma, and Radu Soricut. Albert: A lite BEDRT for self-supervised learning of language representations. In The International",
+        "x": 72,
+        "y": 665.8,
+        "w": 469.9,
+        "h": 21.9,
+        "zh": "[52] Zhenzhong Lan、Mingda Chen、Sebastian Goodman、Kevin Gimpel、Piyush Sharma 与 Radu Soricut。ALBERT：一种用于语言表示自监督学习的轻量 BERT。见 The International"
+      },
+      {
+        "text": "Conference on Learning Representations (ICLR), 2020.",
+        "x": 91.3,
+        "y": 653.8,
+        "w": 240.7,
+        "h": 10,
+        "zh": "Conference on Learning Representations (ICLR)，2020。"
+      },
+      {
+        "text": "[53] Mingzhen Li, Yi Liu, Xiaoyan Liu, Qingxiao Sun, Xin You, Hailong Yang, Zhongzhi Luan, Lin Gan,",
+        "x": 72,
+        "y": 634.3,
+        "w": 469.4,
+        "h": 10,
+        "zh": "[53] Mingzhen Li、Yi Liu、Xiaoyan Liu、Qingxiao Sun、Xin You、Hailong Yang、Zhongzhi Luan、Lin Gan，"
+      },
+      {
+        "text": "The deep learning compiler: A comprehensive survey. Transactions on Parallel and Distributed Systems, 32(3):708–727, 2020.",
+        "x": 90.9,
+        "y": 610.4,
+        "w": 415.5,
+        "h": 21.9,
+        "zh": "深度学习编译器：一份全面综述。Transactions on Parallel and Distributed Systems，32(3):708–727，2020。"
+      },
+      {
+        "text": "[54] Valerii Likhosherstov, Krzysztof Choromanski, Jared Davis, Xingyou Song, and Adrian Weller. Sub-linear memory: How to make performers slim. arXiv preprint arXiv:2012.11346, 2020.",
+        "x": 72,
+        "y": 578.9,
+        "w": 468.2,
+        "h": 21.9,
+        "zh": "[54] Valerii Likhosherstov、Krzysztof Choromanski、Jared Davis、Xingyou Song 与 Adrian Weller。亚线性内存：怎样把 Performer 做得更瘦。arXiv 预印本 arXiv:2012.11346，2020。"
+      },
+      {
+        "text": "[55] Ji Lin, Yongming Rao, Jiwen Lu, and Jie Zhou. Runtime neural pruning. In I. Guyon, U. V. Luxburg, S. Bengio, H. Wallach, R. Fergus, S. Vishwanathan, and R. Garnett, editors, Advances in Neural Information Processing Systems, volume 30. Curran Associates, Inc., 2017.",
+        "x": 72,
+        "y": 535.5,
+        "w": 469.4,
+        "h": 33.9,
+        "zh": "[55] Ji Lin、Yongming Rao、Jiwen Lu 与 Jie Zhou。运行时神经剪枝。载于 I. Guyon、U. V. Luxburg、S. Bengio、H. Wallach、R. Fergus、S. Vishwanathan 与 R. Garnett 编，Advances in Neural Information Processing Systems，第 30 卷。Curran Associates, Inc.，2017。"
+      },
+      {
+        "text": "[56] Yinhan Liu, Myle Ott, Naman Goyal, Jingfei Du, Mandar Joshi, Danqi Chen, Omer Levy, Mike Lewis, Luke Zettlemoyer, and Veselin Stoyanov. Roberta: A robustly optimized bert pretraining approach.",
+        "x": 72,
+        "y": 504,
+        "w": 469.9,
+        "h": 21.9,
+        "zh": "[56] Yinhan Liu、Myle Ott、Naman Goyal、Jingfei Du、Mandar Joshi、Danqi Chen、Omer Levy、Mike Lewis、Luke Zettlemoyer 与 Veselin Stoyanov。RoBERTa：一种经过稳健优化的 BERT 预训练方法。"
+      },
+      {
+        "text": "[57] Xuezhe Ma, Xiang Kong, Sinong Wang, Chunting Zhou, Jonathan May, Hao Ma, and Luke Zettlemoyer. Luna: Linear unified nested attention. Advances in Neural Information Processing Systems, 34, 2021.",
+        "x": 72,
+        "y": 460.6,
+        "w": 469.9,
+        "h": 21.9,
+        "zh": "[57] Xuezhe Ma、Xiang Kong、Sinong Wang、Chunting Zhou、Jonathan May、Hao Ma 与 Luke Zettlemoyer。Luna：线性的统一嵌套注意力。Advances in Neural Information Processing Systems，34，2021。"
+      },
+      {
+        "text": "[58] Peter Mattson, Christine Cheng, Gregory Diamos, Cody Coleman, Paulius Micikevicius, David Patterson, Hanlin Tang, Gu-Yeon Wei, Peter Bailis, Victor Bittorf, et al. Mlperf training benchmark. Proceedings",
+        "x": 72,
+        "y": 429.2,
+        "w": 469.4,
+        "h": 21.9,
+        "zh": "[58] Peter Mattson、Christine Cheng、Gregory Diamos、Cody Coleman、Paulius Micikevicius、David Patterson、Hanlin Tang、Gu-Yeon Wei、Peter Bailis、Victor Bittorf 等。MLPerf 训练基准。Proceedings"
+      },
+      {
+        "text": "of Machine Learning and Systems, 2:336–349, 2020.",
+        "x": 91.7,
+        "y": 417.2,
+        "w": 225.1,
+        "h": 10,
+        "zh": "of Machine Learning and Systems，2:336–349，2020。"
+      },
+      {
+        "text": "[59] Frank McSherry, Michael Isard, and Derek G Murray. Scalability! but at what fCOSTg?",
+        "x": 72,
+        "y": 397.7,
+        "w": 427,
+        "h": 10,
+        "zh": "[59] Frank McSherry、Michael Isard 与 Derek G. Murray。可扩展性！但 COST 是多少？"
+      },
+      {
+        "text": "Workshop on Hot Topics in Operating Systems (HotOS XV), 2015.",
+        "x": 90.6,
+        "y": 385.8,
+        "w": 291.8,
+        "h": 10,
+        "zh": "Workshop on Hot Topics in Operating Systems (HotOS XV)，2015。"
+      },
+      {
+        "text": "[60] Maxim Milakov and Natalia Gimelshein. Online normalizer calculation for softmax. arXiv preprint",
+        "x": 72,
+        "y": 366.2,
+        "w": 468,
+        "h": 10,
+        "zh": "[60] Maxim Milakov 与 Natalia Gimelshein。softmax 的在线归一化量计算。arXiv 预印本"
+      },
+      {
+        "text": "[61] NVIDIA. Nvidia Tesla V100 GPU architecture, 2017.",
+        "x": 72,
+        "y": 334.8,
+        "w": 255.3,
+        "h": 10,
+        "zh": "[61] NVIDIA。Nvidia Tesla V100 GPU 架构，2017。"
+      },
+      {
+        "text": "[62] NVIDIA. Nvidia A100 tensor core GPU architecture, 2020.",
+        "x": 72,
+        "y": 315.3,
+        "w": 279.7,
+        "h": 10,
+        "zh": "[62] NVIDIA。Nvidia A100 Tensor Core GPU 架构，2020。"
+      },
+      {
+        "text": "[63] NVIDIA. Nvidia H100 tensor core GPU architecture, 2022.",
+        "x": 72,
+        "y": 295.8,
+        "w": 279.7,
+        "h": 10,
+        "zh": "[63] NVIDIA。Nvidia H100 Tensor Core GPU 架构，2022。"
+      },
+      {
+        "text": "[64] D Stott Parker. Random butterfly transformations with applications in computational linear algebra.",
+        "x": 72,
+        "y": 276.3,
+        "w": 469.9,
+        "h": 10,
+        "zh": "[64] D. Stott Parker。随机 butterfly 变换及其在计算线性代数中的应用。"
+      },
+      {
+        "text": "[65] Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, et al. Pytorch: An imperative style, highperformance deep learning library. Advances in neural information processing systems, 32, 2019.",
+        "x": 72,
+        "y": 220.9,
+        "w": 469.7,
+        "h": 33.9,
+        "zh": "[65] Adam Paszke、Sam Gross、Francisco Massa、Adam Lerer、James Bradbury、Gregory Chanan、Trevor Killeen、Zeming Lin、Natalia Gimelshein、Luca Antiga 等。PyTorch：一个命令式风格的高性能深度学习库。Advances in Neural Information Processing Systems，32，2019。"
+      },
+      {
+        "text": "[66] Markus N Rabe and Charles Staats. Self-attention does not need 𝑂¹𝑛 º memory. arXiv preprint",
+        "x": 72,
+        "y": 201.4,
+        "w": 468,
+        "h": 10,
+        "zh": "[66] Markus N. Rabe 与 Charles Staats。自注意力并不需要 O(n) 的内存。arXiv 预印本"
+      },
+      {
+        "text": "[67] Alec Radford, Jeffrey Wu, Rewon Child, David Luan, Dario Amodei, Ilya Sutskever, et al. Language models are unsupervised multitask learners. OpenAI blog, 1(8):9, 2019.",
+        "x": 72,
+        "y": 158,
+        "w": 468,
+        "h": 21.9,
+        "zh": "[67] Alec Radford、Jeffrey Wu、Rewon Child、David Luan、Dario Amodei、Ilya Sutskever 等。语言模型是无监督的多任务学习者。OpenAI blog，1(8):9，2019。"
+      },
+      {
+        "text": "[68] Jack Rae and Ali Razavi. Do transformers need deep long-range memory? In Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics, Online, July 2020. Association for Computational Linguistics. URL https://www.aclweb.org/anthology/2020.acl-main.672.",
+        "x": 72,
+        "y": 114.6,
+        "w": 468.2,
+        "h": 33.9,
+        "zh": "[68] Jack Rae 与 Ali Razavi。Transformer 需要很深的长程记忆吗？见《第 58 届计算语言学协会年会论文集》，线上，2020 年 7 月。Association for Computational Linguistics。网址 https://www.aclweb.org/anthology/2020.acl-main.672。"
+      },
+      {
+        "text": "[69] Jack W Rae, Anna Potapenko, Siddhant M Jayakumar, and Timothy P Lillicrap. Compressive transformers for long-range sequence modelling. In The International Conference on Learning Representations",
+        "x": 72,
+        "y": 83.1,
+        "w": 469.7,
+        "h": 21.9,
+        "zh": "[69] Jack W. Rae、Anna Potapenko、Siddhant M. Jayakumar 与 Timothy P. Lillicrap。用于长程序列建模的压缩 Transformer。见 The International Conference on Learning Representations"
+      }
+    ],
+    "15": [
+      {
+        "text": "[70] Jonathan Ragan-Kelley, Connelly Barnes, Andrew Adams, Sylvain Paris, Frédo Durand, and Saman Amarasinghe. Halide: a language and compiler for optimizing parallelism, locality, and recomputation in image processing pipelines. Acm Sigplan Notices, 48(6):519–530, 2013.",
+        "x": 72,
+        "y": 685.3,
+        "w": 468,
+        "h": 33.9,
+        "zh": "[70] Jonathan Ragan-Kelley、Connelly Barnes、Andrew Adams、Sylvain Paris、Frédo Durand 与 Saman Amarasinghe。Halide：一种语言和编译器，用来优化图像处理流水线中的并行、局部性与重计算。ACM SIGPLAN Notices，48(6):519–530，2013。"
+      },
+      {
+        "text": "[71] Raghu Ramakrishnan, Johannes Gehrke, and Johannes Gehrke. Database management systems, volume 3.",
+        "x": 72,
+        "y": 665.3,
+        "w": 469.9,
+        "h": 10,
+        "zh": "[71] Raghu Ramakrishnan、Johannes Gehrke 与 Johannes Gehrke。数据库管理系统，第 3 卷。"
+      },
+      {
+        "text": "[72] Benjamin Recht and Christopher Ré. Parallel stochastic gradient algorithms for large-scale matrix completion. Mathematical Programming Computation, 5(2):201–226, 2013.",
+        "x": 72,
+        "y": 621.5,
+        "w": 468.3,
+        "h": 21.9,
+        "zh": "[72] Benjamin Recht 与 Christopher Ré。面向大规模矩阵补全的并行随机梯度算法。Mathematical Programming Computation，5(2):201–226，2013。"
+      },
+      {
+        "text": "[73] Hongyu Ren, Hanjun Dai, Zihang Dai, Mengjiao Yang, Jure Leskovec, Dale Schuurmans, and Bo Dai. Combiner: Full attention transformer with sparse computation cost. Advances in Neural Information",
+        "x": 72,
+        "y": 589.6,
+        "w": 469.9,
+        "h": 21.9,
+        "zh": "[73] Hongyu Ren、Hanjun Dai、Zihang Dai、Mengjiao Yang、Jure Leskovec、Dale Schuurmans 与 Bo Dai。Combiner：计算代价稀疏的全注意力 Transformer。Advances in Neural Information"
+      },
+      {
+        "text": "[74] Aurko Roy, Mohammad Saffar, Ashish Vaswani, and David Grangier. Efficient content-based sparse attention with routing transformers. Transactions of the Association for Computational Linguistics, 9:",
+        "x": 72,
+        "y": 545.8,
+        "w": 469.4,
+        "h": 21.9,
+        "zh": "[74] Aurko Roy、Mohammad Saffar、Ashish Vaswani 与 David Grangier。用 Routing Transformer 实现基于内容的高效稀疏注意力。Transactions of the Association for Computational Linguistics，9："
+      },
+      {
+        "text": "[75] Amit Sabne. XLA: Compiling machine learning for peak performance. 2020.",
+        "x": 72,
+        "y": 513.9,
+        "w": 354.6,
+        "h": 10,
+        "zh": "[75] Amit Sabne。XLA：为峰值性能而编译机器学习程序。2020。"
+      },
+      {
+        "text": "[76] Victor Sanh, Thomas Wolf, and Alexander M Rush. Movement pruning: Adaptive sparsity by fine-tuning.",
+        "x": 72,
+        "y": 494,
+        "w": 469.9,
+        "h": 10,
+        "zh": "[76] Victor Sanh、Thomas Wolf 与 Alexander M. Rush。Movement pruning：靠微调得到自适应稀疏。"
+      },
+      {
+        "text": "[77] Mohammad Shoeybi, Mostofa Patwary, Raul Puri, Patrick LeGresley, Jared Casper, and Bryan Catanzaro. Megatron-LM: Training multi-billion parameter language models using model parallelism. arXiv preprint",
+        "x": 72,
+        "y": 450.1,
+        "w": 469.9,
+        "h": 21.9,
+        "zh": "[77] Mohammad Shoeybi、Mostofa Patwary、Raul Puri、Patrick LeGresley、Jared Casper 与 Bryan Catanzaro。Megatron-LM：用模型并行训练数十亿参数的语言模型。arXiv 预印本"
+      },
+      {
+        "text": "[78] Vikas Sindhwani, Tara Sainath, and Sanjiv Kumar. Structured transforms for small-footprint deep learning. In Advances in Neural Information Processing Systems, pages 3088–3096, 2015.",
+        "x": 72,
+        "y": 406.3,
+        "w": 468,
+        "h": 21.9,
+        "zh": "[78] Vikas Sindhwani、Tara Sainath 与 Sanjiv Kumar。面向小足迹深度学习的结构化变换。见 Advances in Neural Information Processing Systems，第 3088–3096 页，2015。"
+      },
+      {
+        "text": "[79] Sainbayar Sukhbaatar, Edouard Grave, Piotr Bojanowski, and Armand Joulin. Adaptive attention span in transformers. In Proceedings of the Annual Meeting of the Association for Computational Linguistics,",
+        "x": 72,
+        "y": 374.4,
+        "w": 469.4,
+        "h": 21.9,
+        "zh": "[79] Sainbayar Sukhbaatar、Edouard Grave、Piotr Bojanowski 与 Armand Joulin。Transformer 里的自适应注意力跨度。见计算语言学协会年会论文集，"
+      },
+      {
+        "text": "[80] Yi Tay, Mostafa Dehghani, Samira Abnar, Yikang Shen, Dara Bahri, Philip Pham, Jinfeng Rao, Liu Yang, Sebastian Ruder, and Donald Metzler. Long range arena: A benchmark for efficient transformers. In International Conference on Learning Representations, 2020.",
+        "x": 72,
+        "y": 318.6,
+        "w": 469.9,
+        "h": 33.9,
+        "zh": "[80] Yi Tay、Mostafa Dehghani、Samira Abnar、Yikang Shen、Dara Bahri、Philip Pham、Jinfeng Rao、Liu Yang、Sebastian Ruder 与 Donald Metzler。Long Range Arena：高效 Transformer 的一套基准。见 International Conference on Learning Representations，2020。"
+      },
+      {
+        "text": "[81] Yi Tay, Mostafa Dehghani, Dara Bahri, and Donald Metzler. Efficient transformers: A survey. arXiv",
+        "x": 72,
+        "y": 298.7,
+        "w": 467.9,
+        "h": 10,
+        "zh": "[81] Yi Tay、Mostafa Dehghani、Dara Bahri 与 Donald Metzler。高效 Transformer：一份综述。arXiv"
+      },
+      {
+        "text": "[82] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin. Attention is all you need. Advances in neural information processing",
+        "x": 72,
+        "y": 254.9,
+        "w": 468,
+        "h": 21.9,
+        "zh": "[82] Ashish Vaswani、Noam Shazeer、Niki Parmar、Jakob Uszkoreit、Llion Jones、Aidan N. Gomez、Łukasz Kaiser 与 Illia Polosukhin。注意力就是你所需要的全部。Advances in Neural Information Processing"
+      },
+      {
+        "text": "[83] Hongyu Wang, Shuming Ma, Li Dong, Shaohan Huang, Dongdong Zhang, and Furu Wei. Deepnet: Scaling transformers to 1,000 layers. arXiv preprint arXiv:2203.00555, 2022.",
+        "x": 72,
+        "y": 211,
+        "w": 469.4,
+        "h": 21.9,
+        "zh": "[83] Hongyu Wang、Shuming Ma、Li Dong、Shaohan Huang、Dongdong Zhang 与 Furu Wei。DeepNet：把 Transformer 扩展到 1,000 层。arXiv 预印本 arXiv:2203.00555，2022。"
+      },
+      {
+        "text": "[84] Sinong Wang, Belinda Z Li, Madian Khabsa, Han Fang, and Hao Ma. Linformer: Self-attention with linear complexity. arXiv preprint arXiv:2006.04768, 2020.",
+        "x": 72,
+        "y": 179.2,
+        "w": 468,
+        "h": 21.9,
+        "zh": "[84] Sinong Wang、Belinda Z. Li、Madian Khabsa、Han Fang 与 Hao Ma。Linformer：线性复杂度的自注意力。arXiv 预印本 arXiv:2006.04768，2020。"
+      },
+      {
+        "text": "[85] Samuel Williams, Andrew Waterman, and David Patterson. Roofline: an insightful visual performance model for multicore architectures. Communications of the ACM, 52(4):65–76, 2009.",
+        "x": 72,
+        "y": 147.3,
+        "w": 468,
+        "h": 21.9,
+        "zh": "[85] Samuel Williams、Andrew Waterman 与 David Patterson。Roofline：面向多核架构的一种看得明白的可视化性能模型。Communications of the ACM，52(4):65–76，2009。"
+      },
+      {
+        "text": "[86] Michael E Wolf and Monica S Lam. A data locality optimizing algorithm. In Proceedings of the ACM SIGPLAN 1991 conference on Programming language design and implementation, pages 30–44, 1991.",
+        "x": 72,
+        "y": 115.4,
+        "w": 467.6,
+        "h": 21.9,
+        "zh": "[86] Michael E. Wolf 与 Monica S. Lam。一种优化数据局部性的算法。见 ACM SIGPLAN 1991 编程语言设计与实现会议论文集，第 30–44 页，1991。"
+      }
+    ],
+    "16": [
+      {
+        "text": "[87] Thomas Wolf, Lysandre Debut, Victor Sanh, Julien Chaumond, Clement Delangue, Anthony Moi, Pierric Cistac, Tim Rault, Rémi Louf, Morgan Funtowicz, Joe Davison, Sam Shleifer, Patrick von Platen, Clara Ma, Yacine Jernite, Julien Plu, Canwen Xu, Teven Le Scao, Sylvain Gugger, Mariama Drame, Quentin Lhoest, and Alexander M. Rush. Transformers: State-of-the-art natural language processing. In Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing: System Demonstrations, pages 38–45, Online, October 2020. Association for Computational Linguistics. URL https://www.aclweb.org/anthology/2020.emnlp-demos.6.",
+        "x": 72,
+        "y": 637.4,
+        "w": 469.9,
+        "h": 81.7,
+        "zh": "[87] Thomas Wolf、Lysandre Debut、Victor Sanh、Julien Chaumond、Clement Delangue、Anthony Moi、Pierric Cistac、Tim Rault、Rémi Louf、Morgan Funtowicz、Joe Davison、Sam Shleifer、Patrick von Platen、Clara Ma、Yacine Jernite、Julien Plu、Canwen Xu、Teven Le Scao、Sylvain Gugger、Mariama Drame、Quentin Lhoest 与 Alexander M. Rush。Transformers：前沿的自然语言处理。见《2020 年自然语言处理经验方法会议：系统演示论文集》，第 38–45 页，线上，2020 年 10 月。Association for Computational Linguistics。网址 https://www.aclweb.org/anthology/2020.emnlp-demos.6。"
+      },
+      {
+        "text": "[88] David P Woodruff. Optimal space lower bounds for all frequency moments. In SODA, volume 4, pages 167–175. Citeseer, 2004.",
+        "x": 72,
+        "y": 605.6,
+        "w": 468,
+        "h": 21.9,
+        "zh": "[88] David P. Woodruff。所有频率矩的最优空间下界。见 SODA，第 4 卷，第 167–175 页。Citeseer，2004。"
+      },
+      {
+        "text": "[89] Felix Wu, Angela Fan, Alexei Baevski, Yann N Dauphin, and Michael Auli. Pay less attention with lightweight and dynamic convolutions. In The International Conference on Learning Representations",
+        "x": 72,
+        "y": 573.7,
+        "w": 468,
+        "h": 21.9,
+        "zh": "[89] Felix Wu、Angela Fan、Alexei Baevski、Yann N. Dauphin 与 Michael Auli。用轻量卷积和动态卷积少付一些注意力。见 The International Conference on Learning Representations"
+      },
+      {
+        "text": "[90] Yunyang Xiong, Zhanpeng Zeng, Rudrasis Chakraborty, Mingxing Tan, Glenn Fung, Yin Li, and Vikas Singh. Nyströmformer: A nystöm-based algorithm for approximating self-attention. In Proceedings of the AAAI Conference on Artificial Intelligence. AAAI Conference on Artificial Intelligence, volume 35,",
+        "x": 72,
+        "y": 517.9,
+        "w": 469.4,
+        "h": 33.9,
+        "zh": "[90] Yunyang Xiong、Zhanpeng Zeng、Rudrasis Chakraborty、Mingxing Tan、Glenn Fung、Yin Li 与 Vikas Singh。Nyströmformer：一种基于 Nyström 的自注意力近似算法。见 Proceedings of the AAAI Conference on Artificial Intelligence。AAAI Conference on Artificial Intelligence，第 35 卷，"
+      },
+      {
+        "text": "[91] Li Yuan, Yunpeng Chen, Tao Wang, Weihao Yu, Yujun Shi, Zi-Hang Jiang, Francis EH Tay, Jiashi Feng, and Shuicheng Yan. Tokens-to-token vit: Training vision transformers from scratch on imagenet. In Proceedings of the IEEE/CVF International Conference on Computer Vision, pages 558–567, 2021.",
+        "x": 72,
+        "y": 462.1,
+        "w": 469.4,
+        "h": 33.9,
+        "zh": "[91] Li Yuan、Yunpeng Chen、Tao Wang、Weihao Yu、Yujun Shi、Zi-Hang Jiang、Francis E. H. Tay、Jiashi Feng 与 Shuicheng Yan。Tokens-to-Token ViT：在 ImageNet 上从零训练视觉 Transformer。见 IEEE/CVF International Conference on Computer Vision 论文集，第 558–567 页，2021。"
+      },
+      {
+        "text": "[92] Manzil Zaheer, Guru Guruganesh, Kumar Avinava Dubey, Joshua Ainslie, Chris Alberti, Santiago Ontanon, Philip Pham, Anirudh Ravula, Qifan Wang, Li Yang, et al. Big bird: Transformers for longer sequences. Advances in Neural Information Processing Systems, 33, 2020.",
+        "x": 72,
+        "y": 418.3,
+        "w": 468.2,
+        "h": 33.9,
+        "zh": "[92] Manzil Zaheer、Guru Guruganesh、Kumar Avinava Dubey、Joshua Ainslie、Chris Alberti、Santiago Ontanon、Philip Pham、Anirudh Ravula、Qifan Wang、Li Yang 等。BigBird：面向更长序列的 Transformer。Advances in Neural Information Processing Systems，33，2020。"
+      },
+      {
+        "text": "[93] Shuangfei Zhai, Walter Talbott, Nitish Srivastava, Chen Huang, Hanlin Goh, Ruixiang Zhang, and Josh Susskind. An attention free transformer. arXiv preprint arXiv:2105.14103, 2021.",
+        "x": 72,
+        "y": 386.4,
+        "w": 468,
+        "h": 21.9,
+        "zh": "[93] Shuangfei Zhai、Walter Talbott、Nitish Srivastava、Chen Huang、Hanlin Goh、Ruixiang Zhang 与 Josh Susskind。一种不用注意力的 Transformer。arXiv 预印本 arXiv:2105.14103，2021。"
+      },
+      {
+        "text": "[94] Chen Zhu, Wei Ping, Chaowei Xiao, Mohammad Shoeybi, Tom Goldstein, Anima Anandkumar, and Bryan Catanzaro. Long-short transformer: Efficient transformers for language and vision. Advances in Neural Information Processing Systems, 34, 2021.",
+        "x": 72,
+        "y": 342.6,
+        "w": 468,
+        "h": 33.9,
+        "zh": "[94] Chen Zhu、Wei Ping、Chaowei Xiao、Mohammad Shoeybi、Tom Goldstein、Anima Anandkumar 与 Bryan Catanzaro。Long-Short Transformer：面向语言与视觉的高效 Transformer。Advances in Neural Information Processing Systems，34，2021。"
+      }
+    ],
+    "17": [
+      {
+        "text": "IO-Aware Runtime Optimization. The broad concept of optimizing for reading and writing to fast/slow memory has a long history in computer science and has been known by many names. We draw the most direct connection to the literature of analyzing I/O complexity in this work [1], but concepts of memory hierarchies are fundamental and has appeared in many forms, from the working set model [21], to data locality [86], to the Roofline model of arithmetic intensity [85], to analyses of scalability [59], to standard textbook treatments of computer architecture [40]. We hope that this work encourages the community to adopt these ideas in more parts of the deep learning stack. Efficient ML Models with Structured Matrices. Matrix multiply is the core computational bottleneck of most machine learning models. To reduce the computational complexity, there have been numerous approaches to learn over a more efficient set of matrices. These matrices are called structured matrices, which have subquadratic (𝑜¹𝑛 º for dimension 𝑛 \u0002 𝑛) number of parameters and runtime. Most common examples of structured matrices are sparse and low-rank matrices, along with fast transforms commonly encountered in signal processing (Fourier, Chebyshev, sine/cosine, orthogonal polynomials). There have been several more general classes of structured matrices proposed in machine learning: Toeplitz-like [78], low-displacement rank [49], quasi-separable [25]). The butterfly pattern we use for our block-sparse attention is motivated by the fact that butterfly matrices [15, 64] and their products have been shown to be able to express any structured matrices with almost optimal runtime and number of parameters [16, 20]. However, even though structured matrices are efficient in theory, they have not seen wide adoption since it is hard to translate their efficiency to wall-clock speedup since dense unconstrained matrix multiply has very optimize implementation, a phenomenon known as the hardware lottery [41]. Extensions of butterfly matrices [17, 18] aimed to make",
+        "x": 72,
+        "y": 460.2,
+        "w": 469.7,
+        "h": 237.1,
+        "zh": "IO 感知的运行时优化。针对快、慢内存上的读写做优化，这个宽泛想法在计算机科学里历史很长，也有过许多名字。本文最直接衔接的，是分析 I/O 复杂度的文献 [1]；但内存层次是基础概念，并以多种形式出现过：从工作集模型 [21]，到数据局部性 [86]，到用算术强度刻画的 Roofline 模型 [85]，到可扩展性分析 [59]，再到计算机体系结构的标准教科书论述 [40]。我们希望这项工作能推动社区在深度学习栈的更多部分采纳这些想法。用结构化矩阵做高效的机器学习模型。矩阵乘法是大多数机器学习模型的核心计算瓶颈。为降低计算复杂度，已有大量工作改在一组更高效的矩阵上学习。这些矩阵称为结构化矩阵，其参数量和运行时间相对 n×n 的维度是亚二次的（记作 o(n)）。最常见的例子是稀疏矩阵和低秩矩阵，以及信号处理里常见的快速变换（Fourier、Chebyshev、正弦/余弦、正交多项式）。机器学习里还提出过若干更一般的结构化矩阵族：类 Toeplitz 矩阵 [78]、低位移秩矩阵 [49]、拟可分矩阵 [25]。我们在块稀疏注意力里使用 butterfly 模式，是因为 butterfly 矩阵 [15, 64] 及其乘积已被证明能够以几乎最优的运行时间和参数量表达任意结构化矩阵 [16, 20]。然而，尽管理论上高效，结构化矩阵并没有被广泛采用，因为很难把这种效率兑现成墙钟加速：稠密、不受约束的矩阵乘法已经有非常优化的实现。这一现象称为硬件彩票 [41]。butterfly 矩阵的若干扩展 [17, 18] 旨在让"
+      },
+      {
+        "text": "butterfly matrices more hardware-friendly.",
+        "x": 72,
+        "y": 448.3,
+        "w": 184.8,
+        "h": 10,
+        "zh": "butterfly 矩阵对硬件更友好。"
+      },
+      {
+        "text": "Sparse Training. Our block-sparse FlashAttention can be seen as a step towards making sparse model training more efficient. Sparse models have seen success in compressing models for inference (pruning) by sparsifying the weight matrices [23, 38, 39, 55, 76]. For model training, the lottery tickets hypothesis [28, 29, 30] suggests that there are a set of small sub-networks derived from a larger dense network that performs as well as the original dense network. Out block-sparse FlashAttention can also be seen as a fixed lottery ticket in the context of attention: we fix the sparsity pattern to be the butterfly pattern through training, and observe that it performs almost as well as the (dense) FlashAttention on the Long-range Arena tasks. Efficient Transformer. Transformer-based models have become the most widely-used architecture in natural language processing [22] and computer vision [24, 91]. However, one of their computational bottlenecks is that their time and memory scales quadratic in the sequence length. There are numerous approaches to overcome this bottleneck, including approximation with hashing (i.e., sparse) such as Reformer [51] and Smyrf [19] and with low-rank approximation such as Performer [12, 54]. One can even combine sparse and low-rank approximation for better accuracy (e.g., Longformer [3], BigBird [92], Scatterbrain [9], Long-short transformer [94], Combiner [73]). Other approaches include compressing along the sequence dimension to attend to multiple tokens at once [52, 57, 79, 89]. One can also attend over the states from previous sequences to help lengthen the context (e.g., Transformer-XL [14] and Compressive Transformer [69]). We recommend",
+        "x": 71.6,
+        "y": 257,
+        "w": 470.3,
+        "h": 189.3,
+        "zh": "稀疏训练。我们的块稀疏 FlashAttention 可以看成朝更高效的稀疏模型训练迈出的一步。稀疏模型已经在为推理压缩模型（剪枝）上取得成功，做法是把权重矩阵变稀疏 [23, 38, 39, 55, 76]。就模型训练而言，彩票假设 [28, 29, 30] 指出：从一个更大的稠密网络里，可以找出一组较小的子网络，其表现与原来的稠密网络一样好。我们的块稀疏 FlashAttention 也可以看成注意力这一语境下的一张固定彩票：整个训练过程中，我们把稀疏模式固定成 butterfly 模式，并观察到它在 Long-range Arena 任务上的表现几乎和（稠密的）FlashAttention 一样好。高效 Transformer。基于 Transformer 的模型已经成为自然语言处理 [22] 和计算机视觉 [24, 91] 中使用最广的架构。然而，它们的一个计算瓶颈是时间和内存都随序列长度二次增长。克服这一瓶颈的途径很多，包括用哈希做近似（也就是稀疏），例如 Reformer [51] 和 Smyrf [19]，以及用低秩近似，例如 Performer [12, 54]。甚至可以把稀疏近似和低秩近似结合起来，以得到更好的精度（例如 Longformer [3]、BigBird [92]、Scatterbrain [9]、Long-short transformer [94]、Combiner [73]）。其他途径包括沿序列维度做压缩，从而一次关注多个 token [52, 57, 79, 89]。也可以去关注先前序列留下的状态，以帮助把上下文拉长（例如 Transformer-XL [14] 和 Compressive Transformer [69]）。我们建议"
+      },
+      {
+        "text": "There are several lines of work on developing other modules instead of attention to model longer context. HiPPO [35] and its extensions, most notably S4 [31, 36, 37] projects the history on a polynomial basis, allowing accurate reconstruction of the history through state-space models. They combine the strengths of CNNs (efficient training), RNNs (efficient inference), and continuous models (robust to change in sampling rates). LambdaNetworks [2], AFT [93] and FLASH [42] are other attempts at replacing attention in the",
+        "x": 72,
+        "y": 185.2,
+        "w": 469.9,
+        "h": 57.8,
+        "zh": "还有几条研究路线在开发注意力以外的模块，用来建模更长的上下文。HiPPO [35] 及其扩展，其中最突出的是 S4 [31, 36, 37]，把历史投影到一组多项式基上，从而能经由状态空间模型准确地重建历史。它们结合了 CNN 的长处（训练高效）、RNN 的长处（推理高效）和连续模型的长处（对采样率的变化比较稳健）。LambdaNetworks [2]、AFT [93] 和 FLASH [42] 则是另外一些试图在"
+      },
+      {
+        "text": "context of image classification and language modeling.",
+        "x": 72,
+        "y": 173.3,
+        "w": 236.9,
+        "h": 10,
+        "zh": "图像分类和语言建模的语境里取代注意力的尝试。"
+      },
+      {
+        "text": "We first derive the forward and backward passes of attention and show that they can be computed in a memory-efficient manner (requiring extra memory linear instead of quadratic in the sequence length). Though they reduce the amount of extra memory required, naively they still incur quadratic HBM accesses, resulting in slower execution speed. We describe the FlashAttention algorithm to implement both the forward",
+        "x": 71.5,
+        "y": 82.7,
+        "w": 468.5,
+        "h": 45.8,
+        "zh": "我们首先推导注意力的前向与反向传播，并说明它们可以按省内存的方式计算（额外内存随序列长度线性增长，而不是二次增长）。尽管这样减少了所需的额外内存，若只做朴素实现，HBM 访问仍然是二次的，执行速度因此更慢。我们描述 FlashAttention 算法，用它来实现前向"
+      }
+    ],
+    "18": [
+      {
+        "text": "and the backward passes on GPUs that reduces HBM accesses, leading to both faster runtime and smaller",
+        "x": 72,
+        "y": 709.2,
+        "w": 468.2,
+        "h": 10,
+        "zh": "以及反向传播，并在 GPU 上减少 HBM 访问，从而同时得到更快的运行时间，以及更小的"
+      },
+      {
+        "text": "The main challenge in making attention memory-efficient is the softmax that couples the columns of K (and columns of V). Our approach is to compute the softmax normalization constant separately to decouple the columns. This technique [60] has been used in the literature [51, 66] to show that attention computation does not need quadratic extra memory (though the number of HBM accesses is still quadratic, resulting in",
+        "x": 71.6,
+        "y": 615.3,
+        "w": 468.4,
+        "h": 45.8,
+        "zh": "让注意力变省内存的主要困难，在于 softmax 把 K 的各列（以及 V 的各列）耦合在一起。我们的做法是把 softmax 的归一化常数分开计算，从而把这些列解耦。这项技术 [60] 已在文献 [51, 66] 中被用来说明：计算注意力并不需要二次的额外内存（不过 HBM 访问次数仍然是二次的，因此会导致"
+      },
+      {
+        "text": "For simplicity, we omit here the max-shifting step during softmax. The full algorithm in Appendix B.3",
+        "x": 86.9,
+        "y": 591.4,
+        "w": 453.3,
+        "h": 10,
+        "zh": "为简单起见，这里略去 softmax 中减去最大值的那一步。完整算法见附录 B.3，"
+      },
+      {
+        "text": "contains all the steps. Recall that given input sequences Q K V 2 R",
+        "x": 72,
+        "y": 567.5,
+        "w": 213.7,
+        "h": 21.9,
+        "zh": "其中包含全部步骤。回想一下，给定输入序列 Q、K、V ∈ R，"
+      },
+      {
+        "text": ", we want to compute the attention output O 2 R",
+        "x": 302.7,
+        "y": 567.5,
+        "w": 215.7,
+        "h": 10,
+        "zh": "我们希望计算注意力输出 O ∈ R。"
+      },
+      {
+        "text": "We have that 𝑆𝑖 𝑗 = 𝑞𝑖 𝑘 𝑗 where 𝑞𝑖 and 𝑘 𝑗 are the 𝑖-th and 𝑗-th columns of Q and K respectively. Define",
+        "x": 86.9,
+        "y": 523.4,
+        "w": 453.1,
+        "h": 13.2,
+        "zh": "我们有 S_{ij} = q_i k_j，其中 q_i 和 k_j 分别是 Q 和 K 的第 i 列和第 j 列。定义"
+      },
+      {
+        "text": "Let 𝑣𝑗 be the 𝑗-th column of V, then the 𝑖-th columns of the output is",
+        "x": 72,
+        "y": 474.4,
+        "w": 307.6,
+        "h": 11.5,
+        "zh": "设 v_j 为 V 的第 j 列，则输出的第 i 列为"
+      },
+      {
+        "text": "We see that once 𝐿𝑖 is computed, we can compute 𝑜𝑖 without extra memory by repeatedly summing 𝑣𝑗. Therefore the forward pass can be computed with 𝑂¹𝑛º extra memory: 1. Compute 𝐿𝑖 for all 𝑖 according to Eq. (1), which takes 𝑂¹𝑛º extra memory. 2. Compute 𝑜𝑖 for all 𝑖 according to Eq. (2), which takes 𝑂¹𝑑º extra memory.",
+        "x": 84.2,
+        "y": 360,
+        "w": 455.8,
+        "h": 66.6,
+        "zh": "可以看到，一旦算出 L_i，就可以反复把 v_j 加起来，从而在不另占内存的情况下算出 o_i。因此前向传播可以用 O(n) 的额外内存来完成：1. 按式 (1) 对所有 i 计算 L_i，这占用 O(n) 的额外内存。2. 按式 (2) 对所有 i 计算 o_i，这占用 O(d) 的额外内存。"
+      },
+      {
+        "text": "We derive the backward pass of attention and show that it can also be computed with linear memory. Rabe and Staats [66] suggests that the backward pass can be done without quadratic extra memory by applying gradient checkpointing to the memory-efficient forward pass. We instead derive the backward pass explicitly",
+        "x": 71.5,
+        "y": 291.6,
+        "w": 468.9,
+        "h": 33.9,
+        "zh": "我们推导注意力的反向传播，并说明它同样可以用线性内存来计算。Rabe 与 Staats [66] 指出，若把梯度检查点用到省内存的前向传播上，反向传播就可以不需要二次的额外内存。我们则把反向传播显式推导出来，"
+      },
+      {
+        "text": "and show how it can be computed in a memory-efficient manner.",
+        "x": 72,
+        "y": 279.6,
+        "w": 283.2,
+        "h": 10,
+        "zh": "并说明它可以怎样按省内存的方式来计算。"
+      },
+      {
+        "text": "Suppose that there is a scalar loss function 𝜙, and let the output gradient be dO 2 R",
+        "x": 86.9,
+        "y": 267.7,
+        "w": 356.6,
+        "h": 10,
+        "zh": "设存在一个标量损失函数 φ，并令输出梯度为 dO ∈ R。"
+      },
+      {
+        "text": "). We want to compute the input gradients dQ dK dV 2 R",
+        "x": 84.4,
+        "y": 254.3,
+        "w": 271.9,
+        "h": 10,
+        "zh": "）。我们希望计算输入梯度 dQ、dK、dV ∈ R。"
+      },
+      {
+        "text": "The gradient dV is easy to see. Applying reverse-mode autodiff by hand (aka the chain rule), we obtain",
+        "x": 86.9,
+        "y": 229,
+        "w": 453.1,
+        "h": 10,
+        "zh": "梯度 dV 很容易看出来。用手做反向模式自动微分（也就是链式法则），我们得到"
+      },
+      {
+        "text": "Since we already computed 𝐿𝑖, 𝑑𝑣𝑗 can be computed without extra memory by repeated summing. The gradients dQ and dK are a little more complicated. We go through the gradients dP and dS first.",
+        "x": 72,
+        "y": 147.9,
+        "w": 469.9,
+        "h": 21.9,
+        "zh": "由于 L_i 已经算好，d v_j 可以通过反复求和得到，而不需要额外内存。梯度 dQ 和 dK 则稍微麻烦一些。我们先处理梯度 dP 和 dS。"
+      },
+      {
+        "text": "From Eq. (2), we have that dP = dOV , and so:",
+        "x": 72,
+        "y": 135.9,
+        "w": 210,
+        "h": 10,
+        "zh": "由式 (2)，我们有 dP = dO V，因此："
+      },
+      {
+        "text": "Recall that 𝑃𝑖: = softmax¹𝑆𝑖:º. Using the fact that the Jacobian of 𝑦 = softmax¹𝑥º is diag¹𝑦º \u0000 𝑦𝑦 , we",
+        "x": 86.9,
+        "y": 93.6,
+        "w": 453.1,
+        "h": 11.5,
+        "zh": "回想 P_{i:} = softmax(S_{i:})。利用 y = softmax(x) 的 Jacobian 为 diag(y) − yy 这一事实，我们得到"
+      },
+      {
+        "text": "𝑑𝑆𝑖: = ¹diag¹𝑃𝑖:º \u0000 𝑃𝑖:𝑃𝑖:º𝑑𝑃𝑖: = 𝑃𝑖: \u000e 𝑑𝑃𝑖: \u0000 ¹𝑃𝑖: 𝑑𝑃𝑖:º𝑃𝑖:",
+        "x": 186.7,
+        "y": 68.4,
+        "w": 238.7,
+        "h": 12.7,
+        "zh": ""
+      }
+    ],
+    "19": [
+      {
+        "text": "where \u000e denotes pointwise multiplication.",
+        "x": 71.6,
+        "y": 709.2,
+        "w": 180.5,
+        "h": 10,
+        "zh": "其中 ⊙ 表示逐点乘法。"
+      },
+      {
+        "text": "𝑑𝑆𝑖 𝑗 = 𝑃𝑖 𝑗𝑑𝑃𝑖 𝑗 \u0000 𝐷𝑖𝑃𝑖 𝑗 = 𝑃𝑖 𝑗 ¹𝑑𝑃𝑖 𝑗 \u0000 𝐷𝑖º Now we can get the gradients dQ and dK. Recall that 𝑆𝑖 𝑗 = 𝑞𝑖 𝑘 𝑗, so",
+        "x": 86.9,
+        "y": 588.9,
+        "w": 305,
+        "h": 31.1,
+        "zh": "dS_{ij} = P_{ij} dP_{ij} − D_i P_{ij} = P_{ij} (dP_{ij} − D_i)。现在可以得到梯度 dQ 和 dK。回想 S_{ij} = q_i k_j，因此"
+      },
+      {
+        "text": "Therefore the backward pass can also be computed with 𝑂¹𝑛º extra memory:",
+        "x": 86.9,
+        "y": 483.7,
+        "w": 336.8,
+        "h": 10,
+        "zh": "因此，反向传播同样可以用 O(n) 的额外内存来计算："
+      },
+      {
+        "text": "1. Compute 𝑑𝑣𝑗 for all 𝑗 according to Eq. (3), which takes 𝑂¹𝑑º extra memory.",
+        "x": 84.2,
+        "y": 462.3,
+        "w": 347.2,
+        "h": 11.5,
+        "zh": "1. 按式 (3) 对所有 j 计算 d v_j，这占用 O(d) 的额外内存。"
+      },
+      {
+        "text": "2. Compute 𝐷𝑖 for all 𝑖 according to Eq. (4), which takes 𝑂¹𝑛º extra memory.",
+        "x": 84.2,
+        "y": 442.4,
+        "w": 340.8,
+        "h": 11.5,
+        "zh": "2. 按式 (4) 对所有 i 计算 D_i，这占用 O(n) 的额外内存。"
+      },
+      {
+        "text": "3. Compute 𝑑𝑞𝑖 for all 𝑖 according to Eq. (5), which takes 𝑂¹𝑑º extra memory.",
+        "x": 84.2,
+        "y": 422.5,
+        "w": 344.2,
+        "h": 11.5,
+        "zh": "3. 按式 (5) 对所有 i 计算 d q_i，这占用 O(d) 的额外内存。"
+      },
+      {
+        "text": "4. Compute 𝑑𝑘 𝑗 for all 𝑗 according to Eq. (6), which takes 𝑂¹𝑑º extra memory.",
+        "x": 84.2,
+        "y": 402.5,
+        "w": 347.5,
+        "h": 11.5,
+        "zh": "4. 按式 (6) 对所有 j 计算 d k_j，这占用 O(d) 的额外内存。"
+      },
+      {
+        "text": "FlashAttention: Forward Pass We describe the full details of FlashAttention forward pass. Given input sequences Q K V 2 R want to compute the attention output O 2 R",
+        "x": 71.5,
+        "y": 345.8,
+        "w": 433.9,
+        "h": 42.3,
+        "zh": "FlashAttention：前向传播。下面给出 FlashAttention 前向传播的全部细节。给定输入序列 Q、K、V ∈ R，希望计算注意力输出 O ∈ R。"
+      },
+      {
+        "text": "where 𝜏 2 R is some softmax scaling (typically p1 ), mask is some masking function that sets some entries of the input to \u00001 and keep other entries the same (e.g., key padding mask when sequences in the batch don’t have the same lengths and are padded), and dropout¹𝑥 𝑝º applies dropout to 𝑥 elementwise (i.e., output with probability 1 \u0000 𝑝 and output 0 with probability 𝑝 for each element 𝑥). The full algorithm is in Algorithm 2. We save the output O, the softmax statistics ℓ and 𝑚, and the pseudo-random number generator state R for the backward pass.",
+        "x": 71.6,
+        "y": 220.7,
+        "w": 468.6,
+        "h": 74.5,
+        "zh": "其中 τ ∈ R 是某个 softmax 缩放（通常取 p1），mask 是某个掩码函数，它把输入的一部分项改成屏蔽值、其余项保持不变（例如，当一个 batch 中的序列长度不同、做过填充时使用的 key padding 掩码），而 dropout(x, p) 对 x 逐元素做 dropout（也就是对每个元素 x，以概率 1 − p 照原样输出，以概率 p 输出 0）。完整算法见算法 2。我们为反向传播保存输出 O、softmax 统计量 ℓ 与 m，以及伪随机数生成器的状态 R。"
+      }
+    ],
+    "20": [
+      {
+        "text": "Algorithm 2 FlashAttention Forward Pass Require: Matrices Q K V 2 R",
+        "x": 71.6,
+        "y": 692.6,
+        "w": 196,
+        "h": 26.8,
+        "zh": "算法 2　FlashAttention 前向传播。输入：矩阵 Q、K、V ∈ R。"
+      },
+      {
+        "text": "in HBM, on-chip SRAM of size 𝑀, softmax scaling constant 𝜏 2 R, masking function mask, dropout probability 𝑝drop. 1: Initialize the pseudo-random number generator state\u0006 2: Set block sizes 𝐵𝑐 = 3: Initialize O = ¹0º𝑁\u0002𝑑l 2 mR",
+        "x": 77.4,
+        "y": 640.2,
+        "w": 464,
+        "h": 62.4,
+        "zh": "位于 HBM 中；片上 SRAM 的容量为 M；softmax 缩放常数 τ ∈ R；掩码函数 mask；dropout 概率 p_drop。1：初始化伪随机数生成器的状态。2：设定块大小 B_c =。3：把 O 初始化为 (0)_{N×d}。"
+      },
+      {
+        "text": " ℓ = ¹0º𝑁 2 R  𝑚 = ¹\u00001º𝑁 2 R 4: Divide Q into 𝑇𝑟 =",
+        "x": 77.4,
+        "y": 627.7,
+        "w": 274,
+        "h": 26,
+        "zh": "ℓ = (0)_N ∈ R，m = (−1)_N ∈ R。4：把 Q 分成 T_r ="
+      },
+      {
+        "text": "blocks Q1     Q𝑇𝑟 of size 𝐵𝑟 \u0002 𝑑 each, and divide K V in to 𝑇𝑐 = K1     K𝑇𝑐 and V1     V𝑇𝑐, of size 𝐵𝑐 \u0002 𝑑 each. 5: Divide O into 𝑇𝑟 blocks O𝑖     O𝑇𝑟 of size 𝐵𝑟 \u0002 𝑑 each, divide ℓ into 𝑇𝑟 blocks ℓ𝑖     ℓ𝑇𝑟 of size 𝐵𝑟 each, divide 𝑚 into 𝑇𝑟 blocks 𝑚1     𝑚𝑇𝑟 of size 𝐵𝑟 each. 6: for 1 \u0014 𝑗 \u0014 𝑇𝑐 do Load K𝑗 V𝑗 from HBM to on-chip SRAM. for 1 \u0014 𝑖 \u0014 𝑇𝑟 do Load Q𝑖 O𝑖 ℓ𝑖 𝑚𝑖 from HBM to on-chip SRAM. On chip, compute S𝑖 𝑗 = 𝜏Q𝑖K𝑇 2 R𝐵𝑟\u0002𝐵𝑐. On chip, compute S𝑖 𝑗 On chip, compute 𝑚˜𝑖 𝑗 = rowmax¹Smaskedº 2 R𝐵𝑟 , P˜𝑖 𝑗 = exp¹Smasked \u0000 𝑚˜𝑖 𝑗º 2 R𝐵𝑟\u0002𝐵𝑐 (pointwise), ℓ˜𝑖 𝑗 = rowsum¹P˜𝑖 𝑗º 2 R𝐵𝑟 . On chip, compute 𝑚new = max¹𝑚𝑖 𝑚˜𝑖 𝑗º 2 R𝐵𝑟 , ℓnew = 𝑒𝑚𝑖\u0000𝑚𝑖 On chip, compute P˜dropped = dropout¹P˜𝑖 𝑗 𝑝dropº.",
+        "x": 77.4,
+        "y": 458.5,
+        "w": 464,
+        "h": 180.6,
+        "zh": "大小各为 B_r × d 的块 Q_1, …, Q_{T_r}，并把 K、V 分成 T_c 块，即大小各为 B_c × d 的 K_1, …, K_{T_c} 与 V_1, …, V_{T_c}。5：把 O 分成 T_r 个大小为 B_r × d 的块 O_i, …, O_{T_r}，把 ℓ 分成 T_r 个大小为 B_r 的块 ℓ_i, …, ℓ_{T_r}，把 m 分成 T_r 个大小为 B_r 的块 m_1, …, m_{T_r}。6：对 1 ≤ j ≤ T_c，把 K_j、V_j 从 HBM 载入片上 SRAM。对 1 ≤ i ≤ T_r，把 Q_i、O_i、ℓ_i、m_i 从 HBM 载入片上 SRAM。在片上计算 S_{ij} = τ Q_i K^T ∈ R^{B_r×B_c}。在片上计算 S_{ij}。在片上计算 m̃_{ij} = rowmax(S_masked) ∈ R^{B_r}，P̃_{ij} = exp(S_masked − m̃_{ij}) ∈ R^{B_r×B_c}（逐点），ℓ̃_{ij} = rowsum(P̃_{ij}) ∈ R^{B_r}。在片上计算 m_new = max(m_i, m̃_{ij}) ∈ R^{B_r}，ℓ_new = e^{m_i − m_i}。在片上计算 P̃_dropped = dropout(P̃_{ij}, p_drop)。"
+      },
+      {
+        "text": "diag¹ℓnewº\u00001¹diag¹ℓ𝑖º𝑒𝑚𝑖\u0000𝑚newO𝑖 ¸ 𝑒𝑚˜𝑖 𝑗\u0000𝑚newP˜droppedV𝑗º to HBM.",
+        "x": 162.9,
+        "y": 442.9,
+        "w": 283.1,
+        "h": 14,
+        "zh": ""
+      },
+      {
+        "text": "FlashAttention: Backward Pass We describe the full details of FlashAttention backward pass. Given input sequences Q K V 2 R",
+        "x": 71.5,
+        "y": 344.5,
+        "w": 431.9,
+        "h": 30.3,
+        "zh": "FlashAttention：反向传播。下面给出 FlashAttention 反向传播的全部细节。给定输入序列 Q、K、V ∈ R，"
+      },
+      {
+        "text": ", and the output gradient dO, we want to compute the input gradients dQ dK dV 2 R We first describe the standard attention backward pass in Algorithm 3 for completeness.",
+        "x": 86.9,
+        "y": 320.6,
+        "w": 435.2,
+        "h": 21.9,
+        "zh": "以及输出梯度 dO，我们希望计算输入梯度 dQ、dK、dV ∈ R。为完整起见，先在算法 3 里给出标准注意力的反向传播。"
+      },
+      {
+        "text": "Algorithm 3 Standard Attention Backward Pass Require: Matrices Q K V dO 2 R 1: Load P dO by blocks from HBM, compute dV = P dO 2 R 2: Load dO V by blocks from HBM, compute dP = dOV 3: Read P dP from HBM, compute dS 2 R",
+        "x": 71.6,
+        "y": 243.4,
+        "w": 275.6,
+        "h": 62.7,
+        "zh": "算法 3　标准注意力的反向传播。输入：矩阵 Q、K、V、dO ∈ R。1：按块从 HBM 载入 P、dO，计算 dV = P dO ∈ R。2：按块从 HBM 载入 dO、V，计算 dP = dO V。3：从 HBM 读入 P、dP，计算 dS ∈ R。"
+      },
+      {
+        "text": "𝑙 𝑃𝑖𝑙𝑑𝑃𝑖𝑙º, write dS to HBM. 4: Load dS and K by blocks from HBM, compute dQ = dSK, write dQ to HBM. 5: Load dS and Q by blocks from HBM, compute dK = dS Q, write dK to HBM. 6: Return dQ dK dV.",
+        "x": 77.4,
+        "y": 207.5,
+        "w": 444.6,
+        "h": 45.8,
+        "zh": "对下标 l 的 P_{il} dP_{il}），把 dS 写入 HBM。4：按块从 HBM 载入 dS 和 K，计算 dQ = dS K，把 dQ 写入 HBM。5：按块从 HBM 载入 dS 和 Q，计算 dK = dS Q，把 dK 写入 HBM。6：返回 dQ、dK、dV。"
+      },
+      {
+        "text": "We now make two observations about FlashAttention backward pass:",
+        "x": 86.9,
+        "y": 177.3,
+        "w": 318.1,
+        "h": 10,
+        "zh": "现在对 FlashAttention 的反向传播作两点观察："
+      },
+      {
+        "text": "1. We do not need to store the dropout mask of size 𝑂¹𝑁 º from the forward pass. Instead, we can save the pseudo-random number generator states from the forward pass and re-generate the dropout mask in the backward pass. This allows us to only use 𝑂¹𝑁º extra memory.",
+        "x": 84.2,
+        "y": 133.4,
+        "w": 456.1,
+        "h": 33.9,
+        "zh": "1. 不必保存前向传播里大小为 O(N) 的 dropout 掩码。可以改为保存前向传播的伪随机数生成器状态，到反向传播时再重新生成 dropout 掩码。这样额外内存就只需要 O(N)。"
+      },
+      {
+        "text": "2. When computing the softmax gradient, we use Eq. (4) to compute 𝐷𝑖 = 𝑃𝑖:𝑑𝑃𝑖: without reducing over 𝑃𝑖: and 𝑑𝑃𝑖: of size 𝑁 (they might not fit into SRAM). Instead we can rewrite 𝐷𝑖 = 𝑑𝑜𝑖 𝑜𝑖 and compute the dot product between vectors of size 𝑑.",
+        "x": 84.2,
+        "y": 89.6,
+        "w": 456,
+        "h": 33.9,
+        "zh": "2. 计算 softmax 的梯度时，我们用式 (4) 计算 D_i = P_{i:} dP_{i:}，而不去对长度为 N 的 P_{i:} 和 dP_{i:} 做归约（它们可能放不进 SRAM）。改为把 D_i 写成 D_i = d o_i 与 o_i 的乘积，并在长度为 d 的向量之间做点积。"
+      }
+    ],
+    "21": [
+      {
+        "text": "The full FlashAttention backward pass algorithm is in Algorithm 4. Conceptually it is just a block version of the derivation in Appendix B.2.",
+        "x": 71.7,
+        "y": 697.2,
+        "w": 468.5,
+        "h": 21.9,
+        "zh": "完整的 FlashAttention 反向传播见算法 4。概念上，它就是附录 B.2 中那套推导的分块版本。"
+      },
+      {
+        "text": "Algorithm 4 FlashAttention Backward Pass Require: Matrices Q K V O dO 2 R",
+        "x": 71.6,
+        "y": 655.8,
+        "w": 202.4,
+        "h": 26.8,
+        "zh": "算法 4　FlashAttention 反向传播。输入：矩阵 Q、K、V、O、dO ∈ R。"
+      },
+      {
+        "text": "in HBM, on-chip SRAM of size 𝑀, softmax scaling constant 𝜏 2 R, masking function mask, dropout probability 𝑝drop, pseudo-random number generator state R from the forward pass. 1: Set the pseudo-random number generator state to\u0006 2: Set block sizes 𝐵𝑐 =l 3: Divide Q into 𝑇𝑟 =",
+        "x": 77.4,
+        "y": 590.4,
+        "w": 464,
+        "h": 75.4,
+        "zh": "位于 HBM 中；片上 SRAM 的容量为 M；softmax 缩放常数 τ ∈ R；掩码函数 mask；dropout 概率 p_drop；以及前向传播留下的伪随机数生成器状态 R。1：把伪随机数生成器状态设为该状态。2：设定块大小 B_c =。3：把 Q 分成 T_r ="
+      },
+      {
+        "text": "blocks Q1     Q𝑇𝑟 of size 𝐵𝑟 \u0002 𝑑 each, and divide K V in to 𝑇𝑐 = K1     K𝑇𝑐 and V1     V𝑇𝑐, of size 𝐵𝑐 \u0002 𝑑 each. 4: Divide O into 𝑇𝑟 blocks O𝑖     O𝑇𝑟 of size 𝐵𝑟 \u0002 𝑑 each, divide dO into 𝑇𝑟 blocks dO𝑖     dO𝑇𝑟 of size 𝐵𝑟 \u0002 𝑑 each, divide ℓ into 𝑇𝑟 blocks ℓ𝑖     ℓ𝑇𝑟 of size 𝐵𝑟 each, divide 𝑚 into 𝑇𝑟 blocks 𝑚1     𝑚𝑇𝑟 of size",
+        "x": 77.4,
+        "y": 551.1,
+        "w": 462.6,
+        "h": 50.8,
+        "zh": "大小各为 B_r × d 的块 Q_1, …, Q_{T_r}，并把 K、V 分成 T_c 块，即大小各为 B_c × d 的 K_1, …, K_{T_c} 与 V_1, …, V_{T_c}。4：把 O 分成 T_r 个大小为 B_r × d 的块 O_i, …, O_{T_r}，把 dO 分成 T_r 个大小为 B_r × d 的块 dO_i, …, dO_{T_r}，把 ℓ 分成 T_r 个大小为 B_r 的块 ℓ_i, …, ℓ_{T_r}，把 m 分成 T_r 个大小为"
+      },
+      {
+        "text": "5: Initialize dQ = ¹0º𝑁\u0002𝑑 in HBM and divide it into 𝑇𝑟 blocks dQ1     dQ𝑇 of size 𝐵𝑟 \u0002 𝑑 each. Initialize dK = ¹0º𝑁\u0002𝑑 dV = ¹0º𝑁\u0002𝑑 in HBM and divide dK dV in to 𝑇𝑐 blocks dK1     dK𝑇𝑐 and dV1     dV𝑇𝑐, of size 𝐵𝑐 \u0002 𝑑 each. 6: for 1 \u0014 𝑗 \u0014 𝑇𝑐 do Load K𝑗 V𝑗 from HBM to on-chip SRAM. Initialize dK˜ 𝑗 = ¹0º𝐵𝑐\u0002𝑑 dV˜ 𝑗 = ¹0º𝐵𝑐\u0002𝑑 on SRAM. for 1 \u0014 𝑖 \u0014 𝑇𝑟 do Load Q𝑖 O𝑖 dO𝑖 dQ𝑖 ℓ𝑖 𝑚𝑖 from HBM to on-chip SRAM. On chip, compute S𝑖 𝑗 = 𝜏Q𝑖K𝑇 2 R𝐵𝑟\u0002𝐵𝑐. On chip, compute S𝑖 𝑗 On chip, compute P𝑖 𝑗 = diag¹𝑙𝑖º On chip, compute dropout mask Z𝑖 𝑗 2 R",
+        "x": 77.4,
+        "y": 388.7,
+        "w": 464,
+        "h": 151,
+        "zh": "5：在 HBM 中把 dQ 初始化为 (0)_{N×d}，并分成 T_r 个大小为 B_r × d 的块 dQ_1, …, dQ_T。在 HBM 中把 dK 初始化为 (0)_{N×d}、把 dV 初始化为 (0)_{N×d}，再把 dK、dV 分成 T_c 个大小为 B_c × d 的块 dK_1, …, dK_{T_c} 与 dV_1, …, dV_{T_c}。6：对 1 ≤ j ≤ T_c，把 K_j、V_j 从 HBM 载入片上 SRAM。在 SRAM 上把 dK̃_j 初始化为 (0)_{B_c×d}、把 dṼ_j 初始化为 (0)_{B_c×d}。对 1 ≤ i ≤ T_r，把 Q_i、O_i、dO_i、dQ_i、ℓ_i、m_i 从 HBM 载入片上 SRAM。在片上计算 S_{ij} = τ Q_i K^T ∈ R^{B_r×B_c}。在片上计算 S_{ij}。在片上计算 P_{ij} = diag(ℓ_i)。在片上计算 dropout 掩码 Z_{ij} ∈ R。"
+      },
+      {
+        "text": "where each entry has value 1 \u0000 𝑝drop and value 0 with probability 𝑝drop. On chip, compute P𝑖 𝑗",
+        "x": 108.4,
+        "y": 360,
+        "w": 324.1,
+        "h": 40.2,
+        "zh": "其中每一项取值为 1 − p_drop，并以概率 p_drop 取值 0。在片上计算 P_{ij}"
+      },
+      {
+        "text": "= P𝑖 𝑗 \u000e Z𝑖 𝑗 (pointwise multiply). On chip, compute dV˜ 𝑗",
+        "x": 108.9,
+        "y": 346.2,
+        "w": 258.6,
+        "h": 27,
+        "zh": "= P_{ij} ⊙ Z_{ij}（逐点相乘）。在片上计算 dṼ_j"
+      },
+      {
+        "text": "dV˜ 𝑗 ¸ ¹Pdroppedº>dO𝑖 2 R𝐵𝑐\u0002𝑑. On chip, compute dP𝑖 𝑗 On chip, compute dP𝑖 𝑗 = dP𝑖 𝑗",
+        "x": 108.9,
+        "y": 313.3,
+        "w": 247.5,
+        "h": 47,
+        "zh": "dṼ_j + (P_dropped)^⊤ dO_i ∈ R^{B_c×d}。在片上计算 dP_{ij}。在片上计算 dP_{ij} = dP_{ij}"
+      },
+      {
+        "text": "\u000e Z𝑖 𝑗 (pointwise multiply). On chip, compute 𝐷𝑖 = rowsum¹dO𝑖 \u000e O𝑖º 2 R𝐵𝑟 . On chip, compute dS𝑖 𝑗 = P𝑖 𝑗 \u000e ¹dP𝑖 𝑗 \u0000 𝐷𝑖º 2 R𝐵𝑟\u0002𝐵𝑐.",
+        "x": 108.9,
+        "y": 288.9,
+        "w": 269.6,
+        "h": 37.6,
+        "zh": "⊙ Z_{ij}（逐点相乘）。在片上计算 D_i = rowsum(dO_i ⊙ O_i) ∈ R^{B_r}。在片上计算 dS_{ij} = P_{ij} ⊙ (dP_{ij} − D_i) ∈ R^{B_r×B_c}。"
+      },
+      {
+        "text": "dQ𝑖 ¸ 𝜏dS𝑖 𝑗K𝑗 2 R On chip, compute dK˜ 𝑗",
+        "x": 108.9,
+        "y": 263.7,
+        "w": 138.9,
+        "h": 24.8,
+        "zh": "dQ_i + τ dS_{ij} K_j ∈ R。在片上计算 dK̃_j"
+      },
+      {
+        "text": "We see that similar to the forward pass, the backward pass performs 𝑂¹𝑁 º FLOPs and only requires 𝑂¹𝑁º extra memory beyond inputs, output, output gradient, and input gradients. We analyze the IO-complexity of the backward pass, similar to the forward pass (Theorem 2).",
+        "x": 71.9,
+        "y": 163.2,
+        "w": 468.1,
+        "h": 33.9,
+        "zh": "可以看到，与前向传播类似，反向传播做 O(N) 次 FLOP，并且除输入、输出、输出梯度和输入梯度之外，只需要 O(N) 的额外内存。我们按与前向传播相同的方式分析反向传播的 IO 复杂度（定理 2）。"
+      },
+      {
+        "text": "Theorem 5. Let 𝑁 be the sequence length, 𝑑 be the head dimension, and 𝑀 be size of SRAM with 𝑑 \u0014 𝑀 \u0014 𝑁 𝑑. Standard attention (Algorithm 0) backward pass requires Θ¹𝑁 𝑑 ¸ 𝑁 º HBM accesses, while FlashAttention backward pass (Algorithm 4) requires Θ¹𝑁 𝑑 𝑀",
+        "x": 71.2,
+        "y": 119.4,
+        "w": 470.3,
+        "h": 33.9,
+        "zh": "定理 5。设 N 为序列长度，d 为头维度，M 为 SRAM 容量，且 d ≤ M ≤ N d。标准注意力（算法 0）的反向传播需要 Θ(N d + N) 次 HBM 访问，而 FlashAttention 的反向传播（算法 4）需要 Θ(N d M)"
+      }
+    ],
+    "22": [
+      {
+        "text": "Comparison with Rabe and Staats [66] We describe here some similarities and differences between our FlashAttention algorithm and the algorithm of Rabe and Staats [66]. Conceptually, both FlashAttention and Rabe and Staats [66] operate on blocks of the attention matrix using the well-established technique of tiling (or softmax scaling) [51, 60]. To reduce the memory footprint, both methods avoid storing the large attention matrix in the forward pass and recompute it in the backward",
+        "x": 71.5,
+        "y": 643,
+        "w": 469.9,
+        "h": 78.2,
+        "zh": "与 Rabe 和 Staats [66] 的比较。这里说明 FlashAttention 与 Rabe 和 Staats [66] 的算法有哪些相同与不同。概念上，两者都借助成熟的分块技术（或称 softmax 缩放）[51, 60]，在注意力矩阵的块上运算。为了压低内存占用，两种方法都不在前向传播里保存巨大的注意力矩阵，而留到反向传播再重算。"
+      },
+      {
+        "text": "The first major difference is that Rabe and Staats [66] focuses on the reducing the total memory footprint (maximum amount of GPU memory required) while FlashAttention focuses on reducing memory accesses (the number of memory reads/writes). As mentioned in Section 2, the amount of memory access is the primary determining factor of runtime. Reducing memory accesses also necessarily reduces the total amount of memory required (e.g., if an operation incurs 𝐴 memory accesses, then its total memory requirement is at most 𝐴). As a result, FlashAttention is faster than standard attention (2-4\u0002) while Rabe and Staats [66] is around the same speed or slightly slower than standard attention. In terms of total memory required, both methods offer substantial memory saving. The second difference between the two methods is the way information is summarized from each block to pass to the next block. Rabe and Staats [66] summarizes each block with its temporary output along with the softmax normalization statistics. At the end of the forward pass, the temporary outputs of all the blocks are combined using the statistics to produce the final output. FlashAttention instead incrementally updates the output (Algorithm 1 line 12) after processing each block, so only one copy of the output is needed (instead of 𝐾 copies for 𝐾 blocks). This means that FlashAttention has smaller total memory requirement compared to Rabe and Staats [66]. The final major difference is the way the backward pass is computed. Rabe and Staats [66] uses gradient checkpointing to recompute the attention matrix and the temporary output of each block. FlashAttention instead simplifies the backward pass analytically (Appendices B.2 and B.4). It only recomputes the attention matrix and does not recompute the temporary output of each block. This reduces the memory requirement for the backward pass and yields speedup.",
+        "x": 70.8,
+        "y": 391.9,
+        "w": 469.5,
+        "h": 237.1,
+        "zh": "第一个主要差别是：Rabe 和 Staats [66] 着眼的是降低总内存占用（所需 GPU 内存的峰值），而 FlashAttention 着眼的是减少内存访问（内存读写的次数）。如第 2 节所说，内存访问量是决定运行时间的首要因素。减少内存访问也必然会降低所需的总内存（例如，若某次运算产生 A 次内存访问，则它的总内存需求至多是 A）。因此，FlashAttention 比标准注意力更快（快 2–4 倍），而 Rabe 和 Staats [66] 与标准注意力速度相当，或略慢一点。就所需的总内存而言，两种方法都节省了很多。第二个差别是，怎样把每个块的信息汇总起来交给下一块。Rabe 和 Staats [66] 用临时输出加上 softmax 归一化统计量来概括每个块。前向传播结束时，再用这些统计量把所有块的临时输出合成最终输出。FlashAttention 则是每处理完一个块就增量更新输出（算法 1 第 12 行），因此只需要保留一份输出（而不是 K 个块就留 K 份）。这意味着 FlashAttention 的总内存需求小于 Rabe 和 Staats [66]。最后一个主要差别在反向传播怎么算。Rabe 和 Staats [66] 用梯度检查点去重算注意力矩阵，以及每个块的临时输出。FlashAttention 则从分析上把反向传播简化了（附录 B.2 与 B.4）。它只重算注意力矩阵，不重算每个块的临时输出。这降低了反向传播的内存需求，并带来加速。"
+      },
+      {
+        "text": "Proof of Theorem 1. We first count the number of FLOPs and extra memory required. The dominating FLOPs are from matrix multiplication. In the inner loop, (Algorithm 1 line 9), we",
+        "x": 72,
+        "y": 325.2,
+        "w": 468,
+        "h": 21.9,
+        "zh": "定理 1 的证明。先数 FLOP 次数和所需的额外内存。占主导的 FLOP 来自矩阵乘法。在内层循环里（算法 1 第 9 行），我们"
+      },
+      {
+        "text": ", which takes 𝑂¹𝐵𝑟 𝐵𝑐𝑑º FLOPs. We also compute (Algorithm 1 line 12) P˜𝑖 𝑗V𝑗 2 R𝐵𝑟\u0002𝑑 for P˜𝑖 𝑗 2 R𝐵𝑟\u0002𝐵𝑐 and V𝑗 2 R𝐵𝑐\u0002𝑑, which takes 𝑂¹𝐵𝑟 𝐵𝑐𝑑º FLOPs. We execute the inner loops 𝑇𝑐𝑇𝑟 =",
+        "x": 70.8,
+        "y": 281.2,
+        "w": 469.2,
+        "h": 42,
+        "zh": "，这需要 O(B_r B_c d) 次 FLOP。我们还计算（算法 1 第 12 行）P̃_{ij} V_j ∈ R^{B_r×d}，其中 P̃_{ij} ∈ R^{B_r×B_c}，V_j ∈ R^{B_c×d}，这需要 O(B_r B_c d) 次 FLOP。内层循环一共执行 T_c T_r ="
+      },
+      {
+        "text": "times. Therefore the total number of FLOPs is",
+        "x": 249.4,
+        "y": 282.7,
+        "w": 205.4,
+        "h": 10,
+        "zh": "次。因此 FLOP 的总数为"
+      },
+      {
+        "text": "In terms of extra memory required, we see that we need 𝑂¹𝑁º memory to store the statistics ¹ℓ 𝑚º. We now prove the algorithm’s correctness by induction on 𝑗 for 0 \u0014 𝑗 \u0014 𝑇𝑐. Let K:𝑗 2 R",
+        "x": 86.9,
+        "y": 209.5,
+        "w": 435.8,
+        "h": 23.4,
+        "zh": "就额外内存而言，保存统计量 (ℓ, m) 需要 O(N) 的内存。下面用对 j 的归纳证明算法正确，其中 0 ≤ j ≤ T_c。设 K_{:j} ∈ R"
+      },
+      {
+        "text": "the the first 𝑗 𝐵𝑐 rows of V. Let S::𝑗 = QK:𝑗 2 R first 𝑗 𝐵𝑐 rows of K, and similarly V:𝑗 2 R P::𝑗 = softmax¹S::𝑗º 2 R",
+        "x": 72,
+        "y": 183,
+        "w": 419.9,
+        "h": 26,
+        "zh": "也就是 V 的前 j B_c 行。设 S_{:,:j} = Q K_{:j} ∈ R，对应 K 的前 j B_c 行；类似地，V_{:j} ∈ R，并且 P_{:,:j} = softmax(S_{:,:j}) ∈ R。"
+      },
+      {
+        "text": "be the values of 𝑚 ℓ O in HBM after the 𝑗-th iteration of the outer loop (Algorithm 1 line 5). (Note that these values of 𝑚 ℓ O are updated after each iteration of the outer loop.) We want to show that after the 𝑗-th iteration of the outer loop, we have computed in HBM:",
+        "x": 72,
+        "y": 148.7,
+        "w": 468,
+        "h": 45.8,
+        "zh": "表示外层循环第 j 次迭代之后，HBM 里 m、ℓ、O 的值。（注意：这些 m、ℓ、O 会在外层循环的每一次迭代之后被更新。）我们要说明，外层循环的第 j 次迭代结束时，HBM 里已经算出："
+      },
+      {
+        "text": "Based on our initialization (Algorithm 1 line 2), this claim is true for 𝑗 = 0 (i.e., before the any iteration of the outer loop is executed). Suppose that the claim holds for some 𝑗 = 0     𝑇𝑐 \u0000 1. We want to show that the claim also holds for 𝑗 ¸ 1. Indeed, when we update the statistics in the inner loop (Algorithm 1 line 10)",
+        "x": 72,
+        "y": 80.9,
+        "w": 469.2,
+        "h": 33.9,
+        "zh": "按初始化（算法 1 第 2 行），这一论断在 j = 0 时成立（也就是外层循环还没有任何一次迭代执行的时候）。假设论断对某个 j = 0, …, T_c − 1 成立。我们要说明它对 j + 1 也成立。事实上，当内层循环更新这些统计量时（算法 1 第 10 行），"
+      }
+    ],
+    "23": [
+      {
+        "text": " 𝑚˜º where 𝑚˜ 2 R on the ¹ 𝑗 ¸ 1º-th iteration of the outer loop, we update 𝑚 of S: 𝑗:𝑗¸1, the slice of S from column 𝑗 𝐵𝑐 to column ¹ 𝑗 ¸ 1º𝐵𝑐 \u0000 1. This implies that",
+        "x": 72,
+        "y": 695.7,
+        "w": 393.1,
+        "h": 23.4,
+        "zh": "以及 m̃，其中 m̃ ∈ R；这发生在外层循环的第 (j + 1) 次迭代。我们更新的是 S_{:, j:j+1} 所对应的 m，也就是 S 从第 j B_c 列到第 (j + 1) B_c − 1 列的那一片。由此可知"
+      },
+      {
+        "text": "where ℓ˜= rowsum¹exp¹S: 𝑗:𝑗¸1 \u0000 𝑚˜ºº 2 R𝑁 . By the same algebraic manipulation in Section 3.1, we obtain:",
+        "x": 71.6,
+        "y": 619.2,
+        "w": 460.6,
+        "h": 13.9,
+        "zh": "其中 ℓ̃ = rowsum(exp(S_{:, j:j+1} − m̃)) ∈ R^N。用第 3.1 节里同样的代数变形，得到："
+      },
+      {
+        "text": "Let V𝑗:𝑗¸1 be the slice of V from column 𝑗 𝐵𝑐 to column ¹ 𝑗 ¸ 1º𝐵𝑐 \u0000 1, we also update:",
+        "x": 86.9,
+        "y": 574.1,
+        "w": 375.7,
+        "h": 11.5,
+        "zh": "设 V_{j:j+1} 是 V 从第 j B_c 列到第 (j + 1) B_c − 1 列的那一片，我们同样更新："
+      },
+      {
+        "text": "exp¹S𝑗:𝑗¸1 \u0000 𝑚˜ºV𝑗:𝑗¸1º exp¹S𝑗:𝑗¸1ºV𝑗:𝑗¸1º",
+        "x": 344.1,
+        "y": 531.3,
+        "w": 95.1,
+        "h": 29.7,
+        "zh": ""
+      },
+      {
+        "text": "exp¹S𝑗:𝑗¸1ºV𝑗:𝑗¸1º exp¹S𝑗:𝑗¸1ºV𝑗:𝑗¸1º ºV:𝑗 ¸ exp¹S𝑗:𝑗¸1 \u0000 𝑚",
+        "x": 262.6,
+        "y": 478.1,
+        "w": 260.4,
+        "h": 46.5,
+        "zh": ""
+      },
+      {
+        "text": "We then see that the claim is also true for 𝑗 ¸ 1. By induction, the claim is true for all 𝑗 = 0     𝑇𝑐. When 𝑗 = 𝑇𝑐, we conclude that the final value of O in HBM is softmax¹SºV = softmax¹QK ºV.",
+        "x": 71.5,
+        "y": 400.2,
+        "w": 436.9,
+        "h": 23.4,
+        "zh": "于是这一论断对 j + 1 也成立。由归纳法，它对所有 j = 0, …, T_c 都成立。当 j = T_c 时，可以得出：HBM 中 O 的最终值是 softmax(S) V = softmax(QK) V。"
+      },
+      {
+        "text": "Proof of Theorem 2. We first analyze the IO complexity of standard attention implementation. The inputs",
+        "x": 72,
+        "y": 369.9,
+        "w": 468,
+        "h": 10,
+        "zh": "定理 2 的证明。先分析标准注意力实现的 IO 复杂度。其输入"
+      },
+      {
+        "text": "reside in HBM, and the at the end of the algorithm the output O 2 R In the first step of computing the matrix multiply S = QK , the inputs Q K are read from HBM and the",
+        "x": 86.9,
+        "y": 346,
+        "w": 453.1,
+        "h": 21.9,
+        "zh": "放在 HBM 里，并且算法结束时的输出是 O ∈ R。计算矩阵乘 S = QK 的第一步，会从 HBM 读入 Q、K，并且把"
+      },
+      {
+        "text": "is written to HBM (Algorithm 0 line 1). This incurs Θ¹𝑁 𝑑 ¸ 𝑁 º HBM accesses. In the second step of computing P = softmax¹Sº, the input S is read from HBM and the output P is written to HBM (Algorithm 0 line 2). This incurs Θ¹𝑁 º HBM accesses. In the last step of computing O = PV, the inputs P V are read from global memory and the output O is written to HBM (Algorithm 0 line 3). This incurs Θ¹𝑁 𝑑 ¸ 𝑁 º HBM accesses. Overall, standard attention implementation requires Θ¹𝑁 𝑑 ¸ 𝑁 º global memory accesses. We now analyze the IO complexity of streaming attention. Following Algorithm 1, we see that each element of K and V is loaded from HBM once (Algorithm 1 line 6). We make 𝑇𝑐 passes over Q and O, each pass loading all of Q and all of O to HBM (Algorithm 1 line 8). Therefore the number of HBM accesses is Θ ¹𝑁 𝑑 ¸ 𝑁 𝑑𝑇𝑐º = Θ¹𝑁 𝑑𝑇𝑐º. We derive the conditions on the block sizes 𝐵𝑐 and 𝐵𝑟. We need the blocks K𝑗 and V𝑗 of size 𝐵𝑐 \u0002 𝑑 to fit into on-chip memory, which translates to:",
+        "x": 71.6,
+        "y": 202.5,
+        "w": 469.4,
+        "h": 141.5,
+        "zh": "写入 HBM（算法 0 第 1 行）。这带来 Θ(N d + N) 次 HBM 访问。计算 P = softmax(S) 的第二步，从 HBM 读入 S，并把输出 P 写入 HBM（算法 0 第 2 行）。这带来 Θ(N) 次 HBM 访问。计算 O = PV 的最后一步，从全局内存读入 P、V，并把输出 O 写入 HBM（算法 0 第 3 行）。这带来 Θ(N d + N) 次 HBM 访问。总体而言，标准注意力实现需要 Θ(N d + N) 次全局内存访问。下面分析流式注意力的 IO 复杂度。按算法 1，K 和 V 的每个元素都只从 HBM 载入一次（算法 1 第 6 行）。我们对 Q 和 O 做 T_c 遍扫描，每一遍都把全部 Q 和全部 O 载入 HBM（算法 1 第 8 行）。因此 HBM 访问次数是 Θ(N d + N d T_c) = Θ(N d T_c)。接着推导块大小 B_c 与 B_r 要满足的条件。大小为 B_c × d 的块 K_j 和 V_j 必须放得进片上内存，这相当于："
+      },
+      {
+        "text": "Similarly, we need the blocks Q𝑖 O𝑖 of size 𝐵𝑟 \u0002 𝑑 to fit into on-chip memory, which translates to:",
+        "x": 72,
+        "y": 146.3,
+        "w": 425.7,
+        "h": 11.5,
+        "zh": "类似地，大小为 B_r × d 的块 Q_i、O_i 必须放得进片上内存，这相当于："
+      },
+      {
+        "text": "Finally, we need the block S𝑖 𝑗 of size 𝐵𝑟 \u0002 𝐵𝑐 to fit into on-chip memory, which translates to:",
+        "x": 72,
+        "y": 91.5,
+        "w": 405.7,
+        "h": 11.5,
+        "zh": "最后，大小为 B_r × B_c 的块 S_{ij} 必须放得进片上内存，这相当于："
+      }
+    ],
+    "24": [
+      {
+        "text": "As a result, the number of HBM accesses is:",
+        "x": 86.9,
+        "y": 631.3,
+        "w": 192.5,
+        "h": 10,
+        "zh": "因此，HBM 访问次数为："
+      },
+      {
+        "text": "Proof of Proposition 3. For contradiction, suppose that there exists an algorithm that computes exact attention where the number for HBM access for all 𝑀 2 »𝑑 𝑁 𝑑¼ is",
+        "x": 72,
+        "y": 546.1,
+        "w": 468.3,
+        "h": 21.9,
+        "zh": "命题 3 的证明。用反证法。假设存在一种计算精确注意力的算法，使得对所有 M ∈ [d, N d]，HBM 访问次数都是"
+      },
+      {
+        "text": "In the regime of 𝑀 = Θ¹𝑁 𝑑º, this results in the number of HBM accesses:",
+        "x": 86.9,
+        "y": 490.8,
+        "w": 320.7,
+        "h": 10,
+        "zh": "在 M = Θ(N d) 这个范围内，这将导致如下的 HBM 访问次数："
+      },
+      {
+        "text": "However, the input to attention (matrices Q K V) and the output O have size 𝑁 𝑑 and they start out being in HBM, so if the algorithm computes exact attention it must incur at least Ω¹𝑁 𝑑º HBM accesses. This is a",
+        "x": 72,
+        "y": 423.1,
+        "w": 468,
+        "h": 21.9,
+        "zh": "然而，注意力的输入（矩阵 Q、K、V）和输出 O 的大小都是 N d，而且它们一开始就在 HBM 里。因此，只要算法计算的是精确注意力，就至少要产生 Ω(N d) 次 HBM 访问。这是一个"
+      },
+      {
+        "text": "Proof of Theorem 5. The IO complexity of the attention backward is very similar to the IO complexity of the attention forward (Theorem 2). Here we provide a sketch of the proof. We first analyze the IO complexity of standard attention backward pass. The inputs Q K V dO 2 R reside in HBM, and the at the end of the algorithm the outputs dQ dK dV 2 R At each step of the standard attention backward pass, one needs to load inputs of size 𝑁 𝑑 or 𝑁 HBM, and needs to write the outputs of size 𝑁 We now analyze the IO complexity of FlashAttention backward pass. Similar to Theorem 2, we see that each element of K and V is loaded from HBM once. Each element of dK and dV is only written to HBM once. We make 𝑇𝑐 passes over Q O dO, each pass loading all of Q O dO to HBM. We also make 𝑇𝑐 passes over dQ, each pass reading/writing all of dQ from/to HBM. Therefore the number of HBM accesses is Θ ¹𝑁 𝑑 ¸ 𝑁 𝑑𝑇𝑐º = Θ¹𝑁 𝑑𝑇𝑐º. As in the proof of Theorem 2, the constraints on the block sizes are that:",
+        "x": 72,
+        "y": 259.8,
+        "w": 468,
+        "h": 141.5,
+        "zh": "定理 5 的证明。注意力反向传播的 IO 复杂度与前向传播的 IO 复杂度非常接近（定理 2）。这里只给一个证明提纲。先看标准注意力反向传播的 IO 复杂度。输入 Q、K、V、dO ∈ R 放在 HBM 里，算法结束时的输出是 dQ、dK、dV ∈ R。标准注意力反向传播的每一步，都要从 HBM 载入大小为 N d 或 N 的输入，并写出大小为 N 的输出。再看 FlashAttention 反向传播的 IO 复杂度。与定理 2 类似，K 和 V 的每个元素都只从 HBM 载入一次。dK 和 dV 的每个元素都只写入 HBM 一次。我们对 Q、O、dO 做 T_c 遍扫描，每一遍都把全部 Q、O、dO 载入 HBM。我们还对 dQ 做 T_c 遍扫描，每一遍都把全部 dQ 从 HBM 读出或写回 HBM。因此 HBM 访问次数是 Θ(N d + N d T_c) = Θ(N d T_c)。与定理 2 的证明一样，块大小受到的约束是："
+      },
+      {
+        "text": "or 𝑁 𝑑 to HBM. This incurs Θ¹𝑁 𝑑 ¸ 𝑁 º HBM accesses.",
+        "x": 285.5,
+        "y": 331.5,
+        "w": 241.9,
+        "h": 10,
+        "zh": "或是 N d，写到 HBM。这带来 Θ(N d + N) 次 HBM 访问。"
+      },
+      {
+        "text": "As a result, the number of HBM accesses is:",
+        "x": 86.9,
+        "y": 166,
+        "w": 192.5,
+        "h": 10,
+        "zh": "因此，HBM 访问次数为："
+      }
+    ],
+    "25": [
+      {
+        "text": "Algorithm 5 Block-Sparse FlashAttention Forward Pass Require: Matrices Q K V 2 R",
+        "x": 71.6,
+        "y": 692.6,
+        "w": 251,
+        "h": 26.8,
+        "zh": "算法 5　块稀疏 FlashAttention 的前向传播。输入：矩阵 Q、K、V ∈ R。"
+      },
+      {
+        "text": "in HBM, on-chip SRAM of size 𝑀, softmax scaling constant\u0006 masking function mask, dropout probability 𝑝drop, block sizes 𝐵𝑐 = sparsity mask 𝑀 2 f0 1g 1: Initialize the pseudo-random number generator state R and save to HBM. 2: Initialize O = ¹0º𝑁\u0002𝑑l 2 mR",
+        "x": 77.4,
+        "y": 639.9,
+        "w": 431.4,
+        "h": 62.7,
+        "zh": "位于 HBM 中；片上 SRAM 的容量为 M；softmax 缩放常数；掩码函数 mask；dropout 概率 p_drop；块大小 B_c =；稀疏掩码 M ∈ {0, 1}。1：初始化伪随机数生成器状态 R，并保存到 HBM。2：把 O 初始化为 (0)_{N×d}。"
+      },
+      {
+        "text": " ℓ = ¹0º𝑁 2 R  𝑚 = ¹\u00001º𝑁 2 R 3: Divide Q into 𝑇𝑟 =",
+        "x": 77.4,
+        "y": 627.4,
+        "w": 274,
+        "h": 26,
+        "zh": "ℓ = (0)_N ∈ R，m = (−1)_N ∈ R。3：把 Q 分成 T_r ="
+      },
+      {
+        "text": "blocks Q1     Q𝑇𝑟 of size 𝐵𝑟 \u0002 𝑑 each, and divide K V in to 𝑇𝑐 = K1     K𝑇𝑐 and V1     V𝑇𝑐, of size 𝐵𝑐 \u0002 𝑑 each. 4: Divide O into 𝑇𝑟 blocks O𝑖     O𝑇𝑟 of size 𝐵𝑟 \u0002 𝑑 each, divide ℓ into 𝑇𝑟 blocks ℓ𝑖     ℓ𝑇𝑟 of size 𝐵𝑟 each, divide 𝑚 into 𝑇𝑟 blocks 𝑚1     𝑚𝑇𝑟 of size 𝐵𝑟 each. 5: for 1 \u0014 𝑗 \u0014 𝑇𝑐 do Load K𝑗 V𝑗 from HBM to on-chip SRAM. for 1 \u0014 𝑖 \u0014 𝑇𝑟 do",
+        "x": 77.4,
+        "y": 553.4,
+        "w": 464,
+        "h": 85.5,
+        "zh": "大小各为 B_r × d 的块 Q_1, …, Q_{T_r}，并把 K、V 分成 T_c 块，即大小各为 B_c × d 的 K_1, …, K_{T_c} 与 V_1, …, V_{T_c}。4：把 O 分成 T_r 个大小为 B_r × d 的块 O_i, …, O_{T_r}，把 ℓ 分成 T_r 个大小为 B_r 的块 ℓ_i, …, ℓ_{T_r}，把 m 分成 T_r 个大小为 B_r 的块 m_1, …, m_{T_r}。5：对 1 ≤ j ≤ T_c，把 K_j、V_j 从 HBM 载入片上 SRAM。对 1 ≤ i ≤ T_r，"
+      },
+      {
+        "text": "Load Q𝑖 O𝑖 ℓ𝑖 𝑚𝑖 from HBM to on-chip SRAM. On chip, compute S𝑖 𝑗 = 𝜏Q𝑖K𝑇 2 R𝐵𝑟\u0002𝐵𝑐. On chip, compute S𝑖 𝑗 On chip, compute 𝑚˜𝑖 𝑗 = rowmax¹Smaskedº 2 R𝐵𝑟 , P˜𝑖 𝑗 = exp¹Smasked \u0000 𝑚˜𝑖 𝑗º 2 R𝐵𝑟\u0002𝐵𝑐 (pointwise), ℓ˜𝑖 𝑗 = rowsum¹P˜𝑖 𝑗º 2 R𝐵𝑟 . On chip, compute 𝑚new = max¹𝑚𝑖 𝑚˜𝑖 𝑗º 2 R𝐵𝑟 , ℓnew = 𝑒𝑚𝑖\u0000𝑚𝑖 On chip, compute P˜dropped = dropout¹P˜𝑖 𝑗 𝑝dropº.",
+        "x": 118.8,
+        "y": 446.3,
+        "w": 422.6,
+        "h": 94.6,
+        "zh": "把 Q_i、O_i、ℓ_i、m_i 从 HBM 载入片上 SRAM。在片上计算 S_{ij} = τ Q_i K^T ∈ R^{B_r×B_c}。在片上计算 S_{ij}。在片上计算 m̃_{ij} = rowmax(S_masked) ∈ R^{B_r}，P̃_{ij} = exp(S_masked − m̃_{ij}) ∈ R^{B_r×B_c}（逐点），ℓ̃_{ij} = rowsum(P̃_{ij}) ∈ R^{B_r}。在片上计算 m_new = max(m_i, m̃_{ij}) ∈ R^{B_r}，ℓ_new = e^{m_i − m_i}。在片上计算 P̃_dropped = dropout(P̃_{ij}, p_drop)。"
+      },
+      {
+        "text": "diag¹ℓnewº\u00001¹diag¹ℓ𝑖º𝑒𝑚𝑖\u0000𝑚newO𝑖 ¸ 𝑒𝑚˜𝑖 𝑗\u0000𝑚newP˜droppedV𝑗º to HBM.",
+        "x": 172.8,
+        "y": 430.7,
+        "w": 283.1,
+        "h": 14,
+        "zh": ""
+      },
+      {
+        "text": "Block-sparse FlashAttention We describe the full block-sparse FlashAttention algorithm in Algorithm 5. The algorithm is identical to Algorithm 2, except that we skip zero blocks. We prove the IO-complexity of block-sparse FlashAttention.",
+        "x": 71.5,
+        "y": 270.7,
+        "w": 468.5,
+        "h": 54.3,
+        "zh": "块稀疏 FlashAttention。算法 5 给出完整的块稀疏 FlashAttention。它与算法 2 相同，只是会跳过零块。下面证明它的 IO 复杂度。"
+      },
+      {
+        "text": "Proof of Proposition 4. The proof is very similar to the proof of Theorem 2. For the block-sparse case, notice that we only need to load blocks corresponding to nonzero blocks. As a result, the number of HBM accesses are scaled by 𝑠, the fraction of nonzero blocks in the block-sparsity mask. However, for small values of 𝑠, we would still need to write the result O 2 R",
+        "x": 71.6,
+        "y": 214.9,
+        "w": 468.4,
+        "h": 45.8,
+        "zh": "命题 4 的证明。证明与定理 2 的证明非常相似。在块稀疏的情形下，只需载入非零块所对应的那些块。因此 HBM 访问次数按 s 缩放，s 是块稀疏掩码里非零块所占的比例。不过，当 s 很小的时候，仍然要把结果 O ∈ R 写出去。"
+      },
+      {
+        "text": ". Therefore the number of HBM accesses is",
+        "x": 268.3,
+        "y": 214.9,
+        "w": 188.6,
+        "h": 10,
+        "zh": "。因此 HBM 访问次数为"
+      },
+      {
+        "text": "Potential Extensions We discuss here a few potential extensions of the IO-aware approach to speed up deep learning training. Multi-GPU Attention. Large language models are trained on hundreds or thousands of GPUs, and one typically splits the attention computation between 4-8 GPUs on the same node [77]. This introduces another level of memory hierarchy: beside GPU SRAM and GPU HBM, we also have the HBM of other",
+        "x": 71.5,
+        "y": 81.3,
+        "w": 468.7,
+        "h": 66.2,
+        "zh": "可能的扩展。这里讨论几处可以把 IO 感知的想法用去加快深度学习训练的地方。多 GPU 注意力。大语言模型在数百乃至数千块 GPU 上训练，通常会把注意力计算分到同一节点上的 4 到 8 块 GPU [77]。这就又多出一层内存层次：除了本卡的 GPU SRAM 和 GPU HBM，还有其他卡上的"
+      }
+    ],
+    "26": [
+      {
+        "text": "GPUs. For very long sequences, the different GPUs on the same node can cooperate to compute attention by taking into account the asymmetry of different levels of memory hierarchy. Sparse MLP layers. Typical dense MLP layers are compute-bound and not memory-bound. To improve their efficiency, MLP layers with sparse weight matrices can be used [17]. However, many sparse MLP layers are instead memory-bound, and their speedup is often not proportional to the sparsity. We believe that an IO-aware implementation can alleviate this issue and realize the benefits of sparsity. We are excited about future work in this direction, to reduce the computational requirement of large models and improve their",
+        "x": 72,
+        "y": 637.4,
+        "w": 468.4,
+        "h": 81.7,
+        "zh": "GPU。序列非常长的时候，同一节点上的不同 GPU 可以协作计算注意力，并把内存层次里各层速度不对称这一点考虑进去。稀疏 MLP 层。典型的稠密 MLP 层是计算受限的，不是内存受限的。为了提高效率，可以使用权重矩阵稀疏的 MLP 层 [17]。然而，许多稀疏 MLP 层反而变成内存受限，加速往往与稀疏度不成比例。我们相信，一种 IO 感知的实现可以缓解这个问题，并把稀疏性的好处兑现出来。我们期待沿这个方向继续做下去，以降低大模型的计算需求，并改善它们的"
+      },
+      {
+        "text": "Kernel machine learning. Our approach in FlashAttention relies on the fact that the 𝑁 \u0002 𝑁 attention matrix is a function of a low-rank matrix QK load the inputs Q K and recompute the block of the attention matrix that we need, significantly reducing HBM access. As similar scenario happens in kernel machine learning: each element 𝐾𝑖 𝑗 of the 𝑁 \u0002 𝑁 kernel matrix K is a function of two vectors of size 𝑑 \u001c 𝑁, as it measures the similarity between two datapoints 𝑥𝑖 and 𝑥𝑗. The KeOps library [8, 26] is a successful example of how reducing memory reads/writes can speed up kernel operations. We hope that this will motivate kernel methods that focus more on reducing IOs instead",
+        "x": 72,
+        "y": 541.8,
+        "w": 468,
+        "h": 81.7,
+        "zh": "核方法机器学习。FlashAttention 的做法依赖于如下事实：N×N 的注意力矩阵是低秩矩阵 QK 的函数。载入输入 Q、K，并重算我们需要的那一块注意力矩阵，就能显著减少 HBM 访问。核方法里也有类似的情形：N×N 核矩阵 K 的每个元素 K_{ij}，都是两个大小为 d ≪ N 的向量的函数，因为它衡量的是数据点 x_i 与 x_j 的相似度。KeOps 库 [8, 26] 是一个成功的例子，说明减少内存读写可以加快核运算。我们希望这能推动核方法把更多力气花在减少 IO 上，而不是"
+      },
+      {
+        "text": "(of rank 𝑑 \u001c 𝑁). As a result, we can repeatedly",
+        "x": 326.6,
+        "y": 601.6,
+        "w": 213.8,
+        "h": 10,
+        "zh": "（秩为 d ≪ N）。因此，我们可以反复地"
+      },
+      {
+        "text": "We train BERT-large following the training procedure and hyperparameters of the reference MLPerf 1.1 implementation. In particular, we use the LAMB optimizer with learning rate 3.75e-3, with batch size 448, trained for at most 7100 steps. The training is stopped once the validation accuracy (for masked language modeling) reaches the target 72.0%, and the wall-clock run-time is measured. We train with FP16 precision",
+        "x": 71.5,
+        "y": 418.8,
+        "w": 469.9,
+        "h": 45.8,
+        "zh": "我们按 MLPerf 1.1 参考实现的训练流程和超参数来训练 BERT-large。具体来说，使用 LAMB 优化器，学习率为 3.75e-3，批大小为 448，最多训练 7100 步。一旦验证准确率（针对掩码语言建模）达到目标 72.0%，就停止训练，并测量墙钟运行时间。训练使用 FP16 精度，"
+      },
+      {
+        "text": "using Apex AMP (with O2 optimization level).",
+        "x": 72,
+        "y": 406.9,
+        "w": 205.8,
+        "h": 10,
+        "zh": "并使用 Apex AMP（优化级别为 O2）。"
+      },
+      {
+        "text": "We compare our results with the reported training speed from Nvidia that was submitted to MLPerf 1.1",
+        "x": 86.9,
+        "y": 394.9,
+        "w": 454.1,
+        "h": 10,
+        "zh": "我们把结果与 Nvidia 提交给 MLPerf 1.1 的那份已公布训练速度相比较。"
+      },
+      {
+        "text": "We use the same train / validation data split provided by MLPerf 1.1 reference implementation. In particular, we evaluate on the same 10000 validation examples as the baseline from Nvidia. We train the model on 8\u0002A100-80GB GPUs. Each training run takes between 16 and 19 minutes, and we",
+        "x": 72,
+        "y": 347.1,
+        "w": 468,
+        "h": 33.9,
+        "zh": "我们使用 MLPerf 1.1 参考实现所提供的同一套训练 / 验证划分。具体来说，评估用的是与 Nvidia 基线相同的 10000 个验证样本。模型在 8×A100-80GB GPU 上训练。每次训练运行耗时 16 到 19 分钟，并且我们"
+      },
+      {
+        "text": "We use the standard implementations of GPT-2 [67] from Huggingface transformers library and from Nvidia’s Megatron-LM repo. We follow the training recipe of the Megatron-LM repo. We use an effective batch size of 512, and use gradient accumulation to fit into available GPU memory. We use the AdamW optimizer, with learning rate 6e-4 for GPT-2 small and 1.5e-4 for GPT-2 medium, and weight decay of 0.1. All models are trained with the same hyperparameters for 400K steps. We run all implementations with mixed-precision training (PyTorch AMP). We use the Openwebtext dataset, with the GPT-2 BPE tokenizer. We randomly select 0.5% of the dataset as the validation set, with the rest being used as training set. This random selection of validation set is done once, and all models are evaluated on the same validation set. We train the model on 8\u0002A100-40GB GPUs, and we measure the wall-clock training time. Training GPT-2 small takes between 2.7-9.5 days, and training GPT-2 medium takes between 6.9-21.0 days (Table 2). In Fig. 4, we plot of the validation perplexity throughout training of GPT-2 small/medium, using either HuggingFace implementation or our FlashAttention implementation. We see that FlashAttention behaves the same as the baseline implementation and the validation perplexity curves of the two implementations",
+        "x": 71.5,
+        "y": 133.5,
+        "w": 470.4,
+        "h": 165.4,
+        "zh": "我们使用 Huggingface transformers 库以及 Nvidia Megatron-LM 仓库里 GPT-2 [67] 的标准实现，并遵循 Megatron-LM 仓库的训练配方。有效批大小为 512，并用梯度累积来适应现有的 GPU 内存。优化器是 AdamW：GPT-2 small 的学习率为 6e-4，GPT-2 medium 为 1.5e-4，权重衰减为 0.1。所有模型都用同一组超参数训练 400K 步。所有实现都以混合精度训练（PyTorch AMP）运行。数据用 Openwebtext，分词器用 GPT-2 的 BPE 分词器。我们随机抽出数据集的 0.5% 作为验证集，其余作为训练集。这次随机抽取只做一遍，所有模型都在同一个验证集上评估。训练在 8×A100-40GB GPU 上进行，并测量墙钟训练时间。训练 GPT-2 small 需要 2.7 到 9.5 天，训练 GPT-2 medium 需要 6.9 到 21.0 天（表 2）。图 4 画出 GPT-2 small 与 medium 在整个训练过程中的验证困惑度，实现分别来自 HuggingFace 和我们的 FlashAttention。可以看到，FlashAttention 的行为与基线实现一致，两条实现的验证困惑度曲线"
+      },
+      {
+        "text": "For MIMIC-III and ECtHR, we follow the hyperparameters of Dai et al.",
+        "x": 234.5,
+        "y": 95.6,
+        "w": 307.4,
+        "h": 10,
+        "zh": "对 MIMIC-III 和 ECtHR，我们沿用 Dai 等人的超参数。"
+      }
+    ],
+    "27": [
+      {
+        "text": "GPT-2-small HuggingFace GPT-2-small FlashAttention GPT-2-medium HuggingFace GPT-2-medium FlashAttention",
+        "x": 286.6,
+        "y": 642.3,
+        "w": 168.6,
+        "h": 60.6,
+        "zh": "GPT-2-small，HuggingFace。GPT-2-small，FlashAttention。GPT-2-medium，HuggingFace。GPT-2-medium，FlashAttention"
+      },
+      {
+        "text": "Figure 4: Validation perplexity of GPT-2 small/medium using two implementations. We confirm that FlashAttention yields the same validation curves as the baseline implementation from HuggingFace.",
+        "x": 72,
+        "y": 433.6,
+        "w": 468.3,
+        "h": 21.9,
+        "zh": "图 4：两种实现下 GPT-2 small 与 medium 的验证困惑度。我们确认，FlashAttention 给出的验证曲线与 HuggingFace 的基线实现相同。"
+      },
+      {
+        "text": "We follow the hyperparameters from the Long-range arena paper [80], the Long-range arena repo (https: //github.com/google-research/long-range-arena), and the Nyströmformer reproduction [90]. To be generous to the baseline methods, if we are unable to reproduce the performance of any baseline for any of the five tasks, we report the better performance from Tay et al. [80] or Xiong et al. [90] for that baseline on",
+        "x": 71.5,
+        "y": 346.3,
+        "w": 471.1,
+        "h": 45.8,
+        "zh": "我们沿用 Long-range arena 论文 [80]、Long-range arena 仓库（https://github.com/google-research/long-range-arena）以及 Nyströmformer 复现工作 [90] 里的超参数。为了对基线方法从宽，只要五个任务里有任何一个基线是我们无法复现的，就采用 Tay 等人 [80] 或 Xiong 等人 [90] 为该基线报告的更好的那一份结果。"
+      },
+      {
+        "text": "After hyperparameter tuning, almost all of the attention methods achieve similar accuracy on all of the",
+        "x": 86.9,
+        "y": 322.4,
+        "w": 453.1,
+        "h": 10,
+        "zh": "超参数调完之后，几乎所有注意力方法都达到了相近的准确率，而且是在全部"
+      },
+      {
+        "text": "We run all methods with mixed-precision training, except for Performer (not stable with mixed precision) and Local Attention (implementation does not support FP16). To calculate the overall wallclock-time speedup, we take the geometric mean of the wallclock-time speedup",
+        "x": 72,
+        "y": 274.6,
+        "w": 469.2,
+        "h": 33.9,
+        "zh": "除 Performer（混合精度下不稳定）和 Local Attention（其实现不支持 FP16）之外，所有方法都用混合精度训练来跑。计算总体墙钟加速时，我们取各次墙钟加速的几何平均。"
+      },
+      {
+        "text": "For Path-X and Path-256, we follow the hyperparameters from the PathFinder-32 experiments from the long-range arena paper[80]. For both, we first pretrain a model on Path-64. We take the checkpoint after 200 epochs, upsample its positional embedding (we duplicate the positional embeddings gridwise in space), and fine-tune it on the downstream task for 200 epochs with one epoch of linear warmup, and cosine decay of the learning rate. For Path-X, we take the best performing checkpoint (according to val accuracy), and additionally fine-tune it for 200 epochs with the same warmup and learning rate (this adds roughly 4 points of accuracy to FlashAttention for Path-X, but the model starts overfitting afterwards).",
+        "x": 72,
+        "y": 165.1,
+        "w": 469.4,
+        "h": 81.7,
+        "zh": "对 Path-X 和 Path-256，我们沿用 long-range arena 论文 [80] 里 PathFinder-32 实验的超参数。两者都先在 Path-64 上预训练一个模型。取 200 个 epoch 之后的检查点，把它的位置编码上采样（在空间上按网格把位置编码复制一遍），再在下游任务上微调 200 个 epoch，其中含 1 个 epoch 的线性预热，学习率按余弦衰减。对 Path-X，再取验证准确率最好的那个检查点，用同样的预热和学习率额外微调 200 个 epoch（这大约给 FlashAttention 在 Path-X 上增加 4 个点的准确率，但此后模型开始过拟合）。"
+      },
+      {
+        "text": "We compare our method/implementation with Apex FMHA (https://github.com/NVIDIA/apex/tree/",
+        "x": 71.5,
+        "y": 119,
+        "w": 469.6,
+        "h": 10,
+        "zh": "我们把本文的方法与实现，同 Apex FMHA 做比较（https://github.com/NVIDIA/apex/tree/）。"
+      },
+      {
+        "text": "When we started this project, Apex FMHA was the fastest implementation of attention (that we knew of), tailored for short sequences of length at most 512. In fact, almost all MLPerf submissions for BERT training benchmark running on Nvidia GPUs use FMHA for their model code, as of MLPerf 1.1 [58]. Since",
+        "x": 72,
+        "y": 71.1,
+        "w": 468.4,
+        "h": 33.9,
+        "zh": "本项目开始的时候，Apex FMHA 是我们所知道的最快的注意力实现，并且是为长度至多 512 的短序列专门做的。事实上，截至 MLPerf 1.1 [58]，几乎所有在 Nvidia GPU 上提交 BERT 训练基准的 MLPerf 结果，模型代码用的都是 FMHA。由于"
+      }
+    ],
+    "28": [
+      {
+        "text": "Table 7: Runtime (ms) of FlashAttention compared to FMHA by sequence length, with masking and dropout, measured on an A100-SXM4-40GB GPU. Batch size 64, 16 heads, head dimension 64 (i.e., BERT-large size).",
+        "x": 71.7,
+        "y": 700.5,
+        "w": 469.6,
+        "h": 19.9,
+        "zh": "表 7：FlashAttention 与 FMHA 在不同序列长度下的运行时间（毫秒），带掩码和 dropout，测于一块 A100-SXM4-40GB GPU。批大小 64，16 个头，头维度 64（也就是 BERT-large 的规模）。"
+      },
+      {
+        "text": "Apex FMHA forward + backward FlashAttention forward + backward",
+        "x": 166.8,
+        "y": 609.1,
+        "w": 182.9,
+        "h": 19.9,
+        "zh": "Apex FMHA 的前向加反向。FlashAttention 的前向加反向"
+      },
+      {
+        "text": "FMHA targets BERT models, it only supports head dimension 64, and only runs on A100 GPUs. FMHA fuses the attention computation dropout¹softmax¹mask¹QK ºººV into one CUDA kernel. In the forward pass, it stores the attention matrix softmax¹mask¹QK ºº to HBM to be used in gradient computation. As a result, it does not offer substantial memory saving (though for shorter sequences memory footprint is often",
+        "x": 72,
+        "y": 538.2,
+        "w": 468.4,
+        "h": 45.8,
+        "zh": "FMHA 面向的是 BERT 模型，因此只支持头维度 64，并且只在 A100 GPU 上运行。它把注意力计算 dropout(softmax(mask(QK)))V 融进一个 CUDA kernel。前向传播时，它把注意力矩阵 softmax(mask(QK)) 存进 HBM，供后面算梯度使用。因此它并没有省下多少内存（不过序列较短时，内存占用往往"
+      },
+      {
+        "text": "We use FMHA code as a starting point, and apply two well-established techniques (tiling and recomputation) to deal with long sequences and to save memory as mentioned in Section 3. As a result, we can support much longer sequences (e.g., up to length 64K). We also support more head dimensions (16, 32, 64, 128) and broader GPU types (all Turing and Ampere GPUs at the time of writing). In Table 7, we compare the performance of FlashAttention and Apex FMHA for short sequences (as FMHA only supports sequence length at most 512). Generally FlashAttention is slightly faster than FMHA in the forward pass and slightly slower than FMHA in the backward pass. This is because we do not store the attention matrix in the forward pass and recompute it in the backward pass. Compared to FMHA, the overall runtime of FlashAttention is about 4% slower for sequence length 128, 8% faster for sequence length 256, and 5% faster for sequence length 512.",
+        "x": 72,
+        "y": 406.7,
+        "w": 469.7,
+        "h": 117.6,
+        "zh": "我们以 FMHA 的代码为起点，用上两项成熟技术（分块和重计算）来对付长序列，并按第 3 节所说的方式节省内存。这样就能支持长得多的序列（例如一直到 64K）。我们也支持更多头维度（16、32、64、128），以及更广的 GPU 类型（撰写本文时的全部 Turing 和 Ampere GPU）。表 7 比较了 FlashAttention 与 Apex FMHA 在短序列上的表现（FMHA 只支持长度至多 512 的序列）。总的来说，FlashAttention 的前向略快于 FMHA，反向略慢于 FMHA。原因是我们不在前向里保存注意力矩阵，而在反向里把它重算出来。与 FMHA 相比，FlashAttention 的总运行时间在序列长度 128 时大约慢 4%，在 256 时大约快 8%，在 512 时大约快 5%。"
+      },
+      {
+        "text": "Speedup On Different Hardware and Configurations Speedup varies between different types of GPU types and generations depending on HBM bandwidth and SRAM size. In this section, we profile FlashAttention speedup on different GPUs and configurations.",
+        "x": 72,
+        "y": 348.7,
+        "w": 468,
+        "h": 42.3,
+        "zh": "不同硬件和配置上的加速。加速幅度随 GPU 的类型和代际变化，取决于 HBM 带宽和 SRAM 容量。本节在不同 GPU 和配置上测量 FlashAttention 的加速。"
+      },
+      {
+        "text": "Figure 5: Speedup over standard PyTorch attention at different sequence lengths, on A100.",
+        "x": 106.6,
+        "y": 133.7,
+        "w": 398.7,
+        "h": 10,
+        "zh": "图 5：在 A100 上、不同序列长度下，相对标准 PyTorch 注意力的加速。"
+      },
+      {
+        "text": "Figure 5 shows speedup on an A100 GPU with batch size 8, head dimension 64, and 12 attention heads, across different sequence lengths. We generally see 2-4\u0002 speedup, and we see more speedup when using dropout and masking due to kernel fusion.",
+        "x": 72,
+        "y": 71.1,
+        "w": 468,
+        "h": 33.9,
+        "zh": "图 5 是在一块 A100 GPU 上的加速，批大小为 8，头维度为 64，12 个注意力头，序列长度各不相同。一般能看到 2 到 4 倍的加速；加上 dropout 和掩码之后，由于做了核融合，加速更大。"
+      }
+    ],
+    "29": [
+      {
+        "text": "Figure 6: Speedup over standard PyTorch attention at different sequence lengths, on A100, with head",
+        "x": 72,
+        "y": 527.3,
+        "w": 468,
+        "h": 10,
+        "zh": "图 6：在 A100 上、不同序列长度下，相对标准 PyTorch 注意力的加速；头"
+      },
+      {
+        "text": "Speedup also changes when we increase the head dimension. Each block requires more memory, so we need to use smaller block sizes to fit into SRAM. Figure 6 shows speedup with head dimension 128 on an A100 (batch size 16, 12 heads). We see less speedup overall—but we can still see significant speedup (up to 3\u0002) with a causal mask, where half the blocks are masked out.",
+        "x": 72,
+        "y": 446,
+        "w": 468.3,
+        "h": 45.8,
+        "zh": "把头维度加大之后，加速也会变。每个块要占更多内存，所以必须把块改小，才能放进 SRAM。图 6 是头维度为 128 时在 A100 上的加速（批大小 16，12 个头）。总体加速变小了，但在因果掩码下仍然看得到明显加速（最高 3 倍），因为有一半的块被掩掉了。"
+      },
+      {
+        "text": "Figure 7: Speedup over standard PyTorch attention at different sequence lengths, on RTX 3090.",
+        "x": 95.6,
+        "y": 229.9,
+        "w": 420.7,
+        "h": 10,
+        "zh": "图 7：在 RTX 3090 上、不同序列长度下，相对标准 PyTorch 注意力的加速。"
+      },
+      {
+        "text": "Figure 7 shows speedup on an RTX 3090 GPU. Here, we use batch size 12 with 12 attention heads. We observe slightly higher speedups on the RTX 3090 (between 2.5-4.5\u0002), since the memory bandwidth on an RTX 3090 is lower than on an A100 (roughly 900 GB/s vs. 1.5 TB/s).",
+        "x": 72,
+        "y": 167,
+        "w": 468,
+        "h": 33.9,
+        "zh": "图 7 是在一块 RTX 3090 GPU 上的加速。这里批大小为 12，有 12 个注意力头。RTX 3090 上的加速略高一些（介于 2.5 到 4.5 倍），因为它的内存带宽低于 A100（大约 900 GB/s，对比 1.5 TB/s）。"
+      },
+      {
+        "text": "Figure 8 shows speedup on a T4 GPU. T4 SRAM is smaller than A100, so we need to make the block sizes smaller in FlashAttention. As a result, we observe less speedup on T4, which matches the IO complexity analysis in Section 3.2. T4 GPUs are commonly used for inference, so we also report speedup on the forward pass only.",
+        "x": 72,
+        "y": 105.3,
+        "w": 468.3,
+        "h": 45.8,
+        "zh": "图 8 是在一块 T4 GPU 上的加速。T4 的 SRAM 比 A100 小，所以 FlashAttention 里必须把块设得更小。结果是 T4 上的加速更小，这与第 3.2 节的 IO 复杂度分析一致。T4 常被用来做推理，因此我们也单独报告只算前向时的加速。"
+      }
+    ],
+    "30": [
+      {
+        "text": "Figure 8: Speedup over standard PyTorch attention at different sequence lengths, on T4. Top: Combined forward pass + backward pass. Bottom: Forward pass only.",
+        "x": 72,
+        "y": 324.7,
+        "w": 468,
+        "h": 21.9,
+        "zh": "图 8：在 T4 上、不同序列长度下，相对标准 PyTorch 注意力的加速。上：前向与反向合计。下：只有前向。"
+      },
+      {
+        "text": "We report the full benchmarking results and experimental details on A100.",
+        "x": 71.5,
+        "y": 272.9,
+        "w": 327.6,
+        "h": 10,
+        "zh": "下面给出在 A100 上的完整基准结果和实验细节。"
+      },
+      {
+        "text": "We compare against reference implementations for exact attention from PyTorch/HuggingFace and Megatron, approximate attention, and sparse attention. For approximate attention, we compare against reference implementations of Reformer [51], Local Attention [68], Linformer Attention [84], Smyrf [19], and LongShortFormer (LSFormer) [94]. For sparse attention, we compare against reference implementations of Block-Sparse Attention form OpenAI [11], Longformer[3], and BigBird Attention [92]. For the approximate and sparse attention, we use a compression ratio of 1/8, or a compressed sequence length of 256, whichever is",
+        "x": 72,
+        "y": 187.2,
+        "w": 468.3,
+        "h": 69.7,
+        "zh": "比较对象是精确注意力、近似注意力和稀疏注意力的参考实现。精确注意力来自 PyTorch/HuggingFace 和 Megatron。近似注意力方面，我们比较 Reformer [51]、Local Attention [68]、Linformer Attention [84]、Smyrf [19] 和 LongShortFormer（LSFormer）[94] 的参考实现。稀疏注意力方面，我们比较 OpenAI 的 Block-Sparse Attention [11]、Longformer [3] 和 BigBird Attention [92] 的参考实现。对近似注意力和稀疏注意力，压缩比取 1/8，或者把序列压到长度 256，二者取"
+      },
+      {
+        "text": "We measure runtime and memory usage of the attention computation with 8 heads of dimension 64, and batch size 16 on a machine with one A100 GPU with 40 GB of GPU HBM. We vary sequence length in our experiments. We compute attention on random vectors for Q, K, and V (we do not measure the projection from the hidden layer). For dropout, we use dropout 0.1; for masking, we use a padding mask with uniformly-random mask lengths between the total sequence length and the total sequence length minus 20. To measure runtime, we take the average of 100 measurements of the attention call. We only measure memory footprint once, since it does not vary between runs.",
+        "x": 71.6,
+        "y": 77.6,
+        "w": 469.7,
+        "h": 81.7,
+        "zh": "我们在一台机器上测量注意力计算的运行时间和内存占用：8 个头，头维度 64，批大小 16，一块带 40 GB HBM 的 A100 GPU。实验里改变序列长度。Q、K、V 用随机向量来算注意力（不把从隐藏层做投影的时间算进去）。dropout 取 0.1。掩码用的是 padding 掩码，掩码长度在“总序列长度”和“总序列长度减 20”之间均匀随机抽取。运行时间取注意力调用 100 次测量的平均。内存占用只测一次，因为它不会随运行改变。"
+      }
+    ],
+    "31": [
+      {
+        "text": "Table 9: Forward pass runtime (ms) of various exact/approximate/sparse attention mechanisms by sequence length,",
+        "x": 71.7,
+        "y": 502.7,
+        "w": 469.6,
+        "h": 9,
+        "zh": "表 9：各种精确、近似和稀疏注意力机制的前向运行时间（毫秒），按序列长度列出，"
+      },
+      {
+        "text": "with dropout and masking. Best in bold, second best underlined.",
+        "x": 71.6,
+        "y": 491.7,
+        "w": 282,
+        "h": 9,
+        "zh": "带 dropout 和掩码。最优的加粗，次优的加下划线。"
+      },
+      {
+        "text": "We report timing results on the forward pass, backward pass, and combined forward + backward pass. We measure each method with and without dropout, masking, or both—except for Block Sparse, Longformer, and BigBird. These methods did not successfully run the backward pass with masking due to a bug in external libraries, so we measured them without masking to be generous. We use FP16 for all measurements,",
+        "x": 71.5,
+        "y": 301.4,
+        "w": 470.4,
+        "h": 45.8,
+        "zh": "我们分别报告前向、反向，以及前向加反向合计的计时。每种方法都在有 dropout、有掩码或二者都有，以及没有这些的情况下测量。Block Sparse、Longformer 和 BigBird 除外。这几个方法因为外部库里的一个 bug，带掩码的反向传播没能跑通，所以我们在不带掩码的情况下测量它们，以便从宽比较。全部测量使用 FP16，"
+      },
+      {
+        "text": "except for Local Attention, whose implementation only supports FP32.",
+        "x": 72,
+        "y": 289.4,
+        "w": 310.5,
+        "h": 10,
+        "zh": "只有 Local Attention 例外，它的实现只支持 FP32。"
+      },
+      {
+        "text": "For each baseline, we increase sequence length until it runs out of memory on the GPU, except for the following exceptions: The Megatron implementation does not support sequence lengths longer than 2048. Block-Sparse (OpenAI) does not support sequence lengths longer than 4096. Longformer and BigBird do not",
+        "x": 72,
+        "y": 253.6,
+        "w": 469.9,
+        "h": 33.9,
+        "zh": "对每个基线，我们把序列长度一直加到它在 GPU 上耗尽内存为止，但有如下例外：Megatron 的实现不支持超过 2048 的序列长度。Block-Sparse（OpenAI）不支持超过 4096 的序列长度。Longformer 和 BigBird 不"
+      },
+      {
+        "text": "support sequence lengths longer than 8092.",
+        "x": 72,
+        "y": 241.6,
+        "w": 188.4,
+        "h": 10,
+        "zh": "支持超过 8092 的序列长度。"
+      },
+      {
+        "text": "We measure memory usage on the combined forward + backward pass, without dropout or masking.",
+        "x": 86.9,
+        "y": 229.7,
+        "w": 439.5,
+        "h": 10,
+        "zh": "内存占用是在前向加反向合计、且不带 dropout、也不带掩码的设定下测量的。"
+      },
+      {
+        "text": "Table 8 summarizes all the experimental configurations and contains pointers to the results tables.",
+        "x": 118.8,
+        "y": 203.8,
+        "w": 422.9,
+        "h": 10,
+        "zh": "表 8 汇总了全部实验配置，并标出结果分别在哪一张表里。"
+      }
+    ],
+    "32": [
+      {
+        "text": "Table 10: Backward pass runtime (ms) of various exact/approximate/sparse attention mechanisms by sequence length, with dropout and masking. Best in bold, second best underlined.",
+        "x": 71.6,
+        "y": 694.1,
+        "w": 469.7,
+        "h": 19.9,
+        "zh": "表 10：各种精确、近似和稀疏注意力机制的反向运行时间（毫秒），按序列长度列出，带 dropout 和掩码。最优的加粗，次优的加下划线。"
+      },
+      {
+        "text": "Table 11: Forward pass + backward pass runtime (ms) of various exact/approximate/sparse attention mechanisms by sequence length, with dropout and masking. Best in bold, second best underlined.",
+        "x": 71.7,
+        "y": 530.1,
+        "w": 468.7,
+        "h": 19.9,
+        "zh": "表 11：各种精确、近似和稀疏注意力机制的前向加反向运行时间（毫秒），按序列长度列出，带 dropout 和掩码。最优的加粗，次优的加下划线。"
+      },
+      {
+        "text": "Table 12: Forward pass runtime (ms) of various exact/approximate/sparse attention mechanisms by sequence length, with masking. Best in bold, second best underlined.",
+        "x": 71.6,
+        "y": 366.1,
+        "w": 469.7,
+        "h": 19.9,
+        "zh": "表 12：各种精确、近似和稀疏注意力机制的前向运行时间（毫秒），按序列长度列出，带掩码。最优的加粗，次优的加下划线。"
+      },
+      {
+        "text": "Table 13: Backward pass runtime (ms) of various exact/approximate/sparse attention mechanisms by sequence length, with masking. Best in bold, second best underlined.",
+        "x": 71.6,
+        "y": 202.1,
+        "w": 469.7,
+        "h": 19.9,
+        "zh": "表 13：各种精确、近似和稀疏注意力机制的反向运行时间（毫秒），按序列长度列出，带掩码。最优的加粗，次优的加下划线。"
+      }
+    ],
+    "33": [
+      {
+        "text": "Table 14: Forward pass + backward pass runtime (ms) of various exact/approximate/sparse attention mechanisms by sequence length, with masking. Best in bold, second best underlined.",
+        "x": 71.7,
+        "y": 694.1,
+        "w": 468.7,
+        "h": 19.9,
+        "zh": "表 14：各种精确、近似和稀疏注意力机制的前向加反向运行时间（毫秒），按序列长度列出，带掩码。最优的加粗，次优的加下划线。"
+      },
+      {
+        "text": "Table 15: Forward pass runtime (ms) of various exact/approximate/sparse attention mechanisms by sequence length, with dropout. Best in bold, second best underlined.",
+        "x": 71.6,
+        "y": 530.1,
+        "w": 469.7,
+        "h": 19.9,
+        "zh": "表 15：各种精确、近似和稀疏注意力机制的前向运行时间（毫秒），按序列长度列出，带 dropout。最优的加粗，次优的加下划线。"
+      },
+      {
+        "text": "Table 16: Backward pass runtime (ms) of various exact/approximate/sparse attention mechanisms by sequence length, with dropout. Best in bold, second best underlined.",
+        "x": 71.6,
+        "y": 366.1,
+        "w": 469.7,
+        "h": 19.9,
+        "zh": "表 16：各种精确、近似和稀疏注意力机制的反向运行时间（毫秒），按序列长度列出，带 dropout。最优的加粗，次优的加下划线。"
+      },
+      {
+        "text": "Table 17: Forward pass + backward pass runtime (ms) of various exact/approximate/sparse attention mechanisms by sequence length, with dropout. Best in bold, second best underlined.",
+        "x": 71.7,
+        "y": 202.1,
+        "w": 468.7,
+        "h": 19.9,
+        "zh": "表 17：各种精确、近似和稀疏注意力机制的前向加反向运行时间（毫秒），按序列长度列出，带 dropout。最优的加粗，次优的加下划线。"
+      }
+    ],
+    "34": [
+      {
+        "text": "Table 18: Forward pass runtime (ms) of various exact/approximate/sparse attention mechanisms by sequence length.",
+        "x": 71.7,
+        "y": 705,
+        "w": 470.1,
+        "h": 9,
+        "zh": "表 18：各种精确、近似和稀疏注意力机制的前向运行时间（毫秒），按序列长度列出。"
+      },
+      {
+        "text": "Table 19: Backward pass runtime (ms) of various exact/approximate/sparse attention mechanisms by sequence length.",
+        "x": 71.7,
+        "y": 541.1,
+        "w": 470.1,
+        "h": 9,
+        "zh": "表 19：各种精确、近似和稀疏注意力机制的反向运行时间（毫秒），按序列长度列出。"
+      },
+      {
+        "text": "Table 20: Forward pass + backward pass runtime (ms) of various exact/approximate/sparse attention mechanisms by",
+        "x": 71.7,
+        "y": 377.1,
+        "w": 468.7,
+        "h": 9,
+        "zh": "表 20：各种精确、近似和稀疏注意力机制的前向加反向运行时间（毫秒），按"
+      },
+      {
+        "text": "sequence length. Best in bold, second best underlined.",
+        "x": 72,
+        "y": 366.1,
+        "w": 222.1,
+        "h": 9,
+        "zh": "序列长度列出。最优的加粗，次优的加下划线。"
+      },
+      {
+        "text": "Table 21: Memory usage (MB) of various exact/approximate/sparse attention mechanisms by sequence length. Best",
+        "x": 71.7,
+        "y": 213.1,
+        "w": 468.6,
+        "h": 9,
+        "zh": "表 21：各种精确、近似和稀疏注意力机制的内存占用（MB），按序列长度列出。最优的"
+      }
+    ]
+  }
+}

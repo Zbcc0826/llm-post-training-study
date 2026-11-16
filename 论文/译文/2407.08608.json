@@ -1,0 +1,1955 @@
+{
+  "id": "2407.08608",
+  "title": "2407.08608",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "Fast and Accurate Attention with Asynchrony and Low-precision",
+        "x": 89.4,
+        "y": 645.4,
+        "w": 462.1,
+        "h": 17.2,
+        "zh": "用异步与低精度实现快速且精确的注意力"
+      },
+      {
+        "text": "{jayhshah,ganesh}@colfax-intl.com, yingz@meta.com, {vithakkar,prraman}@nvidia.com, tri@tridao.me",
+        "x": 90.3,
+        "y": 572,
+        "w": 440.5,
+        "h": 9,
+        "zh": ""
+      },
+      {
+        "text": "Attention, as a core layer of the ubiquitous Transformer architecture, is the bottleneck for large language models and long-context applications. FlashAttention elaborated an approach to speed up attention on GPUs through minimizing memory reads/writes. However, it has yet to take advantage of new capabilities present in recent hardware, with FlashAttention-2 achieving only 35% utilization on the H100 GPU. We develop three main techniques to speed up attention on Hopper GPUs: exploiting asynchrony of the Tensor Cores and TMA to (1) overlap overall computation and data movement via warp-specialization and (2) interleave block-wise matmul and softmax operations, and (3) block quantization and incoherent processing that leverages hardware support for FP8 low-precision. We demonstrate that our method, FlashAttention-3, achieves speedup on H100 GPUs by 1.5-2.0× with FP16 reaching up to 740 TFLOPs/s (75% utilization), and with FP8 reaching close to 1.2 PFLOPs/s. We validate that FP8 FlashAttention-3 achieves 2.6× lower numerical error than a",
+        "x": 96.9,
+        "y": 380.1,
+        "w": 447.3,
+        "h": 107.6,
+        "zh": "注意力是无处不在的 Transformer 架构里的核心层，也是大语言模型和长上下文应用的瓶颈。FlashAttention 给出了一套做法：尽量减少内存读写，从而在 GPU 上加速注意力。不过它还没用上新硬件已有的能力，FlashAttention-2 在 H100 GPU 上只达到 35% 的利用率。我们提出三项主要技术，用来在 Hopper GPU 上加速注意力：利用 Tensor Core 和 TMA 的异步性，以便（1）通过 warp specialization 让整体计算与数据搬运重叠，（2）把分块的 matmul 与 softmax 交错执行，以及（3）分块量化与非相干处理，借此用上硬件对 FP8 低精度的支持。我们表明，所提出的方法 FlashAttention-3 在 H100 GPU 上能取得 1.5–2.0 倍加速：FP16 最高约 740 TFLOPs/s（75% 利用率），FP8 则接近 1.2 PFLOPs/s。我们验证，FP8 版 FlashAttention-3 的数值误差比一种"
+      },
+      {
+        "text": "For the Transformer architecture [59], the attention mechanism constitutes the primary computational bottleneck, since computing the self-attention scores of queries and keys has quadratic scaling in the sequence length. Scaling attention to longer context will unlock new capabilities (modeling and reasoning over multiple long documents [24, 43, 50] and files in large codebases [30, 48]), new modalities (high-resolution images [11], audio [23], video [25]), and new applications (user interaction with long history [53], agent workflow with long horizon [62]). This has generated significant interest in making attention faster in the long-context regime, including by approximation [14, 27, 56] and software optimization ([17, 29, 45]), or even alternative architectures [22, 42, 55].",
+        "x": 71.7,
+        "y": 242.6,
+        "w": 498.5,
+        "h": 81.7,
+        "zh": "对 Transformer 架构 [59] 来说，注意力机制构成主要的计算瓶颈，因为 query 与 key 的自注意力分数，其计算量随序列长度呈平方增长。把注意力扩展到更长的上下文，会打开新的能力（对多篇长文档 [24, 43, 50] 以及大代码库中的文件 [30, 48] 做建模与推理）、新的模态（高分辨率图像 [11]、音频 [23]、视频 [25]）和新的应用（带有长历史的用户交互 [53]、长视野的智能体工作流 [62]）。这促使人们大力研究如何在长上下文情形下把注意力做快，途径包括近似 [14, 27, 56] 和软件优化 [17, 29, 45]，乃至改用别的架构 [22, 42, 55]。"
+      },
+      {
+        "text": "knowledge of the GPU’s execution model and hardware characteristics into their high-level design. In [17], Dao et al. introduced FlashAttention, a novel tiling strategy for parallelizing attention that eliminates intermediate reads/writes to slow global memory through fusing all of the attention operations into a single GPU kernel. Dao [15] restructured the algorithm as FlashAttention-2 to also parallelize over the sequence length dimension and perform the inner loop of the forward pass over blocks of the key and value matrices, thus improving the occupancy and distribution of work on the GPU. However, we observe that FlashAttention-2 nonetheless achieves poor utilization on newer GPUs relative to optimized matrix-multiplication (GEMM) kernels, such as 35% vs. 80-90% on the Hopper H100 GPU. Partially, this may be attributed to implementation-level differences, such as not using Hopper-specific instructions in place of Ampere ones when targeting the Tensor Cores. Several work such as ThunkerKitten [52] and cuDNN 9 [39] has shown that with Hopper-specific instructions and tile-based abstractions, one can speedup attention computation and simplify the implementation.",
+        "x": 71.6,
+        "y": 99.2,
+        "w": 498.5,
+        "h": 129.5,
+        "zh": "把对 GPU 执行模型和硬件特性的认识写进它们的高层设计。Dao 等人在 [17] 中提出 FlashAttention，用一种新的分块策略来并行化注意力：把全部注意力运算融进单个 GPU kernel，从而省掉对慢速全局内存的中间读写。Dao [15] 把算法改写成 FlashAttention-2，使它也沿序列长度这一维并行，并让前向的内层循环走在 key 与 value 矩阵的块上，从而提高占用率，并改善工作在 GPU 上的分配。不过我们观察到，相对那些优化过的矩阵乘法（GEMM）kernel，FlashAttention-2 在较新的 GPU 上利用率仍然偏低，例如在 Hopper H100 上是 35%，而 GEMM 能到 80–90%。部分原因可以归结到实现层面：面向 Tensor Core 时，仍在使用 Ampere 的指令，而没有换成 Hopper 专用指令。ThunkerKitten [52] 和 cuDNN 9 [39] 等工作已经表明，用上 Hopper 专用指令和基于 tile 的抽象之后，注意力计算可以更快，实现也可以更简单。"
+      }
+    ],
+    "2": [
+      {
+        "text": "More fundamentally, FlashAttention-2’s algorithm adheres to a simplified synchronous model and makes no explicit use of asynchrony and low-precision in its design. Asynchrony is a result of hardware specialization to accelerate the most important operations in a ML workload: specific hardware units performing matrix multiplication (Tensor Cores) or memory loading (Tensor Memory Accelerator – TMA), separate from the rest of the CUDA cores performing logic, integer, and floating point computation. Low precision such as FP8 in Hopper and FP4 in Blackwell, continuing the trend of FP16 (Pascal in 2017) and BF16 (Ampere in 2020), is a proven technique to get double or quadruple throughput for the same power and chip area. We review the capabilities afforded by Hopper in these directions in § 2.2. The technical challenge is to redesign FlashAttention-2 to make use of these hardware features: asynchrony requires overlapping computation between matmul and softmax even though one depends on the output of the other, and low-precision requires care to minimize quantization error, especially in the case of outlier features in LLMs [20, 54]. To this end, we propose FlashAttention-3, which contributes and synthesizes three new ideas to further improve performance on newer GPU architectures:",
+        "x": 70.8,
+        "y": 565.7,
+        "w": 498.3,
+        "h": 153.4,
+        "zh": "更根本的是，FlashAttention-2 的算法贴着一种简化的同步模型，设计上并没有明确使用异步和低精度。异步来自硬件的专门化，用来加速机器学习负载里最重要的运算：单独的硬件单元负责矩阵乘（Tensor Core）或内存加载（Tensor Memory Accelerator，即 TMA），与负责逻辑、整数和浮点运算的其余 CUDA core 分开。低精度同样是一条已被验证的路线。Hopper 上的 FP8、Blackwell 上的 FP4，延续了 FP16（2017 年的 Pascal）和 BF16（2020 年的 Ampere）这一趋势，能在同样的功耗和芯片面积下把吞吐提高到两倍或四倍。我们在 §2.2 回顾 Hopper 在这些方向上提供的能力。技术上的难点，是重设计 FlashAttention-2，把这些硬件特性用起来：异步要求即使 matmul 和 softmax 彼此依赖，也要把二者的计算重叠起来；低精度则必须小心压低量化误差，尤其是在 LLM 出现离群特征时 [20, 54]。为此我们提出 FlashAttention-3。它综合了三项新想法，以便在更新的 GPU 架构上进一步提高性能："
+      },
+      {
+        "text": "1. Producer-Consumer asynchrony: We define a warp-specialized software pipelining scheme that exploits the asynchronous execution of data movement and Tensor Cores by splitting producers and consumers of data into separate warps, thereby extending the algorithm’s ability to hide memory and instruction issue latencies.",
+        "x": 84.2,
+        "y": 521,
+        "w": 486.6,
+        "h": 33.9,
+        "zh": "1. 生产者–消费者异步：我们定义一种按 warp 分工的软件流水方案。它利用数据搬运和 Tensor Core 的异步执行，把数据的生产者和消费者拆到不同的 warp，从而加强算法隐藏内存延迟和指令发射延迟的能力。"
+      },
+      {
+        "text": "2. Hiding softmax under asynchronous block-wise GEMMs: We overlap the comparatively low-throughput non-GEMM operations involved in softmax, such as floating point multiply-add and exponential, with the asynchronous WGMMA instructions for GEMM. As part of this, we rework the FlashAttention-2 algorithm to circumvent certain sequential dependencies between softmax and the GEMMs. For example, in the 2-stage version of our algorithm, while softmax executes on one block of the scores matrix, WGMMA executes in the asynchronous proxy to compute the next block.",
+        "x": 84.2,
+        "y": 441.8,
+        "w": 484.9,
+        "h": 69.7,
+        "zh": "2. 把 softmax 隐藏在异步的分块 GEMM 之下：softmax 里那些吞吐相对较低的非 GEMM 运算，例如浮点乘加和指数，我们让它们与用于 GEMM 的异步 WGMMA 指令重叠。为此，我们改写了 FlashAttention-2 的算法，绕开 softmax 与这些 GEMM 之间的某些顺序依赖。例如在两阶段版本里，当 softmax 在分数矩阵的一个块上执行时，WGMMA 会在异步代理中计算下一个块。"
+      },
+      {
+        "text": "3. Hardware-accelerated low-precision GEMM: We adapt the forward pass algorithm to allow for targeting the FP8 Tensor Cores for GEMM, nearly doubling the measured TFLOPs/s. This requires bridging the different layout conformance requirements of WGMMA in terms of how blocks of FP32 accumulator and FP8 operand matrices are assumed to be laid out in memory. We use the techniques of block quantization and incoherent processing to mitigate the loss of accuracy that results from moving to FP8 precision.",
+        "x": 84.2,
+        "y": 374.5,
+        "w": 484.9,
+        "h": 57.8,
+        "zh": "3. 由硬件加速的低精度 GEMM：我们改写前向算法，使 GEMM 可以打到 FP8 Tensor Core 上，测得的 TFLOPs/s 几乎翻倍。这需要弥合 WGMMA 在布局一致性上的不同要求，也就是 FP32 累加器的块和 FP8 操作数矩阵在内存中被假定成怎样的排布。我们使用分块量化和非相干处理，来减轻降到 FP8 精度所带来的精度损失。"
+      },
+      {
+        "text": "To validate our method empirically, we benchmark FlashAttention-3 on the H100 SXM5 GPU over a range of parameters and show that (1) FP16 achieves 1.5-2.0× speedup over FlashAttention-2 in the forward pass (reaching up to 740 TFLOPs/s) and 1.5-1.75× in the backward pass, (2) FP8 achieves close to 1.2 PFLOPs/s, and (3) for large sequence length, FP16 outperforms and FP8 is competitive with a state-of-the-art implementation of attention from NVIDIA’s cuDNN library. We also validate that FP16 FlashAttention-3 yields the same numerical error as FlashAttention-2 and is better than the standard attention implementation as intermediate results (e.g., softmax rescaling) are kept in FP32. Moreover, FP8 FlashAttention-3 with block quantization and incoherent processing is 2.6× more accurate than standard attention with per-tensor quantization in cases with",
+        "x": 70.8,
+        "y": 270,
+        "w": 498,
+        "h": 93.6,
+        "zh": "为了从实验上验证这一方法，我们在 H100 SXM5 GPU 上、在一组参数范围内评测 FlashAttention-3。结果表明：（1）前向中，FP16 相对 FlashAttention-2 有 1.5–2.0 倍加速（最高约 740 TFLOPs/s），反向有 1.5–1.75 倍；（2）FP8 接近 1.2 PFLOPs/s；（3）序列较长时，FP16 超过 NVIDIA cuDNN 库中一套先进的注意力实现，FP8 则与之相当。我们还验证，FP16 版 FlashAttention-3 的数值误差与 FlashAttention-2 相同，并且优于标准注意力实现，因为中间结果（例如 softmax 的重缩放）保存在 FP32 中。此外，带有分块量化和非相干处理的 FP8 版 FlashAttention-3，比按张量量化的标准注意力精确 2.6 倍，这出现在如下情形中："
+      },
+      {
+        "text": "We open-source FlashAttention-3 with a permissive license Hugging Face libraries to benefit the largest number of researchers and developers.",
+        "x": 72,
+        "y": 234.1,
+        "w": 360.9,
+        "h": 21.9,
+        "zh": "我们以宽松许可证开源 FlashAttention-3，并面向 Hugging Face 的库，以便惠及尽可能多的研究者和开发者。"
+      },
+      {
+        "text": "and plan to integrate it with PyTorch and",
+        "x": 377,
+        "y": 246.1,
+        "w": 191.8,
+        "h": 10,
+        "zh": "并计划把它接入 PyTorch 以及"
+      },
+      {
+        "text": "Background: Multi-Head Attention and GPU Characteristics",
+        "x": 95.7,
+        "y": 201.4,
+        "w": 425.5,
+        "h": 14.3,
+        "zh": "背景：多头注意力与 GPU 特性"
+      },
+      {
+        "text": "be the query, key and value input sequences associated to a single head, where 𝑁 is the sequence length and 𝑑 is the head dimension. Then the attention output O is computed as:",
+        "x": 72,
+        "y": 147.2,
+        "w": 496.8,
+        "h": 21.9,
+        "zh": "作为与单个头相关联的 query、key 和 value 输入序列，其中 𝑁 是序列长度，𝑑 是头维度。注意力的输出 O 按下式计算："
+      },
+      {
+        "text": "We describe our results in the context of NVIDIA’s Hopper architecture. However, our algorithm is operative for any GPU architecture with sufficiently robust asynchronous execution and low-precision capabilities. More precisely, for head dimension 64 FlashAttention-3 FP8 is ahead, while for head dimensions 128 and 256 it is at par for those cases without causal masking and behind with causal masking. FlashAttention-3 is available at https://github.com/Dao-AILab/flash-attention",
+        "x": 72,
+        "y": 71.1,
+        "w": 497,
+        "h": 46,
+        "zh": "我们把结果放在 NVIDIA Hopper 架构这一背景下描述。不过，只要一台 GPU 的异步执行和低精度能力足够强，这套算法就可以用。更具体地说，头维度为 64 时，FlashAttention-3 的 FP8 领先；头维度为 128 和 256 时，在没有因果掩码的情形下持平，在有因果掩码时则落后。FlashAttention-3 发布于 https://github.com/Dao-AILab/flash-attention"
+      }
+    ],
+    "3": [
+      {
+        "text": "where softmax is applied row-wise and one typically sets 𝛼 = 1/ 𝑑 as the scaling factor. In practice, we subtract rowmax(S) from S to prevent numerical instability with the exponential function. For multi-head attention (MHA), each head has its own set of query, key and value projections, and this computation parallelizes across multiple heads and batches to produce the full output tensor. Now let 𝜙 be a scalar loss function and let d(−) = 𝜕𝜙/𝜕(−) be notation for the gradient. Given the output",
+        "x": 71.6,
+        "y": 661.4,
+        "w": 498.5,
+        "h": 57.8,
+        "zh": "其中 softmax 按行施加，缩放因子通常取 𝛼 = 1/𝑑。实践中，我们从 S 中减去 rowmax(S)，以免指数函数出现数值不稳定。对多头注意力（MHA）而言，每个头有自己的一套 query、key 和 value 投影，这一计算在多个头和多个 batch 上并行，得到完整的输出张量。现设 𝜙 为一个标量损失函数，并用 d(−) = ∂𝜙/∂(−) 表示梯度。给定输出"
+      },
+      {
+        "text": ", we compute dQ, dK, and dV according to the chain rule as follows:",
+        "x": 159.3,
+        "y": 649.4,
+        "w": 300.3,
+        "h": 10,
+        "zh": "，我们按链式法则计算 dQ、dK 和 dV，如下："
+      },
+      {
+        "text": "Here, we have that d𝑠 = (diag(𝑝) − 𝑝 𝑝 )d𝑝 for 𝑝 = softmax(𝑠) as a function of a vector 𝑠, and we write dsoftmax(dP) for this formula applied row-wise. Finally, this computation again parallelizes across the number of heads and batches for the backward pass of MHA.",
+        "x": 72,
+        "y": 515.6,
+        "w": 496.8,
+        "h": 33.9,
+        "zh": "这里，把 𝑝 = softmax(𝑠) 看作向量 𝑠 的函数，有 d𝑠 = (diag(𝑝) − 𝑝 𝑝)d𝑝；这个公式按行施加时，我们记作 dsoftmax(dP)。最后，这一计算再次沿着头数和 batch 数并行，构成 MHA 的反向。"
+      },
+      {
+        "text": "GPU hardware characteristics and execution model We describe the aspects of the GPU’s execution model relevant for FlashAttention-3, with a focus on the NVIDIA Hopper architecture as a concrete instantiation of this model.",
+        "x": 71.5,
+        "y": 457.4,
+        "w": 497.3,
+        "h": 42.3,
+        "zh": "GPU 的硬件特性与执行模型。我们描述与 FlashAttention-3 相关的那些 GPU 执行模型，并以 NVIDIA Hopper 架构作为这一模型的一个具体实例。"
+      },
+      {
+        "text": "The GPU’s memories are organized as a hierarchy of data locales, with capacity inversely related to bandwidth (Table 1) . Global memory (GMEM), also known as HBM, is the off-chip DRAM accessible to all streaming multiprocessors (SMs). Data from GMEM gets transparently cached into an on-chip L2 cache. Next, each SM contains a small on-chip, programmer-managed highly banked cache called shared memory (SMEM). Lastly, there is the register file within each SM.",
+        "x": 72,
+        "y": 383.6,
+        "w": 498.7,
+        "h": 57.8,
+        "zh": "GPU 的存储按数据所在的位置分成层次，容量与带宽大致成反比（表 1）。全局内存（GMEM），也就是 HBM，是片外 DRAM，所有流式多处理器（SM）都能访问。来自 GMEM 的数据会被透明地缓存进片上的 L2。接下来，每个 SM 里有一小块由程序员管理、高度分体的片上缓存，称为共享内存（SMEM）。最后是每个 SM 内部的寄存器文件。"
+      },
+      {
+        "text": "The GPU’s programming model is organized around logical groupings of execution units called threads. From the finest to coarsest level, the thread hierarchy is comprised of threads, warps (32 threads), warpgroups (4 contiguous warps), threadblocks (i.e., cooperative thread arrays or CTAs), threadblock clusters (in",
+        "x": 71.6,
+        "y": 333.8,
+        "w": 498.5,
+        "h": 33.9,
+        "zh": "GPU 的编程模型围绕称为线程的执行单元逻辑分组来组织。从最细到最粗，线程层次包括：线程、warp（32 个线程）、warpgroup（4 个连续的 warp）、线程块（即协作线程数组，CTA），以及线程块 cluster（在"
+      },
+      {
+        "text": "These two hierarchies are closely interlinked. Threads in the same CTA are co-scheduled on the same SM, and CTAs in the same cluster are co-scheduled on the same GPC. SMEM is directly addressable by all threads within a CTA, whereas each thread has at most 256 registers (RMEM) private to itself.",
+        "x": 72,
+        "y": 286,
+        "w": 496.8,
+        "h": 33.9,
+        "zh": "这两套层次紧密联系在一起。同一个 CTA 里的线程被共同调度到同一个 SM 上，同一个 cluster 里的 CTA 被共同调度到同一个 GPC 上。一个 CTA 内的所有线程都可以直接寻址 SMEM，而每个线程最多拥有 256 个只属于自己的寄存器（RMEM）。"
+      },
+      {
+        "text": "Table 1: Thread-Memory hierarchy for the NVIDIA Hopper H100 SXM5 GPU.",
+        "x": 146.9,
+        "y": 263.2,
+        "w": 346.6,
+        "h": 10,
+        "zh": "表 1：NVIDIA Hopper H100 SXM5 GPU 的线程–内存层次。"
+      },
+      {
+        "text": "GPUs are throughput processors that rely on concurrency and asynchrony to hide memory and execution latencies. For async memory copy between GMEM and SMEM, Hopper has the Tensor Memory Accelerator (TMA) as a dedicated hardware unit [38, §7.29]. Furthermore, unlike prior architectures such as Ampere, the Tensor Core of Hopper, exposed via the warpgroup-wide WGMMA instruction [40, §9.7.14], is also asynchronous and can source its inputs directly from shared memory.",
+        "x": 71.6,
+        "y": 110.5,
+        "w": 497.5,
+        "h": 57.8,
+        "zh": "GPU 是吞吐型处理器，靠并发和异步来隐藏内存延迟与执行延迟。对于 GMEM 与 SMEM 之间的异步内存拷贝，Hopper 提供了专门的硬件单元 Tensor Memory Accelerator（TMA）[38, §7.29]。此外，与 Ampere 等前代架构不同，Hopper 的 Tensor Core 通过作用于整个 warpgroup 的 WGMMA 指令暴露出来 [40, §9.7.14]，它本身也是异步的，并且可以直接从共享内存读取输入。"
+      },
+      {
+        "text": "Luo et al. [34] reports shared memory bandwidth of 128 bytes per clock cycle per SM, and we multiply that by 132 SMs and the boost clock of 1830 MHz.",
+        "x": 72,
+        "y": 83.4,
+        "w": 496.8,
+        "h": 17.4,
+        "zh": "Luo 等人 [34] 报告，每个 SM 每个时钟周期的共享内存带宽为 128 字节。我们把这个数乘以 132 个 SM，再乘以 1830 MHz 的加速时钟。"
+      }
+    ],
+    "4": [
+      {
+        "text": "Hardware support for asynchrony allows for warp-specialized kernels, where the warps of a CTA are divided into producer or consumer roles that only ever issue either data movement or computation. Generically, this improves the compiler’s ability to generate optimal instruction schedules [4]. In addition, Hopper supports the dynamic reallocation of registers between warpgroups via setmaxnreg [40, §9.7.17.1], so those warps doing MMAs can obtain a larger share of RMEM than those just issuing TMA (for which only a single thread is needed).",
+        "x": 72,
+        "y": 661.4,
+        "w": 496.8,
+        "h": 57.8,
+        "zh": "对异步的硬件支持，使得可以编写按 warp 分工的 kernel：一个 CTA 里的 warp 被分成生产者或消费者，各自只发射数据搬运，或只发射计算。一般而言，这会让编译器更容易生成更优的指令调度 [4]。此外，Hopper 支持通过 setmaxnreg 在 warpgroup 之间动态重新分配寄存器 [40, §9.7.17.1]，因此做 MMA 的那些 warp 可以比只发射 TMA 的 warp 分到更多 RMEM（TMA 只需要一个线程）。"
+      },
+      {
+        "text": "Modern GPUs have specialized hardware units for accelerating low-precision computation. For example, the WGMMA instruction can target the FP8 Tensor Cores on Hopper to deliver 2x the",
+        "x": 72,
+        "y": 623.5,
+        "w": 496.8,
+        "h": 21.9,
+        "zh": "现代 GPU 有专门用来加速低精度计算的硬件单元。例如，WGMMA 指令可以打到 Hopper 上的 FP8 Tensor Core，从而提供 2 倍的"
+      },
+      {
+        "text": "throughput per SM when compared to FP16 or BF16.",
+        "x": 72,
+        "y": 611.6,
+        "w": 236.7,
+        "h": 10,
+        "zh": "每个 SM 的吞吐（与 FP16 或 BF16 相比）。"
+      },
+      {
+        "text": "However, correctly invoking FP8 WGMMA entails understanding the layout constraints on its operands. Given",
+        "x": 86.9,
+        "y": 599.6,
+        "w": 481.9,
+        "h": 10,
+        "zh": "不过，要正确发起 FP8 的 WGMMA，就必须弄清其操作数的布局约束。给定"
+      },
+      {
+        "text": "for an 𝑀 × 𝐾-matrix 𝐴 and an 𝑁 × 𝐾-matrix 𝐵, we say that the 𝐴 or 𝐵 operand is mn-major if it is contiguous in the outer 𝑀 or 𝑁 dimension, and k-major if is instead contiguous in the inner 𝐾-dimension. Then for FP16 WGMMA, both mn-major and k-major input operands are accepted for operands in SMEM, but for FP8 WGMMA, only the k-major format is supported. Moreover, in situations such as attention where one wants to fuse back-to-back GEMMs in a single kernel, clashing FP32 accumulator and FP8 operand",
+        "x": 71.6,
+        "y": 539.8,
+        "w": 497.4,
+        "h": 57.8,
+        "zh": "对一个 𝑀 × 𝐾 的矩阵 𝐴 和一个 𝑁 × 𝐾 的矩阵 𝐵，如果操作数 𝐴 或 𝐵 在外侧的 𝑀 或 𝑁 维上连续，就称它是 mn-major；如果改为在内侧的 𝐾 维上连续，则称为 k-major。于是，对 FP16 的 WGMMA，放在 SMEM 中的操作数既可以是 mn-major，也可以是 k-major；但对 FP8 的 WGMMA，只支持 k-major。而且，在注意力这类希望把前后相接的 GEMM 融进同一个 kernel 的情形里，彼此冲突的 FP32 累加器与 FP8 操作数"
+      },
+      {
+        "text": "layouts pose an obstacle to invoking dependent FP8 WGMMAs.",
+        "x": 72,
+        "y": 527.9,
+        "w": 280.6,
+        "h": 10,
+        "zh": "布局，会妨碍我们发起有依赖关系的 FP8 WGMMA。"
+      },
+      {
+        "text": "In the context of attention, these layout restrictions entail certain modifications to the design of an FP8 algorithm,",
+        "x": 86.9,
+        "y": 515.9,
+        "w": 483.2,
+        "h": 10,
+        "zh": "在注意力这一语境下，这些布局限制意味着 FP8 算法的设计必须做某些修改，"
+      },
+      {
+        "text": "Following Dao et al. [17], we let standard attention denote an implementation of attention on the GPU that materializes the intermediate matrices S and P to HBM. The main idea of FlashAttention was to leverage a local version of the softmax reduction to avoid these expensive intermediate reads/writes and fuse attention into a single kernel. Local softmax corresponds to lines 18-19 of the consumer mainloop in Algorithm 1 together with the rescalings of blocks of O. The simple derivation that this procedure indeed computes O can be found in [15, §2.3.1].",
+        "x": 72,
+        "y": 409.9,
+        "w": 497.1,
+        "h": 57.8,
+        "zh": "沿用 Dao 等人 [17] 的说法，我们用“标准注意力”指这样一种 GPU 上的注意力实现：它会把中间矩阵 S 和 P 物化到 HBM。FlashAttention 的主要想法，是利用 softmax 归约的一个局部版本，避开这些昂贵的中间读写，把注意力融成单个 kernel。局部 softmax 对应算法 1 里消费者主循环的第 18–19 行，再加上对 O 的各个块做重缩放。这一过程确实算出 O，其简单推导见 [15, §2.3.1]。"
+      },
+      {
+        "text": "In this section, we describe the FlashAttention-3 algorithm. For simplicity, we focus on the forward pass, with the backward pass algorithm described in Appendix B.1. We first indicate how to integrate warp-specialization with a circular SMEM buffer into the base algorithm of FlashAttention-2. We then explain how to exploit asynchrony of WGMMA to define an overlapped GEMM-softmax 2-stage pipeline. Finally, we describe the modifications needed for FP8, both in terms of layout conformance and accuracy via block quantization and incoherent processing.",
+        "x": 72,
+        "y": 307.3,
+        "w": 497.2,
+        "h": 57.8,
+        "zh": "本节描述 FlashAttention-3 算法。为简单起见，我们聚焦前向，反向算法放在附录 B.1。我们先说明如何把 warp specialization 和环形 SMEM 缓冲接进 FlashAttention-2 的基础算法。然后解释如何利用 WGMMA 的异步性，定义一条 GEMM 与 softmax 重叠的两阶段流水。最后描述 FP8 所需要的修改，既包括布局上的一致性，也包括借助分块量化和非相干处理来保住精度。"
+      },
+      {
+        "text": "Producer-Consumer asynchrony through warp-specialization and pingpong schedul-",
+        "x": 102.6,
+        "y": 279.4,
+        "w": 474.7,
+        "h": 12,
+        "zh": "通过 warp specialization 和 pingpong 调度实现的生产者–消费者异步"
+      },
+      {
+        "text": "As with FlashAttention-2, the forward pass of FlashAttention-3 is embarrassingly parallel in the batch size, number of heads, and query sequence length. Thus, it will suffice to give a CTA-level view of the algorithm, which operates on a tile Q𝑖 of the query matrix to compute the corresponding tile O𝑖 of the output. To simplify the description, we first give the warp-specialization scheme with a circular SMEM buffer that does not have in addition the GEMM-softmax overlapping. Let 𝑑 be the head dimension, 𝑁 the sequence length, and fix a query block size 𝐵𝑟 to divide Q into 𝑇𝑟 = ⌈𝐵 ⌉ blocks Q1, .., Q𝑇𝑟.",
+        "x": 71.7,
+        "y": 183.8,
+        "w": 498.4,
+        "h": 73.2,
+        "zh": "与 FlashAttention-2 一样，FlashAttention-3 的前向在 batch 大小、头数和 query 序列长度上都极易并行。因此，给出算法在 CTA 这一级的视图就够了：它在 query 矩阵的一块 Q𝑖 上操作，算出输出中对应的一块 O𝑖。为了把描述简化，我们先给出带环形 SMEM 缓冲的 warp specialization 方案，其中还不包含 GEMM 与 softmax 的重叠。设 𝑑 为头维度，𝑁 为序列长度，并固定 query 的块大小 𝐵𝑟，从而把 Q 分成 𝑇𝑟 = ⌈𝐵⌉ 块 Q1, …, Q𝑇𝑟。"
+      }
+    ],
+    "5": [
+      {
+        "text": "Algorithm 1 FlashAttention-3 forward pass without intra-consumer overlapping – CTA view",
+        "x": 71.6,
+        "y": 709.5,
+        "w": 404.5,
+        "h": 10,
+        "zh": "算法 1：FlashAttention-3 的前向，消费者内部不做重叠——CTA 视图"
+      },
+      {
+        "text": "in HBM, key block size 𝐵𝑐 with 𝑇𝑐 = ⌈𝐵 ⌉. 1: Initialize pipeline object to manage barrier synchronization with 𝑠-stage circular SMEM buffer.",
+        "x": 77.4,
+        "y": 680.5,
+        "w": 427,
+        "h": 21.9,
+        "zh": "位于 HBM 中，key 的块大小为 𝐵𝑐，且 𝑇𝑐 = ⌈𝐵⌉。1：初始化流水对象，用它来管理带有 𝑠 级环形 SMEM 缓冲的屏障同步。"
+      },
+      {
+        "text": "2: if in producer warpgroup then Deallocate predetermined number of registers. Issue load Q𝑖 from HBM to shared memory. Upon completion, commit to notify consumer of the load of Q𝑖. for 0 ≤ 𝑗 < 𝑇𝑐 do Wait for the ( 𝑗 % 𝑠)th stage of the buffer to be consumed.",
+        "x": 77.4,
+        "y": 608.8,
+        "w": 298.4,
+        "h": 69.7,
+        "zh": "2：若位于生产者 warpgroup，则释放预先定好数量的寄存器。发起把 Q𝑖 从 HBM 加载到共享内存的操作。完成后提交，通知消费者 Q𝑖 已经加载。对 0 ≤ 𝑗 < 𝑇𝑐：等待缓冲的第 (𝑗 % 𝑠) 级被消费完。"
+      },
+      {
+        "text": "Issue loads of K𝑗, V𝑗 from HBM to shared memory at the ( 𝑗 % 𝑠)th stage of the buffer. Upon completion, commit to notify consumers of the loads of K𝑗, V𝑗.",
+        "x": 108.9,
+        "y": 583.4,
+        "w": 379.1,
+        "h": 23.4,
+        "zh": "在缓冲的第 (𝑗 % 𝑠) 级，发起把 K𝑗、V𝑗 从 HBM 加载到共享内存。完成后提交，通知消费者 K𝑗、V𝑗 已经加载。"
+      },
+      {
+        "text": "Reallocate predetermined number of registers as function of number of consumer warps.",
+        "x": 98.9,
+        "y": 549,
+        "w": 384.1,
+        "h": 10,
+        "zh": "按消费者 warp 的数量，重新分配预先定好数量的寄存器。"
+      },
+      {
+        "text": "On-chip, initialize O𝑖 = (0) ∈ R𝐵𝑟×𝑑 and ℓ𝑖, 𝑚𝑖 = (0), (−∞) ∈ R𝐵𝑟. Wait for Q𝑖 to be loaded in shared memory. for 0 ≤ 𝑗 < 𝑇𝑐 do Wait for K𝑗 to be loaded in shared memory.",
+        "x": 98.9,
+        "y": 499.7,
+        "w": 280.2,
+        "h": 48.2,
+        "zh": "在片上把 O𝑖 初始化为 (0) ∈ R𝐵𝑟×𝑑，并把 ℓ𝑖、𝑚𝑖 初始化为 (0)、(−∞) ∈ R𝐵𝑟。等待 Q𝑖 被加载进共享内存。对 0 ≤ 𝑗 < 𝑇𝑐：等待 K𝑗 被加载进共享内存。"
+      },
+      {
+        "text": "= Q𝑖K𝑗 (SS-GEMM). Commit and wait. = 𝑚𝑖 and compute 𝑚𝑖 = max(𝑚𝑖",
+        "x": 156.5,
+        "y": 467.8,
+        "w": 191.3,
+        "h": 29.1,
+        "zh": ""
+      },
+      {
+        "text": "Compute Pe(𝑗) = exp(S(𝑗) − 𝑚𝑖) and ℓ𝑖 = exp(𝑚old − 𝑚𝑖)ℓ𝑖 + rowsum(Pe(𝑗)).",
+        "x": 108.9,
+        "y": 455,
+        "w": 318,
+        "h": 13.8,
+        "zh": "计算 Pe(𝑗) = exp(S(𝑗) − 𝑚𝑖)，以及 ℓ𝑖 = exp(𝑚old − 𝑚𝑖)ℓ𝑖 + rowsum(Pe(𝑗))。"
+      },
+      {
+        "text": "Wait for V𝑗 to be loaded in shared memory.",
+        "x": 108.9,
+        "y": 443,
+        "w": 192.4,
+        "h": 11.5,
+        "zh": "等待 V𝑗 被加载进共享内存。"
+      },
+      {
+        "text": "Compute O𝑖 = diag(exp(𝑚old − 𝑚𝑖))−1O𝑖 + Pe(𝑗)V𝑗 (RS-GEMM). Commit and wait.",
+        "x": 108.9,
+        "y": 428.8,
+        "w": 360.9,
+        "h": 13.8,
+        "zh": "计算 O𝑖 = diag(exp(𝑚old − 𝑚𝑖))−1 O𝑖 + Pe(𝑗)V𝑗（RS-GEMM）。提交并等待。"
+      },
+      {
+        "text": "Release the ( 𝑗 % 𝑠)th stage of the buffer for the producer.",
+        "x": 108.9,
+        "y": 418.4,
+        "w": 250.7,
+        "h": 10,
+        "zh": "把缓冲的第 (𝑗 % 𝑠) 级释放给生产者。"
+      },
+      {
+        "text": "O𝑖 and 𝐿𝑖 = 𝑚𝑖 + log(ℓ𝑖). Write O𝑖 and 𝐿𝑖 to HBM as the 𝑖th block of O and 𝐿.",
+        "x": 98.9,
+        "y": 381,
+        "w": 235.1,
+        "h": 23.4,
+        "zh": "得到 O𝑖，以及 𝐿𝑖 = 𝑚𝑖 + log(ℓ𝑖)。把 O𝑖 和 𝐿𝑖 写回 HBM，作为 O 和 𝐿 的第 𝑖 块。"
+      },
+      {
+        "text": "For our implementation of Algorithm 1 on Hopper, we use setmaxnreg for (de)allocations, TMA for loads of Q𝑖 and {K𝑗, V𝑗}0≤ 𝑗<𝑇𝑐, and WGMMA to execute the GEMMs in the consumer mainloop, with the SS or RS prefix indicating whether the first operand is sourced from shared memory or register file. For interpreting the execution flow of Algorithm 1, note that issuing TMA loads does not stall on the completion of other loads due to asynchrony. Moreover, in the producer mainloop, no waits will be issued for the first 𝑠 iterations as the buffer gets filled.",
+        "x": 72,
+        "y": 294.4,
+        "w": 498.7,
+        "h": 57.8,
+        "zh": "在 Hopper 上实现算法 1 时，我们用 setmaxnreg 来释放和再分配寄存器，用 TMA 加载 Q𝑖 以及 {K𝑗, V𝑗}（0 ≤ 𝑗 < 𝑇𝑐），并用 WGMMA 执行消费者主循环里的 GEMM。前缀 SS 或 RS 表示第一个操作数来自共享内存还是寄存器文件。理解算法 1 的执行流时要注意：由于异步，发出 TMA 加载并不会因为其他加载尚未完成而停住。而且在生产者的主循环里，缓冲被填满之前的前 𝑠 次迭代不会发出等待。"
+      },
+      {
+        "text": "The asynchronous nature of WGMMA and TMA, along with warp-specialization, opens up the opportunity to overlap the softmax computation of one warpgroup with the GEMM of another warpgroup. To motivate this, notice that non-matmul operations have much lower throughput than matmul operations on modern hardware accelerators. As an example, the H100 SXM5 GPU has 989 TFLOPS of FP16 matmul but only 3.9 TFLOPS of special functions such as exponential (necessary for softmax). For the attention forward pass in FP16 with head dimension 128, there are 512x more matmul FLOPS compared to exponential operations, but the exponential has 256x lower throughput, so exponential can take 50% of the cycle compared to matmul. The situation is even worse with FP8, where the matmul throughput doubles but the exponential throughput stays the",
+        "x": 71.6,
+        "y": 184.9,
+        "w": 499.1,
+        "h": 93.6,
+        "zh": "WGMMA 和 TMA 是异步的，再加上 warp specialization，就有机会让一个 warpgroup 的 softmax 与另一个 warpgroup 的 GEMM 重叠。动机在于：在现代硬件加速器上，非矩阵乘运算的吞吐远低于矩阵乘。例如，H100 SXM5 GPU 有 989 TFLOPS 的 FP16 矩阵乘，但指数这类特殊函数只有 3.9 TFLOPS，而 softmax 需要指数。对头维度为 128 的 FP16 注意力前向，矩阵乘的 FLOP 数是指数运算的 512 倍，但指数的吞吐低 256 倍，因此指数所占的周期可以达到矩阵乘的 50%。换成 FP8 时情况更糟：矩阵乘的吞吐翻倍，指数的吞吐却一直"
+      },
+      {
+        "text": "Since the exponential is performed by a separate hardware unit (the multi-function unit), ideally we’d want the exponential calculation to be scheduled when the Tensor Cores are performing the matmul. To do so, we use synchronization barriers (bar.sync instructions) to force the GEMMs (GEMM1 – PV of one iteration, and GEMM0 of the next iteration) of warpgroup 1 to be scheduled before the GEMMs of warpgroup 2. As a result, the softmax of warpgroup 1 will be scheduled while warpgroup 2 is performing its GEMMs. Then the roles swap, with warpgroup 2 doing softmax while warpgroup 1 doing GEMMs (hence, “pingpong” scheduling). This is illustrated",
+        "x": 71.6,
+        "y": 101.2,
+        "w": 497.4,
+        "h": 69.7,
+        "zh": "指数由单独的硬件单元（多功能单元）来做。理想情况下，我们希望在 Tensor Core 做矩阵乘的同时把指数算完。为此我们使用同步屏障（bar.sync 指令），迫使 warpgroup 1 的 GEMM——某一次迭代的 GEMM1（即 PV），以及下一次迭代的 GEMM0——排在 warpgroup 2 的 GEMM 之前。这样一来，当 warpgroup 2 在做 GEMM 时，warpgroup 1 的 softmax 就会被调度上去。然后双方对调角色：warpgroup 2 做 softmax，warpgroup 1 做 GEMM（因此称为“pingpong”调度）。这一点如图所示"
+      },
+      {
+        "text": "The CUDA programming guide specifies that 16 operations of special functions can be performed per streaming multiprocessor (SM) per clock cycle. We multiply 16 by 132 SMs and 1830 MHz clock speed to get 3.9 TFLOPS of special functions.",
+        "x": 72,
+        "y": 73.5,
+        "w": 497.8,
+        "h": 17.4,
+        "zh": "CUDA 编程指南写明，每个流式多处理器（SM）每个时钟周期可以执行 16 次特殊函数运算。我们把 16 乘以 132 个 SM，再乘以 1830 MHz 的时钟频率，得到特殊函数的 3.9 TFLOPS。"
+      }
+    ],
+    "6": [
+      {
+        "text": "in Fig. 1. Though in practice the pingpong scheduling is not as clean as depicted in the figure, we generally find this to improve performance (e.g., from 570 TFLOPS to 620-640 TFLOPS for FP16 forward with head dimension 128",
+        "x": 72,
+        "y": 697.2,
+        "w": 497.1,
+        "h": 21.9,
+        "zh": "见图 1。实践中，pingpong 调度并不像图里画的那样干净，但我们总体上发现它能提高性能（例如头维度 128 的 FP16 前向，从 570 TFLOPS 提高到 620–640 TFLOPS）。"
+      },
+      {
+        "text": "Figure 1: Pingpong scheduling for 2 warpgroups to overlap softmax and GEMMs: the softmax of one warpgroup should be scheduled when the GEMMs of another warpgroup are running. The same color denotes the same iteration.",
+        "x": 72,
+        "y": 540.8,
+        "w": 496.8,
+        "h": 19.9,
+        "zh": "图 1：两个 warpgroup 的 pingpong 调度，用来重叠 softmax 与 GEMM：一个 warpgroup 的 softmax，应当调度在另一个 warpgroup 的 GEMM 正在运行的时候。同一种颜色表示同一次迭代。"
+      },
+      {
+        "text": "For multi-query attention [51] and grouped query attention [3], we follow the approach in FlashAttention-2 and adjust the tensor indexing to avoid duplicating K and V in HBM.",
+        "x": 72,
+        "y": 490.2,
+        "w": 496.8,
+        "h": 21.9,
+        "zh": "对多查询注意力 [51] 和分组查询注意力 [3]，我们沿用 FlashAttention-2 的做法，调整张量的索引，避免在 HBM 里复制 K 和 V。"
+      },
+      {
+        "text": "Intra-warpgroup overlapping GEMMs and softmax Even within one warpgroup, we can overlap some instructions in the softmax with some instructions in the GEMMs.",
+        "x": 72,
+        "y": 443.9,
+        "w": 498.7,
+        "h": 30.3,
+        "zh": "在 warpgroup 内部重叠 GEMM 与 softmax。即便在同一个 warpgroup 里，我们也能让 softmax 中的一部分指令与 GEMM 中的一部分指令重叠。"
+      },
+      {
+        "text": "In the attention algorithm, operations within the inner loop (main loop) have sequential dependencies that impede parallelization within a single iteration. For example, (local) softmax (lines 18 to 19) relies on the output",
+        "x": 72,
+        "y": 408,
+        "w": 497.1,
+        "h": 21.9,
+        "zh": "在注意力算法里，内层循环（主循环）中的运算存在顺序依赖，这妨碍了在单次迭代内部做并行。例如，（局部）softmax（第 18 到 19 行）依赖于输出"
+      },
+      {
+        "text": "of the first GEMM, while the second GEMM takes its result P",
+        "x": 91.9,
+        "y": 394.3,
+        "w": 273.2,
+        "h": 10,
+        "zh": "第一次 GEMM 的输出，而第二次 GEMM 又把它的结果 P"
+      },
+      {
+        "text": "as an operand. Indeed, the wait statements",
+        "x": 379.5,
+        "y": 394.3,
+        "w": 189.3,
+        "h": 10,
+        "zh": "当作操作数。事实上，那些 wait 语句"
+      },
+      {
+        "text": "in lines 17 and 21 of Algorithm 1 serialize the execution of softmax and GEMMs. However, we can break these dependencies by pipelining across iterations through additional buffers in registers. Pursuing this idea, we propose",
+        "x": 72,
+        "y": 370.4,
+        "w": 496.8,
+        "h": 21.9,
+        "zh": "位于算法 1 的第 17 行和第 21 行，把 softmax 和 GEMM 的执行串行化了。不过，我们可以在寄存器里再增加缓冲，跨迭代做流水，从而打破这些依赖。沿着这个想法，我们提出"
+      },
+      {
+        "text": "the following two-stage GEMM-softmax pipelining algorithm:",
+        "x": 72,
+        "y": 358.5,
+        "w": 272.9,
+        "h": 10,
+        "zh": "下面这个两阶段的 GEMM–softmax 流水算法："
+      }
+    ],
+    "7": [
+      {
+        "text": "Algorithm 2 FlashAttention-3 consumer warpgroup forward pass Require: Matrices Q𝑖 ∈ R",
+        "x": 71.6,
+        "y": 691,
+        "w": 288.2,
+        "h": 28.4,
+        "zh": "算法 2：FlashAttention-3 中消费者 warpgroup 的前向。要求：矩阵 Q𝑖 ∈ R"
+      },
+      {
+        "text": "in HBM, key block size 𝐵𝑐 with 𝑇𝑐 = ⌈𝐵 ⌉. 1: Reallocate predetermined number of registers as function of number of consumer warps.",
+        "x": 77.4,
+        "y": 680.5,
+        "w": 397.6,
+        "h": 21.9,
+        "zh": "位于 HBM 中，key 的块大小为 𝐵𝑐，且 𝑇𝑐 = ⌈𝐵⌉。1：按消费者 warp 的数量，重新分配预先定好数量的寄存器。"
+      },
+      {
+        "text": "2: On-chip, initialize O𝑖 = (0) ∈ R𝐵𝑟×𝑑 and ℓ𝑖, 𝑚𝑖 = (0), (−∞) ∈ R𝐵𝑟. 3: Wait for Q𝑖 and K0 to be loaded in shared memory. 4: Compute Scur = Q𝑖K0 using WGMMA. Commit and wait. 5: Release the 0th stage of the buffer for K. 6: Compute 𝑚𝑖, P˜cur and ℓ𝑖 based on Scur, and rescale O𝑖. 7: for 1 ≤ 𝑗 < 𝑇𝑐 − 1 do Wait for K𝑗 to be loaded in shared memory. Compute Snext = Q𝑖K𝑗 using WGMMA. Commit but do not wait. Wait for V𝑗−1 to be loaded in shared memory.",
+        "x": 77.4,
+        "y": 571.4,
+        "w": 310.1,
+        "h": 108,
+        "zh": "2：在片上把 O𝑖 初始化为 (0) ∈ R𝐵𝑟×𝑑，并把 ℓ𝑖、𝑚𝑖 初始化为 (0)、(−∞) ∈ R𝐵𝑟。3：等待 Q𝑖 和 K0 被加载进共享内存。4：用 WGMMA 计算 Scur = Q𝑖K0。提交并等待。5：把 K 所用缓冲的第 0 级释放掉。6：根据 Scur 计算 𝑚𝑖、P̃cur 和 ℓ𝑖，并重缩放 O𝑖。7：对 1 ≤ 𝑗 < 𝑇𝑐 − 1：等待 K𝑗 被加载进共享内存。用 WGMMA 计算 Snext = Q𝑖K𝑗。提交，但不要等待。等待 V𝑗−1 被加载进共享内存。"
+      },
+      {
+        "text": "Compute O𝑖 = O𝑖 + P˜curV𝑗−1 using WGMMA. Commit but do not wait.",
+        "x": 98.9,
+        "y": 558.2,
+        "w": 314,
+        "h": 14,
+        "zh": "用 WGMMA 计算 O𝑖 = O𝑖 + P̃cur V𝑗−1。提交，但不要等待。"
+      },
+      {
+        "text": "Wait for the WGMMA Q𝑖K𝑗 . Compute 𝑚𝑖, P˜next and ℓ𝑖 based on Snext. Wait for the WGMMA P˜curV𝑗−1 and then rescale O𝑖",
+        "x": 98.9,
+        "y": 519.4,
+        "w": 230.3,
+        "h": 38.4,
+        "zh": "等待 WGMMA 的 Q𝑖K𝑗 完成。根据 Snext 计算 𝑚𝑖、P̃next 和 ℓ𝑖。等待 WGMMA 的 P̃cur V𝑗−1，然后重缩放 O𝑖"
+      },
+      {
+        "text": "Release the ( 𝑗 % 𝑠)th, resp. ( 𝑗 − 1 % 𝑠)th stage of the buffer for K, resp. V.",
+        "x": 98.9,
+        "y": 508.9,
+        "w": 326.9,
+        "h": 10,
+        "zh": "把缓冲的第 (𝑗 % 𝑠) 级释放给 K，把第 (𝑗 − 1 % 𝑠) 级释放给 V。"
+      },
+      {
+        "text": "18: Wait for V𝑇𝑐−1 to be loaded in shared memory. 19: Compute O𝑖 = O𝑖 + P˜lastV𝑇𝑐−1 using WGMMA. Commit and wait.",
+        "x": 73.1,
+        "y": 458.5,
+        "w": 304.9,
+        "h": 24.5,
+        "zh": "18：等待 V𝑇𝑐−1 被加载进共享内存。19：用 WGMMA 计算 O𝑖 = O𝑖 + P̃last V𝑇𝑐−1。提交并等待。"
+      },
+      {
+        "text": "20: Epilogue: Rescale O𝑖 based on 𝑚𝑖. Compute 𝐿𝑖 based on 𝑚𝑖 and ℓ𝑖. Write O𝑖 and 𝐿𝑖 to HBM as the 𝑖-th block",
+        "x": 73.1,
+        "y": 447.6,
+        "w": 495.9,
+        "h": 11.5,
+        "zh": "20：收尾：根据 𝑚𝑖 重缩放 O𝑖。根据 𝑚𝑖 和 ℓ𝑖 计算 𝐿𝑖。把 O𝑖 和 𝐿𝑖 写回 HBM，作为第 𝑖 块"
+      },
+      {
+        "text": "Algorithm 2 functions as a replacement for the consumer path of Algorithm 1 to comprise the complete FlashAttention-3 algorithm for FP16 precision. At a high-level, we use WGMMA as a metonym for asynchronous GEMM. Within the mainloop (lines 8 to 16), the second WGMMA operation of iteration 𝑗 (line 11) is overlapped",
+        "x": 72,
+        "y": 385,
+        "w": 496.8,
+        "h": 33.9,
+        "zh": "算法 2 用来替换算法 1 的消费者路径，从而构成 FP16 精度下完整的 FlashAttention-3 算法。在高层看来，我们用 WGMMA 作为异步 GEMM 的代称。在主循环（第 8 到 16 行）里，第 𝑗 次迭代的第二次 WGMMA（第 11 行）发生重叠，重叠的对象是"
+      },
+      {
+        "text": "with softmax operations from iteration 𝑗 + 1 (line 13).",
+        "x": 71.6,
+        "y": 373,
+        "w": 235.5,
+        "h": 10,
+        "zh": "第 𝑗 + 1 次迭代中的 softmax 运算（第 13 行）。"
+      },
+      {
+        "text": "While the pipelined structure illustrated above offers theoretical performance gains, there are several practical",
+        "x": 86.9,
+        "y": 361.1,
+        "w": 481.9,
+        "h": 10,
+        "zh": "上面画出的流水结构在理论上能带来性能收益，但实践中还有若干实际的"
+      },
+      {
+        "text": "The pseudocode represents an idealized execution order but the compiler (NVCC) often rearranges instructions for optimization. This can disrupt the carefully crafted WGMMA and non-WGMMA operation pipelining sequence, potentially leading to unexpected behavior or diminished performance gains. An analysis of the SASS code shows that the compiler generates overlapped code as expected (Section B.2).",
+        "x": 72,
+        "y": 287.3,
+        "w": 497.2,
+        "h": 45.8,
+        "zh": "伪代码给出的是理想的执行顺序，但编译器（NVCC）常常为了优化而重排指令。这会打乱我们精心安排的 WGMMA 与非 WGMMA 运算的流水顺序，可能导致意外行为，或使性能收益变小。对 SASS 的分析表明，编译器确实生成了预期中的重叠代码（B.2 节）。"
+      },
+      {
+        "text": "To maintain optimal performance, register spilling should be minimized. However, the 2-stage pipeline requires additional registers to store intermediate results and maintain context between stages. Specifically, an extra Snext must be kept in registers, leading to extra register usage of size 𝐵𝑟 × 𝐵𝑐 × sizeof(float) per threadblock. This increased register demand may conflict with using larger block sizes (another common optimization), which is also register-hungry. In practice, trade-offs should be made based on profiling results.",
+        "x": 71.6,
+        "y": 213.6,
+        "w": 499.1,
+        "h": 57.8,
+        "zh": "要维持最优性能，寄存器溢出应当尽量少。但两阶段流水需要额外的寄存器来存放中间结果，并在各个阶段之间保持上下文。具体而言，必须在寄存器里再留一份 Snext，因此每个线程块会多用 𝐵𝑟 × 𝐵𝑐 × sizeof(float) 这么多寄存器。多出来的寄存器需求，可能和使用更大的块相冲突——更大的块是另一种常见优化，同样很吃寄存器。实践中，应当根据性能剖析的结果来做取舍。"
+      },
+      {
+        "text": "Extending the 2-stage algorithm described above, we propose a 3-stage variant that would further overlap the second WGMMA with softmax. While this approach offers the potential for even higher Tensor Core utilization, it requires even more registers due to an additional stage in the pipeline, making the trade-off between tile size and pipeline depth more difficult to balance. A detailed description of the 3-stage algorithm and",
+        "x": 72,
+        "y": 151.9,
+        "w": 497,
+        "h": 45.8,
+        "zh": "在上面的两阶段算法之上，我们提出一种三阶段变体，让第二次 WGMMA 与 softmax 进一步重叠。它有望把 Tensor Core 的利用率提得更高，但流水再多一级就需要更多寄存器，块大小和流水深度之间的取舍也就更难平衡。三阶段算法的详细描述，以及"
+      },
+      {
+        "text": "its evaluation results can be found in Appendix B.3.",
+        "x": 72,
+        "y": 139.9,
+        "w": 231.4,
+        "h": 10,
+        "zh": "其评测结果，见附录 B.3。"
+      },
+      {
+        "text": "Efficiency: layout transformations. Computing the forward pass of FlashAttention-3 in FP8 precision poses additional challenges not encountered for FP16 in terms of layout conformance.",
+        "x": 72,
+        "y": 81.7,
+        "w": 496.8,
+        "h": 21.9,
+        "zh": "效率：布局变换。用 FP8 精度计算 FlashAttention-3 的前向，会在布局一致性上遇到 FP16 所没有的额外困难。"
+      }
+    ],
+    "8": [
+      {
+        "text": "T0 {d0, d1} T1 {d0, d1} T2 {d0, d1} T3 {d0, d1} T0 {d4, d5} T1 {d4, d5} T2 {d4, d5} T3 {d4, d5} T0 {d2, d3} T1 {d2, d3} T2 {d2, d3} T3 {d2, d3} T0 {d6, d7} T1 {d6, d7} T2 {d6, d7} T3 {d6, d7}",
+        "x": 117.2,
+        "y": 694.2,
+        "w": 406.4,
+        "h": 24.1,
+        "zh": ""
+      },
+      {
+        "text": "Figure 3: FP32 accumulator register WGMMA layout – rows 0 and 8, threads 0-3, entries 0-7.",
+        "x": 129.7,
+        "y": 670.7,
+        "w": 381.4,
+        "h": 9,
+        "zh": "图 3：FP32 累加器寄存器中的 WGMMA 布局——第 0 行和第 8 行，线程 0–3，条目 0–7。"
+      },
+      {
+        "text": "T0 {a0, a1} T0 {a2, a3} T1 {a0, a1} T1 {a2, a3} T2 {a0, a1} T2 {a2, a3} T3 {a0, a1} T3 {a2, a3} T0 {a4, a5} T0 {a6, a7} T1 {a4, a5} T1 {a6, a7} T2 {a4, a5} T2 {a6, a7} T3 {a4, a5} T3 {a6, a7}",
+        "x": 117.7,
+        "y": 631.1,
+        "w": 405.3,
+        "h": 24.1,
+        "zh": ""
+      },
+      {
+        "text": "Figure 4: FP8 operand A register WGMMA layout – rows 0 and 8, threads 0-3, entries 0-7.",
+        "x": 135.5,
+        "y": 607.6,
+        "w": 369.9,
+        "h": 9,
+        "zh": "图 4：FP8 操作数 A 的寄存器 WGMMA 布局——第 0 行和第 8 行，线程 0–3，条目 0–7。"
+      },
+      {
+        "text": "First, we note that the input tensors Q, K, and V are typically given as contiguous in the head dimension, while to satisfy the k-major constraint on FP8 WGMMA for the second GEMM we need V, or rather the tiles of V loaded into SMEM, to be contiguous in the sequence length dimension. Since the TMA load itself cannot change the contiguous dimension, we then need to either (1) transpose V in GMEM as a pre-processing step, or (2) do an in-kernel transpose of tiles of V after loading them into SMEM. To implement option (1), we can either (1a) fuse the transpose to the epilogue of a preceding step such as the rotary embedding, or (1b) call a standalone pre-processing transpose kernel to exchange the strides of the sequence length and head dimensions. However, (1a) is difficult to integrate into a standard library, and (1b) is too wasteful in a memory-bound situation such as inference. Instead, for FP8 FlashAttention-3 we opt for option (2). For the in-kernel transpose, we take advantage of the LDSM (ldmatrix) and STSM (stmatrix) instructions, which involve a warp of threads collectively loading SMEM to RMEM and storing RMEM to SMEM at a granularity of 128 bytes. both register efficient, allowing us to execute them in the producer warpgroup, and capable of transposing layouts when doing memory copy. Moreover, after the first iteration we can arrange for the transpose of the next V tile to be executed in the shadow of the two WGMMAs that involve the preceding V and current K tile. Second, we observe that unlike with FP16, the memory layout of the FP32 accumulator of an FP8 WGMMA is different from that assumed for its operand A when held in registers. We depict fragments of these two layouts in Fig. 3 and Fig. 4, where the entries are held in registers per thread in the listed order. By using byte permute instructions, we can then transform the first WGMMA’s accumulator into a format suitable for the second WGMMA, and compatibly with the layout of the V tile produced by the in-kernel transpose. Specifically, with reference to",
+        "x": 71.6,
+        "y": 360.4,
+        "w": 498.5,
+        "h": 225.2,
+        "zh": "首先我们注意到，输入张量 Q、K、V 通常在头维度上是连续的；而为了满足第二次 GEMM 上 FP8 WGMMA 的 k-major 约束，我们需要 V——更准确地说，是加载进 SMEM 的那些 V 的 tile——在序列长度这一维上连续。TMA 加载本身不能改变哪个维是连续的，因此我们要么（1）在 GMEM 里把 V 转置，作为预处理，要么（2）把 V 的 tile 加载进 SMEM 之后，在 kernel 内部做转置。要实现方案（1），可以（1a）把转置融合进前一步（例如旋转位置编码）的收尾，或者（1b）单独调用一个预处理转置 kernel，交换序列长度维和头维的步长。但（1a）很难融进一个标准库，（1b）在推理这类受内存带宽限制的场景里又太浪费。因此，FP8 版 FlashAttention-3 选择方案（2）。kernel 内的转置利用 LDSM（ldmatrix）和 STSM（stmatrix）指令：一个 warp 的线程集体行动，以 128 字节为粒度，把 SMEM 加载到 RMEM，再把 RMEM 存回 SMEM。这些指令既省寄存器，使我们能在生产者 warpgroup 里执行它们，又能在做内存拷贝时把布局转置过来。此外，第一次迭代之后，我们可以把下一块 V 的转置安排在两次 WGMMA 的掩护下执行，这两次 WGMMA 分别用到前一块 V 和当前的 K tile。其次我们观察到，与 FP16 不同，FP8 WGMMA 的 FP32 累加器在内存中的布局，和它的操作数 A 放在寄存器里时所假定的布局并不相同。我们在图 3 和图 4 中画出这两种布局的片段，其中的条目按所列顺序保存在每个线程的寄存器里。借助字节置换指令，就可以把第一次 WGMMA 的累加器变换成适合第二次 WGMMA 的格式，并与 kernel 内转置所产生的 V tile 的布局相容。具体而言，参照"
+      },
+      {
+        "text": "Fig. 3, we change the order in sequence to",
+        "x": 72,
+        "y": 348.5,
+        "w": 184,
+        "h": 10,
+        "zh": "图 3，我们把顺序依次改成"
+      },
+      {
+        "text": "and this register permutation is then replicated over every 8 bytes. In terms of the logical shape of the P tile, this manuever permutes its columns (e.g., columns 0189 now become the first four columns). For WGMMA to then compute the correct output tile, we can correspondingly arrange for the in-kernel transpose to write out a matching",
+        "x": 72,
+        "y": 283.5,
+        "w": 496.8,
+        "h": 33.9,
+        "zh": "然后，这种寄存器置换按每 8 个字节重复一次。就 P 这一 tile 的逻辑形状而言，这一操作置换了它的列（例如，第 0、1、8、9 列现在变成前四列）。为了让随后的 WGMMA 算出正确的输出 tile，我们可以相应安排 kernel 内的转置，写出一份与之匹配的"
+      },
+      {
+        "text": "Accuracy: block quantization and incoherent processing. With FP8 (e4m3) format, one only uses 3 bits to store the mantissa and 4 bits for the exponent. This results in higher numerical error than FP16/BF16. Moreover, large models typically have outlier values [20, 54] that are much larger in magnitude than most other values, making quantization difficult. One typically use per-tensor scaling [37] by keeping one scalar per tensor (e.g., one for Q, for K, and for V). To reduce the numerical error of attention in FP8, we employ two techniques:",
+        "x": 71.7,
+        "y": 211.8,
+        "w": 499,
+        "h": 57.8,
+        "zh": "精度：分块量化与非相干处理。在 FP8（e4m3）格式下，尾数只用 3 位，指数只用 4 位，数值误差因此高于 FP16/BF16。而且大模型通常存在离群值 [20, 54]，其幅度远大于大多数其他值，使量化变得困难。常见做法是按张量缩放 [37]，每个张量保留一个标量（例如 Q、K、V 各一个）。为了降低 FP8 注意力的数值误差，我们采用两项技术："
+      },
+      {
+        "text": "1. Block quantization: we keep one scalar per block, so that for each of Q, K, V we split the tensor into blocks of size 𝐵𝑟 × 𝑑 or 𝐵𝑐 × 𝑑 and quantize them separately. This quantization can be fused with an operation right before attention (e.g., rotary embedding) with no additional slow down (since rotary embedding is memory-bandwidth bound). As the FlashAttention-3 algorithm naturally operates on blocks, we can scale each block of S to account for this block quantization at no computation cost.",
+        "x": 84.2,
+        "y": 145.2,
+        "w": 484.6,
+        "h": 57.8,
+        "zh": "1. 分块量化：每个块保留一个标量。对 Q、K、V 各自，我们把张量切成大小为 𝐵𝑟 × 𝑑 或 𝐵𝑐 × 𝑑 的块，分别量化。这一量化可以融合进注意力之前的某一步运算（例如旋转位置编码），而且不会额外变慢，因为旋转位置编码受内存带宽限制。FlashAttention-3 的算法本来就按块运算，因此我们可以对 S 的每个块做缩放，把这种分块量化算进去，计算代价为零。"
+      },
+      {
+        "text": "An optimized transpose kernel will achieve speed near the bandwidth of the device [46]. In the PTX documentation, LDSM/STSM are described as copying 8×8 matrices with 16-bit entries [40, §9.7.13.4.15-16], but we can pack 8-bit entries two at a time to use LDSM/STSM in the context of FP8 precision. However, the transpose versions of LDSM/STSM cannot split packed 8-bit entries, which necessitates certain register movements in between LDSM and STSM to actually perform a",
+        "x": 72,
+        "y": 99.6,
+        "w": 496.8,
+        "h": 36.5,
+        "zh": "一个优化过的转置 kernel，速度可以接近设备的带宽 [46]。在 PTX 文档里，LDSM/STSM 被描述为拷贝带 16 位条目的 8×8 矩阵 [40, §9.7.13.4.15–16]，但我们可以一次把两个 8 位条目打包在一起，从而在 FP8 精度下使用 LDSM/STSM。不过，LDSM/STSM 的转置版本不能拆开已经打包的 8 位条目，因此必须在 LDSM 和 STSM 之间做一些寄存器搬移，才能真正完成一次"
+      }
+    ],
+    "9": [
+      {
+        "text": "2. Incoherent processing: to even out outliers, we multiply Q and K with a random orthogonal matrix M before quantizing to FP8. Since M is orthogonal, MM",
+        "x": 84.2,
+        "y": 697.2,
+        "w": 484.6,
+        "h": 21.9,
+        "zh": "2. 非相干处理：为了抹平离群值，我们在量化到 FP8 之前，把 Q 和 K 乘上一个随机正交矩阵 M。由于 M 是正交的，MM"
+      },
+      {
+        "text": "= QK , i.e., multiplying both Q and K with M does not change the attention output. This serves to “spread out” the outliers since each entry of QM or KM is a random sum of entries of Q or K, thus reducing quantization error. In practice, we follow Chee et al. [9] and Tseng et al. [58] and choose M to be the product of random diagonal matrices of ±1 and a Hadamard matrix, which can be multiplied in 𝑂(𝑑 log 𝑑) instead of 𝑂(𝑑 ), and can also be fused with the rotary embedding at no extra computation cost.",
+        "x": 96.9,
+        "y": 637.4,
+        "w": 472.9,
+        "h": 69.7,
+        "zh": "= QK，也就是说，把 Q 和 K 都乘上 M，并不会改变注意力的输出。这起到把离群值“摊开”的作用，因为 QM 或 KM 的每一个条目，都是 Q 或 K 中若干条目的随机求和，从而降低量化误差。实践中，我们跟随 Chee 等人 [9] 和 Tseng 等人 [58]，把 M 取成若干随机 ±1 对角矩阵与一个 Hadamard 矩阵的乘积。这样，乘法的代价是 𝑂(𝑑 log 𝑑)，而不是 𝑂(𝑑)，并且也可以和旋转位置编码融合，不增加计算代价。"
+      },
+      {
+        "text": "We validate that these two techniques reduces numerical error by up to 2.6× in § 4.3.",
+        "x": 71.5,
+        "y": 617.5,
+        "w": 370.4,
+        "h": 10,
+        "zh": "我们在 §4.3 中验证，这两项技术最多能把数值误差降低 2.6 倍。"
+      },
+      {
+        "text": "We use the primitives from CUTLASS [57] such as WGMMA and TMA abstractions to implement FlashAttention- 3 and evaluate its efficiency and accuracy.",
+        "x": 71.5,
+        "y": 550.8,
+        "w": 499.2,
+        "h": 21.9,
+        "zh": "我们使用 CUTLASS [57] 里的原语，例如对 WGMMA 和 TMA 的抽象，来实现 FlashAttention-3，并评估它的效率与精度。"
+      },
+      {
+        "text": "• Benchmarking attention. We measure the runtime of FlashAttention-3 across different sequence lengths and compare it to a standard implementation in PyTorch, FlashAttention-2, FlashAttention-2 in Triton (which uses H100-specific instructions), as well as a vendor’s implementation of FlashAttention-2 optimized for H100 GPUs from cuDNN. We confirm that FlashAttention-3 is up to 2.0× faster than FlashAttention-2 and 1.5× faster than FlashAttention-2 in Triton. FlashAttention-3 reaches up to 740 TFLOPs/s, 75% of the theoretical maximum TFLOPs/s on H100 GPUs.",
+        "x": 86.9,
+        "y": 471.1,
+        "w": 482.1,
+        "h": 69.7,
+        "zh": "• 注意力的基准测试。我们测量 FlashAttention-3 在不同序列长度下的运行时间，并与下列实现比较：PyTorch 中的标准实现、FlashAttention-2、Triton 版的 FlashAttention-2（用了 H100 专用指令），以及厂商针对 H100 GPU 优化过的 FlashAttention-2 实现（来自 cuDNN）。我们确认，FlashAttention-3 最多比 FlashAttention-2 快 2.0 倍，比 Triton 版 FlashAttention-2 快 1.5 倍。FlashAttention-3 最高达到 740 TFLOPs/s，相当于 H100 GPU 理论峰值 TFLOPs/s 的 75%。"
+      },
+      {
+        "text": "• Ablation study. We confirm that our algorithmic improvements with warp-specialization and GEMM-softmax pipelining contribute to the speedup of FlashAttention-3.",
+        "x": 86.9,
+        "y": 439.2,
+        "w": 482.1,
+        "h": 21.9,
+        "zh": "• 消融实验。我们确认，warp specialization 以及 GEMM 与 softmax 的流水，这两项算法上的改进确实为 FlashAttention-3 的加速作出了贡献。"
+      },
+      {
+        "text": "• Accuracy of FP8 attention. We validate that block quantization and incoherent processing reduces the numerical error of FP8 FlashAttention-3 by 2.6×.",
+        "x": 86.9,
+        "y": 407.3,
+        "w": 481.9,
+        "h": 21.9,
+        "zh": "• FP8 注意力的精度。我们验证，分块量化和非相干处理把 FP8 版 FlashAttention-3 的数值误差降低了 2.6 倍。"
+      },
+      {
+        "text": "Benchmarking Attention We measure the runtime of different attention methods on an H100 80GB SXM5 GPU for different settings (without / with causal mask, head dimension 64 or 128) for FP16 inputs. We report the results in Fig. 5 and Fig. 6, showing that FlashAttention-3 is around 1.5-2.0× faster than FlashAttention-2 in the forward pass and 1.5-1.75× faster in the backward pass. Compared to a standard attention implementation, FlashAttention-3 can be up to 3-16× faster. For medium and long sequences (1k and above), FlashAttention-3 even surpasses the speed of a vendor’s library (cuDNN – closed source) that has been optimized for H100 GPUs.",
+        "x": 71,
+        "y": 301.3,
+        "w": 498.1,
+        "h": 90.1,
+        "zh": "注意力基准测试。我们在一块 H100 80GB SXM5 GPU 上，针对不同设置（无因果掩码或有因果掩码，头维度 64 或 128），测量多种注意力方法在 FP16 输入下的运行时间。结果见图 5 和图 6。它们表明，FlashAttention-3 的前向大约比 FlashAttention-2 快 1.5–2.0 倍，反向快 1.5–1.75 倍。相对标准的注意力实现，FlashAttention-3 最多可以快 3–16 倍。对中等长度和长序列（1k 及以上），FlashAttention-3 甚至超过一家厂商的库（cuDNN，闭源）在 H100 GPU 上经过优化后的速度。"
+      },
+      {
+        "text": "We vary the sequence length as 512, 1k, ..., 16k, and set batch size so that the total number of tokens is 16k. We set the hidden dimension to 2048, and head dimension to be either 64, 128, or 256 (i.e., 32 heads, 16 heads, or 8 heads). To calculate the FLOPs of the forward pass, we use:",
+        "x": 71.8,
+        "y": 251.5,
+        "w": 498.4,
+        "h": 33.9,
+        "zh": "我们把序列长度取为 512、1k、……、16k，并设置 batch 大小，使 token 总数为 16k。隐藏维度设为 2048，头维度取 64、128 或 256（也就是 32 个头、16 个头或 8 个头）。计算前向的 FLOPs 时，我们使用："
+      },
+      {
+        "text": "4 · seqlen · head dimension · number of heads.",
+        "x": 220.6,
+        "y": 229.6,
+        "w": 199.4,
+        "h": 10,
+        "zh": "4 · 序列长度 · 头维度 · 头数。"
+      },
+      {
+        "text": "With causal masking, we divide this number by 2 to account for the fact that approximately only half of the entries are calculated. To get the FLOPs of the backward pass, we multiply the forward pass FLOPs by 2.5 (since there are 2 matmuls in the forward pass and 5 matmuls in the backward pass, due to recomputation). We also measure the runtime for FP8 for the forward pass under similar settings. We report the results for headdim 256 in Fig. 7 and give the full results in Appendix C.2.",
+        "x": 71.5,
+        "y": 159.8,
+        "w": 497.5,
+        "h": 57.8,
+        "zh": "有因果掩码时，我们把这个数除以 2，因为大约只有一半条目会被计算。反向的 FLOPs 取前向 FLOPs 的 2.5 倍，因为前向有 2 次 matmul，反向由于重计算而有 5 次 matmul。我们也在类似的设置下测量了前向的 FP8 运行时间。头维度 256 的结果见图 7，完整结果放在附录 C.2。"
+      },
+      {
+        "text": "Ablation Study: 2-Stage Pipelining Experiments We ablate both the 2-stage WGMMA-softmax pipelining and warp-specialization for non-causal FP16 FlashAttention- 3 with fixed parameters {batch, seqlen, nheads, hdim} = {4, 8448, 16, 128}. The result in Table 2 confirms that our algorithmic improvements (asynchrony with warp-specialization and overlapping between GEMM and softmax) lead to significant speedup, from 570 to 661 TFLOPs.",
+        "x": 71.5,
+        "y": 77.7,
+        "w": 510.7,
+        "h": 66.2,
+        "zh": "消融实验：两阶段流水。我们对非因果的 FP16 FlashAttention-3 做消融，固定参数 {batch, seqlen, nheads, hdim} = {4, 8448, 16, 128}，同时考察两阶段的 WGMMA–softmax 流水和 warp specialization。表 2 的结果确认，我们在算法上的改进——由 warp specialization 带来的异步，以及 GEMM 与 softmax 之间的重叠——带来了明显加速，从 570 TFLOPs 提高到 661 TFLOPs。"
+      }
+    ],
+    "10": [
+      {
+        "text": "(a) Forward, without causal mask, head dim 64 Attention forward speed, head dim 128 (H100 80GB SXM5)",
+        "x": 101.9,
+        "y": 524.4,
+        "w": 208,
+        "h": 21.4,
+        "zh": "（a）前向，无因果掩码，头维度 64。注意力前向速度，头维度 128（H100 80GB SXM5）"
+      },
+      {
+        "text": "(b) Forward, with causal mask, head dim 64 Attention forward speed, head dim 128 (H100 80GB SXM5)",
+        "x": 350.3,
+        "y": 524.4,
+        "w": 208,
+        "h": 21.4,
+        "zh": "（b）前向，有因果掩码，头维度 64。注意力前向速度，头维度 128（H100 80GB SXM5）"
+      },
+      {
+        "text": "(c) Forward, without causal mask, head dim 128 Attention forward speed, head dim 256 (H100 80GB SXM5)",
+        "x": 101.9,
+        "y": 340.9,
+        "w": 208,
+        "h": 21.4,
+        "zh": "（c）前向，无因果掩码，头维度 128。注意力前向速度，头维度 256（H100 80GB SXM5）"
+      },
+      {
+        "text": "(d) Forward, with causal mask, head dim 128 Attention forward speed, head dim 256 (H100 80GB SXM5)",
+        "x": 350.3,
+        "y": 340.9,
+        "w": 208,
+        "h": 21.4,
+        "zh": "（d）前向，有因果掩码，头维度 128。注意力前向速度，头维度 256（H100 80GB SXM5）"
+      },
+      {
+        "text": "As there has been interest in the numerical error [21] of FlashAttention, we compare FlashAttention-2, FlashAttention-3, and a standard implementation of attention against a reference implementation in FP64. To simulate outlier features and activations in LLMs [20, 54], we generate the entries of Q, K, V with the following",
+        "x": 71.6,
+        "y": 74.8,
+        "w": 498.6,
+        "h": 33.9,
+        "zh": "由于已有工作关注 FlashAttention 的数值误差 [21]，我们把 FlashAttention-2、FlashAttention-3 以及注意力的一种标准实现，拿去对照 FP64 的参考实现。为了模拟 LLM 中的离群特征与激活 [20, 54]，我们按下面的方式生成 Q、K、V 的条目"
+      }
+    ],
+    "11": [
+      {
+        "text": "Table 2: Pipelining ablation measurements",
+        "x": 226.7,
+        "y": 283.4,
+        "w": 187,
+        "h": 10,
+        "zh": "表 2：流水消融的测量结果"
+      },
+      {
+        "text": "No GEMM-Softmax Pipelining, Warp-Specialization GEMM-Softmax Pipelining, No Warp-Specialization",
+        "x": 148.4,
+        "y": 224,
+        "w": 228.6,
+        "h": 22.3,
+        "zh": "无 GEMM–softmax 流水、有 warp specialization；有 GEMM–softmax 流水、无 warp specialization"
+      },
+      {
+        "text": "N (0, 1) + N (0, 100) · Bernoulli(0.001). That is, each entry is normally distributed with zero mean and standard deviation 1, but for 0.1% of entries we add an independent term that’s normally distributed with standard deviation 10. We then measure the root mean squared error (RMSE) in Table 3. In FP16, both FlashAttention-2 and FlashAttention-3 achieves 1.7× lower RMSE compared to the standard implementation since intermediate results (softmax) are kept in FP32. The baseline attention in FP8 uses per-tensor scaling, with matmul accumulator in FP32 and intermediate softmax results kept in FP16. Thanks to block quantization and incoherent processing, FlashAttention-3 in FP8 is 2.6×",
+        "x": 71.6,
+        "y": 100.5,
+        "w": 497.4,
+        "h": 87.7,
+        "zh": "N(0, 1) + N(0, 100) · Bernoulli(0.001)。也就是说，每个条目服从均值为 0、标准差为 1 的正态分布，但对其中 0.1% 的条目，我们再加一个独立的项，该项服从标准差为 10 的正态分布。然后我们在表 3 中测量均方根误差（RMSE）。在 FP16 下，FlashAttention-2 和 FlashAttention-3 的 RMSE 都比标准实现低 1.7 倍，因为中间结果（softmax）保存在 FP32 中。FP8 的基线注意力使用按张量的缩放，matmul 的累加器为 FP32，softmax 的中间结果则保存在 FP16。得益于分块量化和非相干处理，FP8 下的 FlashAttention-3 达到 2.6 倍"
+      }
+    ],
+    "12": [
+      {
+        "text": "Table 3: Numerical error comparisons in FP16 and FP8 (e4m3).",
+        "x": 179.8,
+        "y": 710.8,
+        "w": 280.8,
+        "h": 10,
+        "zh": "表 3：FP16 与 FP8（e4m3）下的数值误差比较。"
+      },
+      {
+        "text": "With FlashAttention-3, we have demonstrated that new programming techniques and hardware features such as asynchrony and low-precision can have a dramatic impact on the efficiency and accuracy of attention. We are able to speed up attention by 1.5-2.0× times compared to FlashAttention-2, and reduce FP8 numerical error by 2.6× compared to standard per-tensor quantization. Some limitations of our work that we hope to address in the future include: optimizing for LLM inference, integrating a persistent kernel design into the FP8 kernel, understanding the effects of low-precision attention in large-scale training. Though we have focused on Hopper GPUs in this work, we expect that the techniques developed here will apply to other hardware accelerators. We hope that a faster and more accurate primitive such as attention will unlock new applications in long-context tasks.",
+        "x": 71.5,
+        "y": 501.5,
+        "w": 497.5,
+        "h": 93.6,
+        "zh": "借助 FlashAttention-3，我们表明，异步和低精度这类新的编程技术与硬件特性，可以显著影响注意力的效率和精度。相对 FlashAttention-2，我们把注意力加速了 1.5–2.0 倍；相对标准的按张量量化，我们把 FP8 的数值误差降低了 2.6 倍。这项工作还有一些局限，我们希望今后加以解决，包括：针对 LLM 推理做优化，把持久 kernel 的设计接进 FP8 kernel，以及理解低精度注意力在大规模训练中的影响。本文聚焦的是 Hopper GPU，但我们预期这里发展出来的技术也能用到其他硬件加速器上。我们希望，注意力这样一种更快、也更精确的原语，能够打开长上下文任务中的新应用。"
+      },
+      {
+        "text": "We are grateful to the NVIDIA CUTLASS team (especially Haicheng Wu, Aniket Shivam, and Cris Cecka) for helping us understand Hopper’s programming model and for their library, which provides clean and powerful building blocks for the implementation of FlashAttention-3. We thank the cuDNN team for the idea of in-kernel transpose for FP8. The idea of overlapping GEMMs and softmax was inspired by insightful conversations with Christopher Ré, Benjamin Spector, Aniket Shivam, and Markus Hoehnerbach. The pingpong scheduling is adapted from the warp-specialized pingpong GEMM implementation in CUTLASS. We appreciate Driss Guessous for integrating FlashAttention to PyTorch. FlashAttention-3 has benefited from helpful discussions with Horace He on different attention variants, with Hao Liu and Phil Wang on distributed attention, and with Daniel Haziza and Chris De Sa on quantization. We thank Meta, Together AI, and Princeton Language and Intelligence (PLI) for",
+        "x": 71.5,
+        "y": 361.5,
+        "w": 497.5,
+        "h": 105.6,
+        "zh": "我们感谢 NVIDIA CUTLASS 团队（尤其是 Haicheng Wu、Aniket Shivam 和 Cris Cecka）。他们帮助我们理解 Hopper 的编程模型，他们的库也为 FlashAttention-3 的实现提供了干净而有力的构件。我们感谢 cuDNN 团队提出了 FP8 下在 kernel 内做转置这一想法。把 GEMM 与 softmax 重叠起来的想法，来自与 Christopher Ré、Benjamin Spector、Aniket Shivam 和 Markus Hoehnerbach 的交谈，这些交谈很有启发。pingpong 调度改编自 CUTLASS 中按 warp 分工的 pingpong GEMM 实现。我们感谢 Driss Guessous 把 FlashAttention 接入 PyTorch。FlashAttention-3 还得益于这些讨论：与 Horace He 讨论不同的注意力变体，与 Hao Liu 和 Phil Wang 讨论分布式注意力，与 Daniel Haziza 和 Chris De Sa 讨论量化。我们感谢 Meta、Together AI 以及普林斯顿语言与智能（Princeton Language and Intelligence，PLI）的"
+      },
+      {
+        "text": "[1] Ahmad Abdelfattah, Azzam Haidar, Stanimire Tomov, and Jack Dongarra. Performance, design, and autotuning of batched gemm for gpus. pages 21–38, 06 2016. ISBN 978-3-319-41320-4. doi: 10.1007/978-3-319-41321-1_2.",
+        "x": 77,
+        "y": 282.9,
+        "w": 493.7,
+        "h": 21.9,
+        "zh": "[1] Ahmad Abdelfattah、Azzam Haidar、Stanimire Tomov 与 Jack Dongarra。GPU 上批量 GEMM 的性能、设计与自动调优。第 21–38 页，2016 年 6 月。ISBN 978-3-319-41320-4。doi: 10.1007/978-3-319-41321-1_2。"
+      },
+      {
+        "text": "[2] AI21. Introducing jamba: Ai21’s groundbreaking ssm-transformer model. AI21 blog, 2024.",
+        "x": 77,
+        "y": 262.9,
+        "w": 409.9,
+        "h": 10,
+        "zh": "[2] AI21。介绍 Jamba：AI21 开创性的 SSM–Transformer 模型。AI21 博客，2024。"
+      },
+      {
+        "text": "[3] Joshua Ainslie, James Lee-Thorp, Michiel de Jong, Yury Zemlyanskiy, Federico Lebrón, and Sumit Sanghai. Gqa: Training generalized multi-query transformer models from multi-head checkpoints. arXiv:2305.13245, 2023.",
+        "x": 77,
+        "y": 219.1,
+        "w": 493.8,
+        "h": 33.9,
+        "zh": "[3] Joshua Ainslie、James Lee-Thorp、Michiel de Jong、Yury Zemlyanskiy、Federico Lebrón 与 Sumit Sanghai。GQA：从多头检查点训练通用的多查询 Transformer 模型。arXiv:2305.13245，2023。"
+      },
+      {
+        "text": "[4] Michael Bauer, Henry Cook, and Brucek Khailany. CudaDMA: Optimizing GPU Memory Bandwidth via Warp Specialization. In Proceedings of 2011 International Conference for High Performance Computing, Networking, Storage and Analysis, SC ’11, New York, NY, USA, 2011. Association for Computing Machinery. ISBN 9781450307710. doi: 10.1145/2063384.2063400. URL https://doi.org/10.1145/2063384.2063400.",
+        "x": 77,
+        "y": 163.3,
+        "w": 493.8,
+        "h": 45.8,
+        "zh": "[4] Michael Bauer、Henry Cook 与 Brucek Khailany。CudaDMA：通过 warp specialization 优化 GPU 内存带宽。见 2011 年高性能计算、网络、存储与分析国际会议论文集，SC ’11，美国纽约州纽约市，2011。Association for Computing Machinery。ISBN 9781450307710。doi: 10.1145/2063384.2063400。URL https://doi.org/10.1145/2063384.2063400。"
+      },
+      {
+        "text": "[5] Maximilian Beck, Korbinian Pöppel, Markus Spanring, Andreas Auer, Oleksandra Prudnikova, Michael Kopp, Günter Klambauer, Johannes Brandstetter, and Sepp Hochreiter. xlstm: Extended long short-term memory. arXiv preprint arXiv:2405.04517, 2024.",
+        "x": 77,
+        "y": 119.5,
+        "w": 493.8,
+        "h": 33.9,
+        "zh": "[5] Maximilian Beck、Korbinian Pöppel、Markus Spanring、Andreas Auer、Oleksandra Prudnikova、Michael Kopp、Günter Klambauer、Johannes Brandstetter 与 Sepp Hochreiter。xLSTM：扩展的长短期记忆。arXiv 预印本 arXiv:2405.04517，2024。"
+      },
+      {
+        "text": "For our benchmarks, FP16 FlashAttention-3 has a persistent kernel and load balancing strategy, while FP8 FlashAttention-3 does not. This partly explains why FP8 FlashAttention-3 does not perform as well for small sequence length and causal masking compared to the FP8 cuDNN kernels.",
+        "x": 72,
+        "y": 82.9,
+        "w": 497,
+        "h": 26.9,
+        "zh": "在我们的基准测试里，FP16 版 FlashAttention-3 带有持久 kernel 和负载均衡策略，FP8 版则没有。这在一定程度上解释了，为什么在序列较短并且使用因果掩码时，FP8 版 FlashAttention-3 不如 FP8 的 cuDNN kernel。"
+      }
+    ],
+    "13": [
+      {
+        "text": "[6] Iz Beltagy, Matthew E Peters, and Arman Cohan. Longformer: The long-document transformer. arXiv preprint",
+        "x": 77,
+        "y": 709.2,
+        "w": 491.8,
+        "h": 10,
+        "zh": "[6] Iz Beltagy、Matthew E. Peters 与 Arman Cohan。Longformer：面向长文档的 Transformer。arXiv 预印本"
+      },
+      {
+        "text": "[7] Ganesh Bikshandi and Jay Shah. Delivering 1 PFLOP/s of Performance with FP8 FlashAttention-2, 2024. URL https://research.colfax-intl.com/adding-fp8-to-flashattention/.",
+        "x": 77,
+        "y": 665.3,
+        "w": 493.8,
+        "h": 21.9,
+        "zh": "[7] Ganesh Bikshandi 与 Jay Shah。用 FP8 FlashAttention-2 交付 1 PFLOP/s 的性能，2024。URL https://research.colfax-intl.com/adding-fp8-to-flashattention/。"
+      },
+      {
+        "text": "[8] William Brandon, Aniruddha Nrusimha, Kevin Qian, Zachary Ankner, Tian Jin, Zhiye Song, and Jonathan Ragan-Kelley. Striped attention: Faster ring attention for causal transformers. arXiv preprint arXiv:2311.09431,",
+        "x": 77,
+        "y": 633.5,
+        "w": 493.2,
+        "h": 21.9,
+        "zh": "[8] William Brandon、Aniruddha Nrusimha、Kevin Qian、Zachary Ankner、Tian Jin、Zhiye Song 与 Jonathan Ragan-Kelley。Striped attention：面向因果 Transformer 的更快 ring attention。arXiv 预印本 arXiv:2311.09431，"
+      },
+      {
+        "text": "[9] Jerry Chee, Yaohui Cai, Volodymyr Kuleshov, and Christopher M De Sa. Quip: 2-bit quantization of large language models with guarantees. Advances in Neural Information Processing Systems, 36, 2024.",
+        "x": 77,
+        "y": 589.6,
+        "w": 491.8,
+        "h": 21.9,
+        "zh": "[9] Jerry Chee、Yaohui Cai、Volodymyr Kuleshov 与 Christopher M. De Sa。QuIP：带有保证的大语言模型 2-bit 量化。Advances in Neural Information Processing Systems，36，2024。"
+      },
+      {
+        "text": "[10] Beidi Chen, Tri Dao, Eric Winsor, Zhao Song, Atri Rudra, and Christopher Ré. Scatterbrain: Unifying sparse and low-rank attention. In Advances in Neural Information Processing Systems (NeurIPS), 2021.",
+        "x": 72,
+        "y": 557.7,
+        "w": 496.8,
+        "h": 21.9,
+        "zh": "[10] Beidi Chen、Tri Dao、Eric Winsor、Zhao Song、Atri Rudra 与 Christopher Ré。Scatterbrain：把稀疏注意力与低秩注意力统一起来。见 Advances in Neural Information Processing Systems（NeurIPS），2021。"
+      },
+      {
+        "text": "[11] Richard J Chen, Chengkuan Chen, Yicong Li, Tiffany Y Chen, Andrew D Trister, Rahul G Krishnan, and Faisal Mahmood. Scaling vision transformers to gigapixel images via hierarchical self-supervised learning. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pages 16144–16155,",
+        "x": 72,
+        "y": 513.9,
+        "w": 498.2,
+        "h": 33.9,
+        "zh": "[11] Richard J. Chen、Chengkuan Chen、Yicong Li、Tiffany Y. Chen、Andrew D. Trister、Rahul G. Krishnan 与 Faisal Mahmood。通过分层自监督学习，把视觉 Transformer 扩展到十亿像素的图像。见 IEEE/CVF Conference on Computer Vision and Pattern Recognition 论文集，第 16144–16155 页，"
+      },
+      {
+        "text": "[12] Rewon Child, Scott Gray, Alec Radford, and Ilya Sutskever. Generating long sequences with sparse transformers.",
+        "x": 72,
+        "y": 482,
+        "w": 498.7,
+        "h": 10,
+        "zh": "[12] Rewon Child、Scott Gray、Alec Radford 与 Ilya Sutskever。用稀疏 Transformer 生成长序列。"
+      },
+      {
+        "text": "[13] Krzysztof Choromanski, Valerii Likhosherstov, David Dohan, Xingyou Song, Andreea Gane, Tamas Sarlos, Peter Hawkins, Jared Davis, Afroz Mohiuddin, Lukasz Kaiser, et al. Rethinking attention with performers. In The International Conference on Learning Representations (ICLR), 2021.",
+        "x": 72,
+        "y": 426.2,
+        "w": 498.2,
+        "h": 33.9,
+        "zh": "[13] Krzysztof Choromanski、Valerii Likhosherstov、David Dohan、Xingyou Song、Andreea Gane、Tamas Sarlos、Peter Hawkins、Jared Davis、Afroz Mohiuddin、Lukasz Kaiser 等人。用 Performer 重新思考注意力。见 The International Conference on Learning Representations（ICLR），2021。"
+      },
+      {
+        "text": "[14] Krzysztof Marcin Choromanski, Valerii Likhosherstov, David Dohan, Xingyou Song, Andreea Gane, Tamas Sarlos, Peter Hawkins, Jared Quincy Davis, Afroz Mohiuddin, Lukasz Kaiser, et al. Rethinking attention with performers. In International Conference on Learning Representations (ICLR), 2020.",
+        "x": 72,
+        "y": 382.4,
+        "w": 496.8,
+        "h": 33.9,
+        "zh": "[14] Krzysztof Marcin Choromanski、Valerii Likhosherstov、David Dohan、Xingyou Song、Andreea Gane、Tamas Sarlos、Peter Hawkins、Jared Quincy Davis、Afroz Mohiuddin、Lukasz Kaiser 等人。用 Performer 重新思考注意力。见 International Conference on Learning Representations（ICLR），2020。"
+      },
+      {
+        "text": "[15] Tri Dao. FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning, 2023. URL",
+        "x": 72,
+        "y": 362.5,
+        "w": 497.1,
+        "h": 10,
+        "zh": "[15] Tri Dao。FlashAttention-2：更快的注意力，以及更好的并行与工作划分，2023。URL"
+      },
+      {
+        "text": "[16] Tri Dao and Albert Gu. Transformers are SSMs: Generalized models and efficient algorithms with structured state space duality. In International Conference on Machine Learning (ICML), 2024.",
+        "x": 72,
+        "y": 318.6,
+        "w": 496.8,
+        "h": 21.9,
+        "zh": "[16] Tri Dao 与 Albert Gu。Transformer 即 SSM：借助结构化状态空间对偶的广义模型与高效算法。见 International Conference on Machine Learning（ICML），2024。"
+      },
+      {
+        "text": "[17] Tri Dao, Daniel Y. Fu, Stefano Ermon, Atri Rudra, and Christopher Ré. FlashAttention: Fast and memoryefficient exact attention with IO-awareness. In Advances in Neural Information Processing Systems, 2022.",
+        "x": 72,
+        "y": 286.8,
+        "w": 498.5,
+        "h": 21.9,
+        "zh": "[17] Tri Dao、Daniel Y. Fu、Stefano Ermon、Atri Rudra 与 Christopher Ré。FlashAttention：具有 IO 意识的、快速且省内存的精确注意力。见 Advances in Neural Information Processing Systems，2022。"
+      },
+      {
+        "text": "[18] Tri Dao, Daniel Y Fu, Khaled K Saab, Armin W Thomas, Atri Rudra, and Christopher Ré. Hungry hungry hippos: Towards language modeling with state space models. In The International Conference on Learning",
+        "x": 72,
+        "y": 254.9,
+        "w": 497.2,
+        "h": 21.9,
+        "zh": "[18] Tri Dao、Daniel Y. Fu、Khaled K. Saab、Armin W. Thomas、Atri Rudra 与 Christopher Ré。Hungry Hungry Hippos：迈向使用状态空间模型的语言建模。见 The International Conference on Learning"
+      },
+      {
+        "text": "[19] DeepSeek-AI. Deepseek-v2: A strong, economical, and efficient mixture-of-experts language model. arXiv",
+        "x": 72,
+        "y": 223,
+        "w": 496.7,
+        "h": 10,
+        "zh": "[19] DeepSeek-AI。DeepSeek-V2：一个强大、经济且高效的混合专家语言模型。arXiv"
+      },
+      {
+        "text": "[20] Tim Dettmers, Mike Lewis, Younes Belkada, and Luke Zettlemoyer. Llm. int8 (): 8-bit matrix multiplication",
+        "x": 72,
+        "y": 191.1,
+        "w": 496.8,
+        "h": 10,
+        "zh": "[20] Tim Dettmers、Mike Lewis、Younes Belkada 与 Luke Zettlemoyer。LLM.int8()：8-bit 矩阵乘法"
+      },
+      {
+        "text": "for transformers at scale. CoRR abs/2208.07339, 2022.",
+        "x": 92.5,
+        "y": 179.2,
+        "w": 239.9,
+        "h": 10,
+        "zh": "用于大规模的 Transformer。CoRR abs/2208.07339，2022。"
+      },
+      {
+        "text": "[21] Alicia Golden, Samuel Hsia, Fei Sun, Bilge Acun, Basil Hosmer, Yejin Lee, Zachary DeVito, Jeff Johnson, Gu-Yeon Wei, David Brooks, et al. Is flash attention stable? arXiv preprint arXiv:2405.02803, 2024.",
+        "x": 72,
+        "y": 147.3,
+        "w": 498.2,
+        "h": 21.9,
+        "zh": "[21] Alicia Golden、Samuel Hsia、Fei Sun、Bilge Acun、Basil Hosmer、Yejin Lee、Zachary DeVito、Jeff Johnson、Gu-Yeon Wei、David Brooks 等人。Flash Attention 稳定吗？arXiv 预印本 arXiv:2405.02803，2024。"
+      },
+      {
+        "text": "[22] Albert Gu and Tri Dao. Mamba: Linear-time sequence modeling with selective state spaces. 2023.",
+        "x": 72,
+        "y": 127.4,
+        "w": 450.6,
+        "h": 10,
+        "zh": "[22] Albert Gu 与 Tri Dao。Mamba：带有选择性状态空间的线性时间序列建模。2023。"
+      },
+      {
+        "text": "[23] Anmol Gulati, James Qin, Chung-Cheng Chiu, Niki Parmar, Yu Zhang, Jiahui Yu, Wei Han, Shibo Wang, Zhengdong Zhang, Yonghui Wu, et al. Conformer: Convolution-augmented transformer for speech recognition.",
+        "x": 72,
+        "y": 95.5,
+        "w": 498.7,
+        "h": 21.9,
+        "zh": "[23] Anmol Gulati、James Qin、Chung-Cheng Chiu、Niki Parmar、Yu Zhang、Jiahui Yu、Wei Han、Shibo Wang、Zhengdong Zhang、Yonghui Wu 等人。Conformer：用于语音识别的、由卷积增强的 Transformer。"
+      }
+    ],
+    "14": [
+      {
+        "text": "[24] Mandy Guo, Joshua Ainslie, David Uthus, Santiago Ontanon, Jianmo Ni, Yun-Hsuan Sung, and Yinfei Yang. Longt5: Efficient text-to-text transformer for long sequences. arXiv preprint arXiv:2112.07916, 2021.",
+        "x": 72,
+        "y": 697.2,
+        "w": 498.7,
+        "h": 21.9,
+        "zh": "[24] Mandy Guo、Joshua Ainslie、David Uthus、Santiago Ontanon、Jianmo Ni、Yun-Hsuan Sung 与 Yinfei Yang。LongT5：面向长序列的高效文本到文本 Transformer。arXiv 预印本 arXiv:2112.07916，2021。"
+      },
+      {
+        "text": "[25] Jonathan Ho, Tim Salimans, Alexey Gritsenko, William Chan, Mohammad Norouzi, and David J Fleet. Video diffusion models. Advances in Neural Information Processing Systems, 35:8633–8646, 2022.",
+        "x": 72,
+        "y": 665.3,
+        "w": 496.8,
+        "h": 21.9,
+        "zh": "[25] Jonathan Ho、Tim Salimans、Alexey Gritsenko、William Chan、Mohammad Norouzi 与 David J. Fleet。视频扩散模型。Advances in Neural Information Processing Systems，35:8633–8646，2022。"
+      },
+      {
+        "text": "[26] Coleman Hooper, Sehoon Kim, Hiva Mohammadzadeh, Michael W Mahoney, Yakun Sophia Shao, Kurt Keutzer, and Amir Gholami. Kvquant: Towards 10 million context length llm inference with kv cache quantization.",
+        "x": 72,
+        "y": 633.5,
+        "w": 498.7,
+        "h": 21.9,
+        "zh": "[26] Coleman Hooper、Sehoon Kim、Hiva Mohammadzadeh、Michael W. Mahoney、Yakun Sophia Shao、Kurt Keutzer 与 Amir Gholami。KVQuant：借助 KV cache 量化，迈向一千万上下文长度的 LLM 推理。"
+      },
+      {
+        "text": "[27] Angelos Katharopoulos, Apoorv Vyas, Nikolaos Pappas, and François Fleuret. Transformers are RNNs: Fast autoregressive transformers with linear attention. In International Conference on Machine Learning, pages",
+        "x": 72,
+        "y": 589.6,
+        "w": 497.1,
+        "h": 21.9,
+        "zh": "[27] Angelos Katharopoulos、Apoorv Vyas、Nikolaos Pappas 与 François Fleuret。Transformer 即 RNN：带线性注意力的快速自回归 Transformer。见 International Conference on Machine Learning，第"
+      },
+      {
+        "text": "[28] Nikita Kitaev, Łukasz Kaiser, and Anselm Levskaya. Reformer: The efficient transformer. In The International",
+        "x": 72,
+        "y": 557.7,
+        "w": 496.5,
+        "h": 10,
+        "zh": "[28] Nikita Kitaev、Łukasz Kaiser 与 Anselm Levskaya。Reformer：高效的 Transformer。见 The International"
+      },
+      {
+        "text": "Conference on Machine Learning (ICML), 2020.",
+        "x": 91.3,
+        "y": 545.8,
+        "w": 210.9,
+        "h": 10,
+        "zh": "Conference on Machine Learning（ICML），2020。"
+      },
+      {
+        "text": "[29] Woosuk Kwon, Zhuohan Li, Siyuan Zhuang, Ying Sheng, Lianmin Zheng, Cody Hao Yu, Joseph Gonzalez, Hao Zhang, and Ion Stoica. Efficient memory management for large language model serving with pagedattention. In Proceedings of the 29th Symposium on Operating Systems Principles, pages 611–626, 2023.",
+        "x": 72,
+        "y": 502,
+        "w": 498.7,
+        "h": 33.9,
+        "zh": "[29] Woosuk Kwon、Zhuohan Li、Siyuan Zhuang、Ying Sheng、Lianmin Zheng、Cody Hao Yu、Joseph Gonzalez、Hao Zhang 与 Ion Stoica。用 PagedAttention 为大语言模型服务做高效的内存管理。见第 29 届操作系统原理研讨会论文集，第 611–626 页，2023。"
+      },
+      {
+        "text": "[30] Raymond Li, Loubna Ben Allal, Yangtian Zi, Niklas Muennighoff, Denis Kocetkov, Chenghao Mou, Marc Marone, Christopher Akiki, Jia Li, Jenny Chim, et al. Starcoder: may the source be with you! arXiv preprint",
+        "x": 72,
+        "y": 470.1,
+        "w": 496.8,
+        "h": 21.9,
+        "zh": "[30] Raymond Li、Loubna Ben Allal、Yangtian Zi、Niklas Muennighoff、Denis Kocetkov、Chenghao Mou、Marc Marone、Christopher Akiki、Jia Li、Jenny Chim 等人。StarCoder：愿源码与你同在！arXiv 预印本"
+      },
+      {
+        "text": "[31] Hao Liu, Matei Zaharia, and Pieter Abbeel. Ring attention with blockwise transformers for near-infinite context.",
+        "x": 72,
+        "y": 438.2,
+        "w": 498.7,
+        "h": 10,
+        "zh": "[31] Hao Liu、Matei Zaharia 与 Pieter Abbeel。用分块 Transformer 做 ring attention，以支撑接近无限的上下文。"
+      },
+      {
+        "text": "[32] Hao Liu, Wilson Yan, Matei Zaharia, and Pieter Abbeel. World model on million-length video and language",
+        "x": 72,
+        "y": 406.3,
+        "w": 496.8,
+        "h": 10,
+        "zh": "[32] Hao Liu、Wilson Yan、Matei Zaharia 与 Pieter Abbeel。百万长度的视频与语言上的世界模型"
+      },
+      {
+        "text": "with ringattention. arXiv preprint arXiv:2402.08268, 2024.",
+        "x": 92.1,
+        "y": 394.4,
+        "w": 257.7,
+        "h": 10,
+        "zh": "，借助 RingAttention。arXiv 预印本 arXiv:2402.08268，2024。"
+      },
+      {
+        "text": "[33] Zirui Liu, Jiayi Yuan, Hongye Jin, Shaochen Zhong, Zhaozhuo Xu, Vladimir Braverman, Beidi Chen, and Xia Hu. Kivi: A tuning-free asymmetric 2bit quantization for kv cache. arXiv preprint arXiv:2402.02750, 2024.",
+        "x": 72,
+        "y": 362.5,
+        "w": 496.8,
+        "h": 21.9,
+        "zh": "[33] Zirui Liu、Jiayi Yuan、Hongye Jin、Shaochen Zhong、Zhaozhuo Xu、Vladimir Braverman、Beidi Chen 与 Xia Hu。KIVI：无需调参的、非对称的 2-bit KV cache 量化。arXiv 预印本 arXiv:2402.02750，2024。"
+      },
+      {
+        "text": "[34] Weile Luo, Ruibo Fan, Zeyu Li, Dayou Du, Qiang Wang, and Xiaowen Chu. Benchmarking and Dissecting the Nvidia Hopper GPU Architecture, 2024. URL https://arxiv.org/abs/2402.13499.",
+        "x": 72,
+        "y": 330.6,
+        "w": 496.8,
+        "h": 21.9,
+        "zh": "[34] Weile Luo、Ruibo Fan、Zeyu Li、Dayou Du、Qiang Wang 与 Xiaowen Chu。对 Nvidia Hopper GPU 架构做基准测试与剖析，2024。URL https://arxiv.org/abs/2402.13499。"
+      },
+      {
+        "text": "[35] Xuezhe Ma, Chunting Zhou, Xiang Kong, Junxian He, Liangke Gui, Graham Neubig, Jonathan May, and Luke Zettlemoyer. Mega: Moving average equipped gated attention. In The International Conference on Learning",
+        "x": 72,
+        "y": 298.7,
+        "w": 496.8,
+        "h": 21.9,
+        "zh": "[35] Xuezhe Ma、Chunting Zhou、Xiang Kong、Junxian He、Liangke Gui、Graham Neubig、Jonathan May 与 Luke Zettlemoyer。MEGA：配备移动平均的门控注意力。见 The International Conference on Learning"
+      },
+      {
+        "text": "[36] Xuezhe Ma, Xiaomeng Yang, Wenhan Xiong, Beidi Chen, Lili Yu, Hao Zhang, Jonathan May, Luke Zettlemoyer, Omer Levy, and Chunting Zhou. Megalodon: Efficient llm pretraining and inference with unlimited context",
+        "x": 72,
+        "y": 254.9,
+        "w": 498.2,
+        "h": 21.9,
+        "zh": "[36] Xuezhe Ma、Xiaomeng Yang、Wenhan Xiong、Beidi Chen、Lili Yu、Hao Zhang、Jonathan May、Luke Zettlemoyer、Omer Levy 与 Chunting Zhou。Megalodon：在无限上下文下做高效的 LLM 预训练与推理"
+      },
+      {
+        "text": "length. arXiv preprint arXiv:2404.08801, 2024.",
+        "x": 92.5,
+        "y": 242.9,
+        "w": 205.4,
+        "h": 10,
+        "zh": "长度。arXiv 预印本 arXiv:2404.08801，2024。"
+      },
+      {
+        "text": "[37] Paulius Micikevicius, Dusan Stosic, Neil Burgess, Marius Cornea, Pradeep Dubey, Richard Grisenthwaite, Sangwon Ha, Alexander Heinecke, Patrick Judd, John Kamalu, et al. Fp8 formats for deep learning. arXiv",
+        "x": 72,
+        "y": 211,
+        "w": 498.2,
+        "h": 21.9,
+        "zh": "[37] Paulius Micikevicius、Dusan Stosic、Neil Burgess、Marius Cornea、Pradeep Dubey、Richard Grisenthwaite、Sangwon Ha、Alexander Heinecke、Patrick Judd、John Kamalu 等人。深度学习所用的 FP8 格式。arXiv"
+      },
+      {
+        "text": "CUDA Programming Guide Version 12.4, 2024.",
+        "x": 147.6,
+        "y": 179.2,
+        "w": 228.2,
+        "h": 10,
+        "zh": "《CUDA 编程指南》第 12.4 版，2024。"
+      },
+      {
+        "text": "[39] Nvidia. Accelerating transformers with nvidia cudnn 9. Nvidia blog, 2024. URL https://developer.nvidia. com/blog/accelerating-transformers-with-nvidia-cudnn-9/.",
+        "x": 72,
+        "y": 135.3,
+        "w": 500.5,
+        "h": 21.9,
+        "zh": "[39] Nvidia。用 NVIDIA cuDNN 9 加速 Transformer。Nvidia 博客，2024。URL https://developer.nvidia.com/blog/accelerating-transformers-with-nvidia-cudnn-9/。"
+      },
+      {
+        "text": "[40] NVIDIA. Parallel Thread Execution ISA Version 8.4, 2024. URL https://docs.nvidia.com/cuda/pdf/ptx_",
+        "x": 72,
+        "y": 115.4,
+        "w": 497.3,
+        "h": 10,
+        "zh": "[40] NVIDIA。Parallel Thread Execution ISA 第 8.4 版，2024。URL https://docs.nvidia.com/cuda/pdf/ptx_"
+      }
+    ],
+    "15": [
+      {
+        "text": "[41] Muhammad Osama, Duane Merrill, Cris Cecka, Michael Garland, and John D. Owens. Stream-k: Workcentric parallel decomposition for dense matrix-matrix multiplication on the gpu. In Proceedings of the 28th ACM SIGPLAN Annual Symposium on Principles and Practice of Parallel Programming, PPoPP ’23, pages 429–431, New York, NY, USA, 2023. Association for Computing Machinery. ISBN 9798400700156. doi: 10.1145/3572848.3577479. URL https://doi.org/10.1145/3572848.3577479.",
+        "x": 72,
+        "y": 661.4,
+        "w": 498.5,
+        "h": 57.8,
+        "zh": "[41] Muhammad Osama、Duane Merrill、Cris Cecka、Michael Garland 与 John D. Owens。Stream-K：GPU 上稠密矩阵乘法的、以工作为中心的并行分解。见第 28 届 ACM SIGPLAN 并行编程原理与实践年度研讨会论文集，PPoPP ’23，第 429–431 页，美国纽约州纽约市，2023。Association for Computing Machinery。ISBN 9798400700156。doi: 10.1145/3572848.3577479。URL https://doi.org/10.1145/3572848.3577479。"
+      },
+      {
+        "text": "[42] Bo Peng, Eric Alcaide, Quentin Anthony, Alon Albalak, Samuel Arcadinho, Huanqi Cao, Xin Cheng, Michael Chung, Matteo Grella, Kranthi Kiran GV, et al. RWKV: Reinventing RNNs for the Transformer era. arXiv",
+        "x": 72,
+        "y": 629.7,
+        "w": 496.8,
+        "h": 21.9,
+        "zh": "[42] Bo Peng、Eric Alcaide、Quentin Anthony、Alon Albalak、Samuel Arcadinho、Huanqi Cao、Xin Cheng、Michael Chung、Matteo Grella、Kranthi Kiran GV 等人。RWKV：为 Transformer 时代重做 RNN。arXiv"
+      },
+      {
+        "text": "[43] Bowen Peng, Jeffrey Quesnelle, Honglu Fan, and Enrico Shippole. Yarn: Efficient context window extension of large language models. arXiv preprint arXiv:2309.00071, 2023.",
+        "x": 72,
+        "y": 586.1,
+        "w": 496.8,
+        "h": 21.9,
+        "zh": "[43] Bowen Peng、Jeffrey Quesnelle、Honglu Fan 与 Enrico Shippole。YaRN：大语言模型上下文窗口的高效扩展。arXiv 预印本 arXiv:2309.00071，2023。"
+      },
+      {
+        "text": "[44] Hao Peng, Nikolaos Pappas, Dani Yogatama, Roy Schwartz, Noah A Smith, and Lingpeng Kong. Random feature attention. In The International Conference on Learning Representations (ICLR), 2021.",
+        "x": 72,
+        "y": 554.4,
+        "w": 496.8,
+        "h": 21.9,
+        "zh": "[44] Hao Peng、Nikolaos Pappas、Dani Yogatama、Roy Schwartz、Noah A. Smith 与 Lingpeng Kong。随机特征注意力。见 The International Conference on Learning Representations（ICLR），2021。"
+      },
+      {
+        "text": "[45] Markus N Rabe and Charles Staats. arXiv:2112.05682, 2021.",
+        "x": 72,
+        "y": 522.8,
+        "w": 195.8,
+        "h": 21.9,
+        "zh": "[45] Markus N. Rabe 与 Charles Staats。arXiv:2112.05682，2021。"
+      },
+      {
+        "text": "Self-attention does not need 𝑂(𝑛 ) memory.",
+        "x": 280.8,
+        "y": 534.7,
+        "w": 208.5,
+        "h": 10,
+        "zh": "自注意力不需要 𝑂(𝑛) 的内存。"
+      },
+      {
+        "text": "[46] Colfax Research. Tutorial: Matrix Transpose in CUTLASS, 2024. URL https://research.colfax-intl.",
+        "x": 72,
+        "y": 503.1,
+        "w": 500.5,
+        "h": 10,
+        "zh": "[46] Colfax Research。教程：CUTLASS 中的矩阵转置，2024。URL https://research.colfax-intl."
+      },
+      {
+        "text": "com/tutorial-matrix-transpose-in-cutlass/.",
+        "x": 92.5,
+        "y": 491.1,
+        "w": 219.2,
+        "h": 10,
+        "zh": ""
+      },
+      {
+        "text": "[47] Aurko Roy, Mohammad Saffar, Ashish Vaswani, and David Grangier. Efficient content-based sparse attention with routing Transformers. arXiv preprint arXiv:2003.05997, 2020.",
+        "x": 72,
+        "y": 459.5,
+        "w": 496.8,
+        "h": 21.9,
+        "zh": "[47] Aurko Roy、Mohammad Saffar、Ashish Vaswani 与 David Grangier。带路由 Transformer 的、基于内容的高效稀疏注意力。arXiv 预印本 arXiv:2003.05997，2020。"
+      },
+      {
+        "text": "[48] Baptiste Roziere, Jonas Gehring, Fabian Gloeckle, Sten Sootla, Itai Gat, Xiaoqing Ellen Tan, Yossi Adi, Jingyu Liu, Tal Remez, Jérémy Rapin, et al. Code llama: Open foundation models for code. arXiv preprint",
+        "x": 72,
+        "y": 427.8,
+        "w": 498.2,
+        "h": 21.9,
+        "zh": "[48] Baptiste Roziere、Jonas Gehring、Fabian Gloeckle、Sten Sootla、Itai Gat、Xiaoqing Ellen Tan、Yossi Adi、Jingyu Liu、Tal Remez、Jérémy Rapin 等人。Code Llama：面向代码的开放基础模型。arXiv 预印本"
+      },
+      {
+        "text": "[49] Rya Sanovar, Srikant Bharadwaj, Renee St. Amant, Victor Rühle, and Saravan Rajmohan. Lean attention: Hardware-aware scalable attention mechanism for the decode-phase of transformers. 2024.",
+        "x": 72,
+        "y": 384.2,
+        "w": 498.2,
+        "h": 21.9,
+        "zh": "[49] Rya Sanovar、Srikant Bharadwaj、Renee St. Amant、Victor Rühle 与 Saravan Rajmohan。Lean Attention：面向 Transformer 解码阶段的、硬件感知且可扩展的注意力机制。2024。"
+      },
+      {
+        "text": "[50] Uri Shaham, Elad Segal, Maor Ivgi, Avia Efrat, Ori Yoran, Adi Haviv, Ankit Gupta, Wenhan Xiong, Mor Geva, Jonathan Berant, et al. Scrolls: Standardized comparison over long language sequences. arXiv preprint",
+        "x": 72,
+        "y": 352.5,
+        "w": 497,
+        "h": 21.9,
+        "zh": "[50] Uri Shaham、Elad Segal、Maor Ivgi、Avia Efrat、Ori Yoran、Adi Haviv、Ankit Gupta、Wenhan Xiong、Mor Geva、Jonathan Berant 等人。SCROLLS：在长语言序列上做标准化比较。arXiv 预印本"
+      },
+      {
+        "text": "[51] Noam Shazeer. Fast transformer decoding: One write-head is all you need. arXiv preprint arXiv:1911.02150,",
+        "x": 72,
+        "y": 320.9,
+        "w": 498.2,
+        "h": 10,
+        "zh": "[51] Noam Shazeer。快速的 Transformer 解码：一个写头就够了。arXiv 预印本 arXiv:1911.02150，"
+      },
+      {
+        "text": "[52] Benjamin Spector, Aaryan Singhal, Simran Arora, and Christopher Ré, 2024. URL https://github.com/",
+        "x": 72,
+        "y": 289.2,
+        "w": 497.9,
+        "h": 10,
+        "zh": "[52] Benjamin Spector、Aaryan Singhal、Simran Arora 与 Christopher Ré，2024。URL https://github.com/"
+      },
+      {
+        "text": "[53] Fei Sun, Jun Liu, Jian Wu, Changhua Pei, Xiao Lin, Wenwu Ou, and Peng Jiang. Bert4rec: Sequential recommendation with bidirectional encoder representations from transformer. In Proceedings of the 28th ACM international conference on information and knowledge management, pages 1441–1450, 2019.",
+        "x": 72,
+        "y": 233.6,
+        "w": 496.8,
+        "h": 33.9,
+        "zh": "[53] Fei Sun、Jun Liu、Jian Wu、Changhua Pei、Xiao Lin、Wenwu Ou 与 Peng Jiang。BERT4Rec：用 Transformer 的双向编码器表示做序列推荐。见第 28 届 ACM 信息与知识管理国际会议论文集，第 1441–1450 页，2019。"
+      },
+      {
+        "text": "[54] Mingjie Sun, Xinlei Chen, J Zico Kolter, and Zhuang Liu. Massive activations in large language models. arXiv",
+        "x": 72,
+        "y": 213.9,
+        "w": 496.7,
+        "h": 10,
+        "zh": "[54] Mingjie Sun、Xinlei Chen、J. Zico Kolter 与 Zhuang Liu。大语言模型中的巨幅激活。arXiv"
+      },
+      {
+        "text": "[55] Yutao Sun, Li Dong, Shaohan Huang, Shuming Ma, Yuqing Xia, Jilong Xue, Jianyong Wang, and Furu Wei. Retentive network: A successor to transformer for large language models. arXiv preprint arXiv:2307.08621,",
+        "x": 72,
+        "y": 170.3,
+        "w": 498.7,
+        "h": 21.9,
+        "zh": "[55] Yutao Sun、Li Dong、Shaohan Huang、Shuming Ma、Yuqing Xia、Jilong Xue、Jianyong Wang 与 Furu Wei。Retentive Network：面向大语言模型、作为 Transformer 后继者的网络。arXiv 预印本 arXiv:2307.08621，"
+      },
+      {
+        "text": "[56] Yi Tay, Mostafa Dehghani, Dara Bahri, and Donald Metzler. Efficient transformers: A survey. arXiv preprint",
+        "x": 72,
+        "y": 138.7,
+        "w": 496.8,
+        "h": 10,
+        "zh": "[56] Yi Tay、Mostafa Dehghani、Dara Bahri 与 Donald Metzler。高效 Transformer：一份综述。arXiv 预印本"
+      },
+      {
+        "text": "[57] Vijay Thakkar, Pradeep Ramani, Cris Cecka, Aniket Shivam, Honghao Lu, Ethan Yan, Jack Kosaian, Mark Hoemmen, Haicheng Wu, Andrew Kerr, Matt Nicely, Duane Merrill, Dustyn Blasig, Fengqi Qiao, Piotr Majcher, Paul Springer, Markus Hohnerbach, Jin Wang, and Manish Gupta. CUTLASS, January 2023. URL",
+        "x": 72,
+        "y": 83.1,
+        "w": 497.1,
+        "h": 33.9,
+        "zh": "[57] Vijay Thakkar、Pradeep Ramani、Cris Cecka、Aniket Shivam、Honghao Lu、Ethan Yan、Jack Kosaian、Mark Hoemmen、Haicheng Wu、Andrew Kerr、Matt Nicely、Duane Merrill、Dustyn Blasig、Fengqi Qiao、Piotr Majcher、Paul Springer、Markus Hohnerbach、Jin Wang 与 Manish Gupta。CUTLASS，2023 年 1 月。URL"
+      }
+    ],
+    "16": [
+      {
+        "text": "[58] Albert Tseng, Jerry Chee, Qingyao Sun, Volodymyr Kuleshov, and Christopher De Sa. Quip#: Even better llm quantization with hadamard incoherence and lattice codebooks. arXiv preprint arXiv:2402.04396, 2024.",
+        "x": 72,
+        "y": 697.2,
+        "w": 497,
+        "h": 21.9,
+        "zh": "[58] Albert Tseng、Jerry Chee、Qingyao Sun、Volodymyr Kuleshov 与 Christopher De Sa。QuIP#：借助 Hadamard 非相干性与格码本，把 LLM 量化做得更好。arXiv 预印本 arXiv:2402.04396，2024。"
+      },
+      {
+        "text": "[59] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin. Attention is all you need. Advances in neural information processing systems, 30, 2017.",
+        "x": 72,
+        "y": 665.3,
+        "w": 498.2,
+        "h": 21.9,
+        "zh": "[59] Ashish Vaswani、Noam Shazeer、Niki Parmar、Jakob Uszkoreit、Llion Jones、Aidan N. Gomez、Łukasz Kaiser 与 Illia Polosukhin。注意力就是你所需要的一切。Advances in Neural Information Processing Systems，30，2017。"
+      },
+      {
+        "text": "[60] Roger Waleffe, Wonmin Byeon, Duncan Riach, Brandon Norick, Vijay Korthikanti, Tri Dao, Albert Gu, Ali Hatamizadeh, Sudhakar Singh, Deepak Narayanan, et al. An empirical study of mamba-based language models. arXiv preprint arXiv:2406.07887, 2024.",
+        "x": 72,
+        "y": 621.5,
+        "w": 498.7,
+        "h": 33.9,
+        "zh": "[60] Roger Waleffe、Wonmin Byeon、Duncan Riach、Brandon Norick、Vijay Korthikanti、Tri Dao、Albert Gu、Ali Hatamizadeh、Sudhakar Singh、Deepak Narayanan 等人。关于基于 Mamba 的语言模型的实证研究。arXiv 预印本 arXiv:2406.07887，2024。"
+      },
+      {
+        "text": "[61] Yunyang Xiong, Zhanpeng Zeng, Rudrasis Chakraborty, Mingxing Tan, Glenn Fung, Yin Li, and Vikas Singh. Nyströmformer: A nystöm-based algorithm for approximating self-attention. In Proceedings of the AAAI Conference on Artificial Intelligence. AAAI Conference on Artificial Intelligence, volume 35, page 14138, 2021.",
+        "x": 72,
+        "y": 577.7,
+        "w": 498.7,
+        "h": 33.9,
+        "zh": "[61] Yunyang Xiong、Zhanpeng Zeng、Rudrasis Chakraborty、Mingxing Tan、Glenn Fung、Yin Li 与 Vikas Singh。Nyströmformer：一种基于 Nyström 方法来近似自注意力的算法。见 AAAI Conference on Artificial Intelligence 论文集，AAAI Conference on Artificial Intelligence，第 35 卷，第 14138 页，2021。"
+      },
+      {
+        "text": "[62] Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan, and Yuan Cao. React: Synergizing reasoning and acting in language models. arXiv preprint arXiv:2210.03629, 2022.",
+        "x": 72,
+        "y": 545.8,
+        "w": 498.2,
+        "h": 21.9,
+        "zh": "[62] Shunyu Yao、Jeffrey Zhao、Dian Yu、Nan Du、Izhak Shafran、Karthik Narasimhan 与 Yuan Cao。ReAct：让语言模型里的推理与行动协同起来。arXiv 预印本 arXiv:2210.03629，2022。"
+      },
+      {
+        "text": "[63] Manzil Zaheer, Guru Guruganesh, Kumar Avinava Dubey, Joshua Ainslie, Chris Alberti, Santiago Ontanon, Philip Pham, Anirudh Ravula, Qifan Wang, Li Yang, et al. Big bird: Transformers for longer sequences. Advances in Neural Information Processing Systems, 33, 2020.",
+        "x": 72,
+        "y": 502,
+        "w": 498.7,
+        "h": 33.9,
+        "zh": "[63] Manzil Zaheer、Guru Guruganesh、Kumar Avinava Dubey、Joshua Ainslie、Chris Alberti、Santiago Ontanon、Philip Pham、Anirudh Ravula、Qifan Wang、Li Yang 等人。Big Bird：面向更长序列的 Transformer。Advances in Neural Information Processing Systems，33，2020。"
+      },
+      {
+        "text": "[64] Zyphra. Zyphra unveils zamba: A compact 7b ssm hybrid model. Zyphra blog, 2024.",
+        "x": 72,
+        "y": 482,
+        "w": 389.2,
+        "h": 10,
+        "zh": "[64] Zyphra。Zyphra 发布 Zamba：一个紧凑的 7B SSM 混合模型。Zyphra 博客，2024。"
+      }
+    ],
+    "17": [
+      {
+        "text": "Attention variants and distributed attention",
+        "x": 72,
+        "y": 687.4,
+        "w": 226.1,
+        "h": 10,
+        "zh": "注意力的变体与分布式注意力"
+      },
+      {
+        "text": "Ever since attention became popular with the Transformer",
+        "x": 308.1,
+        "y": 687.4,
+        "w": 260.9,
+        "h": 10,
+        "zh": "自从注意力随着 Transformer 流行起来"
+      },
+      {
+        "text": "architecture [59], there has been a large body of work on approximating attention to scale it to longer sequences. These approximation methods can generally be categorized into two classes: sparse and low-rank. Sparse attention only computes some entries of the attention matrix (softmax(QK )) and assumes that other entries are zero. Different methods have different ways of choosing which entries should be zero, either with a fixed pattern [12], with a sliding window [6], or with a dynamic pattern through hashing [28] or routing [47]. The low-rank approach instead assumes that the attention matrix has a low-rank structure, and apply a pointwise nonlinearity to the query and key [27] with random projection [13, 44, 61]. One can also combine the sparse and low-rank approximation for better quality [10, 63]. However, these approximation methods typically do not offer the same model quality as standard attention [56], and so most large-scale models do not employ these techniques. There are other variants of attention aimed at reducing the size of the KV cache to improve inference efficiency. Multi-query attention [51] and grouped query attention [3] tie different heads of K and V, and multiple query heads interact with the same key and value head. Multi-head latent attention [19] parameterizes the K and V as low-rank projections of a shared matrix to further reduce the KV cache size. However, all of these approaches do not change the core computation softmax(QK )V during training and simply change how Q, K, V are obtained. As a result, any efficiency or accuracy improvement to the standard attention computation benefits these methods. To extend to even longer context, attention computation can be distributed across multiple GPUs. Methods such as Ring attention [31, 32] and variants [8] can reach a context length of up to 1 million. They use FlashAttention (or FlashAttention-2) as a primitive, and so the improvement from FlashAttention-3 would benefit these",
+        "x": 70.8,
+        "y": 472.2,
+        "w": 499.9,
+        "h": 213.2,
+        "zh": "这一架构 [59] 之后，已有大量工作试图用近似来把注意力扩展到更长的序列。这些近似方法大体可以分成两类：稀疏和低秩。稀疏注意力只计算注意力矩阵 softmax(QK) 的一部分条目，并假定其余条目为零。不同方法选择把哪些条目置零的方式并不相同：可以是固定模式 [12]，可以是滑动窗口 [6]，也可以是通过哈希 [28] 或路由 [47] 得到的动态模式。低秩方法则假定注意力矩阵具有低秩结构，对 query 和 key 施加逐点的非线性 [27]，并配合随机投影 [13, 44, 61]。也可以把稀疏近似和低秩近似结合起来，以获得更好的质量 [10, 63]。不过，这些近似方法通常给不出与标准注意力相同的模型质量 [56]，因此大多数大规模模型并不采用它们。还有另一些注意力变体，目的是缩小 KV cache，从而提高推理效率。多查询注意力 [51] 和分组查询注意力 [3] 把不同头的 K 和 V 绑在一起，让多个 query 头与同一个 key 头、value 头交互。多头潜在注意力 [19] 把 K 和 V 参数化为某个共享矩阵的低秩投影，以进一步缩小 KV cache。然而，这些做法都不改变训练时的核心计算 softmax(QK)V，只是改变 Q、K、V 是如何得到的。因此，对标准注意力计算在效率或精度上的任何改进，都会惠及这些方法。要想扩展到更长的上下文，可以把注意力计算分布到多块 GPU 上。Ring attention [31, 32] 及其变体 [8] 等方法，可以把上下文长度推到最多 100 万。它们把 FlashAttention（或 FlashAttention-2）当作一个原语来用，因此 FlashAttention-3 带来的改进也会惠及这些"
+      },
+      {
+        "text": "Motivated by the limitations of attention, a variety of alternative architectures have been proposed. They build on the connection between linear attention [27] and recurrent neural networks (RNNs). RWKV [42], H3 [18], MEGA [35], Retnet [55] enhance the expressivity of the simple cumulative sum in linear attention with more sophisticated recurrences. Mamba [22] and xLSTM [5] use learnable weighting for the recurrence and can match the quality of Transformers in language modeling at small or medium scale. These approaches can be connected to generalizations of linear attention through the lens of the structure of the token-mixing matrix [16]. These models have started to see some traction, seeing usage in some medium to large-scale models such as Jamba [2], Zamba [64], Megalodon [36], and Mamba2-hybrid [60]. For the highest quality, these SSM- and RNN-based models still employ many layers of attention. We expect that techniques to speed up attention presented in this work will",
+        "x": 71.6,
+        "y": 338.7,
+        "w": 499.1,
+        "h": 105.6,
+        "zh": "受注意力本身的局限所推动，人们提出了多种替代架构。它们建立在线性注意力 [27] 与循环神经网络（RNN）之间的联系上。RWKV [42]、H3 [18]、MEGA [35] 和 RetNet [55] 用更精细的递推，来增强线性注意力里那种简单累积求和的表达能力。Mamba [22] 和 xLSTM [5] 给递推配上可学习的权重，并在小规模或中等规模的语言建模上，可以达到与 Transformer 相当的质量。透过 token 混合矩阵的结构来看 [16]，这些方法可以和线性注意力的各种推广联系起来。这些模型已经开始获得一些采用，出现在若干中等规模到大规模的模型里，例如 Jamba [2]、Zamba [64]、Megalodon [36] 和 Mamba2-hybrid [60]。为了达到最高的质量，这些基于 SSM 和 RNN 的模型仍然会使用很多层注意力。我们预期，本文所给出的加速注意力的技术将会"
+      },
+      {
+        "text": "be useful to speedup these alternative architectures.",
+        "x": 72,
+        "y": 326.7,
+        "w": 226.6,
+        "h": 10,
+        "zh": "有助于把这些替代架构也加速起来。"
+      },
+      {
+        "text": "Quantization is a promising approach to speed up attention, but they have mostly focused on reducing the space for KV cache for inference efficiency. QuIP [9] and QuIP#[58] use incoherent processing to reduce the quantization, and we adapted this technique for FP8 FlashAttention-3. Recent work suggests that for inference the KV cache is highly compressible down to 4-, 3-, or even 2-bits [26, 33]. However, quantization during training is still challenging as higher precision is typically required for stable training.",
+        "x": 72,
+        "y": 253,
+        "w": 498.2,
+        "h": 57.8,
+        "zh": "量化是加速注意力的一条有希望的途径，但现有工作大多聚焦于缩小 KV cache 所占的空间，以便提高推理效率。QuIP [9] 和 QuIP# [58] 用非相干处理来减轻量化带来的损失，我们把这一技术改造之后，用到了 FP8 版 FlashAttention-3 上。近期工作表明，推理时的 KV cache 可以被高度压缩，低至 4-bit、3-bit 甚至 2-bit [26, 33]。不过，训练期间的量化仍然困难，因为要让训练保持稳定，通常需要更高的精度。"
+      },
+      {
+        "text": "Our work presented in this paper focuses on the micro-architecture specific tuning to leverage new instruction sets and adopt a natively asynchronous programming model. There are other orthogonal axes for hardware-aware algorithm co-design being explored. A recent example of this is LeanAttention [49], which recognizes the poor GPU occupancy and high memory bandwidth requirements of the sequential token generation phase as primary bottlenecks for inference and optimizes it via a smarter load balancing strategy similar to Stream-K load balancing [41] to achieve nearly peak occupancy. There is a large literature on optimizing GEMM for specific hardware that employs many of the same techniques. As an example, Abdelfattah et al. [1] presents a high performance batched GEMM kernel on K40c Graphics Processing Units (GPU) for both fixed and variable sizes, proposing specialized GEMM designs and a comprehensive autotuning process to deliver state-of-the-art",
+        "x": 71.6,
+        "y": 131.5,
+        "w": 498.5,
+        "h": 105.6,
+        "zh": "本文的工作聚焦于针对微架构的专门调优，以便用上新的指令集，并采用一种原生异步的编程模型。硬件感知的算法协同设计，还有其他彼此正交的方向正在被探索。最近的一个例子是 LeanAttention [49]。它把顺序生成 token 这一阶段里 GPU 占用率低、内存带宽需求高，认作推理的主要瓶颈，并用一种更聪明的负载均衡策略来优化它。这种策略类似于 Stream-K 的负载均衡 [41]，从而把占用率做到接近峰值。针对特定硬件来优化 GEMM，已经有大量文献，其中用到许多相同的技术。例如，Abdelfattah 等人 [1] 在 K40c 图形处理器（GPU）上给出了高性能的批量 GEMM kernel，同时覆盖固定尺寸和可变尺寸，提出了专门的 GEMM 设计，以及一套完整的自动调优流程，以达到当时最先进的"
+      }
+    ],
+    "18": [
+      {
+        "text": "Asynchrony Through Warp Specialization for the Backward Pass Similar to the forward pass § 3.1, we use warp specialization to handle asynchrony. Instead of just a simple producer-consumer pattern in the forward pass, we add one extra role of a dQ writer, since we need to accumulate the value of dQ produced by each thread block to the global value of dQ. This dQ accumulation introduces memory contention (many thread blocks writing to the same location) so having a separate warp to handle this (along with asynchrony) will avoid blocking the rest of the warps in the thread block to perform the next computation (matmul). We include the backward pass with warp specialization in Algorithm 3.",
+        "x": 72,
+        "y": 607.2,
+        "w": 498.7,
+        "h": 90.1,
+        "zh": "用 warp specialization 为反向实现异步。与前向的 §3.1 类似，我们用 warp specialization 来处理异步。反向不只是前向那种简单的生产者–消费者模式。我们额外增加一个 dQ 写者的角色，因为每个线程块产生的 dQ，都需要累加到全局的 dQ 上。这种 dQ 累加会带来内存争用（许多线程块写向同一个位置），因此用单独的一个 warp 来处理它，并配上异步，就可以避免挡住该线程块里的其余 warp，让它们去做下一次计算（矩阵乘）。带有 warp specialization 的反向见算法 3。"
+      },
+      {
+        "text": "Algorithm 3 FlashAttention-3 backward pass with warp specialization Require: Matrices Q, K, V, O, dO ∈ R",
+        "x": 71.6,
+        "y": 567.7,
+        "w": 309.7,
+        "h": 26.8,
+        "zh": "算法 3：带有 warp specialization 的 FlashAttention-3 反向。要求：矩阵 Q、K、V、O、dO ∈ R"
+      },
+      {
+        "text": "in HBM, block sizes 𝐵𝑐, 𝐵𝑟. 1: In a preprocessing kernel, compute 𝐷 = rowsum(dO ◦ O) ∈ R",
+        "x": 77.4,
+        "y": 555.7,
+        "w": 458.8,
+        "h": 21.9,
+        "zh": "位于 HBM 中，块大小为 𝐵𝑐、𝐵𝑟。1：在一个预处理 kernel 中，计算 𝐷 = rowsum(dO ◦ O) ∈ R"
+      },
+      {
+        "text": "(pointwise multiply), write 𝐷 to HBM and divide it into 𝑇𝑟 blocks 𝐷l1, . . . , 𝐷m",
+        "x": 88.9,
+        "y": 539.6,
+        "w": 479.9,
+        "h": 26.1,
+        "zh": "（逐点相乘），把 𝐷 写入 HBM，并把它分成 𝑇𝑟 块 𝐷l1, …, 𝐷m"
+      },
+      {
+        "text": "𝑇𝑟 of size 𝐵𝑟 each. blocks Q1, . . . , Q𝑇𝑟 of size 𝐵𝑟 ×𝑑 each, and divide K, V in to 𝑇𝑐 =",
+        "x": 191.5,
+        "y": 526,
+        "w": 273.1,
+        "h": 27.7,
+        "zh": "𝑇𝑟，每块大小为 𝐵𝑟。块 Q1, …, Q𝑇𝑟，每块大小为 𝐵𝑟 × 𝑑，并把 K、V 分成 𝑇𝑐 ="
+      },
+      {
+        "text": "blocks K1, . . . , K𝑇𝑐 2: Divide Q into 𝑇𝑟 = and V1, . . . , V𝑇𝑐, of size 𝐵𝑐 × 𝑑 each. 3: Divide dO into 𝑇𝑟 blocks dO𝑖, . . . , dO𝑇𝑟 of size 𝐵𝑟 × 𝑑 each, and divide 𝐿 into 𝑇𝑟 blocks 𝐿𝑖, . . . , 𝐿𝑇𝑟 of size 𝐵𝑟",
+        "x": 77.4,
+        "y": 499.8,
+        "w": 490.3,
+        "h": 38.8,
+        "zh": "块 K1, …, K𝑇𝑐。2：把 Q 分成 𝑇𝑟 = ，以及 V1, …, V𝑇𝑐，每块大小为 𝐵𝑐 × 𝑑。3：把 dO 分成 𝑇𝑟 块 dO𝑖, …, dO𝑇𝑟，每块大小为 𝐵𝑟 × 𝑑，并把 𝐿 分成 𝑇𝑟 块 𝐿𝑖, …, 𝐿𝑇𝑟，大小为 𝐵𝑟"
+      },
+      {
+        "text": "4: Initialize pipeline object to manage barrier synchronization with 𝑠-stage circular SMEM buffer. 5: if in producer warpgroup then Deallocate predetermined number of registers. Issue load K𝑗 and V𝑗 from HBM to shared memory. Upon completion, commit to notify consumer of the load of K𝑗 and V𝑗. for 1 ≤ 𝑖 ≤ 𝑇𝑟 do Wait for the (𝑖 % 𝑠)th stage of the buffer to be consumed. Issue loads of Q𝑖, dO𝑖 from HBM to shared memory at the (𝑖 % 𝑠)th stage of the buffer. Upon completion, commit to notify consumers of the loads of Q𝑖, dO𝑖.",
+        "x": 77.4,
+        "y": 381.3,
+        "w": 427,
+        "h": 107.1,
+        "zh": "4：初始化流水对象，用它来管理带有 𝑠 级环形 SMEM 缓冲的屏障同步。5：若位于生产者 warpgroup，则释放预先定好数量的寄存器。发起把 K𝑗 和 V𝑗 从 HBM 加载到共享内存。完成后提交，通知消费者 K𝑗 和 V𝑗 已经加载。对 1 ≤ 𝑖 ≤ 𝑇𝑟：等待缓冲的第 (𝑖 % 𝑠) 级被消费完。在缓冲的第 (𝑖 % 𝑠) 级，发起把 Q𝑖、dO𝑖 从 HBM 加载到共享内存。完成后提交，通知消费者 Q𝑖、dO𝑖 已经加载。"
+      },
+      {
+        "text": "14: else if in consumer warpgroups then Reallocate predetermined number of registers as function of number of consumer warps. On-chip, Initialize dK𝑗 = (0)𝐵𝑐×𝑑, dV𝑗 = (0)𝐵𝑐×𝑑 . Wait for K𝑗 and V𝑗 to be loaded in shared memory. for 1 ≤ 𝑖 ≤ 𝑇𝑟 do Wait for Q𝑖 to be loaded in shared memory. Load 𝐿𝑖, 𝐷𝑖 from HBM to on-chip SRAM. On chip, compute S𝑖 Wait for dO𝑖 to be loaded in shared memory. On chip, compute dP𝑖 On chip, wait for S𝑖",
+        "x": 73.1,
+        "y": 229.7,
+        "w": 409.9,
+        "h": 139.1,
+        "zh": "14：否则，若位于消费者 warpgroup，则按消费者 warp 的数量重新分配预先定好数量的寄存器。在片上把 dK𝑗 初始化为 (0)𝐵𝑐×𝑑，把 dV𝑗 初始化为 (0)𝐵𝑐×𝑑。等待 K𝑗 和 V𝑗 被加载进共享内存。对 1 ≤ 𝑖 ≤ 𝑇𝑟：等待 Q𝑖 被加载进共享内存。把 𝐿𝑖、𝐷𝑖 从 HBM 加载到片上 SRAM。在片上计算 S𝑖。等待 dO𝑖 被加载进共享内存。在片上计算 dP𝑖。在片上等待 S𝑖"
+      },
+      {
+        "text": "= exp(S𝑖 𝑗 − 𝐿𝑖) ∈ R On chip, wait for dP𝑖 On chip, compute dV𝑗 ← dV𝑗 + (P𝑖 On chip, compute dK𝑗 ← dK𝑗 + dS𝑖",
+        "x": 108.9,
+        "y": 184.9,
+        "w": 266.8,
+        "h": 58.1,
+        "zh": ""
+      },
+      {
+        "text": "(RS-GEMM). Commit and wait for both dV𝑗 and dK𝑗. On chip, compute dQ𝑖",
+        "x": 108.9,
+        "y": 170.3,
+        "w": 455.6,
+        "h": 27.8,
+        "zh": "（RS-GEMM）。提交，并等待 dV𝑗 和 dK𝑗 两者都完成。在片上计算 dQ𝑖"
+      },
+      {
+        "text": "30: else if in dQ-writer warp then for 1 ≤ 𝑖 ≤ 𝑇𝑟 do",
+        "x": 73.1,
+        "y": 124.4,
+        "w": 152.8,
+        "h": 23.4,
+        "zh": "30：否则，若位于 dQ 写者 warp，则对 1 ≤ 𝑖 ≤ 𝑇𝑟："
+      },
+      {
+        "text": "to be ready in smem. Using a semaphore, atomically add dQ𝑖",
+        "x": 108.9,
+        "y": 96.1,
+        "w": 171.9,
+        "h": 27.8,
+        "zh": "在 smem 中就绪之后，使用信号量，原子地把 dQ𝑖 加到"
+      }
+    ],
+    "19": [
+      {
+        "text": "We give simplified SASS code for the inside of the consumer warpgroup mainloop.",
+        "x": 71.5,
+        "y": 691.8,
+        "w": 358.8,
+        "h": 10,
+        "zh": "我们给出消费者 warpgroup 主循环内部的简化 SASS。"
+      },
+      {
+        "text": "FMNMX.FTZ R0, R24, R6, !PT ; SHFL.BFLY PT, R185, R2, 0x2, 0x1f ; ... FMNMX and SHFL.BFLY ...",
+        "x": 72,
+        "y": 640,
+        "w": 164.7,
+        "h": 30.9,
+        "zh": ""
+      },
+      {
+        "text": "// Apply exp2 and row_sum. Rescale O. FMUL.FTZ R2, R4, UR9 ; MUFU.EX2 R185, R184 ; FFMA.FTZ R24, R24, UR9, -R6.reuse ; FADD.FTZ R24, R211, R24 ; ... FMUL, FFMA, FMUL, MUFU.EX2, FADD ...",
+        "x": 72,
+        "y": 563.3,
+        "w": 188.2,
+        "h": 63.8,
+        "zh": "做 exp2 和 row_sum，并重缩放 O。随后是 FMUL.FTZ、MUFU.EX2、FFMA.FTZ、FADD.FTZ，以及更多的 FMUL、FFMA、FMUL、MUFU.EX2、FADD。"
+      },
+      {
+        "text": "// FP32 -> FP16 conversion are interleaved with exp2, row_sum and O rescaling.",
+        "x": 72,
+        "y": 541.3,
+        "w": 367.1,
+        "h": 9,
+        "zh": "FP32 到 FP16 的转换，与 exp2、row_sum 以及对 O 的重缩放交错进行。"
+      },
+      {
+        "text": "F2FP.F16.F32.PACK_AB R231, R25, R231 ; ... F2FP, FMUL, MUFU, FFMA, FADD ...",
+        "x": 72,
+        "y": 519.4,
+        "w": 178.8,
+        "h": 19.9,
+        "zh": ""
+      },
+      {
+        "text": "// Start the first WGMMA. Broken down into 8 HGMMAs. // The first 7 HGMMAs are packed together.",
+        "x": 72,
+        "y": 486.6,
+        "w": 244.7,
+        "h": 19.9,
+        "zh": "开始第一次 WGMMA。它被拆成 8 条 HGMMA。前 7 条 HGMMA 被打包在一起。"
+      },
+      {
+        "text": "HGMMA.64x192x16.F32 R24, gdesc[UR44], RZ, !UPT ;",
+        "x": 72,
+        "y": 464.6,
+        "w": 225.9,
+        "h": 9,
+        "zh": ""
+      },
+      {
+        "text": "// FP32->FP16, exp2, row_sum, O rescaling are interleaved with HGMMA.",
+        "x": 72,
+        "y": 431.8,
+        "w": 324.7,
+        "h": 9,
+        "zh": "FP32 到 FP16 的转换、exp2、row_sum 以及对 O 的重缩放，与 HGMMA 交错进行。"
+      },
+      {
+        "text": "FADD.FTZ R237, R187, R2 ; ... F2FP, MUFU, FADD ...",
+        "x": 72,
+        "y": 387.9,
+        "w": 117.7,
+        "h": 19.9,
+        "zh": ""
+      },
+      {
+        "text": "// The last HGMMA is issued here. No need to wait. HGMMA.64x192x16.F32 R24, gdesc[UR44], R24, gsb0 ;",
+        "x": 72,
+        "y": 355,
+        "w": 235.3,
+        "h": 19.9,
+        "zh": "最后一条 HGMMA 在这里发出。不必等待。HGMMA.64x192x16.F32 R24, gdesc[UR44], R24, gsb0 ;"
+      },
+      {
+        "text": "// Start the second WGMMA. Broken down into 12 HGMMAs.",
+        "x": 72,
+        "y": 333.1,
+        "w": 254.1,
+        "h": 9,
+        "zh": "开始第二次 WGMMA。它被拆成 12 条 HGMMA。"
+      },
+      {
+        "text": "// All 12 HGMMAs are packed together. Not interleaved with other instructions.",
+        "x": 72,
+        "y": 322.2,
+        "w": 367.1,
+        "h": 9,
+        "zh": "全部 12 条 HGMMA 都打包在一起，不与其他指令交错。"
+      },
+      {
+        "text": "HGMMA.64x128x16.F32 R120, R228, gdesc[UR8].tnspB, R120 ;",
+        "x": 72,
+        "y": 300.3,
+        "w": 263.5,
+        "h": 9,
+        "zh": ""
+      },
+      {
+        "text": "HGMMA.64x128x16.F32 R120, R184, gdesc[UR8].tnspB, R120, gsb0 ;",
+        "x": 72,
+        "y": 278.3,
+        "w": 291.8,
+        "h": 9,
+        "zh": ""
+      },
+      {
+        "text": "// wgmma.wait_group at the end. WARPGROUP.DEPBAR.LE gsb0, 0x0 ;",
+        "x": 72,
+        "y": 245.5,
+        "w": 145.9,
+        "h": 19.9,
+        "zh": "末尾是 wgmma.wait_group。WARPGROUP.DEPBAR.LE gsb0, 0x0 ;"
+      },
+      {
+        "text": "1. Softmax is reordered to the very beginning, even before the first WGMMA.",
+        "x": 84.2,
+        "y": 194.6,
+        "w": 342.6,
+        "h": 10,
+        "zh": "1. softmax 被重排到了最开头，甚至排在第一次 WGMMA 之前。"
+      },
+      {
+        "text": "2. The first WGMMA is interleaved with softmax and FP32 → FP16 datatype conversion of S. This indicates",
+        "x": 84.2,
+        "y": 174.7,
+        "w": 484.6,
+        "h": 10,
+        "zh": "2. 第一次 WGMMA 与 softmax，以及 S 从 FP32 到 FP16 的数据类型转换，是交错的。这表明"
+      },
+      {
+        "text": "that WGMMA and non-WGMMAs are executed in parallel.",
+        "x": 96.9,
+        "y": 162.8,
+        "w": 262.3,
+        "h": 10,
+        "zh": "WGMMA 与非 WGMMA 指令是并行执行的。"
+      },
+      {
+        "text": "3. exp2, row\\_sum, O rescaling and FP32 → FP16 conversions are interleaved together.",
+        "x": 84.2,
+        "y": 142.8,
+        "w": 384,
+        "h": 10,
+        "zh": "3. exp2、row_sum、对 O 的重缩放，以及 FP32 到 FP16 的转换，被交错在一起。"
+      },
+      {
+        "text": "4. The second WGMMA is not overlapped with other instructions, as expected.",
+        "x": 84.2,
+        "y": 122.9,
+        "w": 349,
+        "h": 10,
+        "zh": "4. 第二次 WGMMA 没有与其他指令重叠，这符合预期。"
+      },
+      {
+        "text": "Overall, SASS shows that the 2-stage pipelining idea works as expected.",
+        "x": 72,
+        "y": 103,
+        "w": 314.9,
+        "h": 10,
+        "zh": "总体而言，SASS 表明两阶段流水这一想法是按预期工作的。"
+      }
+    ],
+    "20": [
+      {
+        "text": "3-Stage Pipelining Algorithm We experiment with a 3-stage pipelining algorithm to parallelize the first WGMMA from iteration 𝑗 + 2, softmax from iteration 𝑗 + 1, and the second WGMMA from iteration 𝑗. We describe this algorithm in Algorithm 4. This algorithm behaves worse than the 2-stage pipelining algorithm due to the reasons below:",
+        "x": 71.5,
+        "y": 666.9,
+        "w": 497.6,
+        "h": 54.3,
+        "zh": "三阶段流水算法。我们试验了一种三阶段流水，用来把第 𝑗 + 2 次迭代的第一次 WGMMA、第 𝑗 + 1 次迭代的 softmax，以及第 𝑗 次迭代的第二次 WGMMA 并行起来。算法 4 描述了这一算法。由于下面这些原因，它的表现不如两阶段流水："
+      },
+      {
+        "text": "Algorithm 4 FlashAttention 3-stage pipelining consumer warpgroup forward pass",
+        "x": 71.6,
+        "y": 500.1,
+        "w": 353.6,
+        "h": 10,
+        "zh": "算法 4：FlashAttention 三阶段流水中，消费者 warpgroup 的前向"
+      },
+      {
+        "text": "in HBM, block sizes 𝐵𝑐, 𝐵𝑟. Each warpgroup reads 1 block Qi of size 𝐵𝑟 × 𝑑, blocks K1, . . . , K𝑇𝑐 and V1, . . . , V𝑇𝑐 of size 𝐵𝑐 × 𝑑. Each warpgroup writes 1 output block O𝑖 of size 𝐵𝑟 × 𝑑, and 1 logsumexp block 𝐿𝑖 of size 𝐵𝑟. 1: Initialization. Load Q𝑖 from HBM to on-chip SRAM. Initialize O𝑖, ℓ𝑖, 𝑚𝑖, 𝑠𝑐𝑎𝑙𝑒_𝑜. 2: Wait for the producer warpgroup loading K0 from HBM to on-chip SRAM. 3: Compute S = Q𝑖K0 using WGMMA. Commit and wait. 4: Compute 𝑚𝑖, P˜𝑖, ℓ𝑖, 𝑠𝑐𝑎𝑙𝑒_𝑜 based on S. 5: Wait for the producer warpgroup loading K1 from HBM to on-chip SRAM. 6: Compute S = Q𝑖K1 using WGMMA. Commit and wait. 7: for 2 ≤ 𝑗 < 𝑇𝑐 − 2 do Wait for the producer warpgroup loading K𝑗 from HBM to on-chip SRAM. Compute S_𝑛𝑒𝑥𝑡 = Q𝑖K𝑗 using WGMMA. Commit but do not wait. Wait for the producer warpgroup loading V𝑗−2 from HBM to on-chip SRAM. Rescale O𝑖 based on 𝑠𝑐𝑎𝑙𝑒_𝑜. Compute O𝑖 = O𝑖 + P˜𝑖V𝑗−2 using WGMMA. Commit but do not wait. Compute 𝑚𝑖, P˜𝑖_𝑛𝑒𝑥𝑡, ℓ𝑖, 𝑠𝑐𝑎𝑙𝑒_𝑜 based on S. Wait for all previous WGMMAs. Copy S_𝑛𝑒𝑥𝑡 to S. Copy P˜𝑖_𝑛𝑒𝑥𝑡 to P˜𝑖.",
+        "x": 77.4,
+        "y": 259.1,
+        "w": 492.8,
+        "h": 234.2,
+        "zh": "位于 HBM 中，块大小为 𝐵𝑐、𝐵𝑟。每个 warpgroup 读取 1 块大小为 𝐵𝑟 × 𝑑 的 Qi，以及大小为 𝐵𝑐 × 𝑑 的块 K1, …, K𝑇𝑐 和 V1, …, V𝑇𝑐。每个 warpgroup 写出 1 块大小为 𝐵𝑟 × 𝑑 的输出 O𝑖，以及 1 块大小为 𝐵𝑟 的 logsumexp 𝐿𝑖。1：初始化。把 Q𝑖 从 HBM 加载到片上 SRAM。初始化 O𝑖、ℓ𝑖、𝑚𝑖、scale_o。2：等待生产者 warpgroup 把 K0 从 HBM 加载到片上 SRAM。3：用 WGMMA 计算 S = Q𝑖K0。提交并等待。4：根据 S 计算 𝑚𝑖、P̃𝑖、ℓ𝑖、scale_o。5：等待生产者 warpgroup 把 K1 从 HBM 加载到片上 SRAM。6：用 WGMMA 计算 S = Q𝑖K1。提交并等待。7：对 2 ≤ 𝑗 < 𝑇𝑐 − 2：等待生产者 warpgroup 把 K𝑗 从 HBM 加载到片上 SRAM。用 WGMMA 计算 S_next = Q𝑖K𝑗。提交，但不要等待。等待生产者 warpgroup 把 V𝑗−2 从 HBM 加载到片上 SRAM。根据 scale_o 重缩放 O𝑖。用 WGMMA 计算 O𝑖 = O𝑖 + P̃𝑖 V𝑗−2。提交，但不要等待。根据 S 计算 𝑚𝑖、P̃𝑖_next、ℓ𝑖、scale_o。等待此前所有的 WGMMA。把 S_next 复制到 S。把 P̃𝑖_next 复制到 P̃𝑖。"
+      },
+      {
+        "text": "18: Wait for the producer warpgroup loading V𝑇𝑐−2 from HBM to on-chip SRAM. 19: Rescale O𝑖 based on 𝑠𝑐𝑎𝑙𝑒_𝑜. 20: Compute O𝑖 = O𝑖 + P˜𝑖V𝑇𝑐−2 using WGMMA. Commit and wait. 21: Compute 𝑚𝑖, P˜𝑖, ℓ𝑖, 𝑠𝑐𝑎𝑙𝑒_𝑜 based on S. 22: Wait for the producer warpgroup loading V𝑇𝑐−1 from HBM to on-chip SRAM. 23: Rescale O𝑖 based on 𝑠𝑐𝑎𝑙𝑒_𝑜. 24: Compute O𝑖 = O𝑖 + P˜𝑖V𝑇𝑐−1 using WGMMA. Commit and wait. 25: Epilogue. Rescale O𝑖 based on ℓ𝑖. Compute 𝐿𝑖 based on ℓ𝑖 and 𝑚𝑖. Write O𝑖 and 𝐿𝑖 to HBM as the 𝑖-th block",
+        "x": 73.1,
+        "y": 151.5,
+        "w": 495.9,
+        "h": 95.1,
+        "zh": "18：等待生产者 warpgroup 把 V𝑇𝑐−2 从 HBM 加载到片上 SRAM。19：根据 scale_o 重缩放 O𝑖。20：用 WGMMA 计算 O𝑖 = O𝑖 + P̃𝑖 V𝑇𝑐−2。提交并等待。21：根据 S 计算 𝑚𝑖、P̃𝑖、ℓ𝑖、scale_o。22：等待生产者 warpgroup 把 V𝑇𝑐−1 从 HBM 加载到片上 SRAM。23：根据 scale_o 重缩放 O𝑖。24：用 WGMMA 计算 O𝑖 = O𝑖 + P̃𝑖 V𝑇𝑐−1。提交并等待。25：收尾。根据 ℓ𝑖 重缩放 O𝑖。根据 ℓ𝑖 和 𝑚𝑖 计算 𝐿𝑖。把 O𝑖 和 𝐿𝑖 写回 HBM，作为第 𝑖 块"
+      },
+      {
+        "text": "We expected that softmax can be overlapped with (the first WGMMA + the second WGMMA). However, the compiler doesn’t cooperate in this way. SASS code shows that only the first WGMMA is overlapped with softmax, while the second WGMMA is not. It’s not clear why the compiler chooses to reorder instructions in",
+        "x": 71.6,
+        "y": 86.9,
+        "w": 499.1,
+        "h": 33.9,
+        "zh": "我们预期 softmax 可以与（第一次 WGMMA 加上第二次 WGMMA）重叠。但编译器并没有按这种方式配合。SASS 显示，只有第一次 WGMMA 与 softmax 发生了重叠，第二次 WGMMA 没有。目前还不清楚，编译器为什么选择把指令重排成"
+      }
+    ],
+    "21": [
+      {
+        "text": "This algorithm requires more registers compared to the 2-stage pipelining algorithm. In theory, it needs to store an extra P˜𝑖 and 𝑠𝑐𝑎𝑙𝑒_𝑜, which is of size 𝐵𝑟 × 𝐵𝑐 × sizeof(input_data_type) + 𝐵𝑟 × sizeof(float).",
+        "x": 72,
+        "y": 695.7,
+        "w": 498.7,
+        "h": 23.4,
+        "zh": "相对两阶段流水，这一算法需要更多寄存器。理论上，它要额外存放一份 P̃𝑖 和 scale_o，大小为 𝐵𝑟 × 𝐵𝑐 × sizeof(input_data_type) + 𝐵𝑟 × sizeof(float)。"
+      },
+      {
+        "text": "As a result, a smaller block size needs to be chosen.",
+        "x": 71.6,
+        "y": 685.3,
+        "w": 225.6,
+        "h": 10,
+        "zh": "因此，必须选用更小的块。"
+      },
+      {
+        "text": "Addition Details on Experiments and Benchmarking",
+        "x": 99.2,
+        "y": 652.3,
+        "w": 363.3,
+        "h": 14.3,
+        "zh": "实验与基准测试的补充细节"
+      },
+      {
+        "text": "We benchmark the speed on an H100 80GB SXM5 (700W). We generally use the latest versions of the libraries, at",
+        "x": 71.5,
+        "y": 610.1,
+        "w": 497.6,
+        "h": 10,
+        "zh": "我们在一块 H100 80GB SXM5（700W）上测量速度。库的版本一般取最新版，于"
+      },
+      {
+        "text": "the time of writing (May 2024). Specifically, we use:",
+        "x": 72,
+        "y": 598.2,
+        "w": 228.1,
+        "h": 10,
+        "zh": "撰写时（2024 年 5 月）。具体而言，我们使用："
+      },
+      {
+        "text": "• Triton nightly 3.0.0.post20240424212437",
+        "x": 86.9,
+        "y": 498.5,
+        "w": 185.7,
+        "h": 10,
+        "zh": "• Triton 夜间版 3.0.0.post20240424212437"
+      },
+      {
+        "text": "To reduce variability, we fix the GPU clock speed to 1830MHz (clock speed used to calculate the 989 TFLOPS FP16 theoretical max throughput). We repeat the benchmarks 100 times and take the average timing.",
+        "x": 72,
+        "y": 446.7,
+        "w": 496.8,
+        "h": 21.9,
+        "zh": "为了降低波动，我们把 GPU 时钟固定在 1830 MHz，这也是用来计算 989 TFLOPS 这一 FP16 理论峰值吞吐的时钟。基准重复 100 次，取平均用时。"
+      },
+      {
+        "text": "We use following sequence lengths: 512, 1024, 2048, 4224, 8448, 16896. When sequence length ≥ 4k, we make it also divisible by 132 (number of SMs in H100 SXM5) to avoid wave quantization.",
+        "x": 71.5,
+        "y": 388.5,
+        "w": 497.3,
+        "h": 21.9,
+        "zh": "我们使用下面这些序列长度：512、1024、2048、4224、8448、16896。当序列长度 ≥ 4k 时，我们还让它能被 132 整除（这是 H100 SXM5 的 SM 数量），以避免 wave quantization。"
+      }
+    ],
+    "22": [
+      {
+        "text": "(a) Forward, without causal mask, head dim 64 Attention forward speed, head dim 128 (H100 80GB SXM5)",
+        "x": 105.2,
+        "y": 485.4,
+        "w": 204.8,
+        "h": 21.2,
+        "zh": "（a）前向，无因果掩码，头维度 64。注意力前向速度，头维度 128（H100 80GB SXM5）"
+      },
+      {
+        "text": "(b) Forward, with causal mask, head dim 64 Attention forward speed, head dim 128 (H100 80GB SXM5)",
+        "x": 353.6,
+        "y": 485.4,
+        "w": 204.8,
+        "h": 21.2,
+        "zh": "（b）前向，有因果掩码，头维度 64。注意力前向速度，头维度 128（H100 80GB SXM5）"
+      },
+      {
+        "text": "(c) Forward, without causal mask, head dim 128 Attention forward speed, head dim 256 (H100 80GB SXM5)",
+        "x": 105.2,
+        "y": 304.4,
+        "w": 204.8,
+        "h": 21.2,
+        "zh": "（c）前向，无因果掩码，头维度 128。注意力前向速度，头维度 256（H100 80GB SXM5）"
+      },
+      {
+        "text": "(d) Forward, with causal mask, head dim 128 Attention forward speed, head dim 256 (H100 80GB SXM5)",
+        "x": 353.6,
+        "y": 304.4,
+        "w": 204.8,
+        "h": 21.2,
+        "zh": "（d）前向，有因果掩码，头维度 128。注意力前向速度，头维度 256（H100 80GB SXM5）"
+      }
+    ]
+  }
+}

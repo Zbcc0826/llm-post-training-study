@@ -1,0 +1,1059 @@
+{
+  "id": "2307.08691",
+  "title": "2307.08691",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "Faster Attention with Better Parallelism and Work Partitioning",
+        "x": 79.7,
+        "y": 645.4,
+        "w": 452.5,
+        "h": 17.2,
+        "zh": "更快的注意力：更好的并行与工作划分"
+      },
+      {
+        "text": "Department of Computer Science, Princeton University Department of Computer Science, Stanford University",
+        "x": 166.6,
+        "y": 578.7,
+        "w": 283.9,
+        "h": 25.9,
+        "zh": "普林斯顿大学计算机科学系，斯坦福大学计算机科学系"
+      },
+      {
+        "text": "Scaling Transformers to longer sequence lengths has been a major problem in the last several years, promising to improve performance in language modeling and high-resolution image understanding, as well as to unlock new applications in code, audio, and video generation. The attention layer is the main bottleneck in scaling to longer sequences, as its runtime and memory increase quadratically in the sequence length. FlashAttention [5] exploits the asymmetric GPU memory hierarchy to bring significant memory saving (linear instead of quadratic) and runtime speedup (2-4× compared to optimized baselines), with no approximation. However, FlashAttention is still not nearly as fast as optimized matrix-multiply (GEMM) operations, reaching only 25-40% of the theoretical maximum FLOPs/s. We observe that the inefficiency is due to suboptimal work partitioning between different thread blocks and warps on the GPU, causing either low-occupancy or unnecessary shared memory reads/writes. We propose FlashAttention-2, with better work partitioning to address these issues. In particular, we (1) tweak the algorithm to reduce the number of non-matmul FLOPs (2) parallelize the attention computation, even for a single head, across different thread blocks to increase occupancy, and (3) within each thread block, distribute the work between warps to reduce communication through shared memory. These yield around 2× speedup compared to FlashAttention, reaching 50-73% of the theoretical maximum FLOPs/s on A100 and getting close to the efficiency of GEMM operations. We empirically validate that when used end-to-end to train GPT-style models, FlashAttention-2 reaches training speed of up to 225 TFLOPs/s",
+        "x": 96.6,
+        "y": 306,
+        "w": 419.8,
+        "h": 184.3,
+        "zh": "把 Transformer 扩展到更长的序列，是过去几年的一个主要问题。更长的序列有望提高语言建模和高分辨率图像理解的效果，也有望打开代码、音频和视频生成里的新应用。注意力层是往更长序列扩展时的主要瓶颈，因为它的运行时间和内存都随序列长度二次增长。FlashAttention [5] 利用 GPU 内存层次的不对称，在不做近似的前提下显著节省内存（线性而不是二次），并把运行时间相对优化过的基线加快 2–4 倍。不过 FlashAttention 仍然远不如优化过的矩阵乘法（GEMM）快，只能达到理论峰值 FLOPs/s 的 25–40%。我们观察到，效率低是因为 GPU 上不同线程块和 warp 之间的工作划分不理想，结果要么占用率低，要么多了不必要的共享内存读写。我们提出 FlashAttention-2，用更好的工作划分来解决这些问题。具体而言，我们（1）调整算法，减少非 matmul 的 FLOPs，（2）把注意力计算并行到不同线程块上，哪怕只有一个头，以提高占用率，（3）在每个线程块内部把工作分给各个 warp，减少经由共享内存的通信。这些改动相对 FlashAttention 大约带来 2 倍加速，在 A100 上达到理论峰值 FLOPs/s 的 50–73%，接近 GEMM 的效率。我们用实验确认，用它端到端训练 GPT 风格的模型时，FlashAttention-2 的训练速度最高达到 225 TFLOPs/s"
+      },
+      {
+        "text": "per A100 GPU (72% model FLOPs utilization).",
+        "x": 96.9,
+        "y": 295.1,
+        "w": 193.4,
+        "h": 9,
+        "zh": "每块 A100 GPU（模型 FLOPs 利用率 72%）。"
+      },
+      {
+        "text": "Scaling up the context length of Transformers [18] is a challenge, since the attention layer at their heart",
+        "x": 72,
+        "y": 240.3,
+        "w": 468.3,
+        "h": 10,
+        "zh": "把 Transformer [18] 的上下文长度做大是一件难事，因为位于其核心的注意力层"
+      },
+      {
+        "text": "beyond the standard 2k sequence length limit to train models to understand books, high resolution images, and long-form videos. Just within the last year, there have been several language models with much longer context than before: GPT-4 [12] with context length 32k, MosaicML’s MPT with context length 65k, and Anthropic’s Claude with context length 100k. Emerging use cases such as long document querying and story",
+        "x": 71.6,
+        "y": 180.5,
+        "w": 469.8,
+        "h": 45.8,
+        "zh": "超出常见的 2k 序列长度上限，从而训练能理解书籍、高分辨率图像和长视频的模型。就在过去一年里，已经出现好几个上下文比以往长得多的语言模型：GPT-4 [12] 的上下文长度是 32k，MosaicML 的 MPT 是 65k，Anthropic 的 Claude 是 100k。长文档查询和故事"
+      },
+      {
+        "text": "writing have demonstrated a need for models with such long context.",
+        "x": 71.6,
+        "y": 168.6,
+        "w": 301.8,
+        "h": 10,
+        "zh": "写作已经表明，需要这样长上下文的模型。"
+      },
+      {
+        "text": "To reduce the computational requirement of attention on such long context, there have been numerous methods proposed to approximate attention [2, 3, 4, 8, 9, 14, 19, 20]. Though these methods have seen some use cases, as far as we know, most large-scale training runs still use standard attention. Motivated by this, Dao et al. [5] proposed to reorder the attention computation and leverages classical techniques (tiling, recomputation) to significantly speed it up and reduce memory usage from quadratic to linear in sequence length. This yields 2-4× wall-clock time speedup over optimized baselines, up to 10-20× memory saving,",
+        "x": 72,
+        "y": 96.8,
+        "w": 469.4,
+        "h": 69.7,
+        "zh": "为了降低这么长上下文上注意力的计算量，人们提出了许多近似注意力的方法 [2, 3, 4, 8, 9, 14, 19, 20]。这些方法有一些使用场景，但就我们所知，大多数大规模训练仍然使用标准注意力。因此，Dao 等人 [5] 提出重排注意力的计算顺序，并借助分块、重计算这些经典技巧，在显著加速的同时，把内存占用从随序列长度二次降到线性。相对优化过的基线，墙钟时间加快 2–4 倍，内存最多节省 10–20 倍，"
+      }
+    ],
+    "2": [
+      {
+        "text": "with no approximation, and as a result FlashAttention has seen wide adoption in large-scale training and",
+        "x": 71.6,
+        "y": 709.2,
+        "w": 468.4,
+        "h": 10,
+        "zh": "而且不做近似。因此 FlashAttention 已经被大规模训练广泛采用，并且"
+      },
+      {
+        "text": "However, context length increases even more, FlashAttention is still not nearly as efficient as other primitives such as matrix-multiply (GEMM). In particular, while FlashAttention is already 2-4× faster than a standard attention implementation, the forward pass only reaches 30-50% of the theoretical maximum FLOPs/s of the device (Fig. 5), while the backward pass is even more challenging, reaching only 25-35% of maximum throughput on A100 GPU (Fig. 6). In contrast, optimized GEMM can reach up to 80-90% of the theoretical maximum device throughput. Through careful profiling, we observe that FlashAttention still has suboptimal work partitioning between different thread blocks and warps on the GPU, causing either low-occupancy or unnecessary shared memory reads/writes. Building on FlashAttention, we propose FlashAttention-2 with better parallelism and work",
+        "x": 72,
+        "y": 589.6,
+        "w": 468.4,
+        "h": 105.6,
+        "zh": "然而上下文长度还在继续增加，FlashAttention 的效率仍然远不如矩阵乘法（GEMM）这类其他基本算子。具体来说，FlashAttention 虽然已经比标准注意力实现快 2–4 倍，前向却只达到设备理论峰值 FLOPs/s 的 30–50%（图 5），反向则更困难，在 A100 GPU 上只达到峰值吞吐的 25–35%（图 6）。相比之下，优化过的 GEMM 最高可以达到设备理论峰值吞吐的 80–90%。经过仔细剖析，我们观察到 FlashAttention 在 GPU 的不同线程块和 warp 之间，工作划分仍然不理想，结果要么占用率低，要么有不必要的共享内存读写。在 FlashAttention 的基础上，我们提出 FlashAttention-2，它有更好的并行和工作"
+      },
+      {
+        "text": "partitioning to address these challenges.",
+        "x": 72,
+        "y": 577.7,
+        "w": 174.3,
+        "h": 10,
+        "zh": "划分，用来应对这些挑战。"
+      },
+      {
+        "text": "1. In Section 3.1, we tweak the algorithms to reduce the number of non-matmul FLOPs while not changing the output. While the non-matmul FLOPs only account for a small fraction of the total FLOPs, they take longer to perform as GPUs have specialized units for matrix multiply, and as a result the matmul throughput can be up to 16× higher than non-matmul throughput. It is thus important to reduce non-matmul FLOPs and spend as much time as possible doing matmul FLOPs.",
+        "x": 84.2,
+        "y": 509.9,
+        "w": 456.2,
+        "h": 57.8,
+        "zh": "1. 在第 3.1 节，我们调整算法，减少非 matmul 的 FLOPs，同时不改变输出。非 matmul 的 FLOPs 只占总 FLOPs 的一小部分，但做起来更慢，因为 GPU 有专门做矩阵乘法的单元，matmul 吞吐最高可以比非 matmul 吞吐高 16 倍。因此有必要减少非 matmul 的 FLOPs，把尽可能多的时间花在 matmul 的 FLOPs 上。"
+      },
+      {
+        "text": "2. We propose to parallelize both the forward pass and backward pass along the sequence length dimension, in addition to the batch and number of heads dimension. This increases occupancy (utilization of GPU resources) in the case where the sequences are long (and hence batch size is often small).",
+        "x": 84.2,
+        "y": 466.1,
+        "w": 457.2,
+        "h": 33.9,
+        "zh": "2. 除了批次和头数这两个维度，我们还提出把前向和反向都沿序列长度维度并行。序列很长时（因此批次往往很小），这样做能提高占用率（GPU 资源的利用率）。"
+      },
+      {
+        "text": "3. Even within one block of attention computation, we partition the work between different warps of a thread block to reduce communication and shared memory reads/writes.",
+        "x": 84.2,
+        "y": 434.2,
+        "w": 455.8,
+        "h": 21.9,
+        "zh": "3. 即便在一块注意力计算内部，我们也在一个线程块的不同 warp 之间划分工作，以减少通信和共享内存读写。"
+      },
+      {
+        "text": "In Section 4, we empirically validate that FlashAttention-2 yields significant speedup compared to even FlashAttention. Benchmarks on different settings (with or without causal mask, different head dimensions) show that FlashAttention-2 achieves around 2× speedup over FlashAttention, reaching up to 73% of the theoretical max throughput in the forward pass, and up to 63% of the theoretical max throughput in the backward pass. When used end-to-end to train GPT-style models, we reach training speed",
+        "x": 72,
+        "y": 366.5,
+        "w": 468.3,
+        "h": 57.8,
+        "zh": "在第 4 节，我们用实验确认，即便和 FlashAttention 相比，FlashAttention-2 也有明显加速。在不同设置（有没有因果掩码、不同的头维度）下的测试表明，FlashAttention-2 相对 FlashAttention 大约有 2 倍加速，前向最高达到理论峰值吞吐的 73%，反向最高达到理论峰值吞吐的 63%。用它端到端训练 GPT 风格的模型时，训练速度达到"
+      },
+      {
+        "text": "We provide some background on the performance characteristics and execution model of GPUs. We also describe the standard implementation of attention, as well as FlashAttention.",
+        "x": 71.5,
+        "y": 287.8,
+        "w": 468.5,
+        "h": 21.9,
+        "zh": "我们提供一些关于 GPU 性能特点和执行模型的背景，也描述注意力的标准实现，以及 FlashAttention。"
+      },
+      {
+        "text": "GPU performance characteristics. The GPU consists of compute elements (e.g., floating point arithmetic units) and a memory hierarchy. Most modern GPUs contain specialized units to accelerate matrix multiply in low-precision (e.g., Tensor Cores on Nvidia GPUs for FP16/BF16 matrix multiply). The memory hierarchy comprise of high bandwidth memory (HBM), and on-chip SRAM (aka shared memory). As an example, the A100 GPU has 40-80GB of high bandwidth memory (HBM) with bandwidth 1.5-2.0TB/s and 192KB of on-chip SRAM per each of 108 streaming multiprocessors with bandwidth estimated around 19TB/s [6, 7]. As the L2 cache is not directly controllable by the programmer, we focus on the HBM and SRAM for the",
+        "x": 71.6,
+        "y": 169.8,
+        "w": 470.3,
+        "h": 81.7,
+        "zh": "GPU 的性能特点。GPU 由计算单元（例如浮点运算单元）和内存层次组成。多数现代 GPU 含有专门单元，用来加速低精度矩阵乘法（例如 Nvidia GPU 上做 FP16/BF16 矩阵乘法的 Tensor Core）。内存层次包括高带宽内存（HBM）和片上 SRAM（也就是共享内存）。举例来说，A100 GPU 有 40–80GB 高带宽内存（HBM），带宽为 1.5–2.0TB/s；108 个流式多处理器各自有 192KB 片上 SRAM，带宽估计大约 19TB/s [6, 7]。程序员不能直接控制 L2 缓存，因此我们关注 HBM 和 SRAM，为了"
+      },
+      {
+        "text": "Execution Model. GPUs have a massive number of threads to execute an operation (called a kernel). Threads are organized into thread blocks, which are scheduled to run on streaming multiprocessors (SMs). Within each thread blocks, threads are grouped into warps (a group of 32 threads). Threads within a warp can communicate by fast shuffle instructions or cooperate to perform matrix multiply. Warps within a thread block can communicate by reading from / writing to shared memory. Each kernel loads inputs from HBM to registers and SRAM, computes, then writes outputs to HBM.",
+        "x": 71.5,
+        "y": 86.1,
+        "w": 470.4,
+        "h": 69.7,
+        "zh": "执行模型。GPU 用大量线程执行一个操作（称为 kernel）。线程组织成线程块，线程块被调度到流式多处理器（SM）上运行。每个线程块内部，线程再分成 warp（一组 32 个线程）。同一个 warp 里的线程可以用快速 shuffle 指令通信，也可以协作做矩阵乘法。同一个线程块里的 warp 通过读写共享内存通信。每个 kernel 把输入从 HBM 载入寄存器和 SRAM，计算完再把输出写回 HBM。"
+      }
+    ],
+    "3": [
+      {
+        "text": "Standard Attention Implementation Given input sequences Q, K, V ∈ R",
+        "x": 72,
+        "y": 690.8,
+        "w": 242.8,
+        "h": 30.3,
+        "zh": "标准注意力实现。给定输入序列 Q、K、V ∈ R"
+      },
+      {
+        "text": "where 𝑁 is the sequence length and 𝑑 is the head dimension, we want to compute the attention output O ∈ R",
+        "x": 72,
+        "y": 678.8,
+        "w": 468.3,
+        "h": 21.9,
+        "zh": "其中 N 是序列长度，d 是头维度，我们要计算注意力输出 O ∈ R"
+      },
+      {
+        "text": "For multi-head attention (MHA), this same computation is performed in parallel across many heads, and parallel over the batch dimension (number of input sequences in a batch). The backward pass of attention proceeds as follows. Let dO ∈ R",
+        "x": 72,
+        "y": 611.1,
+        "w": 468,
+        "h": 33.9,
+        "zh": "对多头注意力（MHA），同一套计算会在许多头上并行，也会在批次维度（一个批次里的输入序列条数）上并行。注意力的反向过程如下。设 dO ∈ R"
+      },
+      {
+        "text": "be the gradient of O with respect to some loss function. Then by the chain rule (aka backpropagation):",
+        "x": 72,
+        "y": 599.1,
+        "w": 468,
+        "h": 21.9,
+        "zh": "是 O 关于某个损失函数的梯度。然后由链式法则（也就是反向传播）："
+      },
+      {
+        "text": "where dsoftmax is the gradient (backward pass) of softmax applied row-wise. One can work out that if 𝑝 = softmax(𝑠) for some vector 𝑠 and 𝑝, then with output gradient 𝑑𝑝, the input gradient 𝑑𝑠 = (diag(𝑝) − 𝑝 𝑝 )𝑑𝑝. Standard attention implementations materialize the matrices S and P to HBM, which takes 𝑂(𝑁 ) memory. Often 𝑁 ≫ 𝑑 (typically 𝑁 is on the order of 1k–8k and 𝑑 is around 64–128). The standard attention implementation (1) calls the matrix multiply (GEMM) subroutine to multiply S = QK , writes the result to HBM, then (2) loads § from HBM to compute softmax and write the result P to HBM, and finally (3) calls GEMM to get O = PV. As most of the operations are bounded by memory bandwidth, the large number of memory accesses translates to slow wall-clock time. Moreover, the required memory is 𝑂(𝑁 ) due to having to materialize S and P. Moreover, one has to save P ∈ R",
+        "x": 71.6,
+        "y": 393.6,
+        "w": 470.3,
+        "h": 105.6,
+        "zh": "其中 dsoftmax 是按行做的 softmax 的梯度（反向）。可以算出，若对某个向量 s 和 p 有 p = softmax(s)，输出梯度为 dp，则输入梯度 ds = (diag(p) − p p) dp。标准注意力实现会把矩阵 S 和 P 物化到 HBM，这要 O(N) 的内存。通常 N ≫ d（N 一般在 1k–8k 这个量级，d 大约 64–128）。标准实现（1）调用矩阵乘法（GEMM）子程序计算 S = QK，把结果写入 HBM，然后（2）从 HBM 读入 § 来计算 softmax，并把结果 P 写入 HBM，最后（3）调用 GEMM 得到 O = PV。这些操作大多受内存带宽限制，大量内存访问就变成更慢的墙钟时间。此外，因为必须把 S 和 P 物化出来，所需内存是 O(N)。而且还要把 P ∈ R 存下来"
+      },
+      {
+        "text": "for the backward pass to compute the gradients.",
+        "x": 335.8,
+        "y": 393.6,
+        "w": 206.2,
+        "h": 10,
+        "zh": "供反向传播计算梯度。"
+      },
+      {
+        "text": "To speed up attention on hardware accelerators such as GPU, [5] proposes an algorithm to reduce the memory reads/writes while maintaining the same output (without approximation).",
+        "x": 71.6,
+        "y": 335.4,
+        "w": 468.7,
+        "h": 21.9,
+        "zh": "为了在 GPU 这类硬件加速器上加速注意力，[5] 提出一种算法，在保持输出相同（不做近似）的同时减少内存读写。"
+      },
+      {
+        "text": "FlashAttention applies the classical technique of tiling to reduce memory IOs, by (1) loading blocks of inputs from HBM to SRAM, (2) computing attention with respect to that block, and then (3) updating the output without writing the large intermediate matrices S and P to HBM. As the softmax couples entire rows or blocks of row, online softmax [11, 13] can split the attention computation into blocks, and rescale the output of each block to finally get the right result (with no approximation). By significantly reducing the amount of memory reads/writes, FlashAttention yields 2-4× wall-clock speedup over optimized baseline attention implementations. We describe the online softmax technique [11] and how it is used in attention [\u0002",
+        "x": 72,
+        "y": 203.5,
+        "w": 468,
+        "h": 97.6,
+        "zh": "FlashAttention 用经典的分块来减少内存 IO：先（1）把一块块输入从 HBM 载入 SRAM，（2）针对这块计算注意力，然后（3）更新输出，而不把很大的中间矩阵 S 和 P 写回 HBM。softmax 会把整行或一整段行耦合在一起，在线 softmax [11, 13] 可以把注意力计算拆成块，再把每一块的输出重新缩放，最后得到正确结果（没有近似）。由于大幅减少内存读写，FlashAttention 相对优化过的基线注意力实现有 2–4 倍的墙钟加速。我们说明在线 softmax 技术 [11]，以及它如何用在注意力中 ["
+      },
+      {
+        "text": "13]. For simplicity, consider just one row block of the attention matrix S, of the form S where 𝐵𝑟 and 𝐵𝑐 are the row and column block sizes. We want to compute softmax of this row block and\u0014 multiply with the value, of the form V",
+        "x": 71.6,
+        "y": 165.6,
+        "w": 468.6,
+        "h": 51.7,
+        "zh": "13]。为简单起见，只考虑注意力矩阵 S 的一个行块，其形式为 S，其中 B_r 和 B_c 分别是行块大小和列块大小。我们要对这个行块做 softmax，并与 value 相乘，value 的形式为 V"
+      },
+      {
+        "text": "for some matrices V(1), V(2) ∈ R𝐵𝑐×𝑑. Standard softmax would",
+        "x": 264.8,
+        "y": 165.6,
+        "w": 275.2,
+        "h": 10.9,
+        "zh": "其中有矩阵 V(1)、V(2) ∈ R^{B_c × d}。标准 softmax 会"
+      },
+      {
+        "text": "For clarity of exposition, we omit the scaling of QK (typically by 1/d), and optionally elementwise masking on S and/or dropout applied to P",
+        "x": 72,
+        "y": 130.7,
+        "w": 468.2,
+        "h": 17.4,
+        "zh": "为了把叙述写清楚，我们省去对 QK 的缩放（通常乘以 1/d），也省去 S 上可选的逐元素掩码，以及加在 P 上的 dropout"
+      }
+    ],
+    "4": [
+      {
+        "text": "Online softmax instead computes “local” softmax with respect to each block and rescale to get the right",
+        "x": 72,
+        "y": 597,
+        "w": 468.3,
+        "h": 10,
+        "zh": "在线 softmax 则对每一块计算“局部”softmax，再重新缩放，从而得到正确的"
+      },
+      {
+        "text": "P˜(1) = diag(ℓ(1))−1𝑒S O(1) = P˜(1)V(1) = diag(ℓ(1))−1𝑒S",
+        "x": 100.7,
+        "y": 508.5,
+        "w": 139,
+        "h": 30.7,
+        "zh": ""
+      },
+      {
+        "text": "P˜(2) = diag(ℓ(2))−1𝑒S O(2) = diag(ℓ(1)/ℓ(2))−1O(1) + P˜(2)V(2) = diag(ℓ(2))−1𝑒𝑠",
+        "x": 100.7,
+        "y": 437,
+        "w": 239.2,
+        "h": 30.7,
+        "zh": ""
+      },
+      {
+        "text": "We show how FlashAttention uses online softmax to enable tiling (Fig. 1) to reduce memory reads/writes.",
+        "x": 86.9,
+        "y": 415.1,
+        "w": 455,
+        "h": 10,
+        "zh": "我们说明 FlashAttention 如何借助在线 softmax 来做分块（图 1），从而减少内存读写。"
+      },
+      {
+        "text": "Figure 1: Diagram of how FlashAttention forward pass is performed, when the key K is partitioned into two blocks and the value V is also partitioned into two blocks. By computing attention with respect to each block and rescaling the output, we get the right answer at the end, while avoiding expensive memory reads/writes of the intermediate matrices S and P. We simplify the diagram, omitting the step in softmax",
+        "x": 72,
+        "y": 119.5,
+        "w": 468.4,
+        "h": 45.8,
+        "zh": "图 1：FlashAttention 前向的做法。key K 被分成两块，value V 也被分成两块。对每一块计算注意力并重新缩放输出，最后得到正确答案，同时避开对中间矩阵 S 和 P 那些昂贵的内存读写。图做了简化，省去了 softmax 中"
+      },
+      {
+        "text": "that subtracts each element by the row-wise max.",
+        "x": 72,
+        "y": 107.6,
+        "w": 217.1,
+        "h": 10,
+        "zh": "把每个元素减去该行最大值的那一步。"
+      }
+    ],
+    "5": [
+      {
+        "text": "In the backward pass, by re-computing the values of the attention matrices S and P once blocks of inputs Q, K, V are already loaded to SRAM, FlashAttention avoids having to store large intermediate values. By not having to save the large matrices S and P of size 𝑁 × 𝑁, FlashAttention yields 10-20× memory saving depending on sequence length (memory required in linear in sequence length 𝑁 instead of quadratic). The backward pass also achieves 2-4× wall-clock speedup due to reduce memory reads/writes. The backward pass applies tiling to the equations in Section 2.2. Though the backward pass is simpler than the forward pass conceptually (there is no softmax rescaling), the implementation is significantly more involved. This is because there are more values to be kept in SRAM to perform 5 matrix multiples in the backward pass, compared to just 2 matrix multiples in the forward pass.",
+        "x": 72,
+        "y": 595.1,
+        "w": 468.4,
+        "h": 105.6,
+        "zh": "在反向传播中，一旦输入 Q、K、V 的块已经载入 SRAM，就重新算出注意力矩阵 S 和 P 的值，FlashAttention 因此不必存下很大的中间结果。不必保存大小为 N × N 的矩阵 S 和 P，FlashAttention 按序列长度可以节省 10–20 倍内存（所需内存随序列长度 N 线性增长，而不是二次）。反向也因为减少了内存读写，墙钟时间加快 2–4 倍。反向把分块用到第 2.2 节的式子上。概念上反向比前向简单（没有 softmax 的重新缩放），实现却麻烦得多。这是因为反向要在 SRAM 里留住更多的值，才能做 5 次矩阵乘法，而前向只做 2 次。"
+      },
+      {
+        "text": "FlashAttention-2: Algorithm, Parallelism, and Work Partition-",
+        "x": 95.7,
+        "y": 562.2,
+        "w": 447,
+        "h": 14.3,
+        "zh": "FlashAttention-2：算法、并行与工作划分"
+      },
+      {
+        "text": "We describe the FlashAttention-2 algorithm, which includes several tweaks to FlashAttention to reduce the number of non-matmul FLOPs. We then describe how to parallelize the computation on different thread blocks to make full use the GPU resources. Finally we describe we partition the work between different warps within one thread block to reduce the amount of shared memory access. These improvements lead to 2-3×",
+        "x": 71.5,
+        "y": 486.6,
+        "w": 468.5,
+        "h": 45.8,
+        "zh": "我们描述 FlashAttention-2 算法。它包含对 FlashAttention 的几处调整，用来减少非 matmul 的 FLOPs。然后说明如何把计算并行到不同线程块上，以充分利用 GPU 资源。最后说明我们如何在一个线程块内的不同 warp 之间划分工作，以减少共享内存访问。这些改进带来 2–3 倍"
+      },
+      {
+        "text": "We tweak the algorithm from FlashAttention to reduce the number of non-matmul FLOPs. This is because modern GPUs have specialized compute units (e.g., Tensor Cores on Nvidia GPUs) that makes matmul much faster. As an example, the A100 GPU has a max theoretical throughput of 312 TFLOPs/s of FP16/BF16 matmul, but only 19.5 TFLOPs/s of non-matmul FP32. Another way to think about this is that each non-matmul FLOP is 16× more expensive than a matmul FLOP. To maintain high throughput (e.g., more than 50% of the maximum theoretical TFLOPs/s), we want to spend as much time on matmul FLOPs",
+        "x": 71.5,
+        "y": 368.6,
+        "w": 469.9,
+        "h": 69.7,
+        "zh": "我们调整 FlashAttention 的算法，以减少非 matmul 的 FLOPs。这是因为现代 GPU 有专门的计算单元（例如 Nvidia GPU 上的 Tensor Core），使 matmul 快得多。举例来说，A100 GPU 上 FP16/BF16 matmul 的理论峰值吞吐是 312 TFLOPs/s，非 matmul 的 FP32 只有 19.5 TFLOPs/s。换个角度看，一次非 matmul 的 FLOP 比一次 matmul 的 FLOP 贵 16 倍。要维持高吞吐（例如超过理论峰值 TFLOPs/s 的 50%），我们希望把尽可能多的时间花在 matmul 的 FLOPs 上"
+      },
+      {
+        "text": "We revisit the online softmax trick as shown in Section 2.3 and make two minor tweaks to reduce non-matmul",
+        "x": 71.5,
+        "y": 312.3,
+        "w": 468.5,
+        "h": 10,
+        "zh": "我们回到第 2.3 节的在线 softmax 技巧，做两处小改动来减少非 matmul"
+      },
+      {
+        "text": "1. We do not have to rescale both terms of the output update by diag(ℓ",
+        "x": 84.2,
+        "y": 280.5,
+        "w": 314.7,
+        "h": 10,
+        "zh": "1. 我们不必用 diag(ℓ 把输出更新的两项都重新缩放"
+      },
+      {
+        "text": "We can instead maintain an “un-scaled” version of O",
+        "x": 96.4,
+        "y": 235,
+        "w": 229.3,
+        "h": 10,
+        "zh": "我们可以改为维护一个“未缩放”版本的 O"
+      },
+      {
+        "text": "Only at the every end of the loop do we scale the final O˜ (last) by diag(ℓ(last))−1 to get the right output.",
+        "x": 96.9,
+        "y": 189.6,
+        "w": 445,
+        "h": 12.5,
+        "zh": "只在循环的最后，才用 diag(ℓ(last))^{-1} 缩放最终的 Õ(last)，从而得到正确输出。"
+      },
+      {
+        "text": "2. We do not have to save both the max 𝑚 only need to store the logsumexp 𝐿",
+        "x": 84.2,
+        "y": 157.7,
+        "w": 184.1,
+        "h": 21.9,
+        "zh": "2. 我们不必把最大值 m 也存下来，只需要存储 logsumexp L"
+      }
+    ],
+    "6": [
+      {
+        "text": "In the simple case of 2 blocks in Section 2.3, the online softmax trick now becomes:",
+        "x": 86.9,
+        "y": 709.2,
+        "w": 364.1,
+        "h": 10,
+        "zh": "在第 2.3 节那种只有 2 块的简单情形里，在线 softmax 技巧现在变成："
+      },
+      {
+        "text": "We describe the full FlashAttention-2 forward pass in Algorithm 1.",
+        "x": 86.9,
+        "y": 540.7,
+        "w": 309.4,
+        "h": 10,
+        "zh": "完整的 FlashAttention-2 前向见算法 1。"
+      },
+      {
+        "text": "Algorithm 1 FlashAttention-2 forward pass Require: Matrices Q, Kl, Vm∈ R",
+        "x": 71.6,
+        "y": 495.8,
+        "w": 201.4,
+        "h": 30.3,
+        "zh": "算法 1 FlashAttention-2 前向。需要：矩阵 Q、Kl、Vm ∈ R"
+      },
+      {
+        "text": "in HBM, block sizes 𝐵𝑐, 𝐵𝑟. 1: Divide Q into 𝑇𝑟 =",
+        "x": 77.4,
+        "y": 483.3,
+        "w": 274.4,
+        "h": 26,
+        "zh": "位于 HBM 中，块大小为 B_c、B_r。1：把 Q 分成 T_r ="
+      },
+      {
+        "text": "blocks Q1, . . . , Q𝑇𝑟 of size 𝐵𝑟 × 𝑑 each, and divide K, V in to 𝑇𝑐 = K1, . . . , K𝑇𝑐 and V1, . . . , V𝑇𝑐, of size 𝐵𝑐 × 𝑑 each. 2: Divide the output O ∈ R",
+        "x": 77.4,
+        "y": 458.5,
+        "w": 409.3,
+        "h": 36.2,
+        "zh": "个块 Q_1, …, Q_{T_r}，每块大小为 B_r × d，并把 K、V 分成 T_c = K_1, …, K_{T_c} 以及 V_1, …, V_{T_c}，每块大小为 B_c × d。2：把输出 O ∈ R"
+      },
+      {
+        "text": "into 𝑇𝑟 blocks O𝑖, . . . , O𝑇𝑟 of size 𝐵𝑟 × 𝑑 each, and divide the logsumexp 𝐿 into 𝑇𝑟 blocks 𝐿𝑖, . . . , 𝐿𝑇𝑟 of size 𝐵𝑟 each. 3: for 1 ≤ 𝑖 ≤ 𝑇𝑟 do Load Q𝑖 from HBM to on-chip SRAM. On chip, initialize O𝑖 for 1 ≤ 𝑗 ≤ 𝑇𝑐 do Load K𝑗, V𝑗 from HBM to on-chip SRAM. On chip, compute S𝑖 On chip, compute 𝑚(𝑗) = max(𝑚(𝑗−1), rowmax(S(𝑗))) ∈ R𝐵𝑟, P˜(𝑗) = exp(S(𝑗) − 𝑚(𝑗)) ∈ R𝐵𝑟×𝐵𝑐",
+        "x": 77.4,
+        "y": 355.6,
+        "w": 462.1,
+        "h": 112.9,
+        "zh": "分成 T_r 个块 O_i, …, O_{T_r}，每块大小为 B_r × d，并把 logsumexp L 分成 T_r 个块 L_i, …, L_{T_r}，每块大小为 B_r。3：for 1 ≤ i ≤ T_r do：把 Q_i 从 HBM 载入片上 SRAM。在片上初始化 O_i。for 1 ≤ j ≤ T_c do：把 K_j、V_j 从 HBM 载入片上 SRAM。在片上计算 S_i。在片上计算 m^{(j)} = max(m^{(j−1)}, rowmax(S^{(j)})) ∈ R^{B_r}，P̃^{(j)} = exp(S^{(j)} − m^{(j)}) ∈ R^{B_r × B_c}"
+      },
+      {
+        "text": "On chip, compute O𝑖 = diag(ℓ𝑖 On chip, compute 𝐿𝑖 = 𝑚𝑖 Write O𝑖 to HBM as the 𝑖-th block of O. Write 𝐿𝑖 to HBM as the 𝑖-th block of 𝐿.",
+        "x": 98.9,
+        "y": 260.5,
+        "w": 177,
+        "h": 49.8,
+        "zh": "在片上计算 O_i = diag(ℓ_i。在片上计算 L_i = m_i。把 O_i 写回 HBM，作为 O 的第 i 块。把 L_i 写回 HBM，作为 L 的第 i 块。"
+      },
+      {
+        "text": "17: Return the output O and the logsumexp 𝐿.",
+        "x": 73.1,
+        "y": 238.1,
+        "w": 205.1,
+        "h": 10,
+        "zh": "17：返回输出 O 和 logsumexp L。"
+      },
+      {
+        "text": "One common use case of attention is in auto-regressive language modeling, where we need to apply a causal mask to the attention matrix S (i.e., any entry S𝑖 𝑗 with 𝑗 > 𝑖 is set to −∞).",
+        "x": 72,
+        "y": 192.4,
+        "w": 468,
+        "h": 23.4,
+        "zh": "注意力的一个常见用法是自回归语言建模，这时需要对注意力矩阵 S 施加因果掩码（也就是把任意满足 j > i 的元素 S_{ij} 设为 −∞）。"
+      },
+      {
+        "text": "1. As FlashAttention and FlashAttention-2 already operate by blocks, for any blocks where all the column indices are more than the row indices (approximately half of the blocks for large sequence length), we can skip the computation of that block. This leads to around 1.7-1.8× speedup compared to attention without the causal mask.",
+        "x": 84.2,
+        "y": 138.1,
+        "w": 455.8,
+        "h": 45.8,
+        "zh": "1. FlashAttention 和 FlashAttention-2 本来就按块计算，因此对那些列下标全部大于行下标的块（序列很长时大约占一半），可以直接跳过该块的计算。相对不加因果掩码的注意力，这大约带来 1.7–1.8 倍加速。"
+      },
+      {
+        "text": "2. We do not need to apply the causal mask for blocks whose row indices are guaranteed to be strictly less than the column indices. This means that for each row, we only need apply causal mask to 1 block (assuming square block).",
+        "x": 84.2,
+        "y": 94.3,
+        "w": 456.1,
+        "h": 33.9,
+        "zh": "2. 对于行下标保证严格小于列下标的块，不需要施加因果掩码。这意味着每一行只需要对 1 个块施加因果掩码（假设块是方的）。"
+      }
+    ],
+    "7": [
+      {
+        "text": "Correctness, runtime, and memory requirement.",
+        "x": 72,
+        "y": 709.2,
+        "w": 244.8,
+        "h": 10,
+        "zh": "正确性、运行时间和内存需求。"
+      },
+      {
+        "text": "As with FlashAttention, Algorithm 1 returns the correct output O = softmax(QK )V (with no approximation), using 𝑂(𝑁 𝑑) FLOPs and requires 𝑂(𝑁) additional memory beyond inputs and output (to store the logsumexp 𝐿). The proof is almost the same as the proof of Dao et al. [5, Theorem 1], so we omit it here.",
+        "x": 72,
+        "y": 673.3,
+        "w": 468,
+        "h": 45.8,
+        "zh": "和 FlashAttention 一样，算法 1 返回正确的输出 O = softmax(QK)V（没有近似），使用 O(N d) 的 FLOPs，并且除输入和输出之外，只额外需要 O(N) 的内存（用来存放 logsumexp L）。证明几乎与 Dao 等人 [5, 定理 1] 相同，这里省略。"
+      },
+      {
+        "text": "The backward pass of FlashAttention-2 is almost the same as that of FlashAttention. We make a minor tweak to only use the row-wise logsumexp 𝐿 instead of both the row-wise max and row-wise sum of exponentials in the softmax. We include the backward pass description in Algorithm 2 for completeness.",
+        "x": 71.6,
+        "y": 605.1,
+        "w": 468.4,
+        "h": 33.9,
+        "zh": "FlashAttention-2 的反向几乎与 FlashAttention 相同。我们做了一处小改动：softmax 里只使用按行的 logsumexp L，而不再同时使用按行的最大值和按行的指数和。为完整起见，反向过程写在算法 2 中。"
+      },
+      {
+        "text": "Algorithm 2 FlashAttention-2 Backward Pass Require: Matrices Q, Kl, Vm, O, dO ∈ R",
+        "x": 71.6,
+        "y": 561.2,
+        "w": 211.1,
+        "h": 30.3,
+        "zh": "算法 2 FlashAttention-2 反向。需要：矩阵 Q、Kl、Vm、O、dO ∈ R"
+      },
+      {
+        "text": "in HBM, block sizes 𝐵𝑐, 𝐵𝑟. l 1: Divide Q into 𝑇𝑟 =",
+        "x": 77.4,
+        "y": 548.7,
+        "w": 416.1,
+        "h": 26,
+        "zh": "位于 HBM 中，块大小为 B_c、B_r。l 1：把 Q 分成 T_r ="
+      },
+      {
+        "text": "blocks Q1, . . . , Q𝑇𝑟 of size 𝐵𝑟 × 𝑑 each, and divide K, V in to 𝑇𝑐 = K1, . . . , K𝑇𝑐 and V1, . . . , V𝑇𝑐, of size 𝐵𝑐 × 𝑑 each. 2: Divide O into 𝑇𝑟 blocks O𝑖, . . . , O𝑇𝑟 of size 𝐵𝑟 × 𝑑 each, divide dO into 𝑇𝑟 blocks dO𝑖, . . . , dO𝑇𝑟 of size 𝐵𝑟 × 𝑑 each, and divide 𝐿 into 𝑇𝑟 blocks 𝐿𝑖, . . . , 𝐿𝑇𝑟 of size 𝐵𝑟 each. 3: Initialize dQ = (0)𝑁×𝑑 in HBM and divide it into 𝑇𝑟 blocks dQ1, . . . , dQ𝑇 of size 𝐵𝑟 × 𝑑 each. Divide",
+        "x": 77.4,
+        "y": 497.8,
+        "w": 462.6,
+        "h": 62.4,
+        "zh": "个块 Q_1, …, Q_{T_r}，每块大小为 B_r × d，并把 K、V 分成 T_c = K_1, …, K_{T_c} 以及 V_1, …, V_{T_c}，每块大小为 B_c × d。2：把 O 分成 T_r 个块 O_i, …, O_{T_r}，每块大小为 B_r × d；把 dO 分成 T_r 个块 dO_i, …, dO_{T_r}，每块大小为 B_r × d；把 L 分成 T_r 个块 L_i, …, L_{T_r}，每块大小为 B_r。3：在 HBM 中把 dQ 初始化为 (0)_{N×d}，并分成 T_r 个块 dQ_1, …, dQ_T，每块大小为 B_r × d。再把"
+      },
+      {
+        "text": "in to 𝑇𝑐 blocks dK1, . . . , dK𝑇𝑐 and dV1, . . . , dV𝑇𝑐, of size 𝐵𝑐 × 𝑑 each. 4: Compute 𝐷 = rowsum(dO ◦ O) ∈ R",
+        "x": 77.4,
+        "y": 476.1,
+        "w": 382.1,
+        "h": 21.9,
+        "zh": "分成 T_c 个块 dK_1, …, dK_{T_c} 以及 dV_1, …, dV_{T_c}，每块大小为 B_c × d。4：计算 D = rowsum(dO ◦ O) ∈ R"
+      },
+      {
+        "text": "(pointwise multiply), write 𝐷 to HBM and divide it into 𝑇𝑟 blocks 𝐷1, . . . , 𝐷𝑇𝑟 of size 𝐵𝑟 each. 5: for 1 ≤ 𝑗 ≤ 𝑇𝑐 do Load K𝑗, V𝑗 from HBM to on-chip SRAM. Initialize dK𝑗 = (0)𝐵𝑐×𝑑, dV𝑗 = (0)𝐵𝑐×𝑑 on SRAM. for 1 ≤ 𝑖 ≤ 𝑇𝑟 do Load Q𝑖, O𝑖, dO𝑖, dQ𝑖, 𝐿𝑖, 𝐷𝑖 from HBM to on-chip SRAM. On chip, compute S𝑖 On chip, compute P𝑖",
+        "x": 77.4,
+        "y": 371.6,
+        "w": 462.6,
+        "h": 114.5,
+        "zh": "（逐点相乘），把 D 写入 HBM，并分成 T_r 个块 D_1, …, D_{T_r}，每块大小为 B_r。5：for 1 ≤ j ≤ T_c do：把 K_j、V_j 从 HBM 载入片上 SRAM。在 SRAM 上初始化 dK_j = (0)_{B_c×d}、dV_j = (0)_{B_c×d}。for 1 ≤ i ≤ T_r do：把 Q_i、O_i、dO_i、dQ_i、L_i、D_i 从 HBM 载入片上 SRAM。在片上计算 S_i。在片上计算 P_i"
+      },
+      {
+        "text": "= exp(S𝑖 𝑗 − 𝐿𝑖) ∈ R On chip, compute dV𝑗 ← dV𝑗 + (P𝑖 On chip, compute dP𝑖 On chip, compute dS𝑖 Load dQ𝑖 from HBM to SRAM, then on chip, update dQ𝑖 ← dQ𝑖 + dS𝑖",
+        "x": 108.9,
+        "y": 312,
+        "w": 303.7,
+        "h": 72.9,
+        "zh": "= exp(S_i j − L_i) ∈ R。在片上计算 dV_j ← dV_j + (P_i。在片上计算 dP_i。在片上计算 dS_i。把 dQ_i 从 HBM 载入 SRAM，然后在片上更新 dQ_i ← dQ_i + dS_i"
+      },
+      {
+        "text": "Multi-query attention and grouped-query attention.",
+        "x": 72,
+        "y": 201.4,
+        "w": 254.8,
+        "h": 10,
+        "zh": "多查询注意力与分组查询注意力。"
+      },
+      {
+        "text": "Multi-query attention (MQA) [15] and groupedquery attention (GQA) [1] are variants of attention where multiple heads of query attend to the same head of key and value, in order to reduce the size of KV cache during inference. Instead of having to duplicate the key and value heads for the computation, we implicitly manipulate the indices into the head to perform the same computation. In the backward pass, we need to sum the gradients dK and dV across different heads that were implicitly duplicated.",
+        "x": 72,
+        "y": 141.6,
+        "w": 469.7,
+        "h": 69.7,
+        "zh": "多查询注意力（MQA）[15] 和分组查询注意力（GQA）[1] 是注意力的变体：多个 query 头关注同一个 key 头和 value 头，以便在推理时缩小 KV cache。计算时不必把 key 头和 value 头复制多份，而是隐式地处理头的下标，完成同样的计算。反向时，要把那些被隐式复制的不同头上的梯度 dK 和 dV 求和。"
+      },
+      {
+        "text": "The first version of FlashAttention parallelizes over batch size and number of heads. We use 1 thread block to process one attention head, and there are overall batch size · number of heads thread blocks. Each thread block is scheduled to run on a streaming multiprocessor (SM), and there are 108 of these SMs on",
+        "x": 71.6,
+        "y": 71.4,
+        "w": 468.4,
+        "h": 33.9,
+        "zh": "第一版 FlashAttention 在批次大小和头数上并行。我们用 1 个线程块处理一个注意力头，线程块总数是批次大小乘以头数。每个线程块被调度到一个流式多处理器（SM）上运行，这样的 SM 有 108 个，位于"
+      }
+    ],
+    "8": [
+      {
+        "text": "an A100 GPU for example. This scheduling is efficient when this number is large (say ≥ 80), since we can effectively use almost all of the compute resources on the GPU. In the case of long sequences (which usually means small batch sizes or small number of heads), to make better use of the multiprocessors on the GPU, we now additionally parallelize over the sequence length dimension. This results in significant speedup for this regime.",
+        "x": 72,
+        "y": 661.4,
+        "w": 468,
+        "h": 57.8,
+        "zh": "例如一块 A100 GPU 上。当这个数目比较大（比如 ≥ 80）时，这种调度是有效的，因为几乎能用上 GPU 的全部计算资源。序列很长时（通常意味着批次很小，或者头数很少），为了更好地用上 GPU 上的多处理器，我们现在再沿序列长度维度并行。这个区间因此有明显加速。"
+      },
+      {
+        "text": "We see that the outer loop (over sequence length) is embarrassingly parallel, and we schedule them on different thread blocks that do not need to communicate with each other. We also parallelize over the batch dimension and number of heads dimension, as done in FlashAttention. The increased parallelism over sequence length helps improve occupancy (fraction of GPU resources being used) when the batch size and number of heads are small, leading to speedup in this case. These ideas of swapping the order of the loop (outer loop over row blocks and inner loop over column blocks, instead of the other way round in the original FlashAttention paper), as well as parallelizing over the sequence length dimension were first suggested and implemented by Phil Tillet in the Triton [17]",
+        "x": 72,
+        "y": 551.8,
+        "w": 468,
+        "h": 93.6,
+        "zh": "可以看到，外层循环（沿序列长度）极易并行，我们把它们调度到彼此不需要通信的不同线程块上。我们也像 FlashAttention 那样，在批次维度和头数维度上并行。沿序列长度增加的并行，能在批次和头数都很小的时候提高占用率（正在使用的 GPU 资源所占比例），从而在这种情况下加速。把循环顺序对调（外层遍历行块、内层遍历列块，而不是原来 FlashAttention 论文里的相反顺序），以及沿序列长度维度并行，这两个想法最早由 Phil Tillet 在 Triton [17] 中提出并实现"
+      },
+      {
+        "text": "Notice that the only shared computation between different column blocks is in update dQ in Algorithm 2, where we need to load dQ𝑖 from HBM to SRAM, then on chip, update dQ𝑖 ← dQ𝑖 + dS𝑖 and write back to HBM. We thus parallelize over the sequence length dimension as well, and schedule 1 thread block for each column block of the backward pass. We use atomic adds to communicate between",
+        "x": 72,
+        "y": 476.9,
+        "w": 469,
+        "h": 47,
+        "zh": "注意，不同列块之间唯一共享的计算，是算法 2 里更新 dQ 的那一步：需要把 dQ_i 从 HBM 载入 SRAM，然后在片上做 dQ_i ← dQ_i + dS_i，再写回 HBM。因此我们也沿序列长度维度并行，给反向的每个列块安排 1 个线程块。我们用原子加，以便在"
+      },
+      {
+        "text": "different thread blocks to update dQ. We describe the parallelization scheme in Fig. 2.",
+        "x": 72,
+        "y": 453,
+        "w": 226.3,
+        "h": 21.9,
+        "zh": "不同线程块之间通信，从而更新 dQ。并行方案见图 2。"
+      },
+      {
+        "text": "Figure 2: In the forward pass (left), we parallelize the workers (thread blocks) where each worker takes care of a block of rows of the attention matrix. In the backward pass (right), each worker takes care of a block of",
+        "x": 72,
+        "y": 163.5,
+        "w": 468,
+        "h": 21.9,
+        "zh": "图 2：前向（左）中，我们把工作者（线程块）并行开来，每个工作者负责注意力矩阵的一块行。反向（右）中，每个工作者负责一块"
+      }
+    ],
+    "9": [
+      {
+        "text": "Work Partitioning Between Warps As Section 3.2 describe how we schedule thread blocks, even within each thread block, we also have to decide how to partition the work between different warps. We typically use 4 or 8 warps per thread block, and the partitioning is described in Fig. 3.",
+        "x": 71.6,
+        "y": 666.9,
+        "w": 468.4,
+        "h": 54.3,
+        "zh": "warp 之间的工作划分。第 3.2 节说明了我们如何调度线程块；即便在每个线程块内部，也要决定怎样把工作分给不同的 warp。我们通常每个线程块用 4 个或 8 个 warp，划分方式见图 3。"
+      },
+      {
+        "text": "For each block, FlashAttention splits K and V across 4 warps while keeping Q accessible by all warps. Each warp multiplies to get a slice of QK , then they need to multiply with a slice of V and communicate to add up the result. This is referred to as the “split-K” scheme. However, this is inefficient since all warps need to write their intermediate results out to shared memory, synchronize, then add up the intermediate results. These shared memory reads/writes slow down the forward pass in FlashAttention. In FlashAttention-2, we instead split Q across 4 warps while keeping K and V accessible by all warps. After each warp performs matrix multiply to get a slice of QK , they just need to multiply with their shared slice of V to get their corresponding slice of the output. There is no need for communication between warps. The reduction in shared memory reads/writes yields speedup (Section 4).",
+        "x": 71.6,
+        "y": 545.3,
+        "w": 470.3,
+        "h": 105.6,
+        "zh": "对每一块，FlashAttention 把 K 和 V 分给 4 个 warp，同时让所有 warp 都能访问 Q。每个 warp 相乘得到 QK 的一片，然后还要与 V 的一片相乘，并通信把结果加起来。这称为“split-K”方案。这样做效率不高，因为所有 warp 都要把中间结果写到共享内存，同步，再把中间结果加起来。这些共享内存读写拖慢了 FlashAttention 的前向。FlashAttention-2 改为把 Q 分给 4 个 warp，同时让所有 warp 都能访问 K 和 V。每个 warp 做完矩阵乘法、得到 QK 的一片之后，只需与它们共用的那片 V 相乘，就得到自己对应的那片输出。warp 之间不需要通信。共享内存读写的减少带来了加速（第 4 节）。"
+      },
+      {
+        "text": "Similarly for the backward pass, we choose to partition the warps to avoid the “split-K” scheme. However, it still requires some synchronization due to the more complicated dependency between all the different inputs and gradients Q, K, V, O, dO, dQ, dK, dV. Nevertheless, avoiding “split-K” reduces shared memory reads/writes and again yields speedup (Section 4).",
+        "x": 72,
+        "y": 273.5,
+        "w": 469.2,
+        "h": 45.8,
+        "zh": "反向也类似，我们这样划分 warp，是为了避开“split-K”方案。不过，由于各个输入和梯度 Q、K、V、O、dO、dQ、dK、dV 之间的依赖更复杂，仍然需要一些同步。尽管如此，避开“split-K”减少了共享内存读写，再次带来加速（第 4 节）。"
+      },
+      {
+        "text": "Increasing block sizes generally reduces shared memory loads/stores, but increases the number of registers required and the total amount of shared memory. Past a certain block size, register spilling causes significant slowdown, or the amount of shared memory required is larger than what the GPU has available, and the kernel cannot run at all. Typically we choose blocks of size {64, 128} × {64, 128}, depending on the head dimension 𝑑 and the device shared memory size. We manually tune for each head dimensions since there are essentially only 4 choices for block sizes, but this could benefit from auto-tuning to avoid this manual labor. We leave this to future work.",
+        "x": 72,
+        "y": 175.8,
+        "w": 469.4,
+        "h": 81.7,
+        "zh": "增大块的尺寸，通常会减少共享内存的加载和存储，但会增加所需寄存器数量和共享内存总量。块超过某个大小之后，寄存器溢出会造成明显变慢，或者所需共享内存超过 GPU 能提供的量，kernel 根本无法运行。我们通常根据头维度 d 和设备的共享内存大小，选择 {64, 128} × {64, 128} 这样的块。块大小实质上只有 4 种选择，所以我们对每个头维度手工调参，不过自动调参可以免掉这件手工活。我们把它留到以后的工作。"
+      },
+      {
+        "text": "We evaluate the impact of using FlashAttention-2 to train Transformer models. • Benchmarking attention. We measure the runtime of FlashAttention-2 across different sequence lengths and compare it to a standard implementation in PyTorch, FlashAttention, and FlashAttention in Triton. We confirm that FlashAttention-2 is 1.7-3.0× faster than FlashAttention, 1.3-2.5× faster than FlashAttention in Triton, and 3-10× faster than a standard attention implementation.",
+        "x": 71.5,
+        "y": 73.3,
+        "w": 470.4,
+        "h": 57.8,
+        "zh": "我们评估用 FlashAttention-2 训练 Transformer 模型的效果。• 注意力的性能测试。我们测量 FlashAttention-2 在不同序列长度上的运行时间，并与 PyTorch 中的标准实现、FlashAttention，以及 Triton 中的 FlashAttention 比较。我们确认，FlashAttention-2 比 FlashAttention 快 1.7–3.0 倍，比 Triton 中的 FlashAttention 快 1.3–2.5 倍，比标准注意力实现快 3–10 倍。"
+      }
+    ],
+    "10": [
+      {
+        "text": "FlashAttention-2 reaches up to 230 TFLOPs/s, 73% of the theoretical maximum TFLOPs/s on A100",
+        "x": 82,
+        "y": 709.2,
+        "w": 458.3,
+        "h": 10,
+        "zh": "FlashAttention-2 最高达到 230 TFLOPs/s，是 A100 上理论峰值 TFLOPs/s 的 73%"
+      },
+      {
+        "text": "• End-to-end training speed When used end-to-end to train GPT-style models of size 1.3B and 2.7B on sequence lengths either 2k or 8k, FlashAttention-2 yields up to 1.3× speedup compared to FlashAttention and 2.8× speedup compared to a baseline without FlashAttention. FlashAttention-2 reaches up to 225 TFLOPs/s (72% model FLOPs utilization) per A100 GPU.",
+        "x": 72,
+        "y": 645.3,
+        "w": 469.9,
+        "h": 45.8,
+        "zh": "• 端到端训练速度。用它端到端训练大小为 1.3B 和 2.7B 的 GPT 风格模型，序列长度取 2k 或 8k 时，FlashAttention-2 相对 FlashAttention 最高有 1.3 倍加速，相对不用 FlashAttention 的基线最高有 2.8 倍加速。FlashAttention-2 在每块 A100 GPU 上最高达到 225 TFLOPs/s（模型 FLOPs 利用率 72%）。"
+      },
+      {
+        "text": "Benchmarking Attention We measure the runtime of different attention methods on an A100 80GB SXM4 GPU for different settings (without / with causal mask, head dimension 64 or 128). We report the results in Fig. 4, Fig. 5 and Fig. 6, showing that FlashAttention-2 is around 2× faster than FlashAttention and FlashAttention in xformers (the “cutlass” implementation). FlashAttention-2 is around 1.3-1.5× faster than FlashAttention in Triton in the forward pass and around 2× faster in the backward pass. Compared to a standard attention implementation in PyTorch, FlashAttention-2 can be up to 10× faster. Benchmark setting: we vary the sequence length from 512, 1k, ..., 16k, and set batch size so that the total number of tokens is 16k. We set hidden dimension to 2048, and head dimension to be either 64 or 128 (i.e., 32 heads or 16 heads). To calculate the FLOPs of the forward pass, we use:",
+        "x": 70.8,
+        "y": 503.4,
+        "w": 471,
+        "h": 126,
+        "zh": "注意力性能测试。我们在一块 A100 80GB SXM4 GPU 上，测量不同注意力方法在不同设置下的运行时间（无因果掩码 / 有因果掩码，头维度 64 或 128）。结果见图 4、图 5 和图 6。FlashAttention-2 大约比 FlashAttention 以及 xformers 中的 FlashAttention（“cutlass”实现）快 2 倍。前向大约比 Triton 中的 FlashAttention 快 1.3–1.5 倍，反向大约快 2 倍。相对 PyTorch 中的标准注意力实现，FlashAttention-2 最多可以快 10 倍。测试设置：序列长度从 512、1k、……、16k 变化，并设置批次大小，使总 token 数为 16k。隐藏维度设为 2048，头维度取 64 或 128（即 32 个头或 16 个头）。计算前向 FLOPs 时，我们使用："
+      },
+      {
+        "text": "4 · seqlen · head dimension · number of heads.",
+        "x": 206.2,
+        "y": 481.5,
+        "w": 199.4,
+        "h": 10,
+        "zh": "4 · seqlen · 头维度 · 头数。"
+      },
+      {
+        "text": "With causal mask, we divide this number by 2 to account for the fact that approximately only half of the entries are calculated. To get the FLOPs of the backward pass, we multiply the forward pass FLOPs by 2.5 (since there are 2 matmuls in the forward pass and 5 matmuls in the backward pass, due to recomputation).",
+        "x": 70.8,
+        "y": 435.7,
+        "w": 470.9,
+        "h": 33.9,
+        "zh": "有因果掩码时，把这个数除以 2，因为大约只有一半的元素会被计算。反向的 FLOPs 等于前向 FLOPs 乘以 2.5（前向有 2 次 matmul，反向由于重计算有 5 次 matmul）。"
+      },
+      {
+        "text": "(a) Without causal mask, head dimension 64",
+        "x": 98,
+        "y": 261,
+        "w": 180.8,
+        "h": 9,
+        "zh": "（a）无因果掩码，头维度 64"
+      },
+      {
+        "text": "(b) Without causal mask, head dimension 128 Attention forward + backward speed (A100 80GB SXM4)",
+        "x": 111.5,
+        "y": 248.1,
+        "w": 403.9,
+        "h": 21.8,
+        "zh": "（b）无因果掩码，头维度 128。注意力前向加反向的速度（A100 80GB SXM4）"
+      },
+      {
+        "text": "(d) With causal mask, head dimension 128",
+        "x": 336.1,
+        "y": 96.4,
+        "w": 172.6,
+        "h": 9,
+        "zh": "（d）有因果掩码，头维度 128"
+      }
+    ],
+    "11": [
+      {
+        "text": "(a) Without causal mask, head dimension 64",
+        "x": 98,
+        "y": 558.9,
+        "w": 180.8,
+        "h": 9,
+        "zh": "（a）无因果掩码，头维度 64"
+      },
+      {
+        "text": "(b) Without causal mask, head dimension 128 Attention forward speed (A100 80GB SXM4)",
+        "x": 131.4,
+        "y": 546.1,
+        "w": 384.1,
+        "h": 21.8,
+        "zh": "（b）无因果掩码，头维度 128。注意力前向速度（A100 80GB SXM4）"
+      },
+      {
+        "text": "(d) With causal mask, head dimension 128",
+        "x": 336.1,
+        "y": 394.4,
+        "w": 172.6,
+        "h": 9,
+        "zh": "（d）有因果掩码，头维度 128"
+      },
+      {
+        "text": "Just running the same implementation on H100 GPUs (using no special instructions to make use of new features such as TMA and 4th-gen Tensor Cores), we obtain up to 335 TFLOPs/s (Fig. 7). We expect that by using new instructions, we can obtain another 1.5x-2x speedup on H100 GPUs. We leave that to future work.",
+        "x": 72,
+        "y": 317.5,
+        "w": 469.9,
+        "h": 33.9,
+        "zh": "把同一套实现直接跑在 H100 GPU 上（没有用专门指令去利用 TMA、第 4 代 Tensor Core 这些新特性），我们最高得到 335 TFLOPs/s（图 7）。我们预计，用上新指令之后，在 H100 GPU 上还能再快 1.5x–2x。这留到以后的工作。"
+      },
+      {
+        "text": "End-to-end Performance We measure the training throughput of GPT-style models with either 1.3B or 2.7B parameters, on 8×A100 80GB SXM. As shown in Table 1, FlashAttention-2 yields 2.8× speedup compared to a baseline without FlashAttention and 1.3× speedup compared to FlashAttention-2, reaching up to 225 TFLOPs/s per A100",
+        "x": 71.5,
+        "y": 247.7,
+        "w": 468.8,
+        "h": 54.3,
+        "zh": "端到端性能。我们在 8×A100 80GB SXM 上测量 GPT 风格模型的训练吞吐，参数量为 1.3B 或 2.7B。如表 1 所示，FlashAttention-2 相对没有 FlashAttention 的基线有 2.8 倍加速，相对 FlashAttention-2 有 1.3 倍加速，每块 A100 最高达到 225 TFLOPs/s"
+      },
+      {
+        "text": "Note that we calculate the FLOPs by the formula, following Megatron-LM [16] (and many other papers",
+        "x": 86.9,
+        "y": 223.8,
+        "w": 453.1,
+        "h": 10,
+        "zh": "需要说明，我们按下面这个公式计算 FLOPs，沿用 Megatron-LM [16]（以及许多其他论文"
+      },
+      {
+        "text": "6 · seqlen · number of params + 12 · number of layers · hidden dim · seqlen .",
+        "x": 145.3,
+        "y": 192.6,
+        "w": 321.2,
+        "h": 10,
+        "zh": "6 · seqlen · 参数量 + 12 · 层数 · hidden dim · seqlen。"
+      },
+      {
+        "text": "The first term accounts for the FLOPs due to weight–input multiplication, and the second term accounts for the FLOPs due to attention. However, one can argue that the second term should be halved, as with causal mask we only need to compute approximately half the number of elements in attention. We choose to follow the formula from the literature (without dividing the attention FLOPs by 2) for consistency.",
+        "x": 71.6,
+        "y": 137.4,
+        "w": 468.7,
+        "h": 45.8,
+        "zh": "第一项是权重与输入相乘的 FLOPs，第二项是注意力的 FLOPs。不过也可以认为第二项应当减半，因为有因果掩码时，注意力里大约只需要计算一半的元素。为了与文献一致，我们沿用这个公式（不把注意力的 FLOPs 除以 2）。"
+      },
+      {
+        "text": "FlashAttention-2 is 2× faster than FlashAttention, which means that we can train models with 16k longer context for the same price as previously training a 8k context model. We are excited about how this can",
+        "x": 72,
+        "y": 71.1,
+        "w": 468.3,
+        "h": 21.9,
+        "zh": "FlashAttention-2 比 FlashAttention 快 2 倍，这意味着我们可以用以前训练一个 8k 上下文模型的同样代价，去训练 16k 的更长上下文。我们很期待这能够"
+      }
+    ],
+    "12": [
+      {
+        "text": "(a) Without causal mask, head dimension 64",
+        "x": 98,
+        "y": 558.9,
+        "w": 180.8,
+        "h": 9,
+        "zh": "（a）无因果掩码，头维度 64"
+      },
+      {
+        "text": "(b) Without causal mask, head dimension 128 Attention backward speed (A100 80GB SXM4)",
+        "x": 128.2,
+        "y": 546.1,
+        "w": 387.2,
+        "h": 21.8,
+        "zh": "（b）无因果掩码，头维度 128。注意力反向速度（A100 80GB SXM4）"
+      },
+      {
+        "text": "(d) With causal mask, head dimension 128",
+        "x": 336.1,
+        "y": 394.4,
+        "w": 172.6,
+        "h": 9,
+        "zh": "（d）有因果掩码，头维度 128"
+      },
+      {
+        "text": "Table 1: Training speed (TFLOPs/s/GPU) of GPT-style models on 8×A100 GPUs. FlashAttention-2 reaches up to 225 TFLOPs/s (72% model FLOPs utilization). We compare against a baseline running without",
+        "x": 71.6,
+        "y": 336.9,
+        "w": 468.6,
+        "h": 21.9,
+        "zh": "表 1：GPT 风格模型在 8×A100 GPU 上的训练速度（TFLOPs/s/GPU）。FlashAttention-2 最高达到 225 TFLOPs/s（模型 FLOPs 利用率 72%）。我们对比的基线在运行时不使用"
+      },
+      {
+        "text": "Without FlashAttention GPT3-1.3B 2k context GPT3-1.3B 8k context GPT3-2.7B 2k context GPT3-2.7B 8k context",
+        "x": 90.8,
+        "y": 254.8,
+        "w": 231.9,
+        "h": 58.2,
+        "zh": "无 FlashAttention。GPT3-1.3B，2k 上下文。GPT3-1.3B，8k 上下文。GPT3-2.7B，2k 上下文。GPT3-2.7B，8k 上下文"
+      },
+      {
+        "text": "be used to understand long books and reports, high resolution images, audio and video. FlashAttention-2 will also speed up training, finetuning, and inference of existing models. In the near future, we plan to collaborate with researchers and engineers to make FlashAttention widely applicable in different kinds of devices (e.g., H100 GPUs, AMD GPUs), as well as new data types such as FP8. As an immediate next step, we plan to optimize FlashAttention-2 for H100 GPUs to use new hardware features (TMA, 4th-gen Tensor Cores, fp8). Combining the low-level optimizations in FlashAttention-2 with high-level algorithmic changes (e.g., local, dilated, block-sparse attention) could allow us to train AI models with much longer context. We are also excited to work with compiler researchers to make these optimization techniques easily programmable.",
+        "x": 71.6,
+        "y": 125.7,
+        "w": 468.7,
+        "h": 105.6,
+        "zh": "用来理解长篇书籍和报告、高分辨率图像、音频和视频。FlashAttention-2 也会加快已有模型的训练、微调和推理。在不远的将来，我们计划与研究者和工程师合作，让 FlashAttention 能广泛用于不同设备（例如 H100 GPU、AMD GPU），以及 FP8 这样的新数据类型。紧接着的下一步，我们计划为 H100 GPU 优化 FlashAttention-2，以使用新的硬件特性（TMA、第 4 代 Tensor Core、fp8）。把 FlashAttention-2 的底层优化与高层算法改动（例如局部、dilated、block-sparse 注意力）结合起来，也许能让我们训练上下文长得多的 AI 模型。我们也期待与编译器研究者合作，让这些优化技术容易编写。"
+      }
+    ],
+    "13": [
+      {
+        "text": "(a) Without causal mask, head dimension 64 Attention forward + backward speed (H100 80GB SXM5)",
+        "x": 98,
+        "y": 546,
+        "w": 191.5,
+        "h": 21.8,
+        "zh": "（a）无因果掩码，头维度 64。注意力前向加反向的速度（H100 80GB SXM5）"
+      },
+      {
+        "text": "(b) Without causal mask, head dimension 128 Attention forward + backward speed (H100 80GB SXM5)",
+        "x": 329.5,
+        "y": 546,
+        "w": 194.1,
+        "h": 21.8,
+        "zh": "（b）无因果掩码，头维度 128。注意力前向加反向的速度（H100 80GB SXM5）"
+      },
+      {
+        "text": "(d) With causal mask, head dimension 128",
+        "x": 336.1,
+        "y": 394.3,
+        "w": 172.6,
+        "h": 9,
+        "zh": "（d）有因果掩码，头维度 128"
+      },
+      {
+        "text": "We thank Phil Tillet and Daniel Haziza, who have implemented versions of FlashAttention in Triton [17] and the xformers library [10]. FlashAttention-2 was motivated by exchange of ideas between different ways that attention could be implemented. We are grateful to the Nvidia CUTLASS team (especially Vijay Thakkar, Cris Cecka, Haicheng Wu, and Andrew Kerr) for their CUTLASS library, in particular the CUTLASS 3.x release, which provides clean abstractions and powerful building blocks for the implementation of FlashAttention-2. We thank Driss Guessous for integrating FlashAttention to PyTorch. FlashAttention-2 has benefited from helpful discussions with Phil Wang, Markus Rabe, James Bradbury, Young-Jun Ko, Julien Launay, Daniel Hesslow, Michaël Benesty, Horace He, Ashish Vaswani, and Erich Elsen. Thanks for Stanford CRFM and Stanford NLP for the compute support. We thank Dan Fu and Christopher Ré for their collaboration, constructive feedback, and constant encouragement on this line of work of designing hardware-efficient algorithms. We thank Albert Gu and Beidi Chen for their helpful suggestions on early drafts of this technical",
+        "x": 71.5,
+        "y": 201.3,
+        "w": 470.4,
+        "h": 129.5,
+        "zh": "我们感谢 Phil Tillet 和 Daniel Haziza，他们在 Triton [17] 和 xformers 库 [10] 中实现了 FlashAttention 的若干版本。不同注意力实现方式之间的交流促成了 FlashAttention-2。我们感谢 Nvidia CUTLASS 团队（尤其是 Vijay Thakkar、Cris Cecka、Haicheng Wu 和 Andrew Kerr）的 CUTLASS 库，特别是 CUTLASS 3.x 版本，它为 FlashAttention-2 的实现提供了干净的抽象和有力的构件。我们感谢 Driss Guessous 把 FlashAttention 集成进 PyTorch。FlashAttention-2 得益于与 Phil Wang、Markus Rabe、James Bradbury、Young-Jun Ko、Julien Launay、Daniel Hesslow、Michaël Benesty、Horace He、Ashish Vaswani 和 Erich Elsen 的有益讨论。感谢 Stanford CRFM 和 Stanford NLP 提供的计算支持。我们感谢 Dan Fu 和 Christopher Ré 在设计硬件高效算法这条工作上的合作、建设性反馈和持续鼓励。我们感谢 Albert Gu 和 Beidi Chen 对这份技术"
+      },
+      {
+        "text": "[1] Joshua Ainslie, James Lee-Thorp, Michiel de Jong, Yury Zemlyanskiy, Federico Lebrón, and Sumit Sanghai. Gqa: Training generalized multi-query transformer models from multi-head checkpoints. arXiv",
+        "x": 77,
+        "y": 122.6,
+        "w": 463.3,
+        "h": 21.9,
+        "zh": "[1] Joshua Ainslie、James Lee-Thorp、Michiel de Jong、Yury Zemlyanskiy、Federico Lebrón 与 Sumit Sanghai。GQA：从多头检查点训练通用的多查询 Transformer 模型。arXiv"
+      },
+      {
+        "text": "[2] Iz Beltagy, Matthew E Peters, and Arman Cohan. Longformer: The long-document transformer. arXiv",
+        "x": 77,
+        "y": 90.7,
+        "w": 462.9,
+        "h": 10,
+        "zh": "[2] Iz Beltagy、Matthew E Peters 与 Arman Cohan。Longformer：面向长文档的 Transformer。arXiv"
+      }
+    ],
+    "14": [
+      {
+        "text": "[3] Beidi Chen, Tri Dao, Eric Winsor, Zhao Song, Atri Rudra, and Christopher Ré. Scatterbrain: Unifying sparse and low-rank attention. In Advances in Neural Information Processing Systems (NeurIPS), 2021.",
+        "x": 77,
+        "y": 697.2,
+        "w": 464.7,
+        "h": 21.9,
+        "zh": "[3] Beidi Chen、Tri Dao、Eric Winsor、Zhao Song、Atri Rudra 与 Christopher Ré。Scatterbrain：统一稀疏注意力与低秩注意力。见 Advances in Neural Information Processing Systems (NeurIPS)，2021。"
+      },
+      {
+        "text": "[4] Krzysztof Marcin Choromanski, Valerii Likhosherstov, David Dohan, Xingyou Song, Andreea Gane, Tamas Sarlos, Peter Hawkins, Jared Quincy Davis, Afroz Mohiuddin, Lukasz Kaiser, et al. Rethinking attention with performers. In International Conference on Learning Representations (ICLR), 2020.",
+        "x": 77,
+        "y": 654.1,
+        "w": 464.4,
+        "h": 33.9,
+        "zh": "[4] Krzysztof Marcin Choromanski、Valerii Likhosherstov、David Dohan、Xingyou Song、Andreea Gane、Tamas Sarlos、Peter Hawkins、Jared Quincy Davis、Afroz Mohiuddin、Lukasz Kaiser 等。用 Performer 重新思考注意力。见 International Conference on Learning Representations (ICLR)，2020。"
+      },
+      {
+        "text": "[5] Tri Dao, Daniel Y. Fu, Stefano Ermon, Atri Rudra, and Christopher Ré. FlashAttention: Fast and memory-efficient exact attention with IO-awareness. In Advances in Neural Information Processing",
+        "x": 77,
+        "y": 622.9,
+        "w": 463,
+        "h": 21.9,
+        "zh": "[5] Tri Dao、Daniel Y. Fu、Stefano Ermon、Atri Rudra 与 Christopher Ré。FlashAttention：快速、省内存、具备 IO 感知的精确注意力。见 Advances in Neural Information Processing"
+      },
+      {
+        "text": "[6] Zhe Jia and Peter Van Sandt. Dissecting the Ampere GPU architecture via microbenchmarking. GPU",
+        "x": 77,
+        "y": 591.7,
+        "w": 463,
+        "h": 10,
+        "zh": "[6] Zhe Jia 与 Peter Van Sandt。用微基准测试剖析 Ampere GPU 架构。GPU"
+      },
+      {
+        "text": "[7] Zhe Jia, Marco Maggioni, Benjamin Staiger, and Daniele P Scarpazza. Dissecting the nvidia Volta GPU architecture via microbenchmarking. arXiv preprint arXiv:1804.06826, 2018.",
+        "x": 77,
+        "y": 548.5,
+        "w": 463,
+        "h": 21.9,
+        "zh": "[7] Zhe Jia、Marco Maggioni、Benjamin Staiger 与 Daniele P Scarpazza。用微基准测试剖析 Nvidia Volta GPU 架构。arXiv preprint arXiv:1804.06826，2018。"
+      },
+      {
+        "text": "[8] Angelos Katharopoulos, Apoorv Vyas, Nikolaos Pappas, and François Fleuret. Transformers are RNNs: Fast autoregressive transformers with linear attention. In International Conference on Machine Learning,",
+        "x": 77,
+        "y": 517.3,
+        "w": 464.4,
+        "h": 21.9,
+        "zh": "[8] Angelos Katharopoulos、Apoorv Vyas、Nikolaos Pappas 与 François Fleuret。Transformer 就是 RNN：带线性注意力的快速自回归 Transformer。见 International Conference on Machine Learning，"
+      },
+      {
+        "text": "[9] Nikita Kitaev, Łukasz Kaiser, and Anselm Levskaya. Reformer: The efficient transformer. In The",
+        "x": 77,
+        "y": 486.1,
+        "w": 463,
+        "h": 10,
+        "zh": "[9] Nikita Kitaev、Łukasz Kaiser 与 Anselm Levskaya。Reformer：高效的 Transformer。见 The"
+      },
+      {
+        "text": "International Conference on Machine Learning (ICML), 2020.",
+        "x": 91.9,
+        "y": 474.1,
+        "w": 271.3,
+        "h": 10,
+        "zh": "International Conference on Machine Learning (ICML)，2020。"
+      },
+      {
+        "text": "[10] Benjamin Lefaudeux, Francisco Massa, Diana Liskovich, Wenhan Xiong, Vittorio Caggiano, Sean Naren, Min Xu, Jieru Hu, Marta Tintore, Susan Zhang, Patrick Labatut, and Daniel Haziza. xformers: A modular and hackable transformer modelling library. https://github.com/facebookresearch/xformers, 2022.",
+        "x": 72,
+        "y": 431,
+        "w": 469.9,
+        "h": 33.9,
+        "zh": "[10] Benjamin Lefaudeux、Francisco Massa、Diana Liskovich、Wenhan Xiong、Vittorio Caggiano、Sean Naren、Min Xu、Jieru Hu、Marta Tintore、Susan Zhang、Patrick Labatut 与 Daniel Haziza。xformers：一个模块化、可改造的 Transformer 建模库。https://github.com/facebookresearch/xformers，2022。"
+      },
+      {
+        "text": "[11] Maxim Milakov and Natalia Gimelshein. Online normalizer calculation for softmax. arXiv preprint",
+        "x": 72,
+        "y": 411.7,
+        "w": 468,
+        "h": 10,
+        "zh": "[11] Maxim Milakov 与 Natalia Gimelshein。softmax 的在线归一化计算。arXiv preprint"
+      },
+      {
+        "text": "[12] OpenAI. Gpt-4 technical report. ArXiv, abs/2303.08774, 2023.",
+        "x": 72,
+        "y": 380.5,
+        "w": 295.2,
+        "h": 10,
+        "zh": "[12] OpenAI。GPT-4 技术报告。ArXiv，abs/2303.08774，2023。"
+      },
+      {
+        "text": "[13] Markus N Rabe and Charles Staats. Self-attention does not need 𝑂(𝑛 ) memory. arXiv preprint",
+        "x": 72,
+        "y": 361.3,
+        "w": 468,
+        "h": 10,
+        "zh": "[13] Markus N Rabe 与 Charles Staats。自注意力不需要 O(n) 的内存。arXiv preprint"
+      },
+      {
+        "text": "[14] Aurko Roy, Mohammad Saffar, Ashish Vaswani, and David Grangier. Efficient content-based sparse attention with routing transformers. Transactions of the Association for Computational Linguistics, 9:",
+        "x": 72,
+        "y": 318.1,
+        "w": 469.4,
+        "h": 21.9,
+        "zh": "[14] Aurko Roy、Mohammad Saffar、Ashish Vaswani 与 David Grangier。用 routing transformer 做基于内容的高效稀疏注意力。Transactions of the Association for Computational Linguistics，9："
+      },
+      {
+        "text": "Fast transformer decoding: arXiv:1911.02150, 2019.",
+        "x": 91.7,
+        "y": 275,
+        "w": 207.4,
+        "h": 21.9,
+        "zh": "快速的 Transformer 解码。arXiv:1911.02150，2019。"
+      },
+      {
+        "text": "[16] Mohammad Shoeybi, Mostofa Patwary, Raul Puri, Patrick LeGresley, Jared Casper, and Bryan Catanzaro. Megatron-LM: Training multi-billion parameter language models using model parallelism. arXiv preprint",
+        "x": 72,
+        "y": 243.8,
+        "w": 469.9,
+        "h": 21.9,
+        "zh": "[16] Mohammad Shoeybi、Mostofa Patwary、Raul Puri、Patrick LeGresley、Jared Casper 与 Bryan Catanzaro。Megatron-LM：用模型并行训练数十亿参数的语言模型。arXiv preprint"
+      },
+      {
+        "text": "[17] Philippe Tillet, Hsiang-Tsung Kung, and David Cox. Triton: an intermediate language and compiler for tiled neural network computations. In Proceedings of the 3rd ACM SIGPLAN International Workshop",
+        "x": 72,
+        "y": 200.6,
+        "w": 468.2,
+        "h": 21.9,
+        "zh": "[17] Philippe Tillet、Hsiang-Tsung Kung 与 David Cox。Triton：面向分块神经网络计算的中间语言与编译器。见 Proceedings of the 3rd ACM SIGPLAN International Workshop"
+      },
+      {
+        "text": "on Machine Learning and Programming Languages, pages 10–19, 2019.",
+        "x": 91.7,
+        "y": 188.7,
+        "w": 308.7,
+        "h": 10,
+        "zh": "on Machine Learning and Programming Languages，第 10–19 页，2019。"
+      },
+      {
+        "text": "[18] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin. Attention is all you need. Advances in neural information processing",
+        "x": 72,
+        "y": 157.5,
+        "w": 468,
+        "h": 21.9,
+        "zh": "[18] Ashish Vaswani、Noam Shazeer、Niki Parmar、Jakob Uszkoreit、Llion Jones、Aidan N Gomez、Łukasz Kaiser 与 Illia Polosukhin。你只需要注意力。Advances in neural information processing"
+      },
+      {
+        "text": "[19] Sinong Wang, Belinda Z Li, Madian Khabsa, Han Fang, and Hao Ma. Linformer: Self-attention with",
+        "x": 72,
+        "y": 126.3,
+        "w": 468,
+        "h": 10,
+        "zh": "[19] Sinong Wang、Belinda Z Li、Madian Khabsa、Han Fang 与 Hao Ma。Linformer：自注意力，具有"
+      },
+      {
+        "text": "linear complexity. arXiv preprint arXiv:2006.04768, 2020.",
+        "x": 92.5,
+        "y": 114.3,
+        "w": 252.5,
+        "h": 10,
+        "zh": "线性复杂度。arXiv preprint arXiv:2006.04768，2020。"
+      },
+      {
+        "text": "[20] Manzil Zaheer, Guru Guruganesh, Kumar Avinava Dubey, Joshua Ainslie, Chris Alberti, Santiago Ontanon, Philip Pham, Anirudh Ravula, Qifan Wang, Li Yang, et al. Big bird: Transformers for longer",
+        "x": 72,
+        "y": 83.1,
+        "w": 468.2,
+        "h": 21.9,
+        "zh": "[20] Manzil Zaheer、Guru Guruganesh、Kumar Avinava Dubey、Joshua Ainslie、Chris Alberti、Santiago Ontanon、Philip Pham、Anirudh Ravula、Qifan Wang、Li Yang 等。Big bird：面向更长"
+      },
+      {
+        "text": "sequences. Advances in Neural Information Processing Systems, 33, 2020.",
+        "x": 92.5,
+        "y": 71.1,
+        "w": 320.8,
+        "h": 10,
+        "zh": "序列的 Transformer。Advances in Neural Information Processing Systems，33，2020。"
+      }
+    ]
+  }
+}

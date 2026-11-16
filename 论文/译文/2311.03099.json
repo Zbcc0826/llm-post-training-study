@@ -1,0 +1,3417 @@
+{
+  "id": "2311.03099",
+  "title": "2311.03099",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch",
+        "x": 106.8,
+        "y": 673.1,
+        "w": 382.9,
+        "h": 32.3,
+        "zh": "语言模型就是超级马里奥：从同源模型吸收能力，如同免费午餐"
+      },
+      {
+        "text": "In this paper, we unveil that Language Models (LMs) can acquire new capabilities by assimilating parameters from homologous models without retraining or GPUs. We first introduce DARE to set most delta parameters (i.e., the disparity between fine-tuned and pre-trained parameters) to zeros without affecting the abilities of Supervised Fine-Tuning (SFT) LMs, which randomly Drops delta parameters with a ratio p And REscales the remaining ones by 1/(1 − p) to approximate the original embeddings. Then, we use DARE as a versatile plug-in to sparsify delta parameters of multiple SFT homologous models for mitigating parameter interference and merge them into a single model by parameter fusing. We experiment with encoder- and decoder-based LMs, showing that: (1) SFT delta parameter value ranges are typically small (within 0.002) with extreme redundancy, and DARE can effortlessly eliminate 90% or even 99% of them; (2) DARE can merge multiple task-specific LMs into one LM with diverse capabilities. Notably, this phenomenon is more pronounced in large-scale LMs, where the merged LM reveals the potential to surpass the performance of any source LM, providing a new discovery. We also utilize DARE to create a merged LM that ranks first among models with 7 billion parameters on the Open LLM Leaderboard.",
+        "x": 75,
+        "y": 248.1,
+        "w": 196.2,
+        "h": 332.8,
+        "zh": "本文揭示：语言模型（LM）无需重新训练，也不需要 GPU，就能通过吸收同源模型的参数获得新能力。我们首先提出 DARE，在不影响监督微调（SFT）语言模型能力的前提下，把大部分 delta 参数（即微调后参数与预训练参数之差）置为零。它以比例 p 随机丢弃（Drop）delta 参数，再把剩余参数按 1/(1 − p) 重新缩放（REscale），从而近似原来的嵌入。然后，我们把 DARE 当作通用插件，用来稀疏化多个 SFT 同源模型的 delta 参数，减轻参数干扰，再通过参数融合把它们合并成一个模型。我们在基于编码器和解码器的语言模型上做了实验，结果表明：（1）SFT 的 delta 参数取值范围通常很小（在 0.002 以内），而且极度冗余，DARE 可以轻松去掉其中 90% 甚至 99%；（2）DARE 可以把多个任务专用的语言模型合并成一个具备多种能力的语言模型。这一现象在大规模语言模型上更明显：合并后的模型有可能超过任意一个源模型的性能，这是一项新发现。我们还用 DARE 构造了一个合并模型，在 Open LLM Leaderboard 的 70 亿参数模型中排名第一。"
+      },
+      {
+        "text": "Figure 1: (Left) DARE can effectively eliminate 90% or even 99% delta parameters of WizardMath on GSM8K. (Right) DARE can merge multiple task-specific SFT language models into a single model with all the abilities. LM, MATH, and Code are abbreviations of WizardLM- 13B, WizardMath-13B, and llama-2-13b-code-alpaca.",
+        "x": 306.7,
+        "y": 439.2,
+        "w": 236.5,
+        "h": 69.7,
+        "zh": "图 1：（左）DARE 可以有效去掉 WizardMath 在 GSM8K 上 90% 甚至 99% 的 delta 参数。（右）DARE 可以把多个任务专用的 SFT 语言模型合并成一个具备全部能力的模型。LM、MATH 和 Code 分别是 WizardLM-13B、WizardMath-13B 和 llama-2-13b-code-alpaca 的缩写。"
+      },
+      {
+        "text": "of other mutants to strengthen himself. Likewise, the protagonist in the Super Mario games can gain superpowers like throwing fireballs by absorbing in-game items. In this paper, we astonishingly find that Language Models (LMs), similar to Apocalypse and Super Mario, can enhance their capabilities by absorbing other models without the need for retraining or even GPUs. Formally, Supervised Fine-Tuning (SFT) is the most widely adopted strategy for unlocking task-specific abilities to LMs by optimizing their parameters (Dodge et al., 2020; Zhao et al., 2023). The effectiveness of SFT is fully evident in the alteration of the model parameters before and after SFT, referred to as delta parameters (Ding et al., 2023). We first show that SFT LM (either encoder- or decoder-based) always tends to acquire excessively redundant delta parameters. To be specific, we present DARE (Drop And REscale), which randomly sets certain delta parameters to zeros with a drop rate p and subsequently rescales the remaining ones by a factor of 1/(1−p). Although conceptually simple, DARE can eliminate up to 99% delta parameters with minimal impact on the performance when the LM’s parameters reach 70 billion (see Figure 1(a)). Moreover, the more parameters the LM has, the larger p it can tolerate. We attribute the effectiveness of DARE to its ability to approximate the original embeddings, which is verified theoretically and empirically. Furthermore, we can merge multiple homologous SFT LMs (fine-tuned from the same backbone) based on DARE with-",
+        "x": 307.1,
+        "y": 76.9,
+        "w": 236.1,
+        "h": 332.8,
+        "zh": "其他变种人的力量来强化自己。同样，《超级马里奥》游戏的主角可以通过吸收游戏中的道具获得超能力，比如投掷火球。本文中，我们惊讶地发现，语言模型（LM）与天启、超级马里奥相似，不需要重新训练，甚至不需要 GPU，就能靠吸收其他模型来增强自身能力。形式化地说，监督微调（SFT）是最广泛采用的策略：通过优化参数，为语言模型解锁面向特定任务的能力（Dodge et al., 2020; Zhao et al., 2023）。SFT 的效果完全体现在微调前后模型参数的改变上，这些改变称为 delta 参数（Ding et al., 2023）。我们首先表明，SFT 语言模型（无论基于编码器还是解码器）总会获得过度冗余的 delta 参数。具体而言，我们提出 DARE（Drop And REscale）：以丢弃率 p 随机把一部分 delta 参数置零，再把其余参数乘以 1/(1−p)。尽管概念上很简单，当语言模型参数量达到 700 亿时，DARE 最多可以去掉 99% 的 delta 参数，而对性能影响极小（见图 1(a)）。而且，模型的参数越多，能承受的 p 就越大。我们把 DARE 的有效性归因于它能够近似原来的嵌入，这一点已在理论上和实验上得到验证。进一步地，我们可以基于 DARE，把多个同源 SFT 语言模型（从同一骨干微调而来）合并，而"
+      },
+      {
+        "text": "Human beings have harbored a longstanding desire to acquire additional abilities through various ways, as expressed in mediums like movies and games. For example, in XMen’s Apocalypse, the character can absorb the powers",
+        "x": 55.4,
+        "y": 155.7,
+        "w": 235.7,
+        "h": 45.8,
+        "zh": "人类长久以来一直希望通过各种方式获得额外的能力，这种愿望也体现在电影、游戏等媒介中。例如，在《X战警：天启》里，这个角色能够吸收力量"
+      },
+      {
+        "text": "<yubowen.ybw@alibaba-inc.com>, <shuide.lyb@alibaba-inc.com>.",
+        "x": 55.4,
+        "y": 116.8,
+        "w": 160.3,
+        "h": 18.9,
+        "zh": ""
+      },
+      {
+        "text": "International Conference on Machine Learning, Vienna, Austria. PMLR 235, 2024. Copyright 2024 by",
+        "x": 55.2,
+        "y": 86.9,
+        "w": 234.6,
+        "h": 18.9,
+        "zh": "国际机器学习会议，奥地利维也纳。PMLR 235，2024。版权所有 2024，作者为"
+      }
+    ],
+    "2": [
+      {
+        "text": "Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch",
+        "x": 109,
+        "y": 737.9,
+        "w": 378.9,
+        "h": 9,
+        "zh": "语言模型就是超级马里奥：从同源模型吸收能力，如同免费午餐"
+      },
+      {
+        "text": "out compromising their capabilities. As long as a small portion of the delta parameters remain unaffected during",
+        "x": 55.4,
+        "y": 703,
+        "w": 234,
+        "h": 21.9,
+        "zh": "不会损害它们的能力。只要有一小部分 delta 参数在此期间保持不受影响，"
+      },
+      {
+        "text": "Supervised Fine-tuning of Language Models. SFT of merging, the abilities of LMs unlocked by SFT can still be",
+        "x": 55.4,
+        "y": 691.1,
+        "w": 486,
+        "h": 14.5,
+        "zh": "语言模型的监督微调。SFT 在合并过程中，由 SFT 解锁的语言模型能力仍然可以"
+      },
+      {
+        "text": "LMs aims to impart pre-trained LMs with particular abilities preserved. We first employ DARE to eliminate redundant",
+        "x": 55.4,
+        "y": 679.1,
+        "w": 486,
+        "h": 14.5,
+        "zh": "语言模型旨在把特定能力赋予预训练语言模型。得以保留。我们首先用 DARE 去掉冗余的"
+      },
+      {
+        "text": "by optimizing them on task-specific data, which has become delta parameters in each model before merging, which can",
+        "x": 55.4,
+        "y": 667.2,
+        "w": 486,
+        "h": 14.5,
+        "zh": "方法是在任务专用数据上优化它们，这已成为 每个模型在合并之前的 delta 参数，从而可以"
+      },
+      {
+        "text": "the de facto standard paradigm in natural language processpotentially mitigate the interference of parameters among",
+        "x": 55.4,
+        "y": 655.2,
+        "w": 487.7,
+        "h": 14.5,
+        "zh": "自然语言处理中事实上的标准范式 有可能减轻多个模型之间的参数干扰"
+      },
+      {
+        "text": "ing (Dodge et al., 2020; Zhao et al., 2023). Generally, SFT multiple models (Yadav et al., 2023). Then, we apply estab-",
+        "x": 55.4,
+        "y": 643.2,
+        "w": 486.3,
+        "h": 14.5,
+        "zh": "（Dodge et al., 2020; Zhao et al., 2023）。一般而言，SFT 多个模型（Yadav et al., 2023）。然后，我们采用已有的"
+      },
+      {
+        "text": "can be divided into two categories: full fine-tuning (Radford lished model merging techniques (Wortsman et al., 2022;",
+        "x": 55.4,
+        "y": 631.3,
+        "w": 486,
+        "h": 14.5,
+        "zh": "可以分为两类：全量微调（Radford 既有的模型合并技术（Wortsman et al., 2022;"
+      },
+      {
+        "text": "et al., 2018; Devlin et al., 2019) and parameter-efficient fineIlharco et al., 2023; Matena & Raffel, 2022; Jin et al., 2023;",
+        "x": 55.4,
+        "y": 619.3,
+        "w": 487.7,
+        "h": 14.5,
+        "zh": "et al., 2018; Devlin et al., 2019）以及参数高效微调 Ilharco et al., 2023; Matena & Raffel, 2022; Jin et al., 2023;"
+      },
+      {
+        "text": "tuning (Houlsby et al., 2019; Liu et al., 2021; Li & Liang, Yadav et al., 2023) to fuse the parameters with reduced re-",
+        "x": 54.9,
+        "y": 607.4,
+        "w": 487.8,
+        "h": 14.5,
+        "zh": "（Houlsby et al., 2019; Liu et al., 2021; Li & Liang, Yadav et al., 2023），把冗余已经降低的参数融合起来，"
+      },
+      {
+        "text": "2021; Lester et al., 2021; Hu et al., 2022). Indeed, the effects dundancy for creating one model with diverse capabilities.",
+        "x": 55.4,
+        "y": 595.4,
+        "w": 486,
+        "h": 14.5,
+        "zh": "2021; Lester et al., 2021; Hu et al., 2022）。事实上，这些效果 从而构造出一个具备多种能力的模型。"
+      },
+      {
+        "text": "of SFT are reflected by the difference between parameters We conduct extensive experiments with encoder-based LMs",
+        "x": 55,
+        "y": 577.5,
+        "w": 486.5,
+        "h": 20.5,
+        "zh": "SFT 的效果体现在参数之间的差异上。我们用基于编码器的语言模型做了大量实验，"
+      },
+      {
+        "text": "of LMs before and after SFT, i.e., delta parameters. In this on GLUE benchmark, and decoder-based LMs with three",
+        "x": 55.4,
+        "y": 565.5,
+        "w": 486,
+        "h": 20.5,
+        "zh": "也就是语言模型在 SFT 前后的参数之差，即 delta 参数。在本文 在 GLUE 基准上，以及具备三种能力的解码器语言模型"
+      },
+      {
+        "text": "paper, we reveal the extreme redundancy of various SFT distinct abilities: instruction-following, mathematical rea-",
+        "x": 55.4,
+        "y": 553.6,
+        "w": 486.3,
+        "h": 20.5,
+        "zh": "本文揭示各种 SFT 模型存在极度冗余。这几种不同能力是：指令遵循、数学推"
+      },
+      {
+        "text": "LMs’ delta parameters by proposing an innovative approach soning, and code-generating. We observe that:",
+        "x": 55.4,
+        "y": 541.6,
+        "w": 486,
+        "h": 20.5,
+        "zh": "语言模型的 delta 参数，做法是提出一种新方法。理，以及代码生成。我们观察到："
+      },
+      {
+        "text": "DARE, achieving competitive performance with standard SFT LMs by removing 90% or even 99% delta parameters. (1) SFT LMs exhibit a substantial number of redundant delta parameters regardless of their backbones (e.g., BERT,",
+        "x": 55.1,
+        "y": 511.7,
+        "w": 487.5,
+        "h": 38.4,
+        "zh": "DARE，在去掉 90% 甚至 99% 的 delta 参数后，仍能达到与标准 SFT 语言模型相当的性能。（1）SFT 语言模型含有大量冗余的 delta 参数，与所用骨干无关（例如 BERT、"
+      },
+      {
+        "text": "Network Pruning Technique. With the rapidly increasing RoBERTa, LLaMA, Llama 2, or Code Llama). DARE can",
+        "x": 55.4,
+        "y": 499.8,
+        "w": 486,
+        "h": 20.5,
+        "zh": "网络剪枝技术。随着规模迅速增长，RoBERTa、LLaMA、Llama 2 或 Code Llama）。DARE 可以"
+      },
+      {
+        "text": "size of neural networks, network pruning technique has been remove 90% or even 99% delta parameters without signifi-",
+        "x": 55.4,
+        "y": 487.8,
+        "w": 486,
+        "h": 20.5,
+        "zh": "神经网络的规模，网络剪枝技术已经被 去掉 90% 甚至 99% 的 delta 参数，而不会显著"
+      },
+      {
+        "text": "widely applied to reduce the computational costs (Cheng cantly affecting the model performance. DARE is able to",
+        "x": 55.4,
+        "y": 475.9,
+        "w": 486,
+        "h": 20.5,
+        "zh": "广泛用于降低计算成本（Cheng 影响模型性能。DARE 能够"
+      },
+      {
+        "text": "et al., 2017; Liang et al., 2021). The objective of network approximate the original embeddings well and provide very",
+        "x": 55.4,
+        "y": 463.9,
+        "w": 486.3,
+        "h": 20.5,
+        "zh": "et al., 2017; Liang et al., 2021）。网络剪枝的目标是 很好地近似原来的嵌入，并提供非常"
+      },
+      {
+        "text": "pruning is to eliminate unnecessary parameters while mainsimilar embeddings for each layer of the LM. The rescale",
+        "x": 55.4,
+        "y": 452,
+        "w": 487.7,
+        "h": 20.5,
+        "zh": "剪枝，即去掉不必要的参数，同时保 语言模型每一层都很相似的嵌入。重缩放"
+      },
+      {
+        "text": "taining the model performance (Zhu & Gupta, 2018; Liu operation is crucial to guarantee the success of DARE, and",
+        "x": 55.4,
+        "y": 440,
+        "w": 486,
+        "h": 20.5,
+        "zh": "持模型性能（Zhu & Gupta, 2018; Liu 操作对保证 DARE 成功至关重要，并且"
+      },
+      {
+        "text": "et al., 2019b; Frankle & Carbin, 2019; Gale et al., 2019; dropping 30% or 40% delta parameters without rescaling",
+        "x": 55.4,
+        "y": 428.1,
+        "w": 486.8,
+        "h": 20.5,
+        "zh": "et al., 2019b; Frankle & Carbin, 2019; Gale et al., 2019; 不做重缩放就丢掉 30% 或 40% 的 delta 参数"
+      },
+      {
+        "text": "Xia et al., 2022). Magnitude-based pruning is one classiwould noticeably lead to worse results.",
+        "x": 55.1,
+        "y": 416.1,
+        "w": 488,
+        "h": 20.5,
+        "zh": "Xia et al., 2022）。基于幅度的剪枝是一类 会明显导致更差的结果。"
+      },
+      {
+        "text": "cal pruning method, which selects parameters according to their magnitudes (i.e., absolute parameter values) (Han (2) DARE often retains or enhances the performance of",
+        "x": 55.1,
+        "y": 398.2,
+        "w": 486.3,
+        "h": 26.5,
+        "zh": "经典方法，它按照参数幅度（即参数的绝对值）来选择参数（Han （2）DARE 常常能保持或提升"
+      },
+      {
+        "text": "et al., 2015; Li et al., 2018; Lee et al., 2021). To be specific, various model merging methods on encoder-based LMs. For",
+        "x": 55.2,
+        "y": 386.2,
+        "w": 487.5,
+        "h": 14.5,
+        "zh": "et al., 2015; Li et al., 2018; Lee et al., 2021）。具体而言，各种模型合并方法在基于编码器的语言模型上的表现。对于"
+      },
+      {
+        "text": "parameters with magnitudes lower than a certain threshold decoder-based LMs, simply averaging the parameters can",
+        "x": 55.4,
+        "y": 374.3,
+        "w": 486,
+        "h": 14.5,
+        "zh": "幅度低于某一阈值的参数 解码器语言模型而言，简单地对参数取平均就已经"
+      },
+      {
+        "text": "are removed, and others are preserved. In fact, DARE is already yield satisfactory results. As shown in Figure 1(b),",
+        "x": 55.4,
+        "y": 362.3,
+        "w": 486,
+        "h": 14.5,
+        "zh": "会被去掉，其余参数保留。事实上，DARE 已经能给出令人满意的结果。如图 1(b) 所示，"
+      },
+      {
+        "text": "relevant to the concept of network pruning as it can also we merge various decoder-based LMs by DARE and Task",
+        "x": 55.1,
+        "y": 350.3,
+        "w": 486.4,
+        "h": 14.5,
+        "zh": "与网络剪枝的概念相关，因为它同样可以 我们用 DARE 和 Task 来合并多种解码器语言模型"
+      },
+      {
+        "text": "drop parameters. But DARE differs from existing pruning Arithmetic (Ilharco et al., 2023), leading to considerable",
+        "x": 55.1,
+        "y": 338.4,
+        "w": 486.4,
+        "h": 14.5,
+        "zh": "丢弃参数。但 DARE 不同于现有剪枝 Arithmetic（Ilharco et al., 2023），从而带来可观的"
+      },
+      {
+        "text": "techniques in: (1) DARE focuses on delta parameters while improvements. For example, 3.10% for LM & Math &",
+        "x": 55.4,
+        "y": 326.4,
+        "w": 486,
+        "h": 14.5,
+        "zh": "方法，区别在于：（1）DARE 关注的是 delta 参数，而 提升。例如，LM & Math & 的提升为 3.10%，"
+      },
+      {
+        "text": "most pruning methods deal with fine-tuned parameters; (2) Code vs. LM on AlpacaEval, 3.18% for LM & Math vs.",
+        "x": 55.4,
+        "y": 314.5,
+        "w": 486.7,
+        "h": 14.5,
+        "zh": "大多数剪枝方法处理的是微调后的参数；（2） Code 相对 LM 在 AlpacaEval 上，LM & Math 相对 为 3.18%"
+      },
+      {
+        "text": "DARE can work well without any retraining or extra data, Math on GSM8K, and 19.57% for LM & Code vs. Code on",
+        "x": 55.4,
+        "y": 302.5,
+        "w": 487.2,
+        "h": 14.5,
+        "zh": "DARE 不需要任何重新训练或额外数据就能很好地工作， Math 在 GSM8K 上，以及 LM & Code 相对 Code 在 为 19.57%"
+      },
+      {
+        "text": "which are often inevitably required by pruning methods. MBPP. We also use DARE to create a merged LM with 7 billion parameters, attaining the top-ranking position on the",
+        "x": 55.4,
+        "y": 278.6,
+        "w": 476.1,
+        "h": 26.5,
+        "zh": "而这些往往是剪枝方法不可避免需要的。MBPP。我们还用 DARE 构造了一个 70 亿参数的合并语言模型，并在"
+      },
+      {
+        "text": "Model Merging. Model merging has become a trending Open LLM Leaderboard. It is fascinating that all the benefits",
+        "x": 55.1,
+        "y": 266.7,
+        "w": 486.4,
+        "h": 20.5,
+        "zh": "模型合并。近年来，模型合并成为一个热门方向 Open LLM Leaderboard 上取得首位。令人着迷的是，所有这些收益"
+      },
+      {
+        "text": "research direction in recent years, aiming to merge multiare achieved by solely using CPUs without retraining.",
+        "x": 55.4,
+        "y": 254.7,
+        "w": 487.7,
+        "h": 20.5,
+        "zh": "近年来的研究方向，目标是把多个 都只靠 CPU、无需重新训练就获得了。"
+      },
+      {
+        "text": "ple task-specific models into a single model with diverse abilities (Wortsman et al., 2022; Matena & Raffel, 2022; (3) SFT delta parameters usually stay within 0.002, indi-",
+        "x": 55.1,
+        "y": 236.8,
+        "w": 487.2,
+        "h": 26.5,
+        "zh": "个任务专用模型合并成一个具备多种能力的模型（Wortsman et al., 2022; Matena & Raffel, 2022; （3）SFT 的 delta 参数通常落在 0.002 以内，说"
+      },
+      {
+        "text": "Ilharco et al., 2023; Jin et al., 2023; Yadav et al., 2023; cating minimal modifications to the pre-trained LM, and",
+        "x": 55.4,
+        "y": 224.8,
+        "w": 486.8,
+        "h": 14.5,
+        "zh": "Ilharco et al., 2023; Jin et al., 2023; Yadav et al., 2023; 明对预训练语言模型的修改很小，而且"
+      },
+      {
+        "text": "Zhang et al., 2023). The superiority of model merging over DARE works for delta parameters with relatively small",
+        "x": 55.4,
+        "y": 212.9,
+        "w": 486.2,
+        "h": 14.5,
+        "zh": "Zhang et al., 2023）。模型合并的优越性，是相对于与之比较的对象而言的。DARE 适用于取值范围相对较小的 delta 参数。"
+      },
+      {
+        "text": "multi-task learning (Crawshaw, 2020; Zhang & Yang, 2022) value ranges. However, once models undergo continuous",
+        "x": 55.2,
+        "y": 200.9,
+        "w": 486.9,
+        "h": 14.5,
+        "zh": "多任务学习（Crawshaw, 2020; Zhang & Yang, 2022） 的取值范围。然而，一旦模型经历持续"
+      },
+      {
+        "text": "(which also intends to obtain one model with several abilipre-training, the delta parameters can rapidly reach around",
+        "x": 55.4,
+        "y": 188.9,
+        "w": 487.7,
+        "h": 14.5,
+        "zh": "（多任务学习同样想得到一个具备若干能力的模型） 预训练，delta 参数会迅速达到大约"
+      },
+      {
+        "text": "ties) is that model merging pays attention to the fusion of 0.03, making DARE infeasible. Moreover, dropping only",
+        "x": 55.4,
+        "y": 177,
+        "w": 486,
+        "h": 14.5,
+        "zh": "这一点在于，模型合并关注的是参数的融合。0.03，从而使 DARE 不可行。此外，仅仅丢掉"
+      },
+      {
+        "text": "model parameters without accessing the original training 10% fine-tuned parameters (i.e., the combination of pre-",
+        "x": 54.7,
+        "y": 165,
+        "w": 486.7,
+        "h": 14.5,
+        "zh": "模型参数，而不去访问原来的训练数据。10% 的微调后参数（也就是预训练参数与"
+      },
+      {
+        "text": "data (Matena & Raffel, 2022; Jin et al., 2023). Average trained and delta parameters) would lead to a catastrophic",
+        "x": 55.4,
+        "y": 153.1,
+        "w": 486,
+        "h": 14.5,
+        "zh": "数据（Matena & Raffel, 2022; Jin et al., 2023）。平均 训练得到的参数与 delta 参数之和）就会导致灾难性的"
+      },
+      {
+        "text": "Merging (Wortsman et al., 2022) is one common model decrease in performance, even approaching zero. This find-",
+        "x": 55.4,
+        "y": 141.1,
+        "w": 486,
+        "h": 14.5,
+        "zh": "合并（Wortsman et al., 2022）是一种常见的模型 性能下降，甚至接近零。这一发"
+      },
+      {
+        "text": "merging approach, which utilizes averaged parameters to ing further confirms that SFT primarily unlocks the abilities",
+        "x": 55.4,
+        "y": 129.2,
+        "w": 486,
+        "h": 14.5,
+        "zh": "合并方法，用平均后的参数来 现进一步证实，SFT 主要是在解锁"
+      },
+      {
+        "text": "construct the merged model. Task Arithmetic (Ilharco et al., of pre-trained LMs, rather than introducing new capabilities.",
+        "x": 55.4,
+        "y": 117.2,
+        "w": 487.2,
+        "h": 14.5,
+        "zh": "构造合并后的模型。Task Arithmetic（Ilharco et al., 预训练语言模型的能力，而不是引入新的能力。"
+      },
+      {
+        "text": "2023) employs a pre-defined scaling term to distinguish the The used resources are publicly available at https://",
+        "x": 55.1,
+        "y": 99.3,
+        "w": 486.3,
+        "h": 20.5,
+        "zh": "2023）用一个预先定义的缩放项来区分 所用资源公开于 https://"
+      },
+      {
+        "text": "importance of various models. Fisher Merging (Matena github.com/yule-BUAA/MergeLM.",
+        "x": 55.4,
+        "y": 87.3,
+        "w": 486,
+        "h": 20.5,
+        "zh": "不同模型的重要性。Fisher Merging（Matena github.com/yule-BUAA/MergeLM。"
+      },
+      {
+        "text": "& Raffel, 2022) performs weighted fusions of parameters,",
+        "x": 307.1,
+        "y": 85.9,
+        "w": 235.6,
+        "h": 10,
+        "zh": "& Raffel, 2022）对参数做加权融合，"
+      }
+    ],
+    "3": [
+      {
+        "text": "Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch",
+        "x": 109,
+        "y": 737.9,
+        "w": 378.9,
+        "h": 9,
+        "zh": "语言模型就是超级马里奥：从同源模型吸收能力，如同免费午餐"
+      },
+      {
+        "text": "where the weights are calculated by the Fisher information",
+        "x": 55.1,
+        "y": 715,
+        "w": 234.4,
+        "h": 10,
+        "zh": "其中权重由 Fisher 信息计算得到"
+      },
+      {
+        "text": "that even after removing most delta parameters, DARE can matrix (Fisher, 1922). RegMean (Jin et al., 2023) masterly",
+        "x": 55.4,
+        "y": 703,
+        "w": 486,
+        "h": 21.9,
+        "zh": "即便去掉大部分 delta 参数，DARE 仍然能够。矩阵（Fisher, 1922）。RegMean（Jin et al., 2023）巧妙地"
+      },
+      {
+        "text": "well preserve the model performance by approximating the solves model merging by optimizing a linear regression",
+        "x": 55.4,
+        "y": 691.1,
+        "w": 486,
+        "h": 21.9,
+        "zh": "通过近似原来的嵌入，很好地保持模型性能。把模型合并转化成优化一个线性回归"
+      },
+      {
+        "text": "original embeddings. problem with closed-form solutions. TIES-Merging (Ya-",
+        "x": 55.4,
+        "y": 679.1,
+        "w": 336.1,
+        "h": 21.9,
+        "zh": "原来的嵌入。问题，并且有闭式解。TIES-Merging（Ya-"
+      },
+      {
+        "text": "Theoretical Analysis. We discuss linear transformation dav et al., 2023) tackles the task conflicts in Ilharco et al.",
+        "x": 55.4,
+        "y": 667.2,
+        "w": 486,
+        "h": 15.9,
+        "zh": "理论分析。我们讨论线性变换。dav et al., 2023）处理的是 Ilharco et al."
+      },
+      {
+        "text": "since most parameters of LMs play a role in this basic (2023) by trimming low-magnitude parameters, resolving",
+        "x": 55.1,
+        "y": 655.2,
+        "w": 486.3,
+        "h": 15.9,
+        "zh": "因为语言模型的大多数参数都参与这一基本运算。（2023）中的任务冲突：剪掉幅度较低的参数，并解决"
+      },
+      {
+        "text": "operation (e.g., the computations in feed-forward networks, sign disagreements, and disjointly merging parameters with",
+        "x": 55.4,
+        "y": 643.2,
+        "w": 487.2,
+        "h": 15.9,
+        "zh": "运算（例如前馈网络里的计算，符号分歧，并把符号一致的参数不重叠地合并，这些参数带有"
+      },
+      {
+        "text": "the projections of queries, keys, values, and outputs in selfconsistent signs. In this paper, we use DARE as a versa-",
+        "x": 55.4,
+        "y": 631.3,
+        "w": 487.7,
+        "h": 15.9,
+        "zh": "自注意力模块中 query、key、value 和 output 的投影。一致的符号。本文把 DARE 用作一种通用的"
+      },
+      {
+        "text": "attention modules). Let W/∆W ∈ Rm×n and b/∆b ∈ tile plug-in for existing model merging methods by first",
+        "x": 55.4,
+        "y": 619.3,
+        "w": 486,
+        "h": 16.6,
+        "zh": "注意力模块）。令 W/∆W ∈ Rm×n，b/∆b ∈ 。插件，先用于现有的模型合并方法，做法是首先"
+      },
+      {
+        "text": "be the pre-trained/delta parameters. The input is a vector sparsifying delta parameters of several SFT homologous",
+        "x": 55.4,
+        "y": 607.4,
+        "w": 486.2,
+        "h": 15.9,
+        "zh": "作为预训练参数与 delta 参数。输入是一个向量。稀疏化若干 SFT 同源模型的 delta 参数"
+      },
+      {
+        "text": "x ∈ R . Expectation of the i-th (1 ≤ i ≤ m) dimension of models and then merging them into a single model, which",
+        "x": 55.4,
+        "y": 595.4,
+        "w": 486,
+        "h": 15.9,
+        "zh": "x ∈ R。原来嵌入 h 的第 i 维（1 ≤ i ≤ m）的期望。这些模型，再合并成一个模型，而该模型"
+      },
+      {
+        "text": "the original embeddings h ∈ R is equipped with the capabilities of all the SFT models.",
+        "x": 55.4,
+        "y": 583.5,
+        "w": 376.8,
+        "h": 15.9,
+        "zh": "原来的嵌入 h ∈ R。具备所有 SFT 模型的能力。"
+      },
+      {
+        "text": "SFT Delta Parameters. Let θPRE ∈ Rd denote the parameters of a pre-trained LM (d is the parameter dimension), such as LLaMA (Touvron et al., 2023a) or Llama 2 (Touvron et al., 2023b). For task t, SFT can provide a fine-tuned LM",
+        "x": 55.4,
+        "y": 499.7,
+        "w": 235.7,
+        "h": 46.5,
+        "zh": "SFT 的 delta 参数。令 θPRE ∈ Rd 表示预训练语言模型的参数（d 是参数维度），例如 LLaMA（Touvron et al., 2023a）或 Llama 2（Touvron et al., 2023b）。对于任务 t，SFT 可以给出一个微调后的语言模型"
+      },
+      {
+        "text": "∈ Rd by optimizing the pre-trained model on task-specific data. Give the parameters of both pre-trained LM (θPRE) and SFT LM (θSFT), delta parameters are defined as the difference between parameters of LMs",
+        "x": 55.4,
+        "y": 451.8,
+        "w": 234,
+        "h": 46.5,
+        "zh": "∈ Rd，做法是在任务专用数据上优化预训练模型。给定预训练语言模型的参数（θPRE）和 SFT 语言模型的参数（θSFT），delta 参数定义为这些语言模型的参数之差"
+      },
+      {
+        "text": "where wij/∆wij is the entry located at the intersection of before and after SFT, i.e., δt = θt",
+        "x": 55.4,
+        "y": 439.9,
+        "w": 486,
+        "h": 13.1,
+        "zh": "其中 wij/∆wij 是位于行列交叉处的元素。微调之前与之后，即 δt = θt"
+      },
+      {
+        "text": "the i-th row and j-th column within W/∆W. Similarly, delta parameters reflect the changes in parameters during the",
+        "x": 55.4,
+        "y": 427.9,
+        "w": 487.2,
+        "h": 13.1,
+        "zh": "W/∆W 里第 i 行、第 j 列的交叉位置。类似地，delta 参数反映的是在此过程中参数发生的变化"
+      },
+      {
+        "text": "bi/∆bi denotes the element positioned at the i-th dimension SFT process, analyzing the properties of delta parameters",
+        "x": 55.4,
+        "y": 416,
+        "w": 486,
+        "h": 13.1,
+        "zh": "bi/∆bi 表示第 i 维上的元素。SFT 过程。分析 delta 参数的性质"
+      },
+      {
+        "text": "of b/∆b. Assuming DARE randomly drops delta paramecan offer a better understanding of SFT.",
+        "x": 55.4,
+        "y": 404,
+        "w": 487.7,
+        "h": 13.1,
+        "zh": "属于 b/∆b。假设 DARE 随机丢掉 delta 参数。可以让我们更好地理解 SFT。"
+      },
+      {
+        "text": "ters with a ratio p and rescales others by a factor of γ. After Model Merging Problem.",
+        "x": 55.4,
+        "y": 386.1,
+        "w": 486.2,
+        "h": 19.1,
+        "zh": "丢掉的比例为 p，再把其余参数乘以因子 γ。经过。模型合并问题。"
+      },
+      {
+        "text": "using DARE, the delta parameters change to ∆Wc ∈ Rm×n {t1, t2, · · · , t\b K} and K corresponding SFT models with",
+        "x": 55.4,
+        "y": 370.3,
+        "w": 485.5,
+        "h": 24.3,
+        "zh": "使用 DARE 之后，delta 参数变为 ∆Wc ∈ Rm×n。任务集合为 {t1, t2, · · · , tK}，以及 K 个相应的 SFT 模型，它们具有"
+      },
+      {
+        "text": "and ∆bb ∈ Rm. Therefore, the expectation of the i-th dimen- θSFT, θSFT, · · · , θSFT , model merging aims to",
+        "x": 106.4,
+        "y": 359.3,
+        "w": 436.7,
+        "h": 22.4,
+        "zh": "以及 ∆b̂ ∈ Rm。因此，第 i 维嵌入的期望。θSFT、θSFT、⋯、θSFT。模型合并旨在"
+      },
+      {
+        "text": "sion of embeddings becomes fuse the parameters of K models into a single model with parameters θM that can well handle K tasks simultaneously.",
+        "x": 55.4,
+        "y": 336.8,
+        "w": 367.4,
+        "h": 30.3,
+        "zh": "于是嵌入这一维的期望变为。把 K 个模型的参数融合成一个参数为 θM 的模型，使它能够同时处理好 K 个任务。"
+      },
+      {
+        "text": "(wij + ∆ ˆwij) xj + (bi + ∆ˆbi)] Following Matena & Raffel (2022); Jin et al. (2023); Yadav et al. (2023), we focus on merging fine-tuned models that are optimized from the same pre-trained backbone.",
+        "x": 55.4,
+        "y": 302.4,
+        "w": 462.2,
+        "h": 38,
+        "zh": "(wij + ∆ŵij) xj + (bi + ∆b̂i)]。遵循 Matena & Raffel (2022)、Jin et al. (2023) 与 Yadav et al. (2023)，我们关注的是合并那些从同一个预训练骨干优化而来的微调模型。"
+      },
+      {
+        "text": "xjE[∆ ˆwij] + E[∆ˆbi] 3.1. DARE: A Simple Approach for Reducing Delta Parameter Redundancy",
+        "x": 55.4,
+        "y": 265.3,
+        "w": 472.9,
+        "h": 40.6,
+        "zh": "xj E[∆ŵij] + E[∆b̂i]。3.1. DARE：一种降低 delta 参数冗余的简单方法"
+      },
+      {
+        "text": "xj((1 − p) · γ · ∆wij + p · 0) In this work, we reveal the extremely redundant properties of the delta parameters of SFT LMs and propose DARE to",
+        "x": 55.4,
+        "y": 234.7,
+        "w": 478,
+        "h": 34,
+        "zh": "xj((1 − p) · γ · ∆wij + p · 0)。本文揭示 SFT 语言模型的 delta 参数极度冗余，并提出 DARE，用来"
+      },
+      {
+        "text": "+((1 − p) · γ · ∆bi + p · 0) effectively reduce delta parameter redundancy (see Figure 2(a)). DARE is conceptually simple and consists of two steps: drop and rescale. Given delta parameters δ = θSFT− θPRE, DARE first performs random drop on δ based on a",
+        "x": 55.4,
+        "y": 185.4,
+        "w": 424.4,
+        "h": 56.9,
+        "zh": "+((1 − p) · γ · ∆bi + p · 0)。有效降低 delta 参数冗余（见图 2(a)）。DARE 概念简单，包含两步：丢弃与重缩放。给定 delta 参数 δ = θSFT − θPRE，DARE 先依据"
+      },
+      {
+        "text": "+ (1 − p) · γ · ∆hi. drop rate p (setting their values to zeros) and then rescales the remaining ones by a factor of 1/(1 − p) as follows,",
+        "x": 55.4,
+        "y": 163,
+        "w": 424.9,
+        "h": 28.4,
+        "zh": "+ (1 − p) · γ · ∆hi。丢弃率 p 对 δ 做随机丢弃（把对应的值置为零），再把剩余参数乘以 1/(1 − p)，如下所示，"
+      },
+      {
+        "text": "By setting γ = 1/(1 − p), we have E[hi] = E[hˆi], concluding that DARE can approximate the original embeddings. Remark. We have given a rough proof of why DARE works. In practice, we find that DARE is applicable when the drop Finally, we combine δˆt and θPRE via addition to obtain the",
+        "x": 55.4,
+        "y": 87.4,
+        "w": 487.7,
+        "h": 67.9,
+        "zh": "令 γ = 1/(1 − p)，则有 E[hi] = E[ĥi]，因此可以得出：DARE 能够近似原来的嵌入。注记。我们已经给出 DARE 为何有效的一个粗略证明。实践中，我们发现当丢弃率合适时 DARE 是适用的。最后，我们把 δ̂t 与 θPRE 相加，从而得到"
+      },
+      {
+        "text": "rate p is properly set, and the tolerance of p grows with LMs’ = δˆt+θPRE. We prove parameters for inference, i.e., θt",
+        "x": 55.4,
+        "y": 75.4,
+        "w": 487.7,
+        "h": 23.4,
+        "zh": "率 p 设置得当，并且语言模型越大，能容忍的 p 也越大。= δ̂t + θPRE。我们证明，用于推理的参数，即 θt"
+      },
+      {
+        "text": "parameter sizes. Moreover, removing fine-tuned rather than",
+        "x": 307.4,
+        "y": 76.9,
+        "w": 234,
+        "h": 10,
+        "zh": "参数规模。此外，如果去掉的是微调后的参数，而不是"
+      }
+    ],
+    "4": [
+      {
+        "text": "Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch",
+        "x": 109,
+        "y": 737.9,
+        "w": 378.9,
+        "h": 9,
+        "zh": "语言模型就是超级马里奥：从同源模型吸收能力，如同免费午餐"
+      },
+      {
+        "text": "Figure 2: Illustrations of DARE and merging models with DARE. DARE can achieve comparable performance with standard SFT with 90% or even 99% delta parameters removed. Moreover, DARE tackles the parameter interference issue when merging models and yields consistent improvements. At the top, we mark each icon with one or two muscle logos, indicating its ability for specific tasks. For example, the first or second icon has one muscle logo for math-related tasks, while the third or fourth icon can perform better in math with two muscle logos. The rescale operation in DARE multiplies the remaining parameters by 1/(1 − p), which enhances the task-specific abilities and leads to changes in icons after rescaling.",
+        "x": 55.4,
+        "y": 360.3,
+        "w": 486,
+        "h": 69.7,
+        "zh": "图 2：DARE，以及用 DARE 合并模型的示意图。去掉 90% 甚至 99% 的 delta 参数后，DARE 仍能达到与标准 SFT 相当的性能。此外，DARE 能处理合并模型时的参数干扰，并带来一致的提升。图的上方，我们用一个或两个肌肉标志标记每个图标，表示它在特定任务上的能力。例如，第一个或第二个图标在数学相关任务上有一个肌肉标志，第三个或第四个图标有两个肌肉标志，数学上可以做得更好。DARE 中的重缩放把剩余参数乘以 1/(1 − p)，从而增强任务专用能力，重缩放之后图标也会随之改变。"
+      },
+      {
+        "text": "delta parameters would cause a catastrophically decreased",
+        "x": 55.4,
+        "y": 326.8,
+        "w": 234,
+        "h": 10,
+        "zh": "delta 参数，就会造成灾难性的性能下降"
+      },
+      {
+        "text": "when merging multiple models (Yadav et al., 2023). Take performance. A promising future direction is to explore",
+        "x": 55.4,
+        "y": 314.9,
+        "w": 486,
+        "h": 21.9,
+        "zh": "在合并多个模型时（Yadav et al., 2023）。以。性能。一个有前景的未来方向，是更深入地探索"
+      },
+      {
+        "text": "Figure 2(b) as an example, when merging math- and codeDARE more deeply, such as inferring the upper bound of p",
+        "x": 55.4,
+        "y": 302.9,
+        "w": 487.7,
+        "h": 21.9,
+        "zh": "图 2(b) 为例：在合并数学与代码相关模型时，DARE，例如推出 p 相对于语言模型容量的上界，"
+      },
+      {
+        "text": "related models, DARE can assist existing model merging with respect to LM capacities and illustrating the intrinsic",
+        "x": 55.1,
+        "y": 291,
+        "w": 486.4,
+        "h": 21.9,
+        "zh": "相关的模型，DARE 可以帮助现有的模型合并方法。结合语言模型的容量，并说明其内在"
+      },
+      {
+        "text": "methods to better absorb the abilities of two models with difference between fine-tuned and delta parameters.",
+        "x": 55.4,
+        "y": 279,
+        "w": 486,
+        "h": 21.9,
+        "zh": "从而更好地吸收两个模型的能力，并且。微调后参数与 delta 参数之间的差异。"
+      },
+      {
+        "text": "less or no parameter interference. Last, we highlight the connections and differences between",
+        "x": 55.4,
+        "y": 261.1,
+        "w": 385.1,
+        "h": 27.9,
+        "zh": "参数干扰更少，甚至没有。最后，我们强调二者之间的联系与区别"
+      },
+      {
+        "text": "Formally, given K models that are fine-tuned on\b DARE and Dropout (Srivastava et al., 2014). Both methods",
+        "x": 55.4,
+        "y": 249.1,
+        "w": 449,
+        "h": 21.9,
+        "zh": "形式化地，给定 K 个在相应任务上微调得到的模型。DARE 与 Dropout（Srivastava et al., 2014）。两种方法"
+      },
+      {
+        "text": "sponding tasks with parameters θSFT, θSFT, · · · , θSFT , we first apply DARE on each parameters θtk involve random dropping and rescaling operations, but they differ in two key aspects: (1) DARE handles delta parame-",
+        "x": 55.4,
+        "y": 225.2,
+        "w": 486,
+        "h": 33.9,
+        "zh": "相应任务，参数为 θSFT、θSFT、⋯、θSFT。我们先对每一个应用 DARE。这些参数 θtk 都涉及随机丢弃和重缩放，但有两个关键区别：（1）DARE 处理的是 delta 参数"
+      },
+      {
+        "text": ". Then, we adopt esters while Dropout operates on model outputs; (2) DARE",
+        "x": 55.4,
+        "y": 213.3,
+        "w": 487.7,
+        "h": 20.6,
+        "zh": "。然后，我们采用。而 Dropout 作用在模型输出上；（2）DARE"
+      },
+      {
+        "text": "tablished model merging methods to fuse the derived paramaims to reduce delta parameter redundancy without training,",
+        "x": 55.4,
+        "y": 201.3,
+        "w": 487.7,
+        "h": 20.6,
+        "zh": "既有的模型合并方法，把得到的参数融合起来。旨在不经训练就降低 delta 参数的冗余，"
+      },
+      {
+        "text": "eters and obtain the merged single model with parameters which permanently eliminates delta parameters and only re-",
+        "x": 55.1,
+        "y": 189.4,
+        "w": 486.4,
+        "h": 20.6,
+        "zh": "并得到合并后的单一模型，其参数。这会永久地去掉 delta 参数，并且只再"
+      },
+      {
+        "text": "θM. Let us take Task Arithmetic (Ilharco et al., 2023) as an tains others for inference. Dropout is used to prevent models",
+        "x": 55.4,
+        "y": 177.4,
+        "w": 486,
+        "h": 20.6,
+        "zh": "为 θM。我们以 Task Arithmetic（Ilharco et al., 2023）作为一。保留其余参数供推理使用。Dropout 用来防止模型"
+      },
+      {
+        "text": "instance, whose official computation process is denoted by from overfitting, which temporarily removes part of outputs during training but preserves all the outputs for inference.",
+        "x": 55.4,
+        "y": 153.5,
+        "w": 485.8,
+        "h": 32.6,
+        "zh": "个例子，它的官方计算过程记为。过拟合：训练时暂时去掉一部分输出，但推理时保留全部输出。"
+      },
+      {
+        "text": "As DARE effectively reduces the redundancy of delta parameters by setting most of them to zeros, we hypothesize",
+        "x": 55.1,
+        "y": 97.8,
+        "w": 236,
+        "h": 21.9,
+        "zh": "由于 DARE 把大部分 delta 参数置为零，有效降低了冗余，我们猜想"
+      },
+      {
+        "text": "where λ is the scaling term to determine the importance of that DARE can help address the interference of parameters",
+        "x": 55.4,
+        "y": 85.8,
+        "w": 486,
+        "h": 13.1,
+        "zh": "其中 λ 是缩放项，用来决定其重要性。DARE 可以帮助应对参数之间的干扰"
+      },
+      {
+        "text": "the models to be merged. When equipped with DARE, the",
+        "x": 307.4,
+        "y": 76.9,
+        "w": 234,
+        "h": 10,
+        "zh": "待合并模型的重要性。配上 DARE 之后，这一"
+      }
+    ],
+    "5": [
+      {
+        "text": "Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch",
+        "x": 109,
+        "y": 737.9,
+        "w": 378.9,
+        "h": 9,
+        "zh": "语言模型就是超级马里奥：从同源模型吸收能力，如同免费午餐"
+      },
+      {
+        "text": "calculation process of Task Arithmetic is rewritten as",
+        "x": 55.4,
+        "y": 715,
+        "w": 211.7,
+        "h": 10,
+        "zh": "计算过程被改写为"
+      },
+      {
+        "text": "2009). As the test labels of GLUE are not publicly available, we split the original training data into training and validation θDARE = DARE θSFT, θPRE, p , for 1 ≤ k ≤ K,",
+        "x": 80.7,
+        "y": 688.5,
+        "w": 461.9,
+        "h": 36.4,
+        "zh": "2009）。由于 GLUE 的测试标签并未公开，我们把原始训练数据划分为训练集和验证集。θDARE = DARE(θSFT, θPRE, p)，其中 1 ≤ k ≤ K，"
+      },
+      {
+        "text": "sets with ratios of 90% and 10%. The original validation data is used as the test set. We choose bert-base-uncased (Devlin et al., 2019) and roberta-base (Liu et al., 2019a) as pre-trained backbones, and further fine-tune them to get SFT models on the eight datasets. Evaluation Metrics. We calculate win rate for AlpacaEval, The expression DARE θSFT, θPRE, p signifies the process",
+        "x": 55.1,
+        "y": 615.4,
+        "w": 487.6,
+        "h": 85.7,
+        "zh": "划分比例为 90% 和 10%。原始验证集用作测试集。我们选择 bert-base-uncased（Devlin et al., 2019）和 roberta-base（Liu et al., 2019a）作为预训练骨干，再进一步微调，在八个数据集上得到 SFT 模型。评估指标。我们计算 AlpacaEval 的胜率。表达式 DARE(θSFT, θPRE, p) 表示的过程是"
+      },
+      {
+        "text": "zero-shot accuracy for GSM8K and MATH, pass@1 for of deriving delta parameters from θSFT and θPRE, eliminat-",
+        "x": 55.4,
+        "y": 602.1,
+        "w": 486.2,
+        "h": 21.2,
+        "zh": "GSM8K 和 MATH 的零样本准确率，pass@1 用于。从 θSFT 和 θPRE 得到 delta 参数，并消除"
+      },
+      {
+        "text": "HumanEval and MBPP, Matthews correlation coefficient ing delta parameters based on drop rate p following Equation",
+        "x": 55.4,
+        "y": 593.1,
+        "w": 486,
+        "h": 18.3,
+        "zh": "HumanEval 和 MBPP，Matthews 相关系数。按丢弃率 p、依照公式来去掉 delta 参数"
+      },
+      {
+        "text": "for CoLA, accuracy for SST-2, QNLI, and RTE, matched (3.1), and finally combining the sparsified delta parameters",
+        "x": 55.1,
+        "y": 581.1,
+        "w": 486.3,
+        "h": 18.3,
+        "zh": "用于 CoLA；SST-2、QNLI 和 RTE 用准确率；匹配。（3.1），最后把稀疏化后的 delta 参数与"
+      },
+      {
+        "text": "accuracy for MNLI, accuracy and F1 score for MRPC and with θPRE to obtain θDARE. In Section 4.3, we find that",
+        "x": 55.1,
+        "y": 566.3,
+        "w": 486.4,
+        "h": 21.1,
+        "zh": "MNLI 用准确率；MRPC 用准确率和 F1，与。θPRE 合在一起，得到 θDARE。在第 4.3 节中，我们发现"
+      },
+      {
+        "text": "QQP, and Pearson and Spearman correlation for STS-B. DARE can effectively improve the performance of Task",
+        "x": 55.4,
+        "y": 557.2,
+        "w": 475.3,
+        "h": 18.3,
+        "zh": "QQP；STS-B 用 Pearson 相关和 Spearman 相关。DARE 能够有效提升 Task 的性能"
+      },
+      {
+        "text": "Implementation Details. Following Xu et al. (2023); Luo Arithmetic when merging multiple LMs. It is also worth",
+        "x": 55.1,
+        "y": 545.3,
+        "w": 486.4,
+        "h": 12.3,
+        "zh": "实现细节。遵循 Xu et al. (2023); Luo。Arithmetic 在合并多个语言模型时的表现。同样值得"
+      },
+      {
+        "text": "et al. (2023a;b), the inference of decoder-based LMs is noticing that DARE is a versatile plug-and-play module",
+        "x": 55.4,
+        "y": 533.3,
+        "w": 486,
+        "h": 12.3,
+        "zh": "et al. (2023a;b)，解码器语言模型的推理。注意，DARE 是一个即插即用的通用模块，"
+      },
+      {
+        "text": "implemented by vLLM (Kwon et al., 2023). Temperature and can be applied to any model merging methods, such as",
+        "x": 55.4,
+        "y": 521.3,
+        "w": 486,
+        "h": 12.3,
+        "zh": "由 vLLM（Kwon et al., 2023）实现。温度。并且可以套用到任何模型合并方法上，例如"
+      },
+      {
+        "text": "is set to 0.0 for greedy decoding. The maximal number of Average Merging (Wortsman et al., 2022), Fisher Merging",
+        "x": 55.1,
+        "y": 509.4,
+        "w": 486.4,
+        "h": 12.3,
+        "zh": "设为 0.0，做贪心解码。生成的最大 token 数为。Average Merging（Wortsman et al., 2022）、Fisher Merging"
+      },
+      {
+        "text": "generated tokens is 1,024 on GSM8K, and 2,048 on the (Matena & Raffel, 2022), RegMean (Jin et al., 2023), and",
+        "x": 55.1,
+        "y": 497.4,
+        "w": 486.3,
+        "h": 12.3,
+        "zh": "生成 token 数在 GSM8K 上是 1,024，另外还有 2,048。（Matena & Raffel, 2022）、RegMean（Jin et al., 2023），以及"
+      },
+      {
+        "text": "other four datasets. For encoder-based LMs, We fine-tune TIES-Merging (Yadav et al., 2023).",
+        "x": 55.1,
+        "y": 485.5,
+        "w": 486.3,
+        "h": 12.3,
+        "zh": "其余四个数据集。对于编码器语言模型，我们微调。TIES-Merging（Yadav et al., 2023）。"
+      },
+      {
+        "text": "bert-base-uncased and roberta-base for 10 epochs with a warmup strategy. The weight decay is 0.01. We use 1e-5 and 5e-5 as learning rates and list the optimal setting of each fine-tuned model in Table 4 in Section A.2. Experiments We conduct extensive experiments on encoder- and decoder-",
+        "x": 55,
+        "y": 437.5,
+        "w": 486.5,
+        "h": 48.3,
+        "zh": "bert-base-uncased 和 roberta-base 各微调 10 个 epoch，并使用 warmup。权重衰减为 0.01。学习率取 1e-5 和 5e-5，每个微调模型的最优设置列在第 A.2 节的表 4 中。实验。我们在编码器语言模型和解码器语言模型上做了广泛实验"
+      },
+      {
+        "text": "are conducted on NVIDIA Tesla V100 and A100 GPUs. based LMs to show the effectiveness of DARE in reducing SFT delta parameter redundancy and merging models.",
+        "x": 55.4,
+        "y": 413.6,
+        "w": 476.2,
+        "h": 24.4,
+        "zh": "实验在 NVIDIA Tesla V100 和 A100 GPU 上进行。以表明 DARE 在降低 SFT delta 参数冗余、以及在合并模型方面的有效性。"
+      },
+      {
+        "text": "4.2. Extreme Redundancy in SFT Delta Parameters 4.1. Experimental Setup",
+        "x": 55.4,
+        "y": 388.5,
+        "w": 470.3,
+        "h": 24.4,
+        "zh": "4.2. SFT delta 参数中的极度冗余。4.1. 实验设置"
+      },
+      {
+        "text": "We show the extremely redundant property of SFT delta parameters of both decoder- and encoder-based LMs. We Datasets and Pre-Trained Backbones for Decoder-based",
+        "x": 55.4,
+        "y": 369.8,
+        "w": 486,
+        "h": 24.4,
+        "zh": "我们表明，解码器与编码器语言模型的 SFT delta 参数都极度冗余。我们。解码器语言模型所用的数据集与预训练骨干。"
+      },
+      {
+        "text": "vary drop rate p in [0.0, 0.1, 0.2, · · · , 0.9, 0.99] and apply LMs. We choose AlpacaEval (Li et al., 2023) for evaluating",
+        "x": 55.4,
+        "y": 357.9,
+        "w": 486.3,
+        "h": 12.4,
+        "zh": "让丢弃率 p 在 [0.0, 0.1, 0.2, · · · , 0.9, 0.99] 中取值，并应用。语言模型。我们选用 AlpacaEval（Li et al., 2023）来评估"
+      },
+      {
+        "text": "DARE to get models after removing the corresponding ratio instruction-following models (WizardLM (Xu et al., 2023)).",
+        "x": 55.4,
+        "y": 345.9,
+        "w": 486,
+        "h": 12.4,
+        "zh": "DARE，得到去掉相应比例的 delta 参数之后的模型。指令遵循模型（WizardLM（Xu et al., 2023））。"
+      },
+      {
+        "text": "of delta parameters. When p is equal to 0.0, we actually We use GSM8K (Cobbe et al., 2021) and MATH (Hendrycks",
+        "x": 55,
+        "y": 334,
+        "w": 486.8,
+        "h": 12.4,
+        "zh": "所占的 delta 参数。当 p 等于 0.0 时，我们实际上。我们使用 GSM8K（Cobbe et al., 2021）和 MATH（Hendrycks"
+      },
+      {
+        "text": "obtain the standard SFT LMs. We report the performance et al., 2021b) for testing mathematical reasoning models",
+        "x": 55.4,
+        "y": 322,
+        "w": 486,
+        "h": 12.4,
+        "zh": "得到的就是标准 SFT 语言模型。我们报告其性能。et al., 2021b），用来测试数学推理模型"
+      },
+      {
+        "text": "of decoder-based LMs on GSM8K and HumanEval as well (WizardMath (Luo et al., 2023a)). HumanEval (Chen et al.,",
+        "x": 55.1,
+        "y": 310.1,
+        "w": 486.3,
+        "h": 12.4,
+        "zh": "解码器语言模型在 GSM8K 和 HumanEval 上的性能，以及。（WizardMath（Luo et al., 2023a））。HumanEval（Chen et al.,"
+      },
+      {
+        "text": "as encoder-based LMs on eight GLUE datasets in Figure 3 2021) and MBPP (Austin et al., 2021) are adopted for esti-",
+        "x": 55.4,
+        "y": 298.1,
+        "w": 486,
+        "h": 12.4,
+        "zh": "编码器语言模型在八个 GLUE 数据集上的结果，见图 3。2021）和 MBPP（Austin et al., 2021）用来评估"
+      },
+      {
+        "text": "and Figure 4. Please see results of decoder-based LMs on mating code-generating models (WizardCoder-Python (Luo",
+        "x": 55.4,
+        "y": 286.2,
+        "w": 486,
+        "h": 12.4,
+        "zh": "和图 4。关于解码器语言模型在。代码生成模型（WizardCoder-Python（Luo"
+      },
+      {
+        "text": "AlpacaEval, MATH, and MBPP in Figure 12 in Section B.1. et al., 2023b) and llama-2-13b-code-alpaca (Chaudhary, 2023)). These models are fine-tuned based on pre-trained backbones including LLaMA (Touvron et al., 2023a), Llama 2 (Touvron et al., 2023b), and Code Llama (Roziere et al.,` 2023). Please see Table 3 in Section A.1 for their versions and correspondences with pre-trained backbones. Datasets and Pre-Trained Backbones for Encoder-based LMs. For encoder-based LMs, the GLUE benchmark (Wang et al., 2019) is used, containing one sentence acceptability dataset CoLA (Warstadt et al., 2019), one sentiment",
+        "x": 55.4,
+        "y": 160.6,
+        "w": 487.7,
+        "h": 126,
+        "zh": "AlpacaEval、MATH 和 MBPP 上的结果，见第 B.1 节的图 12。et al., 2023b）以及 llama-2-13b-code-alpaca（Chaudhary, 2023））。这些模型基于预训练骨干微调，骨干包括 LLaMA（Touvron et al., 2023a）、Llama 2（Touvron et al., 2023b）和 Code Llama（Rozière et al., 2023）。版本以及与预训练骨干的对应关系见表 3（第 A.1 节）。编码器语言模型所用的数据集与预训练骨干。对编码器语言模型，使用的是 GLUE 基准（Wang et al., 2019），其中包括一个句子可接受性数据集 CoLA（Warstadt et al., 2019），以及一个情感"
+      },
+      {
+        "text": "Figure 3: Performance of decoder-based LMs on GSM8K detection dataset SST-2 (Socher et al., 2013), two para-",
+        "x": 55.4,
+        "y": 148.7,
+        "w": 486.4,
+        "h": 14.1,
+        "zh": "图 3：解码器语言模型在 GSM8K 上的性能。检测数据集 SST-2（Socher et al., 2013），两个释义"
+      },
+      {
+        "text": "and HumanEval with various drop rates. phrase datasets MRPC (Dolan & Brockett, 2005) and QQP (Shankar et al., 2017), one sentence similarity dataset STSB (Cer et al., 2017), and three natural language inference",
+        "x": 55.1,
+        "y": 112.8,
+        "w": 412.9,
+        "h": 38,
+        "zh": "以及在不同丢弃率下的 HumanEval。短语数据集 MRPC（Dolan & Brockett, 2005）和 QQP（Shankar et al., 2017），一个句子相似度数据集 STS-B（Cer et al., 2017），以及三个自然语言推理"
+      },
+      {
+        "text": "We conclude that: (1) the SFT delta parameters of both datasets MNLI (Bowman et al., 2015; Williams et al., 2018),",
+        "x": 55.4,
+        "y": 100.8,
+        "w": 486,
+        "h": 21.9,
+        "zh": "我们的结论是：（1）两类模型的 SFT delta 参数。数据集有 MNLI（Bowman et al., 2015; Williams et al., 2018），"
+      },
+      {
+        "text": "encoder- and decoder-based LMs are highly redundant. QNLI (Rajpurkar et al., 2016), and RTE (Dagan et al., 2005;",
+        "x": 55.4,
+        "y": 88.9,
+        "w": 487.7,
+        "h": 21.9,
+        "zh": "编码器语言模型和解码器语言模型都高度冗余。QNLI（Rajpurkar et al., 2016），以及 RTE（Dagan et al., 2005;"
+      },
+      {
+        "text": "DARE can effectively remove 90% delta parameters without Haim et al., 2006; Giampiccolo et al., 2007; Bentivogli et al.,",
+        "x": 55.4,
+        "y": 76.9,
+        "w": 486,
+        "h": 21.9,
+        "zh": "DARE 可以有效去掉 90% 的 delta 参数，而不会。Haim et al., 2006; Giampiccolo et al., 2007; Bentivogli et al.,"
+      },
+      {
+        "text": "significantly decreasing the performance. In some cases,",
+        "x": 307.4,
+        "y": 76.9,
+        "w": 235.2,
+        "h": 10,
+        "zh": "显著降低性能。在某些情况下，"
+      }
+    ],
+    "6": [
+      {
+        "text": "Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch",
+        "x": 109,
+        "y": 737.9,
+        "w": 378.9,
+        "h": 9,
+        "zh": "语言模型就是超级马里奥：从同源模型吸收能力，如同免费午餐"
+      },
+      {
+        "text": "Table 1: Performance of merging decoder-based WizardLM-13B (LM), WizardMath-13B (Math), and llama-2-13b-codealpaca (Code) on all the datasets. The best and second-best results are marked in bold and underlined fonts.",
+        "x": 55.1,
+        "y": 704.6,
+        "w": 488,
+        "h": 21.9,
+        "zh": "表 1：合并解码器模型 WizardLM-13B（LM）、WizardMath-13B（Math）和 llama-2-13b-code-alpaca（Code）之后，在全部数据集上的性能。最好的结果用粗体标出，次好的结果加下划线。"
+      },
+      {
+        "text": "for more descriptions of the methods. For feasible computations, we merge decoder-based LMs based on Task Arithmetic and TIES-Merging. The scaling term in both methods is chosen from [0.5, 1.0], and the retain ratio of largest-magnitude parameters in TIES-Merging is selected from [0.5, 0.7, 0.9]. We merge WizardLM-13B, WizardMath-13B, and llama-2-13b-code-alpaca since all of them adopt Llama-2-13b as the pre-trained backbone. WizardCoder-Python-13B is not selected as it is fine-tuned from CodeLlama-13b-Python. We merge encoder-based Figure 4: Performance of encoder-based LMs on GLUE",
+        "x": 55.4,
+        "y": 313.5,
+        "w": 487.7,
+        "h": 118.3,
+        "zh": "这些方法的进一步说明见后文。为使计算可行，我们基于 Task Arithmetic 和 TIES-Merging 合并解码器语言模型。两种方法的缩放项从 [0.5, 1.0] 中选择，TIES-Merging 中保留最大幅度参数的比例从 [0.5, 0.7, 0.9] 中选择。我们合并 WizardLM-13B、WizardMath-13B 和 llama-2-13b-code-alpaca，因为它们都以 Llama-2-13b 为预训练骨干。不选 WizardCoder-Python-13B，因为它是从 CodeLlama-13b-Python 微调而来的。我们合并编码器模型。图 4：编码器语言模型在 GLUE 上的性能"
+      },
+      {
+        "text": "LMs with all five methods and perform grid search on some with different drop rates.",
+        "x": 55.1,
+        "y": 301.5,
+        "w": 486.4,
+        "h": 10.7,
+        "zh": "用全部五种方法合并语言模型，并对一部分超参数做网格搜索。在不同丢弃率下。"
+      },
+      {
+        "text": "hyperparameters (see Table 5 in Section A.4 for more details). Following Jin et al. (2023); Yadav et al. (2023), we also fine-tune the models under the multi-task learning setthe drop rate p can even reach 99%; (2) the tolerance of",
+        "x": 55.4,
+        "y": 264.2,
+        "w": 487.7,
+        "h": 36.1,
+        "zh": "超参数（更多细节见第 A.4 节的表 5）。遵循 Jin et al. (2023); Yadav et al. (2023)，我们也在多任务学习设定下微调模型。丢弃率 p 甚至可以达到 99%；（2）对丢弃率的容忍度"
+      },
+      {
+        "text": "ting and report the oracle results. We show the performance drop rate increases with the sizes of LMs, i.e., LMs with",
+        "x": 55.4,
+        "y": 252.2,
+        "w": 486,
+        "h": 12.2,
+        "zh": "并报告 oracle 结果。我们展示其性能。随语言模型规模增大而提高，也就是参数更多的语言模型"
+      },
+      {
+        "text": "of merging decoder-based LMs in Table 1 and present partial more parameters can withstand higher drop rate. For exam-",
+        "x": 55.4,
+        "y": 240.3,
+        "w": 486,
+        "h": 12.2,
+        "zh": "合并解码器语言模型的结果见表 1，并给出一部分。能够承受更高的丢弃率。例如，"
+      },
+      {
+        "text": "results of merging encoder-based LMs in Figure 5. Please ple, WizardMath-70B performs well when p = 0.99 while",
+        "x": 55.4,
+        "y": 228.3,
+        "w": 486,
+        "h": 12.2,
+        "zh": "合并编码器语言模型的结果见图 5。请。WizardMath-70B 在 p = 0.99 时仍然表现良好，而"
+      },
+      {
+        "text": "refer to Figure 13 in Section B.2 for the complete results. WizardMath-7B and WizardMath-13B fail. This depicts some connections with the scaling laws of LMs (Kaplan",
+        "x": 55,
+        "y": 204.4,
+        "w": 480.5,
+        "h": 24.2,
+        "zh": "完整结果见第 B.2 节的图 13。WizardMath-7B 和 WizardMath-13B 则不行。这说明它与语言模型的缩放定律有一些联系（Kaplan"
+      },
+      {
+        "text": "From Table 1, we find that: 1) DARE often facilitates Task et al., 2020; Hoffmann et al., 2022), indicating that there",
+        "x": 55.4,
+        "y": 192.5,
+        "w": 486.2,
+        "h": 18.2,
+        "zh": "从表 1 可以看到：1）DARE 常常促进 Task。et al., 2020; Hoffmann et al., 2022），表明"
+      },
+      {
+        "text": "Arithmetic and TIES-Merging on merging decoder-based may exist quantifiable correlations between model sizes and",
+        "x": 55.4,
+        "y": 180.5,
+        "w": 486,
+        "h": 18.2,
+        "zh": "Arithmetic 与 TIES-Merging 在合并解码器模型时的效果。模型规模和它们能够承受的丢弃率之间，可能存在可量化的相关"
+      },
+      {
+        "text": "LMs, which even yields better results than the source model drop rates they can afford.",
+        "x": 55.4,
+        "y": 168.5,
+        "w": 486,
+        "h": 18.2,
+        "zh": "甚至比源模型更好。它们所能承受的丢弃率。"
+      },
+      {
+        "text": "in many cases, offering a novel discovery unobserved in previous works. For instance, the improvements brought 4.3. Merging Models with DARE on SFT LMs",
+        "x": 55.4,
+        "y": 143.4,
+        "w": 486,
+        "h": 31.4,
+        "zh": "在很多情况下都是如此，这是以往工作中没有观察到的新发现。例如，由此带来的提升。4.3. 在 SFT 语言模型上用 DARE 做模型合并"
+      },
+      {
+        "text": "by Task Arithmetic with DARE are 3.10% for LM & Math & Code vs. LM on AlpacaEval, 3.18% for LM & Math We combine DARE with five model merging methods, in-",
+        "x": 55,
+        "y": 124.8,
+        "w": 486.5,
+        "h": 26.1,
+        "zh": "Task Arithmetic 配合 DARE 的提升为：LM & Math & Code 相对 LM，在 AlpacaEval 上是 3.10%；LM & Math 是 3.18%。我们把 DARE 与五种模型合并方法结合起来，包"
+      },
+      {
+        "text": "vs. Math on GSM8K, and 19.57% for LM & Code vs. cluding Average Merging (Wortsman et al., 2022), Task",
+        "x": 55.4,
+        "y": 112.8,
+        "w": 487.7,
+        "h": 14.1,
+        "zh": "相对 Math，在 GSM8K 上；以及 LM & Code 相对 Code，为 19.57%。括 Average Merging（Wortsman et al., 2022）、Task"
+      },
+      {
+        "text": "Code on MBPP; 2) Compared with Task Arithmetic, TIESArithmetic (Ilharco et al., 2023), Fisher Merging (Matena",
+        "x": 55.1,
+        "y": 100.8,
+        "w": 488,
+        "h": 14.1,
+        "zh": "在 MBPP 上；2）与 Task Arithmetic 相比，TIES-。Arithmetic（Ilharco et al., 2023）、Fisher Merging（Matena"
+      },
+      {
+        "text": "Merging tends to benefit more from DARE. This is because & Raffel, 2022), RegMean (Jin et al., 2023), and TIES-",
+        "x": 55.1,
+        "y": 88.9,
+        "w": 486.4,
+        "h": 14.1,
+        "zh": "Merging 往往从 DARE 中获益更多。这是因为。& Raffel, 2022）、RegMean（Jin et al., 2023），以及 TIES-"
+      },
+      {
+        "text": "TIES-Merging first eliminates delta parameters with lower Merging (Yadav et al., 2023).",
+        "x": 55.4,
+        "y": 76.9,
+        "w": 486.2,
+        "h": 14.1,
+        "zh": "TIES-Merging 会先去掉幅度更低的 delta 参数。Merging（Yadav et al., 2023）。"
+      }
+    ],
+    "7": [
+      {
+        "text": "Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch",
+        "x": 109,
+        "y": 737.9,
+        "w": 378.9,
+        "h": 9,
+        "zh": "语言模型就是超级马里奥：从同源模型吸收能力，如同免费午餐"
+      },
+      {
+        "text": "Table 2: Results of 7B LMs on the Open LLM Leaderboard.",
+        "x": 307.1,
+        "y": 716.6,
+        "w": 234.3,
+        "h": 10,
+        "zh": "表 2：7B 语言模型在 Open LLM Leaderboard 上的结果。"
+      },
+      {
+        "text": "Average ARC Hella. MMLU TQA Wino. GSM8K NeuralBeagle14-7B 74.74 72.95 88.34 64.55 69.93 82.40 70.28",
+        "x": 314.4,
+        "y": 687.1,
+        "w": 222.1,
+        "h": 16.8,
+        "zh": ""
+      },
+      {
+        "text": "74.76 72.95 87.95 64.70 68.88 82.64 71.42 74.85 73.72 88.71 64.57 68.23 85.64 68.23 WildMarcoroni-7B 75.29 73.98 88.61 64.81 69.76 84.29 70.28",
+        "x": 315.5,
+        "y": 659.8,
+        "w": 216.6,
+        "h": 25.8,
+        "zh": ""
+      },
+      {
+        "text": "75.29 71.42 88.27 64.79 72.37 83.27 71.65 75.49 72.95 88.53 64.99 71.22 83.90 71.34",
+        "x": 381.2,
+        "y": 641.8,
+        "w": 150.9,
+        "h": 16.5,
+        "zh": ""
+      },
+      {
+        "text": "the source models they are built upon, achieving a certain Figure 5: Performance of merging encoder-based bert-base-",
+        "x": 55.4,
+        "y": 598.9,
+        "w": 486,
+        "h": 18.9,
+        "zh": "它们所基于的源模型，并取得了一定程度的。图 5：合并编码器模型 bert-base-"
+      },
+      {
+        "text": "degree of improvement. Notably, until January 28th, 2024, uncased and roberta-base on CoLA and MRPC.",
+        "x": 55.4,
+        "y": 586.9,
+        "w": 487.2,
+        "h": 18.9,
+        "zh": "提升。值得注意的是，直到 2024 年 1 月 28 日，uncased 与 roberta-base 在 CoLA 和 MRPC 上的性能。"
+      },
+      {
+        "text": "supermario v2 achieves the first rank on the Open LLM Leaderboard. It is thrilling that these benefits can be cheaply acquired by merely utilizing CPUs. magnitudes for each model, which potentially decreases the performance. When using DARE, delta parameters can",
+        "x": 55.4,
+        "y": 537.2,
+        "w": 486.3,
+        "h": 56.7,
+        "zh": "supermario v2 在 Open LLM Leaderboard 上排名第一。令人振奋的是，这些收益只用 CPU 就能便宜地得到。每个模型的幅度，这有可能降低性能。使用 DARE 时，delta 参数可以"
+      },
+      {
+        "text": "4.4. Importance of the Rescale Operation be effectively removed by resetting them to zeros without",
+        "x": 55.4,
+        "y": 525.3,
+        "w": 426.6,
+        "h": 19.6,
+        "zh": "4.4. 重缩放操作的重要性。通过重置为零而被有效去掉，并且不会"
+      },
+      {
+        "text": "As analyzed in Section 3.1, the rescale operation in DARE adversely affecting the performance. Thus, TIES-Merging",
+        "x": 55.4,
+        "y": 513.3,
+        "w": 486,
+        "h": 12.9,
+        "zh": "正如第 3.1 节的分析，DARE 中的重缩放。对性能产生不利影响。因此，TIES-Merging"
+      },
+      {
+        "text": "is essential to approximate the original embeddings. To just drops delta parameters sparsified by DARE (with zero",
+        "x": 55.4,
+        "y": 501.3,
+        "w": 486,
+        "h": 12.9,
+        "zh": "对于近似原来的嵌入必不可少。为了。只是丢掉已被 DARE 稀疏化的 delta 参数（以零作为"
+      },
+      {
+        "text": "verify this, we introduce DropOnly which randomly drops as the smallest magnitude), avoiding performance reduction",
+        "x": 55.4,
+        "y": 489.4,
+        "w": 486,
+        "h": 12.9,
+        "zh": "验证这一点，我们引入 DropOnly：它随机丢掉。最小幅度），从而避免性能下降"
+      },
+      {
+        "text": "delta parameters without rescaling. We calculate the similarin the first step; 3) It seems that llama-2-13b-code-alpaca is",
+        "x": 55.4,
+        "y": 477.4,
+        "w": 487.7,
+        "h": 12.9,
+        "zh": "delta 参数，但不做重缩放。我们计算嵌入之间的相似。发生在第一步；3）llama-2-13b-code-alpaca 似乎"
+      },
+      {
+        "text": "ities of embeddings between the original LM and LM with not well fine-tuned for generating codes since it performs",
+        "x": 55.4,
+        "y": 465.5,
+        "w": 486,
+        "h": 12.9,
+        "zh": "原始语言模型和使用了 DARE 或 DropOnly 的语言模型之间。并没有为生成代码做好微调，因为它的表现"
+      },
+      {
+        "text": "DARE or DropOnly. Specifically, we obtain the embeddings worse than WizardLM-13B, which may affect the model",
+        "x": 55.1,
+        "y": 453.5,
+        "w": 486.4,
+        "h": 12.9,
+        "zh": "DARE 或 DropOnly。具体而言，我们取出每一层的嵌入。比 WizardLM-13B 更差，这可能会影响模型"
+      },
+      {
+        "text": "of each input token layer-by-layer and report the average merging performance. We additionally evaluate the code-",
+        "x": 55.4,
+        "y": 441.6,
+        "w": 486,
+        "h": 12.9,
+        "zh": "对每个输入 token 逐层取出，并报告平均。合并性能。我们另外还评估了代码"
+      },
+      {
+        "text": "cosine similarities. Results of WizardMath-7B on GSM8K generating ability of the merger of WizardLM-13B and",
+        "x": 55.4,
+        "y": 429.6,
+        "w": 486.4,
+        "h": 12.9,
+        "zh": "余弦相似度。WizardMath-7B 在 GSM8K 上的结果。生成能力，比较的是 WizardLM-13B 与"
+      },
+      {
+        "text": "and bert-base-uncased on CoLA are shown in Figure 6. WizardMath-13B, which obtains better results than llama- 2-13b-code-alpaca, explaining the suboptimal performance of the amalgamation of WizardMath-13B and llama-2-13bcode-alpaca. Therefore, an essential prerequisite for effective model merging is that each source model to be merged should be well fine-tuned. From Figure 5, we observe that DARE often yields modestly better results of various merging methods, achieving an average improvement of 0.58%, 0.36%, 0.37%, -0.03%, and 0.84% on Average Merging, Task Arithmetic, Fisher Merging, RegMean, and TIES-Merging. However, the merged model still struggles to surpass the single model in some cases, which is in line with the conclusions in Matena &",
+        "x": 55,
+        "y": 268.2,
+        "w": 472.7,
+        "h": 162.3,
+        "zh": "以及 bert-base-uncased 在 CoLA 上的结果见图 6。WizardMath-13B 合并之后的模型，其结果好于 llama-2-13b-code-alpaca，这也解释了为何把 WizardMath-13B 和 llama-2-13b-code-alpaca 合在一起效果不够好。因此，要让模型合并有效，一个必要前提是：每个待合并的源模型都应当微调得足够好。从图 5 可以看到，DARE 常常让各种合并方法略好一些，在 Average Merging、Task Arithmetic、Fisher Merging、RegMean 和 TIES-Merging 上的平均提升分别是 0.58%、0.36%、0.37%、-0.03% 和 0.84%。不过，合并模型在某些情况下仍然难以超过单个模型，这与 Matena &"
+      },
+      {
+        "text": "Figure 6: Cosine similarities of each layer’s embeddings Raffel (2022); Jin et al. (2023); Yadav et al. (2023).",
+        "x": 55.4,
+        "y": 256.3,
+        "w": 486,
+        "h": 15.6,
+        "zh": "图 6：原始语言模型与使用 DARE 或 DropOnly 的语言模型之间，每一层嵌入的余弦相似度。Raffel (2022)、Jin et al. (2023) 和 Yadav et al. (2023) 的结论是一致的。"
+      },
+      {
+        "text": "between the original LM and LM with DARE or DropOnly. Last but not least, from both Table 1 and Figure 5, we further conclude that the improvements caused by DARE are more pronounced in decoder-based LMs compared to encoderbased LMs. One possible reason is that decoder-based LMs are able to accommodate more abilities than encoder-based LMs due to their substantially larger sizes. We further verify the effectiveness of DARE in merging decoder-based LMs apart from the Llama 2 backbone (e.g., Mistral-7B (Jiang et al., 2023)). We provide two merged decoder-based LMs with 7 billion parameters (namely, supermario v1 and supermario v2) and evaluate them on Open",
+        "x": 55,
+        "y": 112.8,
+        "w": 486.4,
+        "h": 147.1,
+        "zh": "原始语言模型与使用 DARE 或 DropOnly 的语言模型之间。最后，从表 1 和图 5 还可以进一步得出：DARE 带来的提升在解码器语言模型上比在编码器语言模型上更明显。一个可能的原因是，解码器语言模型大得多，因此比编码器语言模型更能装下更多能力。我们还验证了 DARE 在合并 Llama 2 以外骨干的解码器语言模型时仍然有效，例如 Mistral-7B（Jiang et al., 2023）。我们给出两个参数量为 70 亿的合并解码器语言模型，分别叫 supermario v1 和 supermario v2，并在 Open"
+      },
+      {
+        "text": "Figure 7: Distributions of cosine similarities of the last LLM Leaderboard (Beeching et al., 2023). Please see Sec-",
+        "x": 55.4,
+        "y": 100.8,
+        "w": 486,
+        "h": 13.5,
+        "zh": "图 7：最后一层嵌入余弦相似度的分布。LLM Leaderboard（Beeching et al., 2023）上做了评估。请参见第"
+      },
+      {
+        "text": "layer’s embeddings between the original LM and LM with tion A.5 for more details of the source models and benchmarks. From Table 2, we find that the merged LMs beat",
+        "x": 55.4,
+        "y": 76.9,
+        "w": 486,
+        "h": 25.5,
+        "zh": "层，比较对象是原始语言模型与使用了该方法的语言模型。A.5 节，那里有源模型和基准的更多细节。从表 2 可以看到，合并后的语言模型超过了"
+      }
+    ],
+    "8": [
+      {
+        "text": "Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch",
+        "x": 109,
+        "y": 737.9,
+        "w": 378.9,
+        "h": 9,
+        "zh": "语言模型就是超级马里奥：从同源模型吸收能力，如同免费午餐"
+      },
+      {
+        "text": "We observe that DARE can perfectly maintain the original embeddings in each layer with similarities higher than 0.95 even when removing 90% delta parameters. However, DropOnly just preserves the original embeddings with p = 0.1 and the similarities sharply decline when p is higher. For example, the similarities on WizardMath-7B decrease to about 0.85/0.68 when p is 0.5/0.9). We further show the distributions of embeddings’ cosine similarities in the last layer in Figure 7, demonstrating the ability of DARE in approximating original embeddings. Note that similar findings can be obtained on other LMs and datasets but they are not presented due to page limits.",
+        "x": 55,
+        "y": 583.5,
+        "w": 236.1,
+        "h": 141.5,
+        "zh": "我们观察到，即便去掉 90% 的 delta 参数，DARE 仍能在每一层很好地保持原来的嵌入，相似度高于 0.95。DropOnly 只在 p = 0.1 时还能保住原来的嵌入，p 再高，相似度就急剧下降。例如，WizardMath-7B 上的相似度在 p 为 0.5 和 0.9 时，大约降到 0.85 和 0.68。我们进一步在图 7 里给出最后一层嵌入余弦相似度的分布，说明 DARE 能够近似原来的嵌入。在其他语言模型和数据集上也能看到类似现象，但受篇幅限制没有放进来。"
+      },
+      {
+        "text": "Figure 9: Comparisons between DARE and MP on GSM8K and CoLA on various LMs. We also report the performance of LMs with DARE and DropOnly in Figure 8. See Figure 14 and Figure 15 in Section B.3 for additional results. We observe that discarding",
+        "x": 55,
+        "y": 541.6,
+        "w": 486.8,
+        "h": 50.4,
+        "zh": "图 9：在多种语言模型上，比较 DARE 与 MP 在 GSM8K 和 CoLA 上的结果。我们还在图 8 中给出使用 DARE 和 DropOnly 的语言模型的性能。更多结果见第 B.3 节的图 14 和图 15。我们观察到，一旦丢掉"
+      },
+      {
+        "text": "the drop rate is 0.7, the performance of MP on 7B LMs the rescale operation usually leads to worse results, and the",
+        "x": 55.4,
+        "y": 529.7,
+        "w": 486,
+        "h": 13.5,
+        "zh": "丢弃率取 0.7 时，MP 在 7B 语言模型上的性能。重缩放操作通常会让结果变差，而且"
+      },
+      {
+        "text": "decreases from 43.85 to 10.61 on AlpacaEval, from 46.70 performance gaps between DARE and DropOnly become",
+        "x": 55.4,
+        "y": 517.7,
+        "w": 486,
+        "h": 13.5,
+        "zh": "在 AlpacaEval 上从 43.85 降到 10.61，并从 46.70。DARE 和 DropOnly 之间的性能差距会变得"
+      },
+      {
+        "text": "to 0.37 on GSM8K, and from 21.34 to 3.05 on HumanEval. more significant with the increase of p. This validates the",
+        "x": 55.4,
+        "y": 505.8,
+        "w": 487.7,
+        "h": 13.5,
+        "zh": "在 GSM8K 上降到 0.37，在 HumanEval 上从 21.34 降到 3.05。随着 p 增大而更明显。这验证了"
+      },
+      {
+        "text": "This is because MP removes parameters with smaller magnieffectiveness of the rescale operation in DARE once again.",
+        "x": 55.4,
+        "y": 493.8,
+        "w": 487.7,
+        "h": 13.5,
+        "zh": "这是因为 MP 去掉的是幅度更小的参数。DARE 中重缩放操作的有效性。"
+      },
+      {
+        "text": "tudes and retains certain parameters with larger magnitudes. Simply rescaling the remaining parameters would result in unpredictable performance.",
+        "x": 307.4,
+        "y": 461.4,
+        "w": 235.7,
+        "h": 33.9,
+        "zh": "并保留一部分幅度更大的参数。如果只是把剩余参数做重缩放，性能会变得不可预测。"
+      },
+      {
+        "text": "We investigate the prerequisites that DARE can work. We choose Llama-2-13b instead of CodeLlama-13b-Python as the pre-trained backbone for WizardCoder-Python-13B and apply DARE to derive the model after dropping certain delta parameters for evaluation. We find that the pass@1 metric on HumanEval/MBPP drastically decreases from 63.41/55.4 to 0.0/0.0 when only 10% delta parameters are removed. Figure 8: Comparisons between DARE and DropOnly on",
+        "x": 55.4,
+        "y": 334.9,
+        "w": 487.7,
+        "h": 92.7,
+        "zh": "我们考察 DARE 得以生效的前提。我们用 Llama-2-13b 而不是 CodeLlama-13b-Python，作为 WizardCoder-Python-13B 的预训练骨干，再用 DARE 得到丢掉一部分 delta 参数之后的模型并做评估。我们发现，只去掉 10% 的 delta 参数，HumanEval 和 MBPP 上的 pass@1 就从 63.41/55.4 猛降到 0.0/0.0。图 8：DARE 与 DropOnly 在"
+      },
+      {
+        "text": "We deduce this is because Code Llama models are additionGSM8K and CoLA on various LMs.",
+        "x": 55.4,
+        "y": 323,
+        "w": 487.7,
+        "h": 21,
+        "zh": "我们推断，这是因为 Code Llama 模型还额外。多种语言模型的 GSM8K 和 CoLA 上的比较。"
+      },
+      {
+        "text": "ally trained with 500B tokens of code-related data (Roziere` et al., 2023), resulting in more obvious changes in parameter values with respect to Llama 2 models. Since WizardCoderPython-13B is fine-tuned based on CodeLlama-13b-Python, 4.5. Comparison with Magnitude-based Pruning",
+        "x": 55.4,
+        "y": 280.9,
+        "w": 487.7,
+        "h": 51.1,
+        "zh": "在 500B 个代码相关 token 上训练过（Rozière et al., 2023），所以相对 Llama 2，参数值的变化更明显。由于 WizardCoder-Python-13B 是在 CodeLlama-13b-Python 上微调的，4.5. 与基于幅度的剪枝做比较"
+      },
+      {
+        "text": "when it uses Llama-2-13b as the pre-trained backbone, the We compare DARE with the commonly used Magnitude-",
+        "x": 55,
+        "y": 262.2,
+        "w": 486.5,
+        "h": 21.9,
+        "zh": "当预训练骨干改成 Llama-2-13b 时，这些。我们把 DARE 与常用的、基于幅度的"
+      },
+      {
+        "text": "ranges of SFT delta parameters would become much larger, based Pruning (MP) (Han et al., 2015; Li et al., 2018; Lee",
+        "x": 55.4,
+        "y": 250.3,
+        "w": 487.2,
+        "h": 21.9,
+        "zh": "SFT delta 参数的取值范围会大得多。剪枝（MP）（Han et al., 2015; Li et al., 2018; Lee"
+      },
+      {
+        "text": "making DARE infeasible. To verify this, we depict the abet al., 2021), which chooses parameters based on their mag-",
+        "x": 55.4,
+        "y": 238.3,
+        "w": 487.7,
+        "h": 21.9,
+        "zh": "从而使 DARE 不可行。为验证这一点，我们画出这些绝对值。et al., 2021）做比较。该方法按参数幅度来选取参数。"
+      },
+      {
+        "text": "solute values of SFT delta parameters of 13B decoder-based nitudes. For more fair and credible comparisons, we adapt",
+        "x": 55.4,
+        "y": 226.4,
+        "w": 486,
+        "h": 21.9,
+        "zh": "13B 解码器语言模型的 SFT delta 参数绝对值。为了比较更公平、也更可信，我们把"
+      },
+      {
+        "text": "LMs vs. various pre-trained backbones in Figure 10. Please MP to operate on delta parameters and discard the retraining",
+        "x": 55.4,
+        "y": 214.4,
+        "w": 486,
+        "h": 21.9,
+        "zh": "相对不同预训练骨干的结果放在图 10 里。请把 MP 改成作用在 delta 参数上，并且不再做重新训练"
+      },
+      {
+        "text": "see Figure 18, Figure 19 and Figure 20 in Section B.5 for process. We show partial results of LMs with DARE and",
+        "x": 55.4,
+        "y": 202.5,
+        "w": 486.2,
+        "h": 21.9,
+        "zh": "见图 18、图 19 和图 20，位于第 B.5 节。这一过程。我们给出使用 DARE 以及"
+      },
+      {
+        "text": "the SFT delta parameter ranges on decoder- and encoderMP in Figure 9. Please refer to Figure 16 and Figure 17 in",
+        "x": 55.4,
+        "y": 190.5,
+        "w": 487.7,
+        "h": 21.9,
+        "zh": "解码器模型和编码器模型上 SFT delta 参数的取值范围。图 9 中的 MP。更多结果见图 16 和图 17，见"
+      },
+      {
+        "text": "based LMs. Additionally, we present the statistics on the Section B.4 for extra results.",
+        "x": 55.4,
+        "y": 178.6,
+        "w": 486,
+        "h": 21.9,
+        "zh": "这些语言模型。此外，我们还给出统计。第 B.4 节中的额外结果。"
+      },
+      {
+        "text": "percentiles of delta parameter ranges of both decoder- and encoder-based LMs in Table 6 in Section B.5. We find that DARE outperforms MP in most cases and the superiority of DARE is more obvious when the drop rate",
+        "x": 55,
+        "y": 148.7,
+        "w": 486.5,
+        "h": 39.9,
+        "zh": "解码器和编码器语言模型 delta 参数取值范围的百分位数，见表 6（第 B.5 节）。我们发现，大多数情况下 DARE 优于 MP；丢弃率越高，DARE 的优势越明显"
+      },
+      {
+        "text": "From the results, we observe the absolute values of delta becomes higher, verifying the superiority of DARE in aban-",
+        "x": 55.4,
+        "y": 136.7,
+        "w": 486,
+        "h": 21.9,
+        "zh": "从结果可以看到，delta 参数的绝对值。越高，越能说明 DARE 在舍弃"
+      },
+      {
+        "text": "parameters of WizardCoder-Python-13B vs. Llama-2-13b doning delta parameters. The reason is that MP fails to",
+        "x": 55.4,
+        "y": 124.8,
+        "w": 486,
+        "h": 21.9,
+        "zh": "WizardCoder-Python-13B 相对 Llama-2-13b 的那些参数。delta 参数时更有优势。原因是 MP 没能"
+      },
+      {
+        "text": "(often greater than 0.01) are several orders of magnitude bigpreserve the original embeddings since it neglects the contri-",
+        "x": 55.4,
+        "y": 112.8,
+        "w": 487.7,
+        "h": 21.9,
+        "zh": "（常常大于 0.01）要大上好几个数量级。保住原来的嵌入，因为它忽略了"
+      },
+      {
+        "text": "ger than those of WizardCoder-Python-13B vs. CodeLlamabutions of delta parameters with lower magnitudes. We have",
+        "x": 55.4,
+        "y": 100.8,
+        "w": 487.7,
+        "h": 21.9,
+        "zh": "WizardCoder-Python-13B 相对 CodeLlama 时的那些值。幅度更低的 delta 参数所作的贡献。我们还"
+      },
+      {
+        "text": "13b-Python (usually within 0.0002), causing the failure of also tried to combine MP with the rescale operation but got",
+        "x": 55.4,
+        "y": 88.9,
+        "w": 486,
+        "h": 21.9,
+        "zh": "13b-Python（通常在 0.0002 以内），于是 DARE 会失败。试过把 MP 和重缩放合在一起用，但得到的结果"
+      },
+      {
+        "text": "DARE. For other 13B decoder-based LMs fine-tuned from worse results than using MP separately. For example, when",
+        "x": 55.1,
+        "y": 76.9,
+        "w": 486.4,
+        "h": 21.9,
+        "zh": "对其他从该骨干微调而来的 13B 解码器语言模型。比单独用 MP 更差。例如，当"
+      },
+      {
+        "text": "Llama-2-13b, most of their absolute values of delta parame-",
+        "x": 307.4,
+        "y": 76.9,
+        "w": 235.6,
+        "h": 10,
+        "zh": "Llama-2-13b 时，它们的 delta 参数绝对值大多数都"
+      }
+    ],
+    "9": [
+      {
+        "text": "Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch",
+        "x": 109,
+        "y": 737.9,
+        "w": 378.9,
+        "h": 9,
+        "zh": "语言模型就是超级马里奥：从同源模型吸收能力，如同免费午餐"
+      },
+      {
+        "text": "based LMs are more susceptible than encoder-based LMs when removing fine-tuned parameters. This could be attributed to the fact that decoder-based LMs exhibit a higher degree of capability and have a stronger correlation with the fine-tuned parameters. Consequently, even the removal of a relatively small proportion of fine-tuned parameters can significantly degrade their performance.",
+        "x": 307.1,
+        "y": 643.2,
+        "w": 236,
+        "h": 81.7,
+        "zh": "去掉微调后的参数时，解码器语言模型比编码器语言模型更敏感。这是因为解码器语言模型的能力更强，和微调后参数的关系也更紧。因此，哪怕只去掉相对较小的一部分微调后参数，性能也会明显变差。"
+      },
+      {
+        "text": "In this work, we first discussed the extremely redundant Figure 10: Delta parameter absolute values of 13B decoder-",
+        "x": 55.4,
+        "y": 593.5,
+        "w": 486,
+        "h": 11.8,
+        "zh": "本文首先讨论了语言模型里 SFT delta 参数极度冗余这一特点。图 10：13B 解码器"
+      },
+      {
+        "text": "properties of SFT delta parameters in LMs and proposed a based LMs vs. the pre-trained backbones.",
+        "x": 55.4,
+        "y": 581.5,
+        "w": 486,
+        "h": 11.8,
+        "zh": "并据此提出一种方法。语言模型相对其预训练骨干的情况。"
+      },
+      {
+        "text": "simple approach DARE to effectively reduce the number of delta parameters needed for SFT without any data, retraining, or even GPUs. DARE can impressively drop 90% or ters are less than 0.002, making DARE a proper choice. To",
+        "x": 55.4,
+        "y": 547.2,
+        "w": 487.7,
+        "h": 34.2,
+        "zh": "这就是简单方法 DARE。它不需要数据，不需要重新训练，甚至不需要 GPU，就能有效减少 SFT 所需要的 delta 参数数量。DARE 可以相当干脆地丢掉 90%，甚至。这些值小于 0.002，所以 DARE 是合适的选择。至此，"
+      },
+      {
+        "text": "even 99% SFT delta parameters without sacrificing much this end, we conclude that DARE can work well when the",
+        "x": 55.4,
+        "y": 535.2,
+        "w": 486,
+        "h": 10.3,
+        "zh": "99% 的 SFT delta 参数，而且不会牺牲太多性能。我们得出结论：当这些"
+      },
+      {
+        "text": "performance compared with using all SFT delta parameters. absolute values of SFT delta parameters are relatively small",
+        "x": 55.4,
+        "y": 523.3,
+        "w": 487.7,
+        "h": 10.3,
+        "zh": "与使用全部 SFT delta 参数相比。SFT delta 参数的绝对值相对较小的时候"
+      },
+      {
+        "text": "We further employed DARE as a versatile plug-and-play (e.g., within 0.002). Otherwise, DARE may fail.",
+        "x": 55.1,
+        "y": 511.3,
+        "w": 486.7,
+        "h": 10.3,
+        "zh": "我们进一步把 DARE 做成现有模型合并方法的即插即用模块。（例如落在 0.002 以内）。否则 DARE 可能会失败。"
+      },
+      {
+        "text": "approach for existing model merging methods to merge multiple task-specific fine-tuned models into a single model 4.7. Can DARE Drop Fine-tuned Parameters?",
+        "x": 55.4,
+        "y": 486.2,
+        "w": 487.7,
+        "h": 23.5,
+        "zh": "用来把多个任务专用的微调模型合并成一个模型。4.7. DARE 能不能丢掉微调后的参数？"
+      },
+      {
+        "text": "with diverse abilities. Extensive experimental results on As previous network pruning methods mainly operate on",
+        "x": 55.1,
+        "y": 467.5,
+        "w": 486.4,
+        "h": 18.2,
+        "zh": "一个具备多种能力的模型。大量实验。以往的网络剪枝方法主要作用在"
+      },
+      {
+        "text": "both encoder- and decoder-based LMs demonstrated the the fine-tuned instead of delta parameters, we also con-",
+        "x": 55.4,
+        "y": 455.6,
+        "w": 486,
+        "h": 18.2,
+        "zh": "在编码器和解码器语言模型上都表明。微调后的参数上，而不是 delta 参数上，因此我们也"
+      },
+      {
+        "text": "effectiveness of DARE in reducing SFT delta parameter duct experiments under this setting with both decoder- and",
+        "x": 55.4,
+        "y": 443.6,
+        "w": 486.2,
+        "h": 18.2,
+        "zh": "DARE 能够减少 SFT 的 delta 参数。在这一设定下做了实验，对象既有解码器，也有"
+      },
+      {
+        "text": "redundancy and facilitating the model merging performance. . For decoder-based LMs, we find they perform badly",
+        "x": 55.4,
+        "y": 431.6,
+        "w": 487.7,
+        "h": 18.2,
+        "zh": "冗余，并让模型合并的效果更好。对解码器语言模型，我们发现它们表现很差。"
+      },
+      {
+        "text": "We also provided a deeper analysis of why DARE works as when removing fine-tuned parameters even with 0.1 as",
+        "x": 55.1,
+        "y": 419.7,
+        "w": 486.4,
+        "h": 18.2,
+        "zh": "我们也更仔细地分析了 DARE 为什么有效，以及。哪怕只按 0.1 的比例去掉微调后的参数，"
+      },
+      {
+        "text": "well as the prerequisites for using DARE. We hope that our Quantitatively, the performance sharply",
+        "x": 122.4,
+        "y": 407.7,
+        "w": 419.2,
+        "h": 18.2,
+        "zh": "使用 DARE 需要满足的前提。我们希望这些。从数量上看，性能会急剧"
+      },
+      {
+        "text": "findings can advance the understanding of model alignment drops from 67.20 to 8.56 on AlpacaEval for WizardLM-",
+        "x": 55.4,
+        "y": 395.8,
+        "w": 486,
+        "h": 18.2,
+        "zh": "发现能从参数分析的角度，推进人们对模型对齐的理解。下降：WizardLM- 在 AlpacaEval 上从 67.20 降到 8.56，"
+      },
+      {
+        "text": "from the perspective of analyzing model parameters. 13B, from 64.22/14.02 to 0.38/0.16 on GSM8K/MATH for WizardMath-13B, from 63.41/55.40 to 0.0/0.20 on HumanEval/MBPP for WizardCoder-Python-13B. Similar observations can also be found on MP or decoder-based LMs",
+        "x": 54.7,
+        "y": 348,
+        "w": 462.3,
+        "h": 54.1,
+        "zh": "从分析模型参数这一视角来看。13B；WizardMath-13B 在 GSM8K/MATH 上从 64.22/14.02 降到 0.38/0.16；WizardCoder-Python-13B 在 HumanEval/MBPP 上从 63.41/55.40 降到 0.0/0.20。在 MP 上，以及在解码器语言模型上，也能看到类似现象"
+      },
+      {
+        "text": "Recently, merging language models has become a promising with 7B, 34B, or 70B sizes. Partial results on encoder-based",
+        "x": 55.1,
+        "y": 336,
+        "w": 486.4,
+        "h": 18.1,
+        "zh": "近来，合并语言模型成了一个有前景的方向。规模为 7B、34B 或 70B。编码器语言模型上的一部分结果"
+      },
+      {
+        "text": "research direction. Our work allows researchers to obtain a LMs are shown in Figure 11 and please see Figure 21 in",
+        "x": 55.4,
+        "y": 324.1,
+        "w": 486,
+        "h": 18.1,
+        "zh": "我们的工作让研究者能以很低的成本得到一个。放在图 11 里，更多结果见图 21，见"
+      },
+      {
+        "text": "single model with diverse capabilities at a low cost. Thanks Section B.6 for additional results. We observe that directly",
+        "x": 55.4,
+        "y": 312.1,
+        "w": 486,
+        "h": 18.1,
+        "zh": "具备多种能力的单一模型。感谢。第 B.6 节。我们观察到，如果直接"
+      },
+      {
+        "text": "to our method, hundreds of models with different functionalities have been created on the Hugging Face community . Several popular toolkits on the GitHub platform have also integrated our work, including huggingface/peft ai/mergekit . Even though this work has no direct social impacts, the potentially harmful information generated by LLMs (e.g., gender bias, racial discrimination) may still exist when using our approach. It is necessary to advocate for careful regulation by the communities as well as authorities",
+        "x": 307.2,
+        "y": 212.6,
+        "w": 236,
+        "h": 105.6,
+        "zh": "得益于我们的方法，Hugging Face 社区里已经出现了数百个功能各不相同的模型。GitHub 上好几个常用工具包也集成了这项工作，包括 huggingface/peft 和 ai/mergekit。尽管本文没有直接的社会影响，使用该方法时，大语言模型仍可能生成有害信息（例如性别偏见、种族歧视）。因此有必要由社区和管理部门一起加以谨慎约束。"
+      },
+      {
+        "text": "We would like to express our sincere gratitude to the anonyparameters on CoLA and MRPC on encoder-based LMs.",
+        "x": 55.4,
+        "y": 151,
+        "w": 487.7,
+        "h": 11.7,
+        "zh": "我们衷心感谢匿名审稿人。编码器语言模型在 CoLA 和 MRPC 上的参数情况。"
+      },
+      {
+        "text": "mous reviewers for their insightful comments and suggestions, which have significantly enriched this paper. eliminating the fine-tuned parameters by either DARE or MP would lead to worse performance on encoder-based",
+        "x": 55.4,
+        "y": 112.8,
+        "w": 487.7,
+        "h": 37.9,
+        "zh": "感谢他们细致而有见地的意见和建议，这些意见让本文充实了不少。无论用 DARE 还是 MP 去掉微调后的参数，都会让编码器模型的性能变差"
+      },
+      {
+        "text": "1https://huggingface.co/models?other= LMs. The above results confirm that the knowledge is inherent in pre-trained LMs, and SFT is responsible for unlocking",
+        "x": 55.4,
+        "y": 88.9,
+        "w": 461.8,
+        "h": 30.7,
+        "zh": "1https://huggingface.co/models?other= 语言模型。上述结果说明，知识本来就在预训练语言模型里，SFT 负责的是把这些能力解锁出来"
+      },
+      {
+        "text": "https://github.com/huggingface/peft https://github.com/arcee-ai/mergekit instead of introducing new capabilities. Moreover, decoder-",
+        "x": 55.4,
+        "y": 76.9,
+        "w": 462.3,
+        "h": 21,
+        "zh": "https://github.com/huggingface/peft https://github.com/arcee-ai/mergekit 而不是引入新的能力。此外，解码器"
+      }
+    ],
+    "10": [
+      {
+        "text": "Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch",
+        "x": 109,
+        "y": 737.9,
+        "w": 378.9,
+        "h": 9,
+        "zh": "语言模型就是超级马里奥：从同源模型吸收能力，如同免费午餐"
+      },
+      {
+        "text": "R., Hesse, C., and Schulman, J. Training verifiers to solve math word problems. CoRR, abs/2110.14168, 2021. Austin, J., Odena, A., Nye, M. I., Bosma, M., Michalewski, H., Dohan, D., Jiang, E., Cai, C. J., Terry, M., Le, Q. V.,",
+        "x": 55.4,
+        "y": 685.1,
+        "w": 486,
+        "h": 39.9,
+        "zh": "R.、Hesse, C. 与 Schulman, J.。训练验证器来解数学应用题。CoRR, abs/2110.14168, 2021。Austin, J.、Odena, A.、Nye, M. I.、Bosma, M.、Michalewski, H.、Dohan, D.、Jiang, E.、Cai, C. J.、Terry, M.、Le, Q. V.、"
+      },
+      {
+        "text": "Crawshaw, M. Multi-task learning with deep neural netand Sutton, C. Program synthesis with large language",
+        "x": 65.4,
+        "y": 673.1,
+        "w": 477.7,
+        "h": 20.3,
+        "zh": "Crawshaw, M.。深度神经网络上的多任务学习，以及 Sutton, C.。用大语言"
+      },
+      {
+        "text": "works: A survey. CoRR, abs/2009.09796, 2020. models. CoRR, abs/2108.07732, 2021.",
+        "x": 65.4,
+        "y": 661.2,
+        "w": 442.7,
+        "h": 20.3,
+        "zh": "网络：一篇综述。CoRR, abs/2009.09796, 2020。模型做程序合成。CoRR, abs/2108.07732, 2021。"
+      },
+      {
+        "text": "Dagan, I., Glickman, O., and Magnini, B. The PASCAL Beeching, E., Fourrier, C., Habib, N., Han, S., Lambert,",
+        "x": 55.4,
+        "y": 641.4,
+        "w": 486.5,
+        "h": 20.5,
+        "zh": "Dagan, I.、Glickman, O. 与 Magnini, B.。PASCAL。Beeching, E.、Fourrier, C.、Habib, N.、Han, S.、Lambert,"
+      },
+      {
+        "text": "recognising textual entailment challenge. In Candela, N., Rajani, N., Sanseviero, O., Tunstall, L., and Wolf, T.",
+        "x": 65.4,
+        "y": 629.5,
+        "w": 477.3,
+        "h": 20.5,
+        "zh": "文本蕴含识别挑战。载于 Candela,。N.、Rajani, N.、Sanseviero, O.、Tunstall, L. 与 Wolf, T."
+      },
+      {
+        "text": "J. Q., Dagan, I., Magnini, B., and d’Alche-Buc, F. (eds.),´ Open llm leaderboard, 2023.",
+        "x": 65.4,
+        "y": 617.5,
+        "w": 477.3,
+        "h": 20.5,
+        "zh": "J. Q.、Dagan, I.、Magnini, B. 与 d’Alché-Buc, F.（编），Open LLM Leaderboard，2023。"
+      },
+      {
+        "text": "Machine Learning Challenges, Evaluating Predictive Uncertainty, Visual Object Classification and Recognizing Bentivogli, L., Clark, P., Dagan, I., and Giampiccolo, D.",
+        "x": 55.4,
+        "y": 597.8,
+        "w": 487.7,
+        "h": 28.3,
+        "zh": "《机器学习挑战：评估预测不确定性、视觉物体分类，以及识别。Bentivogli, L.、Clark, P.、Dagan, I. 与 Giampiccolo, D."
+      },
+      {
+        "text": "Textual Entailment, First PASCAL Machine Learning The fifth pascal recognizing textual entailment challenge.",
+        "x": 65.1,
+        "y": 585.8,
+        "w": 476.3,
+        "h": 16.3,
+        "zh": "文本蕴含》，第一届 PASCAL 机器学习。第五届 PASCAL 文本蕴含识别挑战。"
+      },
+      {
+        "text": "Challenges Workshop, volume 3944 of Lecture Notes in Computer Science, pp. 177–190. Springer, 2005. Bowman, S. R., Angeli, G., Potts, C., and Manning, C. D.",
+        "x": 55.4,
+        "y": 554.1,
+        "w": 486,
+        "h": 36.1,
+        "zh": "挑战研讨会，Lecture Notes in Computer Science 第 3944 卷，第 177–190 页。Springer，2005。Bowman, S. R.、Angeli, G.、Potts, C. 与 Manning, C. D."
+      },
+      {
+        "text": "Devlin, J., Chang, M., Lee, K., and Toutanova, K. BERT: A large annotated corpus for learning natural language",
+        "x": 65,
+        "y": 542.1,
+        "w": 477.8,
+        "h": 16.5,
+        "zh": "Devlin, J.、Chang, M.、Lee, K. 与 Toutanova, K.。BERT：一个用于学习自然语言的大规模标注语料"
+      },
+      {
+        "text": "pre-training of deep bidirectional transformers for laninference. In Proceedings of the 2015 Conference on",
+        "x": 65.4,
+        "y": 530.2,
+        "w": 477.7,
+        "h": 16.5,
+        "zh": "深度双向 Transformer 的预训练，面向语言。推断。载于 2015 年会议论文集"
+      },
+      {
+        "text": "guage understanding. In Proceedings of the 2019 ConferEmpirical Methods in Natural Language Processing, pp.",
+        "x": 65.1,
+        "y": 518.2,
+        "w": 478,
+        "h": 16.5,
+        "zh": "理解。载于 2019 年会议。自然语言处理中的经验方法，第"
+      },
+      {
+        "text": "ence of the North American Chapter of the Association 632–642. The Association for Computational Linguistics,",
+        "x": 65.4,
+        "y": 506.3,
+        "w": 476,
+        "h": 16.5,
+        "zh": "北美计算语言学协会分会论文集。第 632–642 页。计算语言学协会，"
+      },
+      {
+        "text": "for Computational Linguistics: Human Language Technologies, pp. 4171–4186. Association for Computational Cer, D. M., Diab, M. T., Agirre, E., Lopez-Gazpio, I., and Specia, L. Semeval-2017 task 1: Semantic textual simi-",
+        "x": 55.4,
+        "y": 462.6,
+        "w": 487.7,
+        "h": 48.2,
+        "zh": "计算语言学：人类语言技术，第 4171–4186 页。计算语言学协会。Cer, D. M.、Diab, M. T.、Agirre, E.、Lopez-Gazpio, I. 与 Specia, L.。SemEval-2017 任务 1：语义文本相似"
+      },
+      {
+        "text": "Ding, N., Qin, Y., Yang, G., Wei, F., Yang, Z., Su, Y., Hu, S., larity - multilingual and cross-lingual focused evaluation.",
+        "x": 65.4,
+        "y": 450.7,
+        "w": 477.3,
+        "h": 16.7,
+        "zh": "Ding, N.、Qin, Y.、Yang, G.、Wei, F.、Yang, Z.、Su, Y.、Hu, S.、度：面向多语言与跨语言的评测。"
+      },
+      {
+        "text": "Chen, Y., Chan, C., Chen, W., Yi, J., Zhao, W., Wang, X., CoRR, abs/1708.00055, 2017.",
+        "x": 65.1,
+        "y": 438.7,
+        "w": 477.6,
+        "h": 16.7,
+        "zh": "Chen, Y.、Chan, C.、Chen, W.、Yi, J.、Zhao, W.、Wang, X.、CoRR, abs/1708.00055, 2017。"
+      },
+      {
+        "text": "Liu, Z., Zheng, H., Chen, J., Liu, Y., Tang, J., Li, J., and Sun, M. Parameter-efficient fine-tuning of large-scale preChaudhary, S. Code alpaca: An instruction-following llama",
+        "x": 55.4,
+        "y": 419,
+        "w": 487.7,
+        "h": 24.5,
+        "zh": "Liu, Z.、Zheng, H.、Chen, J.、Liu, Y.、Tang, J.、Li, J. 与 Sun, M.。大规模预训练模型的参数高效微调。Chaudhary, S.。Code Alpaca：一个遵循指令的 Llama"
+      },
+      {
+        "text": "trained language models. Nat. Mac. Intell., 5(3):220–235, model for code generation. https://github.com/ sahil280114/codealpaca, 2023.",
+        "x": 65.4,
+        "y": 395,
+        "w": 477.3,
+        "h": 24.5,
+        "zh": "语言模型。Nat. Mac. Intell., 5(3):220–235,。用于代码生成的模型。https://github.com/sahil280114/codealpaca，2023。"
+      },
+      {
+        "text": "Dodge, J., Ilharco, G., Schwartz, R., Farhadi, A., Hajishirzi, Chen, M., Tworek, J., Jun, H., Yuan, Q., de Oliveira Pinto,",
+        "x": 55.4,
+        "y": 375.3,
+        "w": 487.2,
+        "h": 12.7,
+        "zh": "Dodge, J.、Ilharco, G.、Schwartz, R.、Farhadi, A.、Hajishirzi,。Chen, M.、Tworek, J.、Jun, H.、Yuan, Q.、de Oliveira Pinto,"
+      },
+      {
+        "text": "H., and Smith, N. A. Fine-tuning pretrained language H. P., Kaplan, J., Edwards, H., Burda, Y., Joseph, N.,",
+        "x": 65.4,
+        "y": 363.3,
+        "w": 476,
+        "h": 12.7,
+        "zh": "H. 与 Smith, N. A.。微调预训练语言模型：。H. P.、Kaplan, J.、Edwards, H.、Burda, Y.、Joseph, N.、"
+      },
+      {
+        "text": "models: Weight initializations, data orders, and early Brockman, G., Ray, A., Puri, R., Krueger, G., Petrov,",
+        "x": 65.4,
+        "y": 351.4,
+        "w": 476.4,
+        "h": 12.7,
+        "zh": "权重初始化、数据顺序，以及提前。Brockman, G.、Ray, A.、Puri, R.、Krueger, G.、Petrov,"
+      },
+      {
+        "text": "stopping. CoRR, abs/2002.06305, 2020. M., Khlaaf, H., Sastry, G., Mishkin, P., Chan, B., Gray, S., Ryder, N., Pavlov, M., Power, A., Kaiser, L., Bavar-",
+        "x": 65.4,
+        "y": 327.5,
+        "w": 411.9,
+        "h": 24.6,
+        "zh": "停止。CoRR, abs/2002.06305, 2020。M.、Khlaaf, H.、Sastry, G.、Mishkin, P.、Chan, B.、Gray, S.、Ryder, N.、Pavlov, M.、Power, A.、Kaiser, L.、Bavarian"
+      },
+      {
+        "text": "Dolan, W. B. and Brockett, C. Automatically constructian, M., Winter, C., Tillet, P., Such, F. P., Cummings, D.,",
+        "x": 65.4,
+        "y": 315.5,
+        "w": 477.7,
+        "h": 17,
+        "zh": "Dolan, W. B. 与 Brockett, C.。自动构造。M.、Winter, C.、Tillet, P.、Such, F. P.、Cummings, D.、"
+      },
+      {
+        "text": "ing a corpus of sentential paraphrases. In Proceedings Plappert, M., Chantzis, F., Barnes, E., Herbert-Voss, A.,",
+        "x": 65.4,
+        "y": 303.6,
+        "w": 476,
+        "h": 17,
+        "zh": "一个由句子释义组成的语料库。载于。Plappert, M.、Chantzis, F.、Barnes, E.、Herbert-Voss, A.、"
+      },
+      {
+        "text": "of the Third International Workshop on Paraphrasing, Guss, W. H., Nichol, A., Paino, A., Tezak, N., Tang,",
+        "x": 65.4,
+        "y": 291.6,
+        "w": 477.8,
+        "h": 17,
+        "zh": "第三届国际释义研讨会论文集，。Guss, W. H.、Nichol, A.、Paino, A.、Tezak, N.、Tang,"
+      },
+      {
+        "text": "IWP@IJCNLP 2005. Asian Federation of Natural LanJ., Babuschkin, I., Balaji, S., Jain, S., Saunders, W.,",
+        "x": 65.2,
+        "y": 279.7,
+        "w": 477.9,
+        "h": 17,
+        "zh": "IWP@IJCNLP 2005。亚洲自然语言。J.、Babuschkin, I.、Balaji, S.、Jain, S.、Saunders, W.、"
+      },
+      {
+        "text": "guage Processing, 2005. Hesse, C., Carr, A. N., Leike, J., Achiam, J., Misra, V., Morikawa, E., Radford, A., Knight, M., Brundage,",
+        "x": 65,
+        "y": 255.7,
+        "w": 349.2,
+        "h": 29,
+        "zh": "处理联合会，2005。Hesse, C.、Carr, A. N.、Leike, J.、Achiam, J.、Misra, V.、Morikawa, E.、Radford, A.、Knight, M.、Brundage,"
+      },
+      {
+        "text": "Fisher, R. A. On the mathematical foundations of theoretical M., Murati, M., Mayer, K., Welinder, P., McGrew, B.,",
+        "x": 65.4,
+        "y": 243.8,
+        "w": 476,
+        "h": 21.4,
+        "zh": "Fisher, R. A.。论理论统计学的数学基础。M.、Murati, M.、Mayer, K.、Welinder, P.、McGrew, B.、"
+      },
+      {
+        "text": "statistics. Philosophical transactions of the Royal Society Amodei, D., McCandlish, S., Sutskever, I., and Zaremba,",
+        "x": 65,
+        "y": 231.8,
+        "w": 476.4,
+        "h": 21.4,
+        "zh": "统计。伦敦皇家学会哲学汇刊。Amodei, D.、McCandlish, S.、Sutskever, I. 与 Zaremba,"
+      },
+      {
+        "text": "of London. Series A, containing papers of a mathematical W. Evaluating large language models trained on code.",
+        "x": 64.9,
+        "y": 219.9,
+        "w": 476.5,
+        "h": 21.4,
+        "zh": "A 辑，所收为数学方面的论文。W.。评估在代码上训练的大语言模型。"
+      },
+      {
+        "text": "or physical character, 222(594-604):309–368, 1922. CoRR, abs/2107.03374, 2021.",
+        "x": 65.1,
+        "y": 207.9,
+        "w": 462.6,
+        "h": 21.4,
+        "zh": "或具有物理学性质的论文，222(594-604):309–368，1922。CoRR, abs/2107.03374, 2021。"
+      },
+      {
+        "text": "Frankle, J. and Carbin, M. The lottery ticket hypothesis: Cheng, Y., Wang, D., Zhou, P., and Zhang, T. A survey",
+        "x": 55.4,
+        "y": 188.2,
+        "w": 487.4,
+        "h": 21.6,
+        "zh": "Frankle, J. 与 Carbin, M.。彩票假说：。Cheng, Y.、Wang, D.、Zhou, P. 与 Zhang, T.。一篇综述"
+      },
+      {
+        "text": "Finding sparse, trainable neural networks. In 7th Internaof model compression and acceleration for deep neural",
+        "x": 65.4,
+        "y": 176.2,
+        "w": 477.7,
+        "h": 21.6,
+        "zh": "寻找稀疏且可训练的神经网络。第七届国际。关于深度神经网络的模型压缩与加速"
+      },
+      {
+        "text": "tional Conference on Learning Representations. OpenRenetworks. CoRR, abs/1710.09282, 2017.",
+        "x": 65.4,
+        "y": 164.3,
+        "w": 477.7,
+        "h": 21.6,
+        "zh": "学习表征会议。OpenReview.net。网络。CoRR, abs/1710.09282, 2017。"
+      },
+      {
+        "text": "Clark, P., Cowhey, I., Etzioni, O., Khot, T., Sabharwal, A.,",
+        "x": 55.4,
+        "y": 144.5,
+        "w": 235.2,
+        "h": 10,
+        "zh": "Clark, P.、Cowhey, I.、Etzioni, O.、Khot, T.、Sabharwal, A.、"
+      },
+      {
+        "text": "Gale, T., Elsen, E., and Hooker, S. The state of sparsity in Schoenick, C., and Tafjord, O. Think you have solved",
+        "x": 65.4,
+        "y": 132.6,
+        "w": 476,
+        "h": 21.7,
+        "zh": "Gale, T.、Elsen, E. 与 Hooker, S.。深度神经网络中稀疏性的现状。Schoenick, C. 与 Tafjord, O.。你以为问答已经"
+      },
+      {
+        "text": "deep neural networks. CoRR, abs/1902.09574, 2019. question answering? try arc, the AI2 reasoning challenge.",
+        "x": 65.4,
+        "y": 120.6,
+        "w": 462.7,
+        "h": 21.7,
+        "zh": "深度神经网络。CoRR, abs/1902.09574, 2019。被你解完了吗？试试 ARC，也就是 AI2 推理挑战。"
+      },
+      {
+        "text": "Gao, L., Tow, J., Abbasi, B., Biderman, S., Black, S., DiPofi, CoRR, abs/1803.05457, 2018.",
+        "x": 65.1,
+        "y": 108.6,
+        "w": 477.6,
+        "h": 14.1,
+        "zh": "Gao, L.、Tow, J.、Abbasi, B.、Biderman, S.、Black, S.、DiPofi,。CoRR, abs/1803.05457, 2018。"
+      },
+      {
+        "text": "A., Foster, C., Golding, L., Hsu, J., Le Noac’h, A., Li, H., Cobbe, K., Kosaraju, V., Bavarian, M., Chen, M., Jun, H.,",
+        "x": 55.4,
+        "y": 88.9,
+        "w": 487.2,
+        "h": 21.9,
+        "zh": "A.、Foster, C.、Golding, L.、Hsu, J.、Le Noac’h, A.、Li, H.、。Cobbe, K.、Kosaraju, V.、Bavarian, M.、Chen, M.、Jun, H.、"
+      },
+      {
+        "text": "McDonell, K., Muennighoff, N., Ociepa, C., Phang, J., Kaiser, L., Plappert, M., Tworek, J., Hilton, J., Nakano,",
+        "x": 65.4,
+        "y": 76.9,
+        "w": 477.3,
+        "h": 21.9,
+        "zh": "McDonell, K.、Muennighoff, N.、Ociepa, C.、Phang, J.、。Kaiser, L.、Plappert, M.、Tworek, J.、Hilton, J.、Nakano,"
+      },
+      {
+        "text": "Reynolds, L., Schoelkopf, H., Skowron, A., Sutawika, L.,",
+        "x": 317.4,
+        "y": 76.9,
+        "w": 225.3,
+        "h": 10,
+        "zh": "Reynolds, L.、Schoelkopf, H.、Skowron, A.、Sutawika, L.、"
+      }
+    ],
+    "11": [
+      {
+        "text": "Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch",
+        "x": 109,
+        "y": 737.9,
+        "w": 378.9,
+        "h": 9,
+        "zh": "语言模型就是超级马里奥：从同源模型吸收能力，如同免费午餐"
+      },
+      {
+        "text": "Tang, E., Thite, A., Wang, B., Wang, K., and Zou, A. A",
+        "x": 65.1,
+        "y": 715,
+        "w": 224.7,
+        "h": 10,
+        "zh": "Tang, E.、Thite, A.、Wang, B.、Wang, K. 与 Zou, A.。一套"
+      },
+      {
+        "text": "Jiang, A. Q., Sablayrolles, A., Mensch, A., Bamford, C., framework for few-shot language model evaluation, 12",
+        "x": 65.4,
+        "y": 703,
+        "w": 477.3,
+        "h": 21.9,
+        "zh": "Jiang, A. Q.、Sablayrolles, A.、Mensch, A.、Bamford, C.、面向少样本语言模型评测的框架，12"
+      },
+      {
+        "text": "Chaplot, D. S., de Las Casas, D., Bressand, F., Lengyel, G., Lample, G., Saulnier, L., Lavaud, L. R., Lachaux, M., Stock, P., Scao, T. L., Lavril, T., Wang, T., Lacroix, T., Giampiccolo, D., Magnini, B., Dagan, I., and Dolan, W. B.",
+        "x": 55.4,
+        "y": 669.3,
+        "w": 487.2,
+        "h": 43.7,
+        "zh": "Chaplot, D. S.、de Las Casas, D.、Bressand, F.、Lengyel, G.、Lample, G.、Saulnier, L.、Lavaud, L. R.、Lachaux, M.、Stock, P.、Scao, T. L.、Lavril, T.、Wang, T.、Lacroix, T.、。Giampiccolo, D.、Magnini, B.、Dagan, I. 与 Dolan, W. B."
+      },
+      {
+        "text": "and Sayed, W. E. Mistral 7b. CoRR, abs/2310.06825, The third pascal recognizing textual entailment challenge. In Proceedings of the ACL-PASCAL workshop on textual",
+        "x": 65.1,
+        "y": 645.4,
+        "w": 477.6,
+        "h": 31.7,
+        "zh": "以及 Sayed, W. E.。Mistral 7B。CoRR, abs/2310.06825,。第三届 PASCAL 文本蕴含识别挑战。载于 ACL-PASCAL 文本研讨会论文集"
+      },
+      {
+        "text": "Jin, X., Ren, X., Preotiuc-Pietro, D., and Cheng, P. Dataentailment and paraphrasing, pp. 1–9, 2007.",
+        "x": 65.4,
+        "y": 633.5,
+        "w": 477.7,
+        "h": 11.3,
+        "zh": "Jin, X.、Ren, X.、Preotiuc-Pietro, D. 与 Cheng, P.。数据。蕴含与释义，第 1–9 页，2007。"
+      },
+      {
+        "text": "less knowledge fusion by merging weights of language Haim, R. B., Dagan, I., Dolan, B., Ferro, L., Giampiccolo,",
+        "x": 55.4,
+        "y": 611.7,
+        "w": 486,
+        "h": 21.1,
+        "zh": "通过合并语言模型的权重来做无数据知识融合。Haim, R. B.、Dagan, I.、Dolan, B.、Ferro, L.、Giampiccolo,"
+      },
+      {
+        "text": "models. In The Eleventh International Conference on D., Magnini, B., and Szpektor, I. The second pascal recog-",
+        "x": 65.4,
+        "y": 599.8,
+        "w": 476,
+        "h": 21.1,
+        "zh": "模型。第十一届国际会议。D.、Magnini, B. 与 Szpektor, I.。第二届 PASCAL 的识别"
+      },
+      {
+        "text": "Learning Representations. OpenReview.net, 2023. nising textual entailment challenge. In Proceedings of the",
+        "x": 65.4,
+        "y": 587.8,
+        "w": 452.5,
+        "h": 21.1,
+        "zh": "学习表征会议。OpenReview.net，2023。文本蕴含挑战。载于"
+      },
+      {
+        "text": "Kaplan, J., McCandlish, S., Henighan, T., Brown, T. B., Second PASCAL Challenges Workshop on Recognising",
+        "x": 65.2,
+        "y": 575.8,
+        "w": 477.5,
+        "h": 12.6,
+        "zh": "Kaplan, J.、McCandlish, S.、Henighan, T.、Brown, T. B.、。第二届 PASCAL 识别文本蕴含挑战研讨会"
+      },
+      {
+        "text": "Chess, B., Child, R., Gray, S., Radford, A., Wu, J., and Textual Entailment, volume 7, pp. 785–794, 2006.",
+        "x": 64.8,
+        "y": 563.9,
+        "w": 476.6,
+        "h": 12.6,
+        "zh": "Chess, B.、Child, R.、Gray, S.、Radford, A.、Wu, J. 与。文本蕴含，第 7 卷，第 785–794 页，2006。"
+      },
+      {
+        "text": "Amodei, D. Scaling laws for neural language models. CoRR, abs/2001.08361, 2020. Han, S., Pool, J., Tran, J., and Dally, W. Learning both weights and connections for efficient neural network.",
+        "x": 55.4,
+        "y": 530.2,
+        "w": 487.7,
+        "h": 34.4,
+        "zh": "Amodei, D.。神经语言模型的缩放定律。CoRR, abs/2001.08361, 2020。Han, S.、Pool, J.、Tran, J. 与 Dally, W.。为了高效的神经网络，同时学习权重和连接。"
+      },
+      {
+        "text": "Kwon, W., Li, Z., Zhuang, S., Sheng, Y., Zheng, L., Yu, Advances in neural information processing systems, 28,",
+        "x": 64.8,
+        "y": 518.2,
+        "w": 477.9,
+        "h": 13.9,
+        "zh": "Kwon, W.、Li, Z.、Zhuang, S.、Sheng, Y.、Zheng, L.、Yu,。《神经信息处理系统进展》，第 28 卷，"
+      },
+      {
+        "text": "C. H., Gonzalez, J., Zhang, H., and Stoica, I. Efficient memory management for large language model serving with pagedattention. In Proceedings of the 29th SymHendrycks, D., Burns, C., Basart, S., Zou, A., Mazeika, M.,",
+        "x": 55.4,
+        "y": 484.5,
+        "w": 487.7,
+        "h": 35.7,
+        "zh": "C. H.、Gonzalez, J.、Zhang, H. 与 Stoica, I.。用 PagedAttention 为大语言模型服务做高效的内存管理。第 29 届。Hendrycks, D.、Burns, C.、Basart, S.、Zou, A.、Mazeika, M.、"
+      },
+      {
+        "text": "posium on Operating Systems Principles, pp. 611–626. Song, D., and Steinhardt, J. Measuring massive multitask language understanding. In 9th International Conference on Learning Representations. OpenReview.net, 2021a.",
+        "x": 65.4,
+        "y": 448.7,
+        "w": 477.8,
+        "h": 35.7,
+        "zh": "操作系统原理研讨会论文集，第 611–626 页。Song, D. 与 Steinhardt, J.。测量大规模多任务语言理解。第九届国际学习表征会议。OpenReview.net，2021a。"
+      },
+      {
+        "text": "Lee, J., Park, S., Mo, S., Ahn, S., and Shin, J. Layeradaptive sparsity for the magnitude-based pruning. In 9th Hendrycks, D., Burns, C., Kadavath, S., Arora, A., Basart,",
+        "x": 55.4,
+        "y": 426.9,
+        "w": 487.7,
+        "h": 25.1,
+        "zh": "Lee, J.、Park, S.、Mo, S.、Ahn, S. 与 Shin, J.。面向基于幅度的剪枝，做逐层自适应稀疏。第九届。Hendrycks, D.、Burns, C.、Kadavath, S.、Arora, A.、Basart,"
+      },
+      {
+        "text": "International Conference on Learning Representations. S., Tang, E., Song, D., and Steinhardt, J. Measuring",
+        "x": 65.4,
+        "y": 415,
+        "w": 477.8,
+        "h": 13.1,
+        "zh": "国际学习表征会议。S.、Tang, E.、Song, D. 与 Steinhardt, J.。用 MATH 数据集来测量"
+      },
+      {
+        "text": "OpenReview.net, 2021. mathematical problem solving with the MATH dataset. In Proceedings of the Neural Information Processing",
+        "x": 65.4,
+        "y": 391.1,
+        "w": 344.9,
+        "h": 25.1,
+        "zh": "OpenReview.net，2021。数学问题求解。载于神经信息处理"
+      },
+      {
+        "text": "Lester, B., Al-Rfou, R., and Constant, N. The power of scale Systems Track on Datasets and Benchmarks 1, 2021b.",
+        "x": 65.2,
+        "y": 379.1,
+        "w": 476.3,
+        "h": 16.6,
+        "zh": "Lester, B.、Al-Rfou, R. 与 Constant, N.。规模的力量。系统轨道，数据集与基准 1，2021b。"
+      },
+      {
+        "text": "for parameter-efficient prompt tuning. In Proceedings of the 2021 Conference on Empirical Methods in Natural Hoffmann, J., Borgeaud, S., Mensch, A., Buchatskaya, E.,",
+        "x": 55.4,
+        "y": 357.4,
+        "w": 486,
+        "h": 26.4,
+        "zh": "用于参数高效的提示调优。载于 2021 年经验方法自然语言处理会议论文集。Hoffmann, J.、Borgeaud, S.、Mensch, A.、Buchatskaya, E.、"
+      },
+      {
+        "text": "Language Processing, pp. 3045–3059. Association for Cai, T., Rutherford, E., de Las Casas, D., Hendricks,",
+        "x": 65.4,
+        "y": 345.4,
+        "w": 476.2,
+        "h": 14.4,
+        "zh": "自然语言处理，第 3045–3059 页。计算语言学协会。Cai, T.、Rutherford, E.、de Las Casas, D.、Hendricks,"
+      },
+      {
+        "text": "Computational Linguistics, 2021. L. A., Welbl, J., Clark, A., Hennigan, T., Noland, E., Millican, K., van den Driessche, G., Damoc, B., Guy,",
+        "x": 65.4,
+        "y": 321.5,
+        "w": 385.4,
+        "h": 26.4,
+        "zh": "计算语言学协会，2021。L. A.、Welbl, J.、Clark, A.、Hennigan, T.、Noland, E.、Millican, K.、van den Driessche, G.、Damoc, B.、Guy,"
+      },
+      {
+        "text": "Li, G., Qian, C., Jiang, C., Lu, X., and Tang, K. OptimizaA., Osindero, S., Simonyan, K., Elsen, E., Rae, J. W.,",
+        "x": 65,
+        "y": 309.5,
+        "w": 478,
+        "h": 17.9,
+        "zh": "Li, G.、Qian, C.、Jiang, C.、Lu, X. 与 Tang, K.。基于优化的。A.、Osindero, S.、Simonyan, K.、Elsen, E.、Rae, J. W.、"
+      },
+      {
+        "text": "tion based layer-wise magnitude-based pruning for DNN Vinyals, O., and Sifre, L. Training compute-optimal large",
+        "x": 65,
+        "y": 297.6,
+        "w": 476.4,
+        "h": 17.9,
+        "zh": "逐层幅度剪枝，用于 DNN。Vinyals, O. 与 Sifre, L.。训练计算最优的大型"
+      },
+      {
+        "text": "compression. In Proceedings of the Twenty-Seventh Interlanguage models. CoRR, abs/2203.15556, 2022.",
+        "x": 65.4,
+        "y": 285.6,
+        "w": 477.7,
+        "h": 17.9,
+        "zh": "压缩。第二十七届国际联合会议论文集。语言模型。CoRR, abs/2203.15556, 2022。"
+      },
+      {
+        "text": "national Joint Conference on Artificial Intelligence, pp. 2383–2389. ijcai.org, 2018. Houlsby, N., Giurgiu, A., Jastrzebski, S., Morrone, B., de Laroussilhe, Q., Gesmundo, A., Attariyan, M., and",
+        "x": 55.4,
+        "y": 251.9,
+        "w": 487.7,
+        "h": 39.7,
+        "zh": "人工智能国际联合会议，第 2383–2389 页。ijcai.org，2018。Houlsby, N.、Giurgiu, A.、Jastrzebski, S.、Morrone, B.、de Laroussilhe, Q.、Gesmundo, A.、Attariyan, M. 与"
+      },
+      {
+        "text": "Li, X., Zhang, T., Dubois, Y., Taori, R., Gulrajani, I., Gelly, S. Parameter-efficient transfer learning for NLP.",
+        "x": 65.4,
+        "y": 240,
+        "w": 477.3,
+        "h": 19.3,
+        "zh": "Li, X.、Zhang, T.、Dubois, Y.、Taori, R.、Gulrajani, I.、。Gelly, S.。面向 NLP 的参数高效迁移学习。"
+      },
+      {
+        "text": "Guestrin, C., Liang, P., and Hashimoto, T. B. AlpacaeIn Proceedings of the 36th International Conference on",
+        "x": 65.4,
+        "y": 228,
+        "w": 477.7,
+        "h": 19.3,
+        "zh": "Guestrin, C.、Liang, P. 与 Hashimoto, T. B.。AlpacaEval。第 36 届国际机器学习会议论文集"
+      },
+      {
+        "text": "val: An automatic evaluator of instruction-following Machine Learning, volume 97 of Proceedings of Machine",
+        "x": 65,
+        "y": 216.1,
+        "w": 476.5,
+        "h": 19.3,
+        "zh": "val：一个指令遵循能力的自动评估器。机器学习，第 97 卷，《机器学习论文集》中的"
+      },
+      {
+        "text": "https://github.com/tatsu-lab/ Learning Research, pp. 2790–2799. PMLR, 2019.",
+        "x": 65.1,
+        "y": 204.1,
+        "w": 477.5,
+        "h": 19.3,
+        "zh": "https://github.com/tatsu-lab/ 。机器学习研究论文集，第 2790–2799 页。PMLR，2019。"
+      },
+      {
+        "text": "Hu, E. J., Shen, Y., Wallis, P., Allen-Zhu, Z., Li, Y., Wang,",
+        "x": 55.4,
+        "y": 182.4,
+        "w": 235.2,
+        "h": 10,
+        "zh": "Hu, E. J.、Shen, Y.、Wallis, P.、Allen-Zhu, Z.、Li, Y.、Wang,"
+      },
+      {
+        "text": "Li, X. L. and Liang, P. Prefix-tuning: Optimizing continuS., Wang, L., and Chen, W. Lora: Low-rank adaptation of",
+        "x": 65.4,
+        "y": 170.4,
+        "w": 477.7,
+        "h": 20.6,
+        "zh": "Li, X. L. 与 Liang, P.。Prefix-tuning：优化连续的。S.、Wang, L. 与 Chen, W.。LoRA：大语言模型的低秩适配"
+      },
+      {
+        "text": "ous prompts for generation. In Proceedings of the 59th large language models. In The Tenth International Con-",
+        "x": 65.4,
+        "y": 158.5,
+        "w": 476,
+        "h": 20.6,
+        "zh": "提示，用于生成。载于第 59 届。大语言模型。第十届国际"
+      },
+      {
+        "text": "Annual Meeting of the Association for Computational ference on Learning Representations. OpenReview.net,",
+        "x": 65.4,
+        "y": 146.5,
+        "w": 476,
+        "h": 20.6,
+        "zh": "计算语言学协会年会。学习表征会议。OpenReview.net，"
+      },
+      {
+        "text": "Linguistics and the 11th International Joint Conference on Natural Language Processing, pp. 4582–4597. Association for Computational Linguistics, 2021. Ilharco, G., Ribeiro, M. T., Wortsman, M., Schmidt, L., Hajishirzi, H., and Farhadi, A. Editing models with task",
+        "x": 55.4,
+        "y": 100.8,
+        "w": 487.7,
+        "h": 54.3,
+        "zh": "语言学与第 11 届自然语言处理国际联合会议，第 4582–4597 页。计算语言学协会，2021。Ilharco, G.、Ribeiro, M. T.、Wortsman, M.、Schmidt, L.、Hajishirzi, H. 与 Farhadi, A.。用任务来编辑模型"
+      },
+      {
+        "text": "Liang, T., Glossner, J., Wang, L., Shi, S., and Zhang, X. arithmetic. In The Eleventh International Conference on",
+        "x": 65.4,
+        "y": 88.9,
+        "w": 477.8,
+        "h": 21.9,
+        "zh": "Liang, T.、Glossner, J.、Wang, L.、Shi, S. 与 Zhang, X.。算术。第十一届国际会议"
+      },
+      {
+        "text": "Pruning and quantization for deep neural network accelLearning Representations. OpenReview.net, 2023.",
+        "x": 65.1,
+        "y": 76.9,
+        "w": 478,
+        "h": 21.9,
+        "zh": "面向深度神经网络加速的剪枝与量化。学习表征。OpenReview.net，2023。"
+      },
+      {
+        "text": "eration: A survey. Neurocomputing, 461:370–403, 2021.",
+        "x": 317.4,
+        "y": 76.9,
+        "w": 225.7,
+        "h": 10,
+        "zh": "加速：一篇综述。Neurocomputing, 461:370–403, 2021。"
+      }
+    ],
+    "12": [
+      {
+        "text": "Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch",
+        "x": 109,
+        "y": 737.9,
+        "w": 378.9,
+        "h": 9,
+        "zh": "语言模型就是超级马里奥：从同源模型吸收能力，如同免费午餐"
+      },
+      {
+        "text": "Lin, S., Hilton, J., and Evans, O. Truthfulqa: Measuring",
+        "x": 55.4,
+        "y": 715,
+        "w": 234,
+        "h": 10,
+        "zh": "Lin, S.、Hilton, J. 与 Evans, O.。TruthfulQA：测量"
+      },
+      {
+        "text": "Shankar, I., Nikhil, D., and Kornel, C. how models mimic human falsehoods. In Proceedings",
+        "x": 65.4,
+        "y": 703,
+        "w": 416.5,
+        "h": 21.9,
+        "zh": "Shankar, I.、Nikhil, D. 与 Kornel, C.。模型如何模仿人类的不实说法。载于"
+      },
+      {
+        "text": "dataset release: question pairs (2017). URL https://www. of the 60th Annual Meeting of the Association for Com-",
+        "x": 65.4,
+        "y": 691.1,
+        "w": 477.8,
+        "h": 21.9,
+        "zh": "数据集发布：问题对（2017）。URL https://www. 。第 60 届年会，该协会的"
+      },
+      {
+        "text": "quora. com/q/quoradata/First-Quora-Dataset-Releaseputational Linguistics, pp. 3214–3252. Association for",
+        "x": 65.4,
+        "y": 679.1,
+        "w": 477.7,
+        "h": 21.9,
+        "zh": "quora.com/q/quoradata/First-Quora-Dataset-Release。计算语言学，第 3214–3252 页。协会"
+      },
+      {
+        "text": "Question-Pairs, 2017. Computational Linguistics, 2022.",
+        "x": 65.4,
+        "y": 667.2,
+        "w": 339,
+        "h": 21.9,
+        "zh": "Question-Pairs，2017。计算语言学协会，2022。"
+      },
+      {
+        "text": "Socher, R., Perelygin, A., Wu, J., Chuang, J., Manning, C. D., Ng, A. Y., and Potts, C. Recursive deep models Liu, X., Zheng, Y., Du, Z., Ding, M., Qian, Y., Yang, Z., and",
+        "x": 55.4,
+        "y": 645.2,
+        "w": 487.2,
+        "h": 22.8,
+        "zh": "Socher, R.、Perelygin, A.、Wu, J.、Chuang, J.、Manning, C. D.、Ng, A. Y. 与 Potts, C.。递归深度模型。Liu, X.、Zheng, Y.、Du, Z.、Ding, M.、Qian, Y.、Yang, Z. 与"
+      },
+      {
+        "text": "for semantic compositionality over a sentiment treebank. Tang, J. GPT understands, too. CoRR, abs/2103.10385,",
+        "x": 65.1,
+        "y": 633.2,
+        "w": 478.1,
+        "h": 10.8,
+        "zh": "在情感树库上刻画语义组合性。Tang, J.。GPT 也是懂的。CoRR, abs/2103.10385,"
+      },
+      {
+        "text": "In Proceedings of the 2013 Conference on Empirical Methods in Natural Language Processing, pp. 1631–1642. Liu, Y., Ott, M., Goyal, N., Du, J., Joshi, M., Chen, D., Levy, O., Lewis, M., Zettlemoyer, L., and Stoyanov, V. Roberta:",
+        "x": 55.4,
+        "y": 587.4,
+        "w": 487.7,
+        "h": 44.7,
+        "zh": "2013 年经验方法自然语言处理会议论文集，第 1631–1642 页。Liu, Y.、Ott, M.、Goyal, N.、Du, J.、Joshi, M.、Chen, D.、Levy, O.、Lewis, M.、Zettlemoyer, L. 与 Stoyanov, V.。RoBERTa："
+      },
+      {
+        "text": "Srivastava, N., Hinton, G. E., Krizhevsky, A., Sutskever, I., A robustly optimized BERT pretraining approach. CoRR,",
+        "x": 65,
+        "y": 575.4,
+        "w": 477.6,
+        "h": 11.6,
+        "zh": "Srivastava, N.、Hinton, G. E.、Krizhevsky, A.、Sutskever, I.、。一种经过稳健优化的 BERT 预训练方法。CoRR,"
+      },
+      {
+        "text": "and Salakhutdinov, R. Dropout: a simple way to prevent abs/1907.11692, 2019a.",
+        "x": 65.4,
+        "y": 563.5,
+        "w": 476,
+        "h": 11.6,
+        "zh": "以及 Salakhutdinov, R.。Dropout：一种简单办法，用来防止。abs/1907.11692，2019a。"
+      },
+      {
+        "text": "neural networks from overfitting. J. Mach. Learn. Res., Liu, Z., Sun, M., Zhou, T., Huang, G., and Darrell, T. Re-",
+        "x": 55.4,
+        "y": 541.5,
+        "w": 487.2,
+        "h": 21.6,
+        "zh": "让神经网络不至于过拟合。J. Mach. Learn. Res.,。Liu, Z.、Sun, M.、Zhou, T.、Huang, G. 与 Darrell, T.。重新"
+      },
+      {
+        "text": "15(1):1929–1958, 2014. thinking the value of network pruning. In 7th Interna-",
+        "x": 65.4,
+        "y": 529.5,
+        "w": 347.8,
+        "h": 21.6,
+        "zh": "15(1):1929–1958，2014。思考网络剪枝的价值。第七届国际"
+      },
+      {
+        "text": "Touvron, H., Lavril, T., Izacard, G., Martinet, X., Lachaux, tional Conference on Learning Representations. OpenRe-",
+        "x": 65.4,
+        "y": 517.6,
+        "w": 477.3,
+        "h": 12.5,
+        "zh": "Touvron, H.、Lavril, T.、Izacard, G.、Martinet, X.、Lachaux,。学习表征会议。OpenReview"
+      },
+      {
+        "text": "M., Lacroix, T., Roziere, B., Goyal, N., Hambro, E.,` Azhar, F., Rodriguez, A., Joulin, A., Grave, E., and Lample, G. Llama: Open and efficient foundation language Luo, H., Sun, Q., Xu, C., Zhao, P., Lou, J., Tao, C., Geng, X.,",
+        "x": 55.4,
+        "y": 483.7,
+        "w": 487.7,
+        "h": 34.5,
+        "zh": "M.、Lacroix, T.、Rozière, B.、Goyal, N.、Hambro, E.、Azhar, F.、Rodriguez, A.、Joulin, A.、Grave, E. 与 Lample, G.。LLaMA：开放且高效的基础语言模型。Luo, H.、Sun, Q.、Xu, C.、Zhao, P.、Lou, J.、Tao, C.、Geng, X.、"
+      },
+      {
+        "text": "models. CoRR, abs/2302.13971, 2023a. Lin, Q., Chen, S., and Zhang, D. Wizardmath: Empowering mathematical reasoning for large language models via",
+        "x": 65.4,
+        "y": 459.8,
+        "w": 410.8,
+        "h": 22.5,
+        "zh": "模型。CoRR, abs/2302.13971，2023a。Lin, Q.、Chen, S. 与 Zhang, D.。WizardMath：增强大语言模型的数学推理能力，经由"
+      },
+      {
+        "text": "Touvron, H., Martin, L., Stone, K., Albert, P., Almahairi, reinforced evol-instruct. CoRR, abs/2308.09583, 2023a.",
+        "x": 65.4,
+        "y": 447.8,
+        "w": 477.3,
+        "h": 13.3,
+        "zh": "Touvron, H.、Martin, L.、Stone, K.、Albert, P.、Almahairi,。强化版 evol-instruct。CoRR, abs/2308.09583，2023a。"
+      },
+      {
+        "text": "A., Babaei, Y., Bashlykov, N., Batra, S., Bhargava, P., Bhosale, S., Bikel, D., Blecher, L., Canton-Ferrer, C., Luo, Z., Xu, C., Zhao, P., Sun, Q., Geng, X., Hu, W., Tao, C.,",
+        "x": 55.4,
+        "y": 425.8,
+        "w": 487.2,
+        "h": 23.3,
+        "zh": "A.、Babaei, Y.、Bashlykov, N.、Batra, S.、Bhargava, P.、Bhosale, S.、Bikel, D.、Blecher, L.、Canton-Ferrer, C.、。Luo, Z.、Xu, C.、Zhao, P.、Sun, Q.、Geng, X.、Hu, W.、Tao, C.、"
+      },
+      {
+        "text": "Chen, M., Cucurull, G., Esiobu, D., Fernandes, J., Fu, Ma, J., Lin, Q., and Jiang, D. Wizardcoder: Empowering",
+        "x": 65.4,
+        "y": 413.9,
+        "w": 477.3,
+        "h": 11.4,
+        "zh": "Chen, M.、Cucurull, G.、Esiobu, D.、Fernandes, J.、Fu,。Ma, J.、Lin, Q. 与 Jiang, D.。WizardCoder：让"
+      },
+      {
+        "text": "J., Fu, W., Fuller, B., Gao, C., Goswami, V., Goyal, N., code large language models with evol-instruct. CoRR,",
+        "x": 65.4,
+        "y": 401.9,
+        "w": 477.3,
+        "h": 11.4,
+        "zh": "J.、Fu, W.、Fuller, B.、Gao, C.、Goswami, V.、Goyal, N.、。代码大语言模型具备 evol-instruct 的能力。CoRR,"
+      },
+      {
+        "text": "Hartshorn, A., Hosseini, S., Hou, R., Inan, H., Kardas, abs/2306.08568, 2023b.",
+        "x": 65.4,
+        "y": 390,
+        "w": 477.3,
+        "h": 11.4,
+        "zh": "Hartshorn, A.、Hosseini, S.、Hou, R.、Inan, H.、Kardas,。abs/2306.08568，2023b。"
+      },
+      {
+        "text": "M., Kerkez, V., Khabsa, M., Kloumann, I., Korenev, A., Matena, M. and Raffel, C. Merging models with fisher-",
+        "x": 55.4,
+        "y": 368,
+        "w": 487.2,
+        "h": 21.4,
+        "zh": "M.、Kerkez, V.、Khabsa, M.、Kloumann, I.、Korenev, A.、。Matena, M. 与 Raffel, C.。用 Fisher"
+      },
+      {
+        "text": "Koura, P. S., Lachaux, M., Lavril, T., Lee, J., Liskovich, weighted averaging. In Advances in Neural Information",
+        "x": 65,
+        "y": 356.1,
+        "w": 477.6,
+        "h": 21.4,
+        "zh": "Koura, P. S.、Lachaux, M.、Lavril, T.、Lee, J.、Liskovich,。加权平均来合并模型。载于《神经信息"
+      },
+      {
+        "text": "D., Lu, Y., Mao, Y., Martinet, X., Mihaylov, T., Mishra, Processing Systems, 2022.",
+        "x": 65.1,
+        "y": 344.1,
+        "w": 477.6,
+        "h": 21.4,
+        "zh": "D.、Lu, Y.、Mao, Y.、Martinet, X.、Mihaylov, T.、Mishra,。处理系统进展》，2022。"
+      },
+      {
+        "text": "P., Molybog, I., Nie, Y., Poulton, A., Reizenstein, J., Rungta, R., Saladi, K., Schelten, A., Silva, R., Smith, Radford, A., Narasimhan, K., Salimans, T., Sutskever, I.,",
+        "x": 55.4,
+        "y": 322.1,
+        "w": 487.2,
+        "h": 31.4,
+        "zh": "P.、Molybog, I.、Nie, Y.、Poulton, A.、Reizenstein, J.、Rungta, R.、Saladi, K.、Schelten, A.、Silva, R.、Smith,。Radford, A.、Narasimhan, K.、Salimans, T.、Sutskever, I.、"
+      },
+      {
+        "text": "E. M., Subramanian, R., Tan, X. E., Tang, B., Taylor, et al. Improving language understanding by generative",
+        "x": 65.4,
+        "y": 310.2,
+        "w": 477.3,
+        "h": 19.4,
+        "zh": "E. M.、Subramanian, R.、Tan, X. E.、Tang, B.、Taylor,。等人。用生成式方法改进语言理解"
+      },
+      {
+        "text": "R., Williams, A., Kuan, J. X., Xu, P., Yan, Z., Zarov, I., Zhang, Y., Fan, A., Kambadur, M., Narang, S., Rodriguez, A., Stojnic, R., Edunov, S., and Scialom, T. Llama 2: Rajpurkar, P., Zhang, J., Lopyrev, K., and Liang, P. Squad:",
+        "x": 55.4,
+        "y": 276.3,
+        "w": 487.4,
+        "h": 41.4,
+        "zh": "R.、Williams, A.、Kuan, J. X.、Xu, P.、Yan, Z.、Zarov, I.、Zhang, Y.、Fan, A.、Kambadur, M.、Narang, S.、Rodriguez, A.、Stojnic, R.、Edunov, S. 与 Scialom, T.。Llama 2：。Rajpurkar, P.、Zhang, J.、Lopyrev, K. 与 Liang, P.。SQuAD："
+      },
+      {
+        "text": "Open foundation and fine-tuned chat models. 100, 000+ questions for machine comprehension of text.",
+        "x": 64.7,
+        "y": 264.3,
+        "w": 443.1,
+        "h": 17.5,
+        "zh": "开放的基础模型与经过微调的对话模型。用于机器阅读文本理解的十万多个问题。"
+      },
+      {
+        "text": "abs/2307.09288, 2023b. In Proceedings of the 2016 Conference on Empirical Methods in Natural Language Processing, pp. 2383–2392.",
+        "x": 65,
+        "y": 240.4,
+        "w": 348.2,
+        "h": 29.4,
+        "zh": "abs/2307.09288，2023b。2016 年经验方法自然语言处理会议论文集，第 2383–2392 页。"
+      },
+      {
+        "text": "Wang, A., Singh, A., Michael, J., Hill, F., Levy, O., and The Association for Computational Linguistics, 2016.",
+        "x": 65.1,
+        "y": 228.5,
+        "w": 476.3,
+        "h": 20.2,
+        "zh": "Wang, A.、Singh, A.、Michael, J.、Hill, F.、Levy, O. 与。计算语言学协会，2016。"
+      },
+      {
+        "text": "Bowman, S. R. GLUE: A multi-task benchmark and analysis platform for natural language understanding. In 7th Roziere, B., Gehring, J., Gloeckle, F., Sootla, S., Gat, I., Tan,`",
+        "x": 55.4,
+        "y": 206.5,
+        "w": 487.7,
+        "h": 30.3,
+        "zh": "Bowman, S. R.。GLUE：一个面向自然语言理解的多任务基准与分析平台。第七届。Rozière, B.、Gehring, J.、Gloeckle, F.、Sootla, S.、Gat, I.、Tan,"
+      },
+      {
+        "text": "International Conference on Learning Representations. X. E., Adi, Y., Liu, J., Remez, T., Rapin, J., Kozhevnikov,",
+        "x": 65,
+        "y": 194.5,
+        "w": 478.1,
+        "h": 18.3,
+        "zh": "国际学习表征会议。X. E.、Adi, Y.、Liu, J.、Remez, T.、Rapin, J.、Kozhevnikov,"
+      },
+      {
+        "text": "OpenReview.net, 2019. A., Evtimov, I., Bitton, J., Bhatt, M., Canton-Ferrer, C., Grattafiori, A., Xiong, W., Defossez, A., Copet, J., Azhar,´",
+        "x": 65,
+        "y": 170.6,
+        "w": 345.3,
+        "h": 30.3,
+        "zh": "OpenReview.net，2019。A.、Evtimov, I.、Bitton, J.、Bhatt, M.、Canton-Ferrer, C.、Grattafiori, A.、Xiong, W.、Défossez, A.、Copet, J.、Azhar,"
+      },
+      {
+        "text": "Warstadt, A., Singh, A., and Bowman, S. R. Neural netF., Touvron, H., Martin, L., Usunier, N., Scialom, T., and",
+        "x": 65.4,
+        "y": 158.7,
+        "w": 477.7,
+        "h": 21.1,
+        "zh": "Warstadt, A.、Singh, A. 与 Bowman, S. R.。神经网络对。F.、Touvron, H.、Martin, L.、Usunier, N.、Scialom, T. 与"
+      },
+      {
+        "text": "work acceptability judgments. Trans. Assoc. Comput. Synnaeve, G. Code llama: Open foundation models for",
+        "x": 65.4,
+        "y": 146.7,
+        "w": 477.8,
+        "h": 21.1,
+        "zh": "句子可接受性的判断。Trans. Assoc. Comput.。Synnaeve, G.。Code Llama：面向代码的开放基础模型"
+      },
+      {
+        "text": "Linguistics, 7:625–641, 2019. code. CoRR, abs/2308.12950, 2023.",
+        "x": 65.4,
+        "y": 134.8,
+        "w": 370.5,
+        "h": 21.1,
+        "zh": "Linguistics, 7:625–641，2019。代码。CoRR, abs/2308.12950，2023。"
+      },
+      {
+        "text": "Williams, A., Nangia, N., and Bowman, S. R. A broadSakaguchi, K., Bras, R. L., Bhagavatula, C., and Choi, Y.",
+        "x": 55.4,
+        "y": 112.8,
+        "w": 487.7,
+        "h": 21.9,
+        "zh": "Williams, A.、Nangia, N. 与 Bowman, S. R.。一个覆盖面很广的。Sakaguchi, K.、Bras, R. L.、Bhagavatula, C. 与 Choi, Y."
+      },
+      {
+        "text": "coverage challenge corpus for sentence understanding Winogrande: An adversarial winograd schema challenge",
+        "x": 64.9,
+        "y": 100.8,
+        "w": 476.5,
+        "h": 21.9,
+        "zh": "用于句子理解的挑战语料，途径是推理。Winogrande：大规模的对抗式 Winograd 图式挑战。"
+      },
+      {
+        "text": "through inference. In Walker, M. A., Ji, H., and Stent, A. at scale. In The Thirty-Fourth AAAI Conference on Artifi-",
+        "x": 65.4,
+        "y": 88.9,
+        "w": 477.8,
+        "h": 21.9,
+        "zh": "载于 Walker, M. A.、Ji, H. 与 Stent, A.。第 34 届 AAAI 人工智能会议"
+      },
+      {
+        "text": "(eds.), Proceedings of the 2018 Conference of the North cial Intelligence, pp. 8732–8740. AAAI Press, 2020.",
+        "x": 65.4,
+        "y": 76.9,
+        "w": 476,
+        "h": 21.9,
+        "zh": "（编），2018 年北美。人工智能，第 8732–8740 页。AAAI Press，2020。"
+      },
+      {
+        "text": "American Chapter of the Association for Computational",
+        "x": 316.8,
+        "y": 76.9,
+        "w": 224.6,
+        "h": 10,
+        "zh": "计算语言学协会分会论文集"
+      }
+    ],
+    "13": [
+      {
+        "text": "Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch",
+        "x": 109,
+        "y": 737.9,
+        "w": 378.9,
+        "h": 9,
+        "zh": "语言模型就是超级马里奥：从同源模型吸收能力，如同免费午餐"
+      },
+      {
+        "text": "Linguistics: Human Language Technologies, pp. 1112– 1122. Association for Computational Linguistics, 2018.",
+        "x": 64.7,
+        "y": 703,
+        "w": 226.3,
+        "h": 21.9,
+        "zh": "语言学：人类语言技术，第 1112–1122 页。计算语言学协会，2018。"
+      },
+      {
+        "text": "Wortsman, M., Ilharco, G., Gadre, S. Y., Roelofs, R., Lopes, R. G., Morcos, A. S., Namkoong, H., Farhadi, A., Carmon, Y., Kornblith, S., and Schmidt, L. Model soups: averaging weights of multiple fine-tuned models improves accuracy without increasing inference time. In International Conference on Machine Learning, volume 162 of Proceedings of Machine Learning Research, pp. 23965–",
+        "x": 55.4,
+        "y": 611.4,
+        "w": 235.7,
+        "h": 81.7,
+        "zh": "Wortsman, M.、Ilharco, G.、Gadre, S. Y.、Roelofs, R.、Lopes, R. G.、Morcos, A. S.、Namkoong, H.、Farhadi, A.、Carmon, Y.、Kornblith, S. 与 Schmidt, L.。Model soups：对多个微调模型的权重取平均，可以在不增加推理时间的情况下提高准确率。载于国际机器学习会议，《机器学习研究论文集》第 162 卷，第 23965–"
+      },
+      {
+        "text": "Xia, M., Zhong, Z., and Chen, D. Structured pruning learns compact and accurate models. In Muresan, S., Nakov, P., and Villavicencio, A. (eds.), Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), pp. 1513–1528. Association for Computational Linguistics, 2022.",
+        "x": 55.4,
+        "y": 519.7,
+        "w": 235.7,
+        "h": 69.7,
+        "zh": "Xia, M.、Zhong, Z. 与 Chen, D.。结构化剪枝学到紧凑而准确的模型。载于 Muresan, S.、Nakov, P. 与 Villavicencio, A.（编），第 60 届计算语言学协会年会论文集（第 1 卷：长文），第 1513–1528 页。计算语言学协会，2022。"
+      },
+      {
+        "text": "Xu, C., Sun, Q., Zheng, K., Geng, X., Zhao, P., Feng, J., Tao, C., and Jiang, D. Wizardlm: Empowering large language models to follow complex instructions. CoRR, abs/2304.12244, 2023.",
+        "x": 55.4,
+        "y": 463.9,
+        "w": 235.2,
+        "h": 45.8,
+        "zh": "Xu, C.、Sun, Q.、Zheng, K.、Geng, X.、Zhao, P.、Feng, J.、Tao, C. 与 Jiang, D.。WizardLM：让大语言模型遵循复杂指令。CoRR, abs/2304.12244, 2023。"
+      },
+      {
+        "text": "Yadav, P., Tam, D., Choshen, L., Raffel, C., and Bansal, M. Resolving interference when merging models. In Advances in Neural Information Processing Systems, 2023.",
+        "x": 55.4,
+        "y": 420.1,
+        "w": 235.7,
+        "h": 33.9,
+        "zh": "Yadav, P.、Tam, D.、Choshen, L.、Raffel, C. 与 Bansal, M.。合并模型时消除干扰。载于《神经信息处理系统进展》，2023。"
+      },
+      {
+        "text": "Zellers, R., Holtzman, A., Bisk, Y., Farhadi, A., and Choi, Y. Hellaswag: Can a machine really finish your sentence? In Proceedings of the 57th Conference of the Association for Computational Linguistics, pp. 4791–4800. Association for Computational Linguistics, 2019.",
+        "x": 55.4,
+        "y": 352.3,
+        "w": 235.7,
+        "h": 57.8,
+        "zh": "Zellers, R.、Holtzman, A.、Bisk, Y.、Farhadi, A. 与 Choi, Y.。HellaSwag：机器真的能把你的句子补完吗？第 57 届计算语言学协会会议论文集，第 4791–4800 页。计算语言学协会，2019。"
+      },
+      {
+        "text": "Zhang, J., Chen, S., Liu, J., and He, J. Composing parameterefficient modules with arithmetic operations. In Advances in Neural Information Processing Systems, 2023.",
+        "x": 55.4,
+        "y": 308.5,
+        "w": 235.7,
+        "h": 33.9,
+        "zh": "Zhang, J.、Chen, S.、Liu, J. 与 He, J.。用算术运算来组合参数高效模块。载于《神经信息处理系统进展》，2023。"
+      },
+      {
+        "text": "Zhang, Y. and Yang, Q. A survey on multi-task learning. IEEE Trans. Knowl. Data Eng., 34(12):5586–5609, 2022.",
+        "x": 55.4,
+        "y": 276.6,
+        "w": 235.7,
+        "h": 21.9,
+        "zh": "Zhang, Y. 与 Yang, Q.。多任务学习综述。IEEE Trans. Knowl. Data Eng., 34(12):5586–5609, 2022。"
+      },
+      {
+        "text": "Zhao, W. X., Zhou, K., Li, J., Tang, T., Wang, X., Hou, Y., Min, Y., Zhang, B., Zhang, J., Dong, Z., Du, Y., Yang, C., Chen, Y., Chen, Z., Jiang, J., Ren, R., Li, Y., Tang, X., Liu, Z., Liu, P., Nie, J., and Wen, J. A survey of large language models. CoRR, abs/2303.18223, 2023.",
+        "x": 55.4,
+        "y": 208.9,
+        "w": 235.2,
+        "h": 57.8,
+        "zh": "Zhao, W. X.、Zhou, K.、Li, J.、Tang, T.、Wang, X.、Hou, Y.、Min, Y.、Zhang, B.、Zhang, J.、Dong, Z.、Du, Y.、Yang, C.、Chen, Y.、Chen, Z.、Jiang, J.、Ren, R.、Li, Y.、Tang, X.、Liu, Z.、Liu, P.、Nie, J. 与 Wen, J.。大语言模型综述。CoRR, abs/2303.18223, 2023。"
+      },
+      {
+        "text": "Zhu, M. and Gupta, S. To prune, or not to prune: Exploring the efficacy of pruning for model compression. In 6th International Conference on Learning Representations. OpenReview.net, 2018.",
+        "x": 55.4,
+        "y": 153.1,
+        "w": 235.7,
+        "h": 45.8,
+        "zh": "Zhu, M. 与 Gupta, S.。剪，还是不剪：探讨剪枝用于模型压缩是否有效。第六届国际学习表征会议。OpenReview.net，2018。"
+      }
+    ],
+    "14": [
+      {
+        "text": "Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch",
+        "x": 109,
+        "y": 737.9,
+        "w": 378.9,
+        "h": 9,
+        "zh": "语言模型就是超级马里奥：从同源模型吸收能力，如同免费午餐"
+      },
+      {
+        "text": "A.1. Details of SFT and Pre-Trained Backbones of Decoder-based LMs",
+        "x": 55.4,
+        "y": 695.6,
+        "w": 300.1,
+        "h": 10,
+        "zh": "A.1. 解码器语言模型的 SFT 模型与预训练骨干"
+      },
+      {
+        "text": "Table 3 shows the versions and correspondences with pre-trained backbones of SFT decoder-based LMs.",
+        "x": 55.1,
+        "y": 677,
+        "w": 417.5,
+        "h": 10,
+        "zh": "表 3 列出 SFT 解码器语言模型的版本，以及它们与预训练骨干的对应关系。"
+      },
+      {
+        "text": "Table 3: Versions and correspondences with pre-trained backbones of SFT decoder-based LMs.",
+        "x": 108.1,
+        "y": 651.4,
+        "w": 380.3,
+        "h": 10,
+        "zh": "表 3：SFT 解码器语言模型的版本，以及与预训练骨干的对应关系。"
+      },
+      {
+        "text": "WizardCoder-Python-7B WizardCoder-Python-13B",
+        "x": 239,
+        "y": 532.2,
+        "w": 104.5,
+        "h": 21.9,
+        "zh": ""
+      },
+      {
+        "text": "CodeLlama-13b-Python WizardCoder-Python-34B18",
+        "x": 239,
+        "y": 520.2,
+        "w": 220.1,
+        "h": 21.9,
+        "zh": ""
+      },
+      {
+        "text": "CodeLlama-34b-Python19 llama-2-13b-code-alpaca",
+        "x": 241.4,
+        "y": 508.3,
+        "w": 224.5,
+        "h": 22.5,
+        "zh": ""
+      },
+      {
+        "text": "A.2. Learning Rate Configurations of Encoder-based LMs on GLUE",
+        "x": 55.4,
+        "y": 472.2,
+        "w": 290.1,
+        "h": 10,
+        "zh": "A.2. 编码器语言模型在 GLUE 上的学习率设置"
+      },
+      {
+        "text": "The optimal settings of the learning rate of each fine-tuned encoder-based LM are presented in Table 4.",
+        "x": 55.1,
+        "y": 453.5,
+        "w": 411,
+        "h": 10,
+        "zh": "每个微调后的编码器语言模型，其学习率的最优设置列在表 4 中。"
+      },
+      {
+        "text": "Table 4: Configurations of learning rates of bert-base-uncased and roberta-base on GLUE.",
+        "x": 118.6,
+        "y": 427.9,
+        "w": 359.5,
+        "h": 10,
+        "zh": "表 4：bert-base-uncased 和 roberta-base 在 GLUE 上的学习率配置。"
+      },
+      {
+        "text": "A.3. Descriptions of Existing Model Merging Methods",
+        "x": 55.4,
+        "y": 339.3,
+        "w": 229,
+        "h": 10,
+        "zh": "A.3. 已有模型合并方法的说明"
+      },
+      {
+        "text": "We experiment with five model merging methods:",
+        "x": 55,
+        "y": 320.6,
+        "w": 199.4,
+        "h": 10,
+        "zh": "我们试验了五种模型合并方法："
+      },
+      {
+        "text": "• Average Merging simply averages the parameters of multiple models to get the merged model (Wortsman et al., 2022).",
+        "x": 66.9,
+        "y": 291.6,
+        "w": 476.1,
+        "h": 10,
+        "zh": "• Average Merging 只是把多个模型的参数取平均，得到合并后的模型（Wortsman et al., 2022）。"
+      },
+      {
+        "text": "https://huggingface.co/WizardLM/WizardLM-7B-V1.0 https://huggingface.co/decapoda-research/llama-7b-hf https://huggingface.co/WizardLM/WizardLM-13B-V1.2 https://huggingface.co/meta-llama/Llama-2-13b-hf https://huggingface.co/WizardLM/WizardLM-70B-V1.0 https://huggingface.co/meta-llama/Llama-2-70b-hf https://huggingface.co/WizardLM/WizardMath-7B-V1.0 https://huggingface.co/meta-llama/Llama-2-7b-hf https://huggingface.co/WizardLM/WizardMath-13B-V1.0 https://huggingface.co/WizardLM/WizardMath-70B-V1.0 https://huggingface.co/WizardLM/WizardCoder-Python-7B-V1.0 https://huggingface.co/codellama/CodeLlama-7b-Python-hf https://huggingface.co/WizardLM/WizardCoder-Python-13B-V1.0 https://huggingface.co/codellama/CodeLlama-13b-Python-hf https://huggingface.co/WizardLM/WizardCoder-Python-34B-V1.0 https://huggingface.co/codellama/CodeLlama-34b-Python-hf https://huggingface.co/layoric/llama-2-13b-code-alpaca https://huggingface.co/bert-base-uncased https://huggingface.co/roberta-base",
+        "x": 71.6,
+        "y": 76.9,
+        "w": 318.9,
+        "h": 204.6,
+        "zh": ""
+      }
+    ],
+    "15": [
+      {
+        "text": "Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch",
+        "x": 109,
+        "y": 737.9,
+        "w": 378.9,
+        "h": 9,
+        "zh": "语言模型就是超级马里奥：从同源模型吸收能力，如同免费午餐"
+      },
+      {
+        "text": "• Task Arithmetic uses a scaling term to control the contributions between the pre-trained backbone and the models to be merged (Ilharco et al., 2023).",
+        "x": 66.9,
+        "y": 703,
+        "w": 474.5,
+        "h": 21.9,
+        "zh": "• Task Arithmetic 用一个缩放项，来控制预训练骨干和待合并模型各自的贡献（Ilharco et al., 2023）。"
+      },
+      {
+        "text": "• Fisher Merging first estimates the importance of parameters by calculating the Fisher information matrix, and then fuses parameters based on their importance (Matena & Raffel, 2022).",
+        "x": 66.9,
+        "y": 665.7,
+        "w": 474.5,
+        "h": 21.9,
+        "zh": "• Fisher Merging 先计算 Fisher 信息矩阵，以此来估计参数有多重要，再按重要性融合参数（Matena & Raffel, 2022）。"
+      },
+      {
+        "text": "• RegMean recasts the model merging task as a linear regression problem and derives closed-form solutions to solve the problem (Jin et al., 2023).",
+        "x": 66.9,
+        "y": 628.3,
+        "w": 474.5,
+        "h": 21.9,
+        "zh": "• RegMean 把模型合并改写成一个线性回归问题，并给出闭式解（Jin et al., 2023）。"
+      },
+      {
+        "text": "• TIES-Merging aims to address parameter conflicts in model merging. It first trims parameters with lower magnitudes, and then resolves sign disagreements. Parameters with consistent signs are finally merged (Yadav et al., 2023).",
+        "x": 66.9,
+        "y": 591,
+        "w": 475.8,
+        "h": 21.9,
+        "zh": "• TIES-Merging 要处理的是模型合并里的参数冲突。它先剪掉幅度较低的参数，再消除符号上的不一致。符号一致的参数最后才被合并（Yadav et al., 2023）。"
+      },
+      {
+        "text": "A.4. Details of Grid Search on Hyperparameters of Model Merging Methods for Encoder-based LMs",
+        "x": 55.4,
+        "y": 562.3,
+        "w": 427.6,
+        "h": 10,
+        "zh": "A.4. 编码器语言模型上，模型合并方法超参数的网格搜索"
+      },
+      {
+        "text": "Table 5 shows the searched ranges of model merging methods’ hyperparameters for encoder-based LMs. For DARE, we search the drop rate p in [0.1, 0.2, · · · , 0.9] and select the optimal setting with the best performance.",
+        "x": 55.1,
+        "y": 531.7,
+        "w": 486.3,
+        "h": 21.9,
+        "zh": "表 5 给出编码器语言模型上、各模型合并方法超参数的搜索范围。对 DARE，丢弃率 p 在 [0.1, 0.2, · · · , 0.9] 里搜索，并取性能最好的那一档。"
+      },
+      {
+        "text": "Table 5: Searched ranges of hyperparameters of model merging methods for encoder-based LMs.",
+        "x": 104.5,
+        "y": 506.5,
+        "w": 387.5,
+        "h": 10,
+        "zh": "表 5：编码器语言模型上，模型合并方法超参数的搜索范围。"
+      },
+      {
+        "text": "Search Ranges of Hyperparameters scaling term to merge model parameters: [0.1, 0.3, 0.5, 0.7, 0.9, 1.0] scaling term to merge model parameters: [0.1, 0.3, 0.5, 0.7, 0.9, 1.0], number of examples to compute Fisher information matrix: [256, 512, 1024, 2048] scaling term to reduce non-diagonal items: [0.1, 0.3, 0.5, 0.7, 0.9, 1.0], number of examples to compute inner product matrices: [256, 512, 1024, 2048] scaling term to merge model parameters: [0.1, 0.3, 0.5, 0.7, 0.9, 1.0], ratio to retain parameters with largest-magnitude values: [0.1, 0.2, 0.3]",
+        "x": 187.6,
+        "y": 398.8,
+        "w": 330.8,
+        "h": 95.3,
+        "zh": "超参数搜索范围。用于合并模型参数的缩放项：[0.1, 0.3, 0.5, 0.7, 0.9, 1.0]。用于合并模型参数的缩放项：[0.1, 0.3, 0.5, 0.7, 0.9, 1.0]，计算 Fisher 信息矩阵所用的样本数：[256, 512, 1024, 2048]。用于压低非对角项的缩放项：[0.1, 0.3, 0.5, 0.7, 0.9, 1.0]，计算内积矩阵所用的样本数：[256, 512, 1024, 2048]。用于合并模型参数的缩放项：[0.1, 0.3, 0.5, 0.7, 0.9, 1.0]，保留最大幅度参数的比例：[0.1, 0.2, 0.3]。"
+      },
+      {
+        "text": "A.5. Details of Our Merged 7B LMs and the Open LLM Leaderboard",
+        "x": 55.4,
+        "y": 357.2,
+        "w": 295.7,
+        "h": 10,
+        "zh": "A.5. 我们合并出的 7B 语言模型，以及 Open LLM Leaderboard"
+      },
+      {
+        "text": "We offer two merged LMs with 7 billion parameters, namely supermario v1 and supermario v2. Specifically, we choose",
+        "x": 55,
+        "y": 338.5,
+        "w": 486.5,
+        "h": 10,
+        "zh": "我们给出两个参数量为 70 亿的合并语言模型，名叫 supermario v1 和 supermario v2。具体而言，我们选择"
+      },
+      {
+        "text": "to build supermario v1, where both of them all derived from Beagle14-7B . We set the drop rate p in DARE to 0.3, and merge NeuralBeagle14-7B and Turdus by Task Arithmetic with 0.8 as the scaling term. We select WildMarcoroni-Variant1-7B",
+        "x": 55.4,
+        "y": 302.6,
+        "w": 486,
+        "h": 33.9,
+        "zh": "来构建 supermario v1，二者都派生自 Beagle14-7B。DARE 的丢弃率 p 设为 0.3，并用 Task Arithmetic 合并 NeuralBeagle14-7B 与 Turdus，缩放项取 0.8。我们选取 WildMarcoroni-Variant1-7B"
+      },
+      {
+        "text": "to obtain supermario v2, where both of them adopt (Jiang et al., 2023) as the backbone. The drop rate p in DARE is set to 0.5, and the scaling term in Task Arithmetic is also 0.5. The Open LLM Leaderboard",
+        "x": 55.1,
+        "y": 260.8,
+        "w": 486.6,
+        "h": 51.8,
+        "zh": "来得到 supermario v2，二者采用的骨干都是（Jiang et al., 2023）。DARE 的丢弃率 p 设为 0.5，Task Arithmetic 的缩放项同样是 0.5。Open LLM Leaderboard"
+      },
+      {
+        "text": "is established to evaluate open-sourced LLMs based on Eleuther AI Language Model Evaluation Harness (Gao et al., 2023), which contains six benchmarks including AI2 Reasoning Challenge (ARC) (Clark et al., 2018), HellaSwag (Zellers et al., 2019), MMLU (Hendrycks et al., 2021a), TruthfulQA (Lin et al., 2022), Winogrande (Sakaguchi et al., 2020), and GSM8K (Cobbe et al., 2021). The average score on the six datasets is used for ranking models on the leaderboard. We refer interested readers to the original papers for detailed information on the datasets. Note that the results of Turdus on Open LLM Leaderboard are not available and we instead report the performance of Beagle14-7B in Table 2. Moreover, due to space limits, we use Hella., TQA, and Wino. as the abbreviations for HellaSwag, TruthfulQA, and Winogrande. WildMarcoroni-7B and WestSeverus-7B are the abbreviations for WildMarcoroni-Variant1-7B and WestSeverus-7B-DPO-v2.",
+        "x": 55.1,
+        "y": 159.2,
+        "w": 487.6,
+        "h": 111.6,
+        "zh": "用来评估开源大语言模型，依据是 Eleuther AI Language Model Evaluation Harness（Gao et al., 2023）。其中有六个基准：AI2 Reasoning Challenge（ARC）（Clark et al., 2018）、HellaSwag（Zellers et al., 2019）、MMLU（Hendrycks et al., 2021a）、TruthfulQA（Lin et al., 2022）、Winogrande（Sakaguchi et al., 2020）和 GSM8K（Cobbe et al., 2021）。六个数据集上的平均分用来给榜单排名。数据集的细节请看原论文。另外，Turdus 在 Open LLM Leaderboard 上没有可用结果，所以表 2 里改报 Beagle14-7B 的成绩。由于版面有限，Hella.、TQA 和 Wino. 分别是 HellaSwag、TruthfulQA 和 Winogrande 的缩写。WildMarcoroni-7B 和 WestSeverus-7B 则是 WildMarcoroni-Variant1-7B 和 WestSeverus-7B-DPO-v2 的缩写。"
+      },
+      {
+        "text": "https://huggingface.co/mlabonne/NeuralBeagle14-7B https://huggingface.co/udkai/Turdus https://huggingface.co/mlabonne/Beagle14-7B https://huggingface.co/BarryFutureman/WildMarcoroni-Variant1-7B https://huggingface.co/FelixChao/WestSeverus-7B-DPO-v2 https://huggingface.co/mistralai/Mistral-7B-v0.1 https://huggingface.co/spaces/HuggingFaceH4/open_llm_leaderboard",
+        "x": 71.6,
+        "y": 76.9,
+        "w": 344.3,
+        "h": 74.2,
+        "zh": ""
+      }
+    ],
+    "16": [
+      {
+        "text": "Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch",
+        "x": 109,
+        "y": 737.9,
+        "w": 378.9,
+        "h": 9,
+        "zh": "语言模型就是超级马里奥：从同源模型吸收能力，如同免费午餐"
+      },
+      {
+        "text": "B.1. Additional Results of Delta Parameter Redundancy of Decoder-based LMs",
+        "x": 55.4,
+        "y": 695.6,
+        "w": 336.3,
+        "h": 10,
+        "zh": "B.1. 解码器语言模型 delta 参数冗余的补充结果"
+      },
+      {
+        "text": "Figure 12 shows results of decoder-based LMs on AlpacaEval, MATH, and MBPP with different drop rates. We notice that the performance of WizardLM-70B drastically declines on AlpacaEval when the drop rate is 0.9 (different from the observations of WizardMath-70B and WizardCoder-Python-34B). One possible reason is that the instruction-following task on AlpacaEval is harder and requires general abilities with more delta parameters via SFT, causing more obvious dependencies among parameters (especially on LMs with larger sizes). Therefore, when the ratio of dropped delta parameters reaches a relatively small value (e.g., 0.9 in this case), the dependent relationships among parameters are destroyed, leading to unsatisfactory performance.",
+        "x": 55.4,
+        "y": 605.2,
+        "w": 486,
+        "h": 81.7,
+        "zh": "图 12 给出解码器语言模型在不同丢弃率下，于 AlpacaEval、MATH 和 MBPP 上的结果。可以看到，丢弃率取 0.9 时，WizardLM-70B 在 AlpacaEval 上的性能掉得很厉害（这和 WizardMath-70B、WizardCoder-Python-34B 上的现象不一样）。一个可能的原因是，AlpacaEval 上的指令遵循更难，要靠 SFT 用更多 delta 参数去支撑通用能力，参数之间的依赖也就更强，模型越大越是如此。因此，当丢掉的 delta 参数比例达到一个相对较小的值（这里是 0.9）时，参数之间的依赖被破坏，性能就不理想。"
+      },
+      {
+        "text": "Figure 12: Performance of decoder-based LMs on AlpacaEval, MATH, and MBPP with various drop rates.",
+        "x": 85.3,
+        "y": 442.9,
+        "w": 426.3,
+        "h": 10,
+        "zh": "图 12：解码器语言模型在不同丢弃率下，于 AlpacaEval、MATH 和 MBPP 上的性能。"
+      },
+      {
+        "text": "B.2. Additional Results of Merging Encoder-based LMs",
+        "x": 55.4,
+        "y": 398.3,
+        "w": 235.9,
+        "h": 10,
+        "zh": "B.2. 合并编码器语言模型的补充结果"
+      },
+      {
+        "text": "B.3. Additional Results of Comparisons between DARE and DropOnly",
+        "x": 55.4,
+        "y": 107.5,
+        "w": 299.5,
+        "h": 10,
+        "zh": "B.3. DARE 与 DropOnly 对比的补充结果"
+      },
+      {
+        "text": "The comparison results between DARE and DropOnly on AlpacaEval, MATH, HumanEval, and MBPP on decoder-based LMs and all results on GLUE on encoder-based LMs are shown in Figure 14 and Figure 15, respectively.",
+        "x": 55.1,
+        "y": 76.9,
+        "w": 486.3,
+        "h": 21.9,
+        "zh": "DARE 与 DropOnly 在解码器语言模型的 AlpacaEval、MATH、HumanEval 和 MBPP 上的对比，以及编码器语言模型在 GLUE 上的全部结果，分别见图 14 和图 15。"
+      }
+    ],
+    "17": [
+      {
+        "text": "Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch",
+        "x": 109,
+        "y": 737.9,
+        "w": 378.9,
+        "h": 9,
+        "zh": "语言模型就是超级马里奥：从同源模型吸收能力，如同免费午餐"
+      },
+      {
+        "text": "Figure 14: Comparing DARE and DropOnly on AlpacaEval, MATH, HumanEval, and MBPP on decoder-based LMs.",
+        "x": 63.8,
+        "y": 560.4,
+        "w": 469.3,
+        "h": 10,
+        "zh": "图 14：在解码器语言模型上，比较 DARE 与 DropOnly 在 AlpacaEval、MATH、HumanEval 和 MBPP 上的结果。"
+      },
+      {
+        "text": "Figure 16: Comparisons between DARE and MP on AlpacaEval, MATH, HumanEval, and MBPP on decoder-based LMs.",
+        "x": 55.4,
+        "y": 96.3,
+        "w": 485.9,
+        "h": 10,
+        "zh": "图 16：在解码器语言模型上，比较 DARE 与 MP 在 AlpacaEval、MATH、HumanEval 和 MBPP 上的结果。"
+      }
+    ],
+    "18": [
+      {
+        "text": "Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch",
+        "x": 109,
+        "y": 737.9,
+        "w": 378.9,
+        "h": 9,
+        "zh": "语言模型就是超级马里奥：从同源模型吸收能力，如同免费午餐"
+      },
+      {
+        "text": "B.4. Additional Results of Comparisons between DARE and MP",
+        "x": 55.4,
+        "y": 715,
+        "w": 272,
+        "h": 10,
+        "zh": "B.4. DARE 与 MP 对比的补充结果"
+      },
+      {
+        "text": "Comparisons between DARE and magnitude-based pruning on AlpacaEval, MATH, HumanEval, and MBPP on decoderbased LMs and all results on GLUE on encoder-based LMs are shown in Figure 16 and Figure 17, respectively.",
+        "x": 55.4,
+        "y": 684.4,
+        "w": 487.7,
+        "h": 21.9,
+        "zh": "DARE 与基于幅度的剪枝，在解码器语言模型的 AlpacaEval、MATH、HumanEval 和 MBPP 上的对比，以及编码器语言模型在 GLUE 上的全部结果，分别见图 16 和图 17。"
+      },
+      {
+        "text": "B.5. Ranges of SFT Delta Parameters of Decoder-based LMs and Encoder-based LMs",
+        "x": 55.4,
+        "y": 409.6,
+        "w": 363.6,
+        "h": 10,
+        "zh": "B.5. 解码器语言模型与编码器语言模型的 SFT delta 参数范围"
+      },
+      {
+        "text": "We show the SFT delta parameter ranges of decoder- and encoder-based LMs in Figure 18, Figure 19 and Figure 20. Note that for decoder-based LMs, the results are obtained by randomly selecting 10% delta parameters, whereas for encoder-based LMs, all delta parameters are included. We also provide the statistics on the percentiles of delta parameter ranges in Table 6, which are derived by sorting the entire ranges and indexing at positions corresponding to 0, 10%, 20%, ..., 100%.",
+        "x": 55,
+        "y": 355.1,
+        "w": 487.7,
+        "h": 45.8,
+        "zh": "图 18、图 19 和图 20 给出解码器与编码器语言模型的 SFT delta 参数取值范围。对解码器语言模型，这些结果来自随机抽取的 10% delta 参数；对编码器语言模型，则包含全部 delta 参数。表 6 进一步给出取值范围的分位数：先把整个范围排序，再取对应 0、10%、20%、……、100% 位置上的值。"
+      },
+      {
+        "text": "B.6. Additional Results of Dropping Fine-tuned Parameters on Encoder-based LMs",
+        "x": 55.4,
+        "y": 330,
+        "w": 353.9,
+        "h": 10,
+        "zh": "B.6. 在编码器语言模型上去掉微调后参数的补充结果"
+      },
+      {
+        "text": "Figure 21 shows the results of removing fine-tuned parameters on GLUE on encoder-based LMs.",
+        "x": 55.4,
+        "y": 311.3,
+        "w": 386.8,
+        "h": 10,
+        "zh": "图 21 给出在编码器语言模型的 GLUE 上去掉微调后参数的结果。"
+      }
+    ],
+    "19": [
+      {
+        "text": "Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch",
+        "x": 109,
+        "y": 737.9,
+        "w": 378.9,
+        "h": 9,
+        "zh": "语言模型就是超级马里奥：从同源模型吸收能力，如同免费午餐"
+      },
+      {
+        "text": "Figure 18: Delta parameter ranges of 13B decoder-based LMs vs. the pre-trained backbones.",
+        "x": 113.4,
+        "y": 377.7,
+        "w": 370.1,
+        "h": 10,
+        "zh": "图 18：13B 解码器语言模型相对预训练骨干的 delta 参数取值范围。"
+      }
+    ],
+    "20": [
+      {
+        "text": "Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch",
+        "x": 109,
+        "y": 737.9,
+        "w": 378.9,
+        "h": 9,
+        "zh": "语言模型就是超级马里奥：从同源模型吸收能力，如同免费午餐"
+      },
+      {
+        "text": "Figure 21: Performance of DARE and MP when dropping fine-tuned parameters on GLUE on encoder-based LMs.",
+        "x": 69.3,
+        "y": 124.5,
+        "w": 458.2,
+        "h": 10,
+        "zh": "图 21：在编码器语言模型的 GLUE 上去掉微调后参数时，DARE 与 MP 的性能。"
+      }
+    ],
+    "21": [
+      {
+        "text": "Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch",
+        "x": 109,
+        "y": 737.9,
+        "w": 378.9,
+        "h": 9,
+        "zh": "语言模型就是超级马里奥：从同源模型吸收能力，如同免费午餐"
+      },
+      {
+        "text": "4.81e-020.74e-027.98e-021.82e-03 1.08e-021.44e-021.03e-021.11e-027.47e-023.87e-022.29e-024.81e-033.52e-039.08e-038.06e-032.77e-032.56e-022.31e-029.11e-032.01e-03",
+        "x": 167.9,
+        "y": 657.8,
+        "w": 337.6,
+        "h": 10.2,
+        "zh": ""
+      },
+      {
+        "text": "0.03e-02 0.06e-02 0.10e-02 0.16e-020.01e-02 0.02e-02 0.04e-02 0.06e-023.34e-05 6.87e-05 1.07e-04 1.81e-04",
+        "x": 167.9,
+        "y": 485.9,
+        "w": 233.8,
+        "h": 10.2,
+        "zh": ""
+      },
+      {
+        "text": "-3.81e-02 -2.47e-02 -1.53e-02 -7.31e-03 7.63e-06 7.32e-03 1.53e-02 2.47e-02 3.81e-02",
+        "x": 267.3,
+        "y": 266.7,
+        "w": 378.5,
+        "h": 10.2,
+        "zh": ""
+      },
+      {
+        "text": "0% (min)-3.93e-02 -0.16e-02 -0.10e-02 -0.06e-02 -0.03e-02-0.69e-02 -0.06e-02 -0.04e-02 -0.02e-02 -0.01e-02-8.42e-02 -3.05e-05-1.86e-03 -1.81e-04 -1.07e-04 -6.87e-05 -3.34e-05-1.10e-02 -1.99e-03 -1.16e-03 -5.70e-04 -7.35e-05 3.08e-05 1.07e-04 5.74e-04 1.17e-03 1.99e-03-8.33e-03 -1.33e-03 -8.09e-04 -4.29e-04 -1.11e-04 4.81e-05 1.93e-04 4.42e-04 8.21e-04 1.34e-03-1.10e-02 -1.41e-03 -8.45e-04 -4.49e-04 -1.01e-04 8.55e-06 1.06e-04 4.54e-04 8.50e-04 1.41e-03-1.40e-02 -1.88e-03 -1.13e-03 -5.93e-04 -1.27e-04 2.11e-05 1.27e-04 5.93e-04 1.13e-03 1.88e-03-3.66e-02 -0.32e-02 -0.19e-02 -0.11e-02 -0.04e-02 0.01e-02 0.06e-02 0.13e-02 0.21e-02 0.32e-02-2.28e-02 -2.61e-03 -1.63e-03 -9.51e-04 -3.90e-04 7.63e-05 4.81e-04 1.03e-03 1.70e-03 2.65e-03-1.32e-02 -1.77e-03 -1.11e-03 -6.57e-04 -2.76e-04 4.43e-05 3.31e-04 7.08e-04 1.16e-03 1.79e-03-4.86e-03 -3.94e-04 -2.42e-04 -1.31e-04 -3.43e-05 2.12e-06 3.56e-05 1.33e-04 2.43e-04 3.95e-04-3.60e-03 -4.94e-04 -2.65e-04 -1.01e-04 -2.52e-05 1.81e-06 2.89e-05 1.01e-04 2.66e-04 4.97e-04-1.10e-02 -1.18e-03 -6.69e-04 -3.43e-04 -1.44e-04 1.04e-05 1.64e-04 3.81e-04 6.82e-04 1.19e-03-7.82e-03 -1.26e-03 -6.87e-04 -2.95e-04 -5.84e-05 2.92e-06 7.03e-05 2.94e-04 6.86e-04 1.26e-03-2.68e-03 -4.45e-04 -2.54e-04 -1.11e-04 -2.10e-05 1.22e-06 3.39e-05 1.12e-04 2.55e-04 4.46e-04-3.29e-02 -3.16e-03 -2.01e-03 -1.18e-03 -5.33e-04 6.27e-05 6.51e-04 1.32e-03 2.14e-03 3.30e-03-3.22e-02 -3.39e-03 -2.17e-03 -1.28e-03 -5.78e-04 6.97e-05 7.09e-04 1.43e-03 2.31e-03 3.54e-03-7.69e-03 -1.22e-03 -7.51e-04 -4.35e-04 -1.83e-04 8.53e-06 2.10e-04 4.54e-04 7.67e-04 1.23e-03-1.81e-03 -2.90e-04 -1.63e-04 -7.32e-05 -1.01e-05 3.86e-07 1.24e-05 7.38e-05 1.63e-04 2.91e-04",
+        "x": 149.1,
+        "y": 222.2,
+        "w": 743.6,
+        "h": 10.5,
+        "zh": ""
+      },
+      {
+        "text": "Table 6: Statistics about the deciles of delta parameter ranges of both decoder- and encoder-based LMs.CoLASST-2MRPCSTS-BQQPMNLIQNLIRTECoLASST-2MRPCSTS-BQQPMNLIQNLIRTE",
+        "x": 126.6,
+        "y": 185.4,
+        "w": 412.8,
+        "h": 19,
+        "zh": "表 6：解码器语言模型与编码器语言模型 delta 参数取值范围的十分位数统计。列名依次为 CoLA、SST-2、MRPC、STS-B、QQP、MNLI、QNLI、RTE，并再出现一次 CoLA、SST-2、MRPC、STS-B、QQP、MNLI、QNLI、RTE。"
+      },
+      {
+        "text": "WizardLM-13Bvs. Llama-2-13bWizardMath-13Bvs. Llama-2-13bvs. Llama-2-13bvs. Llama-2-13b",
+        "x": 161.7,
+        "y": 124.3,
+        "w": 179.5,
+        "h": 13.3,
+        "zh": ""
+      },
+      {
+        "text": "llama-2-13b-code-alpacaWizardCoder-Python-13Bvs. CodeLlama-13b-Python WizardCoder-Python-13Bbert-base-uncased",
+        "x": 211.4,
+        "y": 103.4,
+        "w": 190.8,
+        "h": 15.9,
+        "zh": ""
+      }
+    ]
+  }
+}

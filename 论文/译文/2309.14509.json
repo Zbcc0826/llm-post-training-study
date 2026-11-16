@@ -1,0 +1,719 @@
+{
+  "id": "2309.14509",
+  "title": "2309.14509",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "DEEPSPEED ULYSSES: SYSTEM OPTIMIZATIONS FOR ENABLING",
+        "x": 72.6,
+        "y": 681.2,
+        "w": 466.9,
+        "h": 17.2,
+        "zh": "DeepSpeed Ulysses：为使下列训练成为可能而做的系统优化"
+      },
+      {
+        "text": "TRAINING OF EXTREME LONG SEQUENCE TRANSFORMER",
+        "x": 92.7,
+        "y": 661.3,
+        "w": 426,
+        "h": 17.2,
+        "zh": "极端长序列 Transformer 的训练"
+      },
+      {
+        "text": "Sam Ade Jacobs, Masahiro Tanaka, Chengming Zhang, Minjia Zhang",
+        "x": 157,
+        "y": 579.8,
+        "w": 298,
+        "h": 10,
+        "zh": "Sam Ade Jacobs、Masahiro Tanaka、Chengming Zhang、Minjia Zhang"
+      },
+      {
+        "text": "Shuaiwen Leon Song, Samyam Rajbhandari, Yuxiong He",
+        "x": 184.4,
+        "y": 551.6,
+        "w": 243.2,
+        "h": 10,
+        "zh": "Shuaiwen Leon Song、Samyam Rajbhandari、Yuxiong He"
+      },
+      {
+        "text": "{samjacobs,mtanaka,minjiaz,v-chengmingz,leonsong,samyamr,yxhe}@microsoft.com",
+        "x": 107.3,
+        "y": 529.8,
+        "w": 397.4,
+        "h": 10,
+        "zh": ""
+      },
+      {
+        "text": "Computation in a typical Transformer-based large language model (LLM) can be characterized by batch size, hidden dimension, number of layers, and sequence length. Until now, system works for accelerating LLM training have focused on the first three dimensions: data parallelism for batch size, tensor parallelism for hidden size and pipeline parallelism for model depth or layers. These widely studied forms of parallelism are not targeted or optimized for long sequence Transformer models. Given practical application needs for long sequence LLM, renewed attentions are being drawn to sequence parallelism. However, existing works in sequence parallelism are constrained by memorycommunication inefficiency, limiting their scalability to long sequence large models. In this work, we introduce DeepSpeed-Ulysses, a novel, portable and effective methodology for enabling highly efficient and scalable LLM training with extremely long sequence length. DeepSpeed-Ulysses at its core partitions input data along the sequence dimension and employs an efficient all-to-all collective communication for attention computation. Theoretical communication analysis shows that whereas other methods incur communication overhead as sequence length increases, DeepSpeed-Ulysses maintains constant communication volume when sequence length and compute devices are increased proportionally. Furthermore, experimental evaluations show that DeepSpeed-Ulysses trains 2.5x faster with 4x longer sequence length than the existing method SOTA baseline.",
+        "x": 107.5,
+        "y": 297.8,
+        "w": 398.4,
+        "h": 173.6,
+        "zh": "典型的基于 Transformer 的大语言模型（LLM），其计算可以由批次大小、隐藏维度、层数和序列长度来刻画。迄今为止，加速 LLM 训练的系统工作集中在前三个维度：针对批次大小的数据并行、针对隐藏维度的张量并行，以及针对模型深度或层数的流水线并行。这些被广泛研究的并行形式，并非针对长序列 Transformer 模型，也没有为此做过优化。鉴于长序列 LLM 的实际应用需求，序列并行重新受到关注。然而，现有的序列并行工作受限于内存与通信效率不高，因而难以扩展到长序列大模型。本文提出 DeepSpeed-Ulysses，一种新颖、可移植且有效的方法，用来以极长的序列长度进行高效、可扩展的 LLM 训练。DeepSpeed-Ulysses 的核心是沿序列维度切分输入数据，并在注意力计算中使用高效的 all-to-all 集合通信。理论通信分析表明，其他方法的通信开销会随序列长度增加而上升，而 DeepSpeed-Ulysses 在序列长度与计算设备按比例增加时，通信量保持不变。实验评估进一步表明，相对于现有方法的 SOTA 基线，DeepSpeed-Ulysses 的训练速度快 2.5 倍，序列长度则长 4 倍。"
+      },
+      {
+        "text": "Training large models with long sequences is becoming very important across the board from generative AI to models for scientific discovery. On generative AI side, conversational AI, knowledge-rich long document summarization and video generation require reasoning over long contexts in spatial and temporal domains. For example, multimodal foundation models such as ones that process speech, images and waveforms concurrently require long context reasoning over high dimensional inputs with long sequences. Similarly, chapter and book level summarization (estimated at tens and hundreds of thousands of words) are of great importance in conversational AI and abstractive summarization tasks [Beltagy et al., 2020, Kry´sci´nski et al., 2022, MosaicML, 2023] and have shown to benefit from long sequence training [Xiong et al., 2023, Peng et al., 2023, Touvron et al., 2023]. The debut of ChatGPT (and subsequent similar open source and \"product\" LLM brands) has pushed chat application to the forefront of modern AI, making chat applications to be more relevant than ever before. Processing long sequence is crucial for supporting longer histories in chat applications [Touvron et al., 2023]. Long sequence length is equally critical for AI for science opening doors for better understanding of structure biology, health care, climate and weather forecasting [Nguyen et al., 2023] and large molecular simulation [Zvyagin et al., 2022]. For instance, by adapting large language models with gene sequences, we can create language models that can learn the evolutionary patterns of genomes using simple alphabets and extremely long sequences (the human genome",
+        "x": 71.7,
+        "y": 72,
+        "w": 469.6,
+        "h": 168.2,
+        "zh": "用长序列训练大模型，从生成式 AI 到面向科学发现的模型，正在各个方向上变得非常重要。就生成式 AI 而言，对话式 AI、知识密集的长文档摘要和视频生成，都需要在空间域和时间域上对长上下文进行推理。例如，同时处理语音、图像和波形的多模态基础模型，必须对高维、长序列输入做长上下文推理。同样，章节级和书籍级摘要（估计在数万到数十万词）在对话式 AI 和抽象式摘要任务中非常重要 [Beltagy et al., 2020, Kryściński et al., 2022, MosaicML, 2023]，并且已经表明能从长序列训练中受益 [Xiong et al., 2023, Peng et al., 2023, Touvron et al., 2023]。ChatGPT 的问世（以及随后类似的开源和「产品」LLM 品牌）把聊天应用推到了现代 AI 的前台，使聊天应用比以往任何时候都更受关注。处理长序列，对于在聊天应用中支持更长的历史至关重要 [Touvron et al., 2023]。长序列对于科学 AI 同样关键，它为更好地理解结构生物学、医疗健康、气候与天气预报 [Nguyen et al., 2023] 以及大规模分子模拟 [Zvyagin et al., 2022] 打开了大门。例如，把大语言模型适配到基因序列上，就可以造出能用简单字母表和极长序列学习基因组演化模式的语言模型（人类基因组"
+      }
+    ],
+    "2": [
+      {
+        "text": "has 6.4 billion letters) [Zvyagin et al., 2022]. In health care, diagnostic predictive model conditioned on entire patient care record requires context of long sequences [Li et al., 2022a, Gao et al., 2021]. Despite the emerging importance of long sequence length for both generative AI and AI for science, existing large model training systems and the underlying parallelism technologies (data, tensor, pipeline, sequence parallelism) are limited in their ability to support the efficient long sequence training. Two challenges with existing parallelism approach come to the fore. First, existing parallelism approach such as data, tensor and pipeline parallelism cannot address the scaling along sequence dimension. Second, existing sequence parallelism approaches are not effective because of memory-communication inefficiencies. Furthermore, existing approaches have limited usability requiring intrusive and",
+        "x": 72,
+        "y": 628.2,
+        "w": 468,
+        "h": 91.8,
+        "zh": "有 64 亿个字母）[Zvyagin et al., 2022]。在医疗健康领域，以患者完整诊疗记录为条件的诊断预测模型，需要长序列上下文 [Li et al., 2022a, Gao et al., 2021]。尽管长序列对生成式 AI 和科学 AI 都日益重要，现有大模型训练系统及其底层并行技术（数据并行、张量并行、流水线并行、序列并行）仍然难以高效支持长序列训练。现有并行方法有两个突出的挑战。第一，数据并行、张量并行和流水线并行这类方法，无法解决沿序列维度的扩展。第二，现有序列并行方法由于内存与通信效率不高，效果有限。此外，现有方法可用性不足，需要侵入式的，并且"
+      },
+      {
+        "text": "In this paper, we introduce DeepSpeed-Ulysses (or Ulysses, a very long novel), a simple, portable, and effective methodology for enabling highly efficient and scalable LLM training with extremely long sequence lengths. DeepSpeedUlysses partitions individual samples along the sequence dimension among participating GPUs. Then right before the attention computation, it employs all-to-all communication collective on the partitioned queries, keys and values such that each GPU receives the full sequence but only for a non-overlapping subset of the attention heads. This allows the participating GPUs to compute attention for different attention heads in parallel. Finally, DeepSpeed-Ulysses employs another all-to-all to gather the results along the attention heads while re-partitioning along the sequence dimension. In this work, we put forward the following contributions of DeepSpeed-Ulysses to advance state of the art in long",
+        "x": 72,
+        "y": 519.1,
+        "w": 469.7,
+        "h": 91.8,
+        "zh": "本文介绍 DeepSpeed-Ulysses（简称 Ulysses，一部极长的小说），一种简单、可移植且有效的方法，用来以极长的序列长度进行高效、可扩展的 LLM 训练。DeepSpeed-Ulysses 把单个样本沿序列维度切分到参与计算的各块 GPU 上。紧接在注意力计算之前，它对已切分的 query、key 和 value 做 all-to-all 集合通信，使每块 GPU 拿到完整序列，但只对应一组互不重叠的注意力头。这样，参与计算的 GPU 就可以并行计算不同注意力头上的注意力。最后，DeepSpeed-Ulysses 再做一次 all-to-all，沿注意力头把结果收集起来，同时重新按序列维度切分。本文提出 DeepSpeed-Ulysses 的下列贡献，用以推进长序列方向的现有水平"
+      },
+      {
+        "text": "• DeepSpeed-Ulysses trains Transformer models 4x larger sequence lengths than existing systems, while",
+        "x": 99.4,
+        "y": 486.9,
+        "w": 440.6,
+        "h": 10,
+        "zh": "• DeepSpeed-Ulysses 训练 Transformer 模型时，序列长度可以达到现有系统的 4 倍，同时"
+      },
+      {
+        "text": "enabling training with sequences with over a million tokens.",
+        "x": 107.9,
+        "y": 476,
+        "w": 240.1,
+        "h": 10,
+        "zh": "能够训练超过一百万个 token 的序列。"
+      },
+      {
+        "text": "• Communication reduction of over 10x compared to existing systems, resulting in throughput improvements of up to 2.5x, and sustained throughput of over 175 TFlops/GPU (over 54% of hardware peak). • Fully general and implementation agnostic attention: DeepSpeed sequence parallelism (Ulysses) supports dense as well as sparse attention, and it works with efficient attention implementations such as FlashAttention",
+        "x": 99.4,
+        "y": 420.7,
+        "w": 440.6,
+        "h": 48.5,
+        "zh": "• 与现有系统相比，通信量降低 10 倍以上，吞吐量因此最多提升 2.5 倍，持续吞吐量超过 175 TFlops/GPU（超过硬件峰值的 54%）。• 注意力完全通用，且与具体实现无关：DeepSpeed 序列并行（Ulysses）既支持稠密注意力，也支持稀疏注意力，并且可以配合 FlashAttention 等高效注意力实现一起使用"
+      },
+      {
+        "text": "• Support for massive model training: DeepSpeed sequence parallelism works together with ZeRO-3 to not only",
+        "x": 99.4,
+        "y": 393.1,
+        "w": 440.9,
+        "h": 10,
+        "zh": "• 支持超大模型训练：DeepSpeed 序列并行与 ZeRO-3 配合，从而不仅"
+      },
+      {
+        "text": "support large sequence lengths but also massive model sizes.",
+        "x": 107.9,
+        "y": 382.2,
+        "w": 241.9,
+        "h": 10,
+        "zh": "支持很长的序列，也支持巨大的模型规模。"
+      },
+      {
+        "text": "• Easy-to-use and portable, requiring minimal code changes to the existing training frameworks.",
+        "x": 99.4,
+        "y": 365.5,
+        "w": 385.1,
+        "h": 10,
+        "zh": "• 易用且可移植，只需对现有训练框架做极少的代码改动。"
+      },
+      {
+        "text": "In subsequent sections, we provide background and related work, a detailed discussion of DeepSpeed sequence parallelism core design, communication complexity analysis, experimental evaluation and comparison with existing",
+        "x": 72,
+        "y": 333.3,
+        "w": 468,
+        "h": 20.9,
+        "zh": "在随后各节中，我们给出背景与相关工作，详细讨论 DeepSpeed 序列并行的核心设计、通信复杂度分析、实验评估，以及与现有方法的比较"
+      },
+      {
+        "text": "In this section, we present a brief overview of Transformer architecture, mode of parallelism to accelerate Transformer",
+        "x": 72,
+        "y": 267.6,
+        "w": 468.2,
+        "h": 10,
+        "zh": "本节简要概述 Transformer 架构，以及用来加速 Transformer"
+      },
+      {
+        "text": "training and a discussion on closely related work to our approach",
+        "x": 72,
+        "y": 256.7,
+        "w": 259.4,
+        "h": 10,
+        "zh": "训练的并行方式，并讨论与我们的方法密切相关的工作"
+      },
+      {
+        "text": "This section briefly introduces Transformer architecture and highlights different mode of parallelism of deep neural network in general and Transformer model in particular. This brief discussion is followed by specific focus on closely",
+        "x": 71.7,
+        "y": 198.5,
+        "w": 468.7,
+        "h": 20.9,
+        "zh": "本节简要介绍 Transformer 架构，并指出深度神经网络总体上、以及 Transformer 模型具体上有哪些并行方式。这段简短讨论之后，会特别聚焦于密切相关的"
+      },
+      {
+        "text": "Shown in Figure 1 is a sketch of building blocks of a typical multihead attention Transformer architecture [Vaswani et al., 2017]. It consists of input sequences which are projected into queries (Q),keys (K) and values (V) embeddings. QKV are typically a 3D tensor of size N, b, d where N is sequence length, b is micro batch size and d is hidden dimension. The QKV tensors are fed to the attention block, a central component of Transformer model. Outputs of attentions are inputs to the multilayer perceptron (MLP) or position-wise feed-forward block of Transformer architecture. The attention block followed by MLP block are replicated multiple times to form an encoder, a decoder or an encoder-",
+        "x": 71.6,
+        "y": 82.9,
+        "w": 470.1,
+        "h": 70,
+        "zh": "图 1 给出了典型多头注意力 Transformer 架构的组成模块示意 [Vaswani et al., 2017]。它包含输入序列，这些序列被投影成 query（Q）、key（K）和 value（V）嵌入。QKV 通常是大小为 N、b、d 的三维张量，其中 N 是序列长度，b 是微批次大小，d 是隐藏维度。QKV 张量被送入注意力块，这是 Transformer 模型的核心组件。注意力的输出，是多层感知机（MLP），也就是 Transformer 架构中逐位置前馈块的输入。注意力块之后接上 MLP 块，这一组合被复制多次，构成编码器、解码器，或编码器-"
+      }
+    ],
+    "3": [
+      {
+        "text": "Data parallelism [Dean et al., 2012] is de facto method of accelerating neural network training and has been applied widely with different neural network architectures and applications. Data parallelism in its simplest form partitions input data across sample or batch dimension while replicating model parameters across compute devices. Data parallelism is effective when the batch size is sufficiently large to hide communication cost in compute. However, it is limited when model is large and model parameter replication across devices is practically infeasible. ZeRO [Rajbhandari et al., 2020, 2021] optimization addresses this problem by partitioning model parameters across available compute devices. Moreso, large batch is known to have impacts on model quality [Keskar et al., 2016]. It is worth to note that our proposed approach is orthogonal to both data parallelism and ZeRO. Our proposed approach can be used with both methods. Also, by leveraging sequence parallelism to keep global batch size at reasonable size on large systems, we effectively ameliorate the impact of large batch size on model convergence. Sequence parallelism serves two purposes in this regard. First, sequence parallelism can accelerate time to solution for same (already explored) long sequence length; in other words, sequence parallelism reduces the iteration time proportional to additional compute resources. Second, sequence parallelism enables longer sequence training or continual pretraining where training context length gradually increase over time [Xiong et al., 2023]. Consider a real world scenario of large scale training on 1024 GPUs. The initial exploratory or pretraining set up of a (proxy) LLM has a sequence length of 8192 (8K), a micro batch size of 1 (thus, 8 million token global size) per GPU. A simple change to improve the quality of the pretrained model requires a change of sequence length from 8K to 32K, which would result in approximately 32 million global batch size. However, increasing the global batch size is not an option due to the negative impact on model quality. Therefore, sequence parallelism comes in handy as a system optimization technique with no requirement for laborious hyperparameter search. In this scenario, sequence parallelism allows for large batch sizes to be split across multiple GPUs without increasing the global batch size, regardless of the sequence length. Tensor [Shoeybi et al., 2019] and pipeline parallelism [Narayanan et al., 2019, Huang et al., 2018, Narayanan et al., 2021] are two other popular methods for large scale training. Collectively, tensor and pipeline parallelism are called model parallelism, and are targeted at compute operators in large models. In contrast to data parallelism, model parallelism are used when models are too large (as it is in many LLMs) and can not be fully replicated across data parallel ranks. Tensor parallelism splits compute operators (i.e., attention and MLPs) within a layer and pipeline parallelism splits model in a depth-wise (layer-wise) fashion. 3D parallelism [Team and Majumder, 2020, Smith et al., 2022] combines data parallelism, tensor parallelism and pipeline parallelism to achieve higher throughput in comparison to the 3 constituents components at a cost of extensive code rewrite and productivity overhead [Wang et al., 2023].",
+        "x": 71.6,
+        "y": 158.5,
+        "w": 469.6,
+        "h": 326.4,
+        "zh": "数据并行 [Dean et al., 2012] 是加速神经网络训练的事实标准方法，已被广泛用于不同的神经网络架构和应用。数据并行最简单的形式，是沿样本或批次维度切分输入数据，同时在各计算设备上复制模型参数。当批次足够大、能够用计算掩盖通信开销时，数据并行是有效的。然而，当模型很大、在各设备上复制模型参数实际上不可行时，它就受到限制。ZeRO [Rajbhandari et al., 2020, 2021] 优化通过把模型参数切分到可用计算设备上来解决这个问题。此外，大批次已知会影响模型质量 [Keskar et al., 2016]。值得注意的是，我们提出的方法与数据并行和 ZeRO 都是正交的，可以和这两种方法一起使用。另外，借助序列并行，可以在大规模系统上把全局批次保持在合理大小，从而有效减轻大批次对模型收敛的影响。序列并行在这方面有两个用途。第一，对同样（已经探索过）的长序列长度，序列并行可以缩短求解时间；换句话说，序列并行使迭代时间随额外计算资源成比例下降。第二，序列并行使更长序列的训练或持续预训练成为可能，训练上下文长度会随时间逐渐增加 [Xiong et al., 2023]。考虑一个在 1024 块 GPU 上做大规模训练的真实场景。某个（代理）LLM 的初始探索或预训练配置是序列长度 8192（8K）、每块 GPU 的微批次大小为 1（因此全局规模为 800 万 token）。为提高预训练模型质量而做的一个简单改动，是把序列长度从 8K 改为 32K，这会使全局批次大小大约变成 3200 万。然而，由于对模型质量有负面影响，增大全局批次并不可取。因此，序列并行作为一种系统优化技术正好派上用场，而且不需要费力地搜索超参数。在这一场景中，无论序列长度如何，序列并行都允许把大批次拆到多块 GPU 上，同时不增加全局批次。张量并行 [Shoeybi et al., 2019] 和流水线并行 [Narayanan et al., 2019, Huang et al., 2018, Narayanan et al., 2021] 是大规模训练的另外两种常用方法。张量并行和流水线并行合起来称为模型并行，针对的是大模型里的计算算子。与数据并行不同，模型并行用于模型太大（许多 LLM 就是如此）、无法在数据并行 rank 上完整复制的情况。张量并行在一层内部切分计算算子（即注意力和 MLP），流水线并行则按深度（按层）切分模型。3D 并行 [Team and Majumder, 2020, Smith et al., 2022] 把数据并行、张量并行和流水线并行组合起来，相对于这三个组成部分能获得更高吞吐量，代价是大量重写代码，以及生产力上的额外开销 [Wang et al., 2023]。"
+      },
+      {
+        "text": "For a broad overview and survey of distributed training methods for deep neural networks please see [Ben-Nun and Hoefler, 2019]. These methods are broadly categorized into data and model parallelism as described above. However, all of existing parallel methods are limited in dealing with intermediate activation memory overhead associated with",
+        "x": 72,
+        "y": 82.9,
+        "w": 469.2,
+        "h": 31.8,
+        "zh": "关于深度神经网络分布式训练方法的广泛概述与综述，请见 [Ben-Nun and Hoefler, 2019]。这些方法大致分为上文所述的数据并行和模型并行。然而，现有的全部并行方法，在处理与中间激活内存开销相关的问题时都受到限制，"
+      }
+    ],
+    "4": [
+      {
+        "text": "ColAI-SP [Li et al., 2022b] Megatron-SP [Korthikanti et al., 2022] O(M)",
+        "x": 159.1,
+        "y": 674.2,
+        "w": 134.6,
+        "h": 16.7,
+        "zh": "ColAI-SP [Li et al., 2022b]、Megatron-SP [Korthikanti et al., 2022]，O(M)"
+      },
+      {
+        "text": "Table 1: Comparison of our work (DS-Ulysses) to other sequence parallelism methods.",
+        "x": 132.4,
+        "y": 650.9,
+        "w": 347.2,
+        "h": 10,
+        "zh": "表 1：本文工作（DS-Ulysses）与其他序列并行方法的比较。"
+      },
+      {
+        "text": "While recent works in sequence parallelism address the memory overhead, they are lacking in communication efficiency, thus limited in scaling capability. Similar to our work, all existing works in sequence parallelism partition the input data along sequence dimension but differ in what input projections are partitioned and how partitions are aggregated and",
+        "x": 71.5,
+        "y": 610.6,
+        "w": 469.7,
+        "h": 31.8,
+        "zh": "近期的序列并行工作处理了内存开销，但通信效率不足，因此扩展能力有限。与本文类似，现有的序列并行工作都沿序列维度切分输入数据，差别在于哪些输入投影被切分，以及这些分片如何聚合，并且"
+      },
+      {
+        "text": "The authors in [Li et al., 2022b] (henceforward called ColAI-SP) introduce ring self attention, a ring-like communication collective in which query projections are local whereas key and values projections are transmitted in a ring-style to compute global attention, resulting in communication complexity linear in message size, M. Megatron-LM sequence parallelism [Korthikanti et al., 2022] approach is tightly integrated with Megatron tensor parallelism. Megatron LM partitions sequence along sequence dimensions and applies allgather and reduce scatter collective to aggregate QKV projections for attention computation. Communication complexity analysis shows that unlike our approach, MegatronLM sequence parallelism communication volume increase linearly with message size (M) regardless of number of compute devices. DeepSpeed-Ulysses on the other hand keeps communication volume consistent by increasing GPUs",
+        "x": 71.7,
+        "y": 506.9,
+        "w": 470,
+        "h": 86.3,
+        "zh": "[Li et al., 2022b] 的作者（下文称为 ColAI-SP）提出了环形自注意力（ring self-attention），这是一种环形通信集合：query 投影留在本地，key 和 value 投影则以环形方式传送，用来计算全局注意力，通信复杂度随消息大小 M 线性增长。Megatron-LM 的序列并行 [Korthikanti et al., 2022] 与 Megatron 张量并行紧密集成。Megatron-LM 沿序列维度切分序列，并用 all-gather 与 reduce-scatter 集合通信来聚合 QKV 投影，以便做注意力计算。通信复杂度分析表明，与本文方法不同，无论计算设备数量是多少，Megatron-LM 序列并行的通信量都随消息大小 M 线性增加。DeepSpeed-Ulysses 则靠增加 GPU 数量，使通信量保持不变"
+      },
+      {
+        "text": "proportional to message size or sequence length see 3.2 for more details.",
+        "x": 72,
+        "y": 496,
+        "w": 291.6,
+        "h": 10,
+        "zh": "增加的幅度与消息大小或序列长度成比例，详见第 3.2 节。"
+      },
+      {
+        "text": "Table 1 summarizes how DeepSpeed-Ulysses differs from other existing methods. DeepSpeed-Ulysses has communication efficiency advantage over the other two methods. It also benefits from leveraging ZeRO [Rajbhandari et al., 2020, 2021] optimization for model parameter partitioning across both sequence and data parallel groups. DeepSpeed-Ulysses supports different kinds of attention and it is easy to use. Megatron-LM sequence parallelism is tightly integrated with Megatron-LM tensor parallelism limiting both its memory efficiency and easy of use. ColAI-SP requires a different (specific) kind of attention and is not easy to use. It is not clear how well ColAI-SP ring self-attention generalizes to",
+        "x": 71.7,
+        "y": 425.1,
+        "w": 470,
+        "h": 64.5,
+        "zh": "表 1 总结了 DeepSpeed-Ulysses 与其他现有方法的差别。DeepSpeed-Ulysses 在通信效率上优于另外两种方法。它还借助 ZeRO [Rajbhandari et al., 2020, 2021] 优化，在序列并行组和数据并行组上切分模型参数。DeepSpeed-Ulysses 支持不同种类的注意力，而且容易使用。Megatron-LM 序列并行与 Megatron-LM 张量并行绑在一起，这既限制了它的内存效率，也限制了易用性。ColAI-SP 需要另一种（特定的）注意力，而且不容易使用。目前还不清楚 ColAI-SP 的环形自注意力能在多大程度上推广到"
+      },
+      {
+        "text": "There are related works in sparse Transformer particularly focusing on full-attention approximation such as sparse attention [Child et al., 2019, Choromanski et al., 2020, Zaheer et al., 2021, Beltagy et al., 2020]. There are also recent works on single GPU memory and compute efficient attention. A popular example in this category is Flash attention [Dao et al., 2022, Dao, 2023], which leverages known techniques such as tiling and recomputation for compute and memory efficiency. These works are orthogonal to our work and were leveraged accordingly.",
+        "x": 71.6,
+        "y": 354.2,
+        "w": 468.4,
+        "h": 53.6,
+        "zh": "稀疏 Transformer 方面有一些相关工作，尤其是关注全注意力近似的，例如稀疏注意力 [Child et al., 2019, Choromanski et al., 2020, Zaheer et al., 2021, Beltagy et al., 2020]。也有近期工作研究单块 GPU 上对内存和计算都高效的注意力。这类工作里一个广为人知的例子是 FlashAttention [Dao et al., 2022, Dao, 2023]，它利用分块（tiling）和重计算等已知技术来提高计算效率和内存效率。这些工作与本文正交，并被相应地加以利用。"
+      },
+      {
+        "text": "Figure 2 shows the core design of DeepSpeed-Ulysses. As with the known transformer architecture, the design consists of input sequences N partitioned across P available devices. Each local N/P partition is projected into queries (Q), keys",
+        "x": 72,
+        "y": 72,
+        "w": 468,
+        "h": 20.9,
+        "zh": "图 2 给出了 DeepSpeed-Ulysses 的核心设计。与已知的 Transformer 架构一样，该设计把输入序列 N 切分到 P 个可用设备上。每个本地的 N/P 分片被投影成 query（Q）、key"
+      }
+    ],
+    "5": [
+      {
+        "text": "(K) and values (V) embeddings. Next, (QKV) embeddings are gathered into global QKV through highly optimized all-to-all collectives between participating compute devices. Sequel to all-to-all collective is the attention computation",
+        "x": 71.7,
+        "y": 699.1,
+        "w": 468.3,
+        "h": 20.9,
+        "zh": "（K）和 value（V）嵌入。接下来，参与计算的设备之间用高度优化的 all-to-all 集合通信，把（QKV）嵌入聚合成全局 QKV。all-to-all 集合通信之后，就是注意力计算"
+      },
+      {
+        "text": "After the attention computation, another all-to-all collective transforms output context tensor of attention computation to sequence (N/P) parallel for subsequent operators (MLP MatMul, layer norm etc) in the remaining modules of",
+        "x": 71.6,
+        "y": 630.4,
+        "w": 468.4,
+        "h": 20.9,
+        "zh": "注意力计算之后，另一次 all-to-all 集合通信把注意力计算得到的输出上下文张量变换成按序列（N/P）并行的形式，供其余模块里的后续算子（MLP 的 MatMul、层归一化等）使用"
+      },
+      {
+        "text": "What distinguishes DeepSpeed-Ulysses from the other existing long-sequence approaches is our much smaller aggregate communication volume and overall better scalability with increasing degree of sequence parallelism compared to",
+        "x": 71.5,
+        "y": 557,
+        "w": 468.5,
+        "h": 20.9,
+        "zh": "DeepSpeed-Ulysses 与其他现有长序列方法的区别在于：我们的总通信量小得多，而且随着序列并行度增加，整体可扩展性也更好，相比于"
+      },
+      {
+        "text": "existing solutions, as demonstrated by the communication volume analysis below:",
+        "x": 72,
+        "y": 546.1,
+        "w": 327.1,
+        "h": 10,
+        "zh": "现有方案。下面的通信量分析说明了这一点："
+      },
+      {
+        "text": "On modern clusters with intra-node NVSwitch interconnect and inter-node fat tree IB topology, the communication volume transmitted per link for an all-to-all for aggregate message of size M over P GPUs is M/P. For a transformer model with hidden size h, sequence length of N, and parallelism degree of P, DS-Sequence performs all-to-all for the QKV projections with an aggregate message size of 3Nh before the attention computation, and another all-to-all for output context projection with a size Nh for each transformer layer. Therefore, DeepSpeed sequence parallelism incurs an aggregate communication volume per link of 4Nh/P (or with the complexity of O(N/P). Note that this communication",
+        "x": 71.6,
+        "y": 475.2,
+        "w": 468.5,
+        "h": 64.5,
+        "zh": "在节点内使用 NVSwitch 互连、节点间使用胖树 IB 拓扑的现代集群上，对聚合消息大小为 M、跨越 P 块 GPU 的一次 all-to-all，每条链路上传输的通信量是 M/P。对于隐藏维度为 h、序列长度为 N、并行度为 P 的 Transformer 模型，DS-Sequence 在注意力计算之前对 QKV 投影做 all-to-all，聚合消息大小为 3Nh，并在每个 Transformer 层对输出上下文投影再做一次大小为 Nh 的 all-to-all。因此，DeepSpeed 序列并行在每条链路上的总通信量为 4Nh/P（复杂度为 O(N/P)）。注意，这一通信"
+      },
+      {
+        "text": "volume is constant when both N and P are increased proportionally.",
+        "x": 71.8,
+        "y": 464.3,
+        "w": 270.1,
+        "h": 10,
+        "zh": "量在 N 和 P 按比例同时增加时保持不变。"
+      },
+      {
+        "text": "In contrast, the existing approaches like Megatron-LM incur communication volume that increases linearly with N regardless of P, resulting in the communication complexity of O(N). For instance, Megatron-LM performs two all-gather with the message volume of Nh and two reduce-scatter with the volume of Nh for each transformer layer. However, the cost of each all-gather and reduce-scatter of size M remains M when P » 1, instead of M/P. Therefore, Megatron-LM sequence parallelism incurs a communication volume per link of 4Nh which is P times larger than that for DeepSpeed sequence parallelism. This allows DeepSpeed sequence parallelism to enable training with extremely long sequences while achieving significantly higher training efficiency compared to the existing approaches. Our evaluation results",
+        "x": 71.6,
+        "y": 382.4,
+        "w": 468.5,
+        "h": 75.4,
+        "zh": "相比之下，Megatron-LM 等现有方法的通信量随 N 线性增加，与 P 无关，通信复杂度为 O(N)。例如，Megatron-LM 在每个 Transformer 层做两次消息量为 Nh 的 all-gather，以及两次消息量为 Nh 的 reduce-scatter。然而，当 P ≫ 1 时，大小为 M 的每次 all-gather 和 reduce-scatter，代价仍然是 M，而不是 M/P。因此，Megatron-LM 序列并行在每条链路上的通信量为 4Nh，是 DeepSpeed 序列并行的 P 倍。这使得 DeepSpeed 序列并行能够以极长序列进行训练，同时相比现有方法取得高得多的训练效率。我们的评估结果"
+      },
+      {
+        "text": "While DeepSpeed sequence parallelism reduces the activation memory when training with longer sequences, it does not impact the memory consumed by the model states. Therefore, to support large sequence length training with a large language model, DeepSpeed sequence parallelism is integrated with ZeRO-3. ZeRO Redundancy Optimizer Stage 3 (ZeRO-3) [Rajbhandari et al., 2020, 2021] is a memory optimization technique for training large models. Unlike the classic data parallel training of neural networks where model states are replicated across data parallel ranks, ZeRO-3 optimizes memory usage by partitioning model states across data parallel ranks. However, with sequence parallelism, training data can be considered in both batch (sample) and sequence dimensions and the associated parallel groups combined to form a larger group for ZeRO parallelism. Therefore, we extend ZeRO-3 partitioning to combination of data parallel and sequence parallel ranks. In other words, in DeepSpeed sequence parallelism, ZeRO partitions model states across both sequence and data parallel group and collects per rank partitions (allgather) when they are needed. Similarly, gradients are reduced across both data and sequence parallel ranks for parameter update. ZeRO support allows for huge memory savings in both sequence and data dimensions and enables scaling not just to large sequence",
+        "x": 71.5,
+        "y": 199.9,
+        "w": 470.2,
+        "h": 130,
+        "zh": "DeepSpeed 序列并行在用更长序列训练时减少了激活所占用的内存，但并不影响模型状态所占用的内存。因此，为了用大语言模型支持长序列训练，DeepSpeed 序列并行与 ZeRO-3 集成在一起。ZeRO 冗余优化器第 3 阶段（ZeRO-3）[Rajbhandari et al., 2020, 2021] 是一种用于训练大模型的内存优化技术。与经典的神经网络数据并行训练不同——后者在各个数据并行 rank 上复制模型状态——ZeRO-3 把模型状态切分到数据并行 rank 上，从而优化内存占用。然而，有了序列并行之后，训练数据可以同时从批次（样本）和序列两个维度来看待，相关的并行组可以合并成一个更大的组，供 ZeRO 并行使用。因此，我们把 ZeRO-3 的切分扩展到数据并行 rank 与序列并行 rank 的组合。换句话说，在 DeepSpeed 序列并行中，ZeRO 跨序列并行组和数据并行组切分模型状态，并在需要时收集每个 rank 的分片（all-gather）。类似地，为了更新参数，梯度会在数据并行 rank 和序列并行 rank 上做规约。ZeRO 的支持在序列和数据两个维度上都大幅节省内存，使扩展不仅能达到很长的序列"
+      },
+      {
+        "text": "DeepSpeed implementation of distributed attention module is general enough to support any attention: e.g., selfattention, cross-attention, causal attention in both their dense and sparse counterparts, and their various optimized kernels that support long-sequence at local attention level such as different versions of FlashAttention. The general property of DeepSpeed-Ulysses stems from the modular nature of its core design: an attention-centric sequence parallelism design. Prior to attention computation is sequence parallelism of N/P partition, attention computation is head parallelism with full attention per head but just with fewer heads, thus attention computation can be replaced with any type of attention mechanisms, e.g., dense attention and various forms of sparse attention.",
+        "x": 72,
+        "y": 72,
+        "w": 469.7,
+        "h": 75.4,
+        "zh": "DeepSpeed 对分布式注意力模块的实现足够通用，可以支持任何注意力：例如自注意力、交叉注意力、因果注意力，包括它们的稠密形式和稀疏形式，以及在本地注意力层面支持长序列的各种优化内核，例如不同版本的 FlashAttention。DeepSpeed-Ulysses 的通用性来自其核心设计的模块化：这是一种以注意力为中心的序列并行设计。注意力计算之前，是 N/P 分片上的序列并行；注意力计算本身是头并行，每个头仍做完整的注意力，只是头的数量更少。因此，注意力计算可以替换成任何类型的注意力机制，例如稠密注意力和各种形式的稀疏注意力。"
+      }
+    ],
+    "6": [
+      {
+        "text": "We evaluate DeepSpeed-Ulysses (DeepSpeed Sequence) on GPT [Radford et al., 2019], a foundation model for many NLP tasks on up to 256 A100 GPUs. Our evaluations are five-fold: i) sequence length scalability, ii) throughput for dense attention and comparison with existing system, and iii) throughput with sparse attention and comparison with existing system, iv) parallel scaling study and v) convergence study of Deep sequence parallelism. We discuss and",
+        "x": 71.5,
+        "y": 653.9,
+        "w": 468.8,
+        "h": 42.7,
+        "zh": "我们在最多 256 块 A100 GPU 上评估 DeepSpeed-Ulysses（DeepSpeed Sequence），所用模型是 GPT [Radford et al., 2019]，它是许多 NLP 任务的基础模型。评估分五个方面：i）序列长度的可扩展性，ii）稠密注意力的吞吐量以及与现有系统的比较，iii）稀疏注意力的吞吐量以及与现有系统的比较，iv）并行扩展研究，以及 v）DeepSpeed 序列并行的收敛性研究。我们接下来讨论并"
+      },
+      {
+        "text": "present evaluations from each of these categories next.",
+        "x": 72,
+        "y": 643,
+        "w": 217.2,
+        "h": 10,
+        "zh": "分别给出这几个类别的评估。"
+      },
+      {
+        "text": "The first set of experiments is strong scaling of sequence length up to 1 million tokens on 1.2 billion parameter GPT model. Results of this evaluation are shown in Figure 3. DeepSpeed sequence parallelism allows increasing sequence length linearly with the number of GPUs and sequence length scales linearly relative to and maintains similar computation throughput across different sequence length at appropriate GPU count.",
+        "x": 71.7,
+        "y": 565.1,
+        "w": 468.5,
+        "h": 42.7,
+        "zh": "第一组实验是在 12 亿参数的 GPT 模型上，把序列长度强扩展到最多 100 万个 token。评估结果如图 3 所示。DeepSpeed 序列并行允许序列长度随 GPU 数量线性增加；在与之匹配的 GPU 数量下，序列长度线性扩展，并且不同序列长度上的计算吞吐量保持相近。"
+      },
+      {
+        "text": "Figure 3: DeepSpeed sequence parallelism strong scalability evaluation at different sequence length and GPU counts",
+        "x": 73.4,
+        "y": 233.2,
+        "w": 465.2,
+        "h": 10,
+        "zh": "图 3：DeepSpeed 序列并行在不同序列长度和 GPU 数量下的强可扩展性评估"
+      },
+      {
+        "text": "Next, we evaluate DeepSpeed sequence parallelism on 7 billion (7B) and 30 billion (30B) parameter GPT dense attention models and compare against Megatron-LM’s sequence parallelism on 32 and 64 A100 GPUs respectively. The",
+        "x": 72,
+        "y": 170.2,
+        "w": 468,
+        "h": 20.9,
+        "zh": "接下来，我们在 70 亿（7B）和 300 亿（30B）参数的 GPT 稠密注意力模型上评估 DeepSpeed 序列并行，并分别在 32 块和 64 块 A100 GPU 上与 Megatron-LM 的序列并行进行比较。"
+      },
+      {
+        "text": "results of these evaluations are shown in Figures 4 and 5.",
+        "x": 72,
+        "y": 159.3,
+        "w": 229.5,
+        "h": 10,
+        "zh": "这些评估的结果如图 4 和图 5 所示。"
+      },
+      {
+        "text": "We compare DeepSpeed sequence parallelism with Megatron-LM for 7B and 30B models running various sequence lengths. For our evaluation we chose the sequence parallelism degree and micro-batch size that produced the best performance (measured as throughput or TFLOPs) for both DeepSpeed sequence parallelism and Megatron-LM, this we call optimal (batch size-sequence length) configurations. For DeepSpeed sequence parallelism, we always use a ZeRO parallelism degrees of 32 and 64 for 7B and 30B models respectively. Figures 4 and 5 show that DeepSpeed sequence parallelism consistently outperforms Megatron-LM for the sequence length that can be run with both. In addition, DeepSpeed sequence parallelism can run longer sequence than Megatron-",
+        "x": 71.5,
+        "y": 72,
+        "w": 470.1,
+        "h": 80.9,
+        "zh": "我们针对以不同序列长度运行的 7B 和 30B 模型，比较 DeepSpeed 序列并行与 Megatron-LM。评估时，我们为 DeepSpeed 序列并行和 Megatron-LM 都选择了能产生最佳性能（以吞吐量或 TFLOPs 衡量）的序列并行度和微批次大小，称之为最优（批次大小–序列长度）配置。对 DeepSpeed 序列并行，7B 和 30B 模型我们始终分别使用 ZeRO 并行度 32 和 64。图 4 和图 5 表明，在两者都能运行的序列长度上，DeepSpeed 序列并行始终优于 Megatron-LM。此外，DeepSpeed 序列并行能运行的序列比 Megatron-"
+      }
+    ],
+    "7": [
+      {
+        "text": "LM. DeepSpeed sequence parallelism performance advantages are two folds: (1) DeepSpeed sequence parallelism in combination with ZeRO-3 fits more samples than Megatron-LM because of the memory optimization leading to higher throughput (2) DeepSpeed sequence parallelism benefits from efficient all-to-all communication relative to all-gather communication as applied in Megatron-LM sequence parallelism.",
+        "x": 72,
+        "y": 677.3,
+        "w": 468.2,
+        "h": 42.7,
+        "zh": "LM 更长。DeepSpeed 序列并行的性能优势来自两方面：（1）DeepSpeed 序列并行结合 ZeRO-3，由于内存优化，能装下比 Megatron-LM 更多的样本，从而带来更高的吞吐量；（2）DeepSpeed 序列并行受益于高效的 all-to-all 通信，相对而言，Megatron-LM 序列并行使用的是 all-gather 通信。"
+      },
+      {
+        "text": "Figure 4: Evaluation of DeepSpeed-Ulysses and Megatron LM on 7B parameter model with dense attention (32 GPUs)",
+        "x": 72,
+        "y": 345.4,
+        "w": 468.4,
+        "h": 10,
+        "zh": "图 4：在 7B 参数模型、稠密注意力上评估 DeepSpeed-Ulysses 与 Megatron-LM（32 块 GPU）"
+      },
+      {
+        "text": "Similarly, we evaluate DeepSpeed sequence parallelism on 7 billion and 30 billion parameter sparse attention models and benchmark against Megatron-LM sequence parallelism. Results of our evaluation are shown in Figures 6 and 7. We observe similar trends with sparse attention as dense attention experiments. We observe more than 2x throughput performance of DeepSpeed sequence parallelism compared to Megatron-LM. For memory saving, DeepSpeed sequence parallelism leveraging ZeRO-3 scales to 4x longer sequence lengths than Megatron-LM. DeepSpeed sequence parallelism outperforms Megatron-LM for sequence length that can be run with both. In fact, the current DeepSpeed throughput is bottlenecked by the local sparse attention implementation, and as a result DeepSpeed throughput decreases as the sequence length increases. We expect this gap in performance between DeepSpeed and Megatron-LM to increase further for larger sequence lengths as we improve the performance of the local sparse attention",
+        "x": 71.5,
+        "y": 200.9,
+        "w": 470.2,
+        "h": 102.7,
+        "zh": "类似地，我们在 70 亿和 300 亿参数的稀疏注意力模型上评估 DeepSpeed 序列并行，并以 Megatron-LM 序列并行作为对照。评估结果如图 6 和图 7 所示。稀疏注意力上的趋势与稠密注意力实验相似。DeepSpeed 序列并行的吞吐量是 Megatron-LM 的 2 倍以上。在节省内存方面，借助 ZeRO-3 的 DeepSpeed 序列并行可以把序列长度扩展到 Megatron-LM 的 4 倍。在两者都能运行的序列长度上，DeepSpeed 序列并行优于 Megatron-LM。事实上，当前 DeepSpeed 的吞吐量瓶颈在于本地稀疏注意力的实现，因此随着序列长度增加，DeepSpeed 的吞吐量会下降。我们预期，在更长的序列上，随着本地稀疏注意力性能的改进，DeepSpeed 与 Megatron-LM 之间的性能差距会进一步扩大"
+      },
+      {
+        "text": "Table 2: Parallel scaling study with fixed sequence length",
+        "x": 191.4,
+        "y": 140.3,
+        "w": 229.2,
+        "h": 10,
+        "zh": "表 2：固定序列长度下的并行扩展研究"
+      }
+    ],
+    "8": [
+      {
+        "text": "Figure 5: Evaluation of DeepSpeed-Ulysses and Megatron LM on 30B parameter model with dense attention (64 GPUs)",
+        "x": 72,
+        "y": 402.6,
+        "w": 468.7,
+        "h": 10,
+        "zh": "图 5：在 30B 参数模型、稠密注意力上评估 DeepSpeed-Ulysses 与 Megatron-LM（64 块 GPU）"
+      },
+      {
+        "text": "Table 3: Parallel scaling study with varying sequence length",
+        "x": 186.2,
+        "y": 380.4,
+        "w": 239.6,
+        "h": 10,
+        "zh": "表 3：序列长度变化时的并行扩展研究"
+      },
+      {
+        "text": "Furthermore, we conduct parallel scaling studies of DeepSpeed-Ulysses along two axes. First, we fix sequence length at 131,072 tokens and increase GPU count from 64 to 256. Second, we increase the GPU count proportionally to the increase in sequence length. The results of these experiments are shown in Tables 2 and 3 respectively. For both evaluations, we used GPT-7B dense model at global batch size of 8. The tables show iteration time in microseconds as well as the achieved throughput measured in per GPU TFLOPs. Table 2 can be interpreted as strong scaling and shows that execution time decreases almost linearly as we increase the GPU count. Table 3 on the other hand, is a form of weak scaling (not in the traditional sense) with caveat that attention computation, a function of sequence length, is quadratic in complexity. In other words, as we increase sequence length, the work increases quadratically. Communication overhead can be attributed to slight decrease in throughput as we increase communication workload (that is, sequence length or GPU count). This overhead notwithstanding, we observe good scaling at high percentages of theoretical peak GPU performance across the two studies. These good scaling results indicate good parallel efficiency",
+        "x": 71.7,
+        "y": 173.1,
+        "w": 468.7,
+        "h": 124.5,
+        "zh": "此外，我们沿两个方向对 DeepSpeed-Ulysses 做并行扩展研究。第一，把序列长度固定在 131,072 个 token，并把 GPU 数量从 64 增加到 256。第二，让 GPU 数量随序列长度按比例增加。这些实验的结果分别见表 2 和表 3。两次评估都使用全局批次大小为 8 的 GPT-7B 稠密模型。表中给出以微秒计的迭代时间，以及以每块 GPU 的 TFLOPs 衡量的实际吞吐量。表 2 可以理解为强扩展：随着 GPU 数量增加，执行时间几乎线性下降。表 3 则是一种弱扩展（并非传统意义上的弱扩展），需要注意的是，注意力计算作为序列长度的函数，复杂度是二次的。换句话说，序列长度增加时，计算量按二次方增长。吞吐量的轻微下降可以归因于通信开销，也就是在增加通信负载（序列长度或 GPU 数量）时出现的开销。尽管有这一开销，两项研究都观察到良好的扩展，并且达到理论峰值 GPU 性能的很高比例。这些良好的扩展结果表明并行效率很好"
+      },
+      {
+        "text": "Lastly, Figure 8 shows convergence of a 1.3 billion GPT model at 32K sequence length on 8 A100 GPUs with sequence parallelism degree set at 4 for both DeepSpeed-Ulysses and Megatron-LM sequence parallelism. For DeepSpeed sequence parallelism, we evaluate convergence with different ZeRO stages. DeepSpeed sequence parallelism is a purely system optimization technique that enables training of long sequence Transformer model, thus there is no (negative) on quality of trained models, this assertion is validated through experiments and is shown in Figure 8.",
+        "x": 72,
+        "y": 72,
+        "w": 468.3,
+        "h": 53.6,
+        "zh": "最后，图 8 给出一个 13 亿参数的 GPT 模型在序列长度 32K、8 块 A100 GPU 上的收敛情况；DeepSpeed-Ulysses 和 Megatron-LM 序列并行的序列并行度都设为 4。对 DeepSpeed 序列并行，我们用不同的 ZeRO 阶段评估收敛。DeepSpeed 序列并行是一种纯粹的系统优化技术，用来训练长序列 Transformer 模型，因此不会对所训练模型的质量产生负面影响。这一判断已由实验验证，如图 8 所示。"
+      }
+    ],
+    "9": [
+      {
+        "text": "Figure 6: Evaluation of DeepSpeed-Ulysses and Megatron LM on 7B parameter model with blocked sparse attention",
+        "x": 72,
+        "y": 402.6,
+        "w": 468,
+        "h": 10,
+        "zh": "图 6：在 7B 参数模型、分块稀疏注意力上评估 DeepSpeed-Ulysses 与 Megatron-LM"
+      },
+      {
+        "text": "In conclusion, we present a memory and communication efficient DeepSpeed Sequence as enabling technology for long sequence large Transformer training. DeepSpeed Sequence enables sequence parallelism across GPUs (by extension other AI accelerators), parallelizing sequence across all components of the Transformer model, including streamline support for SOTA Flash (dense and sparse) attention. Training with DeepSpeed Sequence allows both model size and sequence length to scale near indefinitely unbounded by single GPU memory limitation and at a high fraction of peak",
+        "x": 72,
+        "y": 292.8,
+        "w": 468.3,
+        "h": 53.6,
+        "zh": "总之，我们给出一种在内存和通信上都高效的 DeepSpeed Sequence，作为长序列大型 Transformer 训练的使能技术。DeepSpeed Sequence 让序列并行可以跨 GPU 进行（进而也可用于其他 AI 加速器），并在 Transformer 模型的全部组件上对序列做并行，包括顺畅支持 SOTA 的 Flash 注意力（稠密和稀疏）。用 DeepSpeed Sequence 训练时，模型规模和序列长度都可以近乎不受单块 GPU 内存限制地扩展，并且达到峰值的很高比例"
+      },
+      {
+        "text": "Iz Beltagy, Matthew E. Peters, and Arman Cohan. Longformer: The long-document transformer, 2020. Wojciech Kry´sci´nski, Nazneen Rajani, Divyansh Agarwal, Caiming Xiong, and Dragomir Radev. Booksum: A",
+        "x": 72,
+        "y": 220.1,
+        "w": 468.4,
+        "h": 25.2,
+        "zh": "Iz Beltagy、Matthew E. Peters、Arman Cohan。Longformer：长文档 Transformer，2020。Wojciech Kryściński、Nazneen Rajani、Divyansh Agarwal、Caiming Xiong、Dragomir Radev。BookSum："
+      },
+      {
+        "text": "collection of datasets for long-form narrative summarization, 2022.",
+        "x": 82,
+        "y": 209.2,
+        "w": 267.7,
+        "h": 10,
+        "zh": "用于长篇叙事摘要的数据集汇集，2022。"
+      },
+      {
+        "text": "MosaicML. Introducing mpt-7b: A new standard for open-source, commercially usable llms. https://https:",
+        "x": 72,
+        "y": 194,
+        "w": 470.6,
+        "h": 10,
+        "zh": "MosaicML。介绍 MPT-7B：开源、可商用 LLM 的新标准。https://https:"
+      },
+      {
+        "text": "Wenhan Xiong, Jingyu Liu, Igor Molybog, Hejia Zhang, Prajjwal Bhargava, Rui Hou, Louis Martin, Rashi Rungta, Karthik Abinav Sankararaman, Barlas Oguz, Madian Khabsa, Han Fang, Yashar Mehdad, Sharan Narang, Kshitiz Malik, Angela Fan, Shruti Bhosale, Sergey Edunov, Mike Lewis, Sinong Wang, and Hao Ma. Effective long-context",
+        "x": 72,
+        "y": 146,
+        "w": 469.2,
+        "h": 31.8,
+        "zh": "Wenhan Xiong、Jingyu Liu、Igor Molybog、Hejia Zhang、Prajjwal Bhargava、Rui Hou、Louis Martin、Rashi Rungta、Karthik Abinav Sankararaman、Barlas Oguz、Madian Khabsa、Han Fang、Yashar Mehdad、Sharan Narang、Kshitiz Malik、Angela Fan、Shruti Bhosale、Sergey Edunov、Mike Lewis、Sinong Wang、Hao Ma。有效的长上下文"
+      },
+      {
+        "text": "Bowen Peng, Jeffrey Quesnelle, Honglu Fan, and Enrico Shippole. Yarn: Efficient context window extension of large",
+        "x": 72,
+        "y": 119.9,
+        "w": 468,
+        "h": 10,
+        "zh": "Bowen Peng、Jeffrey Quesnelle、Honglu Fan、Enrico Shippole。Yarn：大规模模型上下文窗口的高效扩展"
+      },
+      {
+        "text": "Hugo Touvron, Louis Martin, Kevin Stone, Peter Albert, Amjad Almahairi, Yasmine Babaei, Nikolay Bashlykov, Soumya Batra, Prajjwal Bhargava, Shruti Bhosale, Dan Bikel, Lukas Blecher, Cristian Canton Ferrer, Moya Chen, Guillem Cucurull, David Esiobu, Jude Fernandes, Jeremy Fu, Wenyin Fu, Brian Fuller, Cynthia Gao, Vedanuj",
+        "x": 72,
+        "y": 72,
+        "w": 469.2,
+        "h": 31.8,
+        "zh": "Hugo Touvron、Louis Martin、Kevin Stone、Peter Albert、Amjad Almahairi、Yasmine Babaei、Nikolay Bashlykov、Soumya Batra、Prajjwal Bhargava、Shruti Bhosale、Dan Bikel、Lukas Blecher、Cristian Canton Ferrer、Moya Chen、Guillem Cucurull、David Esiobu、Jude Fernandes、Jeremy Fu、Wenyin Fu、Brian Fuller、Cynthia Gao、Vedanuj"
+      }
+    ],
+    "10": [
+      {
+        "text": "Figure 7: Evaluation of DeepSpeed-Ulysses and Megatron LM on 30B parameter model with blocked sparse attention",
+        "x": 72,
+        "y": 402.6,
+        "w": 468,
+        "h": 10,
+        "zh": "图 7：在 30B 参数模型、分块稀疏注意力上评估 DeepSpeed-Ulysses 与 Megatron-LM"
+      },
+      {
+        "text": "Goswami, Naman Goyal, Anthony Hartshorn, Saghar Hosseini, Rui Hou, Hakan Inan, Marcin Kardas, Viktor Kerkez, Madian Khabsa, Isabel Kloumann, Artem Korenev, Punit Singh Koura, Marie-Anne Lachaux, Thibaut Lavril, Jenya Lee, Diana Liskovich, Yinghai Lu, Yuning Mao, Xavier Martinet, Todor Mihaylov, Pushkar Mishra, Igor Molybog, Yixin Nie, Andrew Poulton, Jeremy Reizenstein, Rashi Rungta, Kalyan Saladi, Alan Schelten, Ruan Silva, Eric Michael Smith, Ranjan Subramanian, Xiaoqing Ellen Tan, Binh Tang, Ross Taylor, Adina Williams, Jian Xiang Kuan, Puxin Xu, Zheng Yan, Iliyan Zarov, Yuchen Zhang, Angela Fan, Melanie Kambadur, Sharan Narang, Aurelien Rodriguez, Robert Stojnic, Sergey Edunov, and Thomas Scialom. Llama 2: Open foundation and fine-tuned chat",
+        "x": 81.8,
+        "y": 292.7,
+        "w": 459.5,
+        "h": 75.4,
+        "zh": "Goswami、Naman Goyal、Anthony Hartshorn、Saghar Hosseini、Rui Hou、Hakan Inan、Marcin Kardas、Viktor Kerkez、Madian Khabsa、Isabel Kloumann、Artem Korenev、Punit Singh Koura、Marie-Anne Lachaux、Thibaut Lavril、Jenya Lee、Diana Liskovich、Yinghai Lu、Yuning Mao、Xavier Martinet、Todor Mihaylov、Pushkar Mishra、Igor Molybog、Yixin Nie、Andrew Poulton、Jeremy Reizenstein、Rashi Rungta、Kalyan Saladi、Alan Schelten、Ruan Silva、Eric Michael Smith、Ranjan Subramanian、Xiaoqing Ellen Tan、Binh Tang、Ross Taylor、Adina Williams、Jian Xiang Kuan、Puxin Xu、Zheng Yan、Iliyan Zarov、Yuchen Zhang、Angela Fan、Melanie Kambadur、Sharan Narang、Aurelien Rodriguez、Robert Stojnic、Sergey Edunov、Thomas Scialom。Llama 2：开放的基础模型与经过微调的对话"
+      },
+      {
+        "text": "Tung Nguyen, Johannes Brandstetter, Ashish Kapoor, Jayesh K. Gupta, and Aditya Grover. Climax: A foundation",
+        "x": 72,
+        "y": 265,
+        "w": 468,
+        "h": 10,
+        "zh": "Tung Nguyen、Johannes Brandstetter、Ashish Kapoor、Jayesh K. Gupta、Aditya Grover。Climax：一个基础"
+      },
+      {
+        "text": "Maxim Zvyagin, Alexander Brace, Kyle Hippe, Yuntian Deng, Bin Zhang, Cindy Orozco Bohorquez, Austin Clyde, Bharat Kale, Danilo Perez-Rivera, Heng Ma, et al. Genslms: Genome-scale language models reveal sars-cov-2",
+        "x": 72,
+        "y": 226.4,
+        "w": 469.2,
+        "h": 20.9,
+        "zh": "Maxim Zvyagin、Alexander Brace、Kyle Hippe、Yuntian Deng、Bin Zhang、Cindy Orozco Bohorquez、Austin Clyde、Bharat Kale、Danilo Perez-Rivera、Heng Ma 等。GenSLMs：基因组规模的语言模型揭示 SARS-CoV-2"
+      },
+      {
+        "text": "evolutionary dynamics. bioRxiv, pages 2022–10, 2022.",
+        "x": 82,
+        "y": 215.5,
+        "w": 219.5,
+        "h": 10,
+        "zh": "的演化动态。bioRxiv，页码 2022–10，2022。"
+      },
+      {
+        "text": "Yikuan Li, Ramsey M. Wehbe, Faraz S. Ahmad, Hanyin Wang, and Yuan Luo. Clinical-longformer and clinical-bigbird: Transformers for long clinical sequences. CoRR, abs/2201.11838, 2022a. URL https://arxiv.org/abs/2201.",
+        "x": 72,
+        "y": 187.8,
+        "w": 471.7,
+        "h": 20.9,
+        "zh": "Yikuan Li、Ramsey M. Wehbe、Faraz S. Ahmad、Hanyin Wang、Yuan Luo。Clinical-Longformer 与 Clinical-BigBird：面向长临床序列的 Transformer。CoRR，abs/2201.11838，2022a。URL https://arxiv.org/abs/2201."
+      },
+      {
+        "text": "Shang Gao, Mohammed Alawad, M. Todd Young, John Gounley, Noah Schaefferkoetter, Hong Jun Yoon, Xiao-Cheng Wu, Eric B. Durbin, Jennifer Doherty, Antoinette Stroup, Linda Coyle, and Georgia Tourassi. Limitations of transformers on clinical text classification. IEEE Journal of Biomedical and Health Informatics, 25(9):3596–3607,",
+        "x": 72,
+        "y": 138.3,
+        "w": 469.2,
+        "h": 31.8,
+        "zh": "Shang Gao、Mohammed Alawad、M. Todd Young、John Gounley、Noah Schaefferkoetter、Hong Jun Yoon、Xiao-Cheng Wu、Eric B. Durbin、Jennifer Doherty、Antoinette Stroup、Linda Coyle、Georgia Tourassi。Transformer 在临床文本分类上的局限。IEEE Journal of Biomedical and Health Informatics，25(9):3596–3607，"
+      },
+      {
+        "text": "Tri Dao. Flashattention-2: Faster attention with better parallelism and work partitioning, 2023. Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin. Attention is all you need. In Advances in neural information processing systems, pages 5998–6008,",
+        "x": 72,
+        "y": 82.9,
+        "w": 469.2,
+        "h": 37.7,
+        "zh": "Tri Dao。FlashAttention-2：更快的注意力，以及更好的并行与工作划分，2023。Ashish Vaswani、Noam Shazeer、Niki Parmar、Jakob Uszkoreit、Llion Jones、Aidan N. Gomez、Łukasz Kaiser、Illia Polosukhin。注意力就是你所需要的一切。载于 Advances in Neural Information Processing Systems，页码 5998–6008，"
+      }
+    ],
+    "11": [
+      {
+        "text": "Figure 8: Convergence evaluation of DeepSpeed-Ulysses with different ZeRO memory optimization stages",
+        "x": 92.9,
+        "y": 421.3,
+        "w": 426.2,
+        "h": 10,
+        "zh": "图 8：DeepSpeed-Ulysses 在不同 ZeRO 内存优化阶段下的收敛评估"
+      },
+      {
+        "text": "Jeffrey Dean, Greg Corrado, Rajat Monga, Kai Chen, Matthieu Devin, Mark Mao, Marc’aurelio Ranzato, Andrew Senior, Paul Tucker, Ke Yang, et al. Large scale distributed deep networks. Advances in neural information processing",
+        "x": 72,
+        "y": 377.5,
+        "w": 468.4,
+        "h": 20.9,
+        "zh": "Jeffrey Dean、Greg Corrado、Rajat Monga、Kai Chen、Matthieu Devin、Mark Mao、Marc’aurelio Ranzato、Andrew Senior、Paul Tucker、Ke Yang 等。大规模分布式深度网络。Advances in Neural Information Processing"
+      },
+      {
+        "text": "Samyam Rajbhandari, Jeff Rasley, Olatunji Ruwase, and Yuxiong He. Zero: Memory optimizations toward training trillion parameter models. In SC20: International Conference for High Performance Computing, Networking, Storage",
+        "x": 72,
+        "y": 339.9,
+        "w": 468,
+        "h": 20.9,
+        "zh": "Samyam Rajbhandari、Jeff Rasley、Olatunji Ruwase、Yuxiong He。ZeRO：面向万亿参数模型训练的内存优化。载于 SC20: International Conference for High Performance Computing, Networking, Storage"
+      },
+      {
+        "text": "Samyam Rajbhandari, Olatunji Ruwase, Jeff Rasley, Shaden Smith, and Yuxiong He. Zero-infinity: Breaking the gpu memory wall for extreme scale deep learning. In Proceedings of the International Conference for High Performance",
+        "x": 72,
+        "y": 302.3,
+        "w": 468,
+        "h": 20.9,
+        "zh": "Samyam Rajbhandari、Olatunji Ruwase、Jeff Rasley、Shaden Smith、Yuxiong He。ZeRO-Infinity：打破 GPU 内存墙，实现极端规模的深度学习。载于 Proceedings of the International Conference for High Performance"
+      },
+      {
+        "text": "Computing, Networking, Storage and Analysis, SC ’21, 2021.",
+        "x": 81.6,
+        "y": 291.4,
+        "w": 245.2,
+        "h": 10,
+        "zh": "Computing, Networking, Storage and Analysis，SC ’21，2021。"
+      },
+      {
+        "text": "Nitish Shirish Keskar, Dheevatsa Mudigere, Jorge Nocedal, Mikhail Smelyanskiy, and Ping Tak Peter Tang. On large-batch training for deep learning: Generalization gap and sharp minima. arXiv preprint arXiv:1609.04836, 2016. Mohammad Shoeybi, Mostofa Patwary, Raul Puri, Patrick LeGresley, Jared Casper, and Bryan Catanzaro. Megatron-lm: Training multi-billion parameter language models using model parallelism, 2019. Deepak Narayanan, Aaron Harlap, Amar Phanishayee, Vivek Seshadri, Nikhil Devanur, Greg Granger, Phil Gibbons, and Matei Zaharia. Pipedream: Generalized pipeline parallelism for dnn training. In ACM Symposium on Operating",
+        "x": 72,
+        "y": 211.4,
+        "w": 469.7,
+        "h": 74.2,
+        "zh": "Nitish Shirish Keskar、Dheevatsa Mudigere、Jorge Nocedal、Mikhail Smelyanskiy、Ping Tak Peter Tang。论深度学习中的大批次训练：泛化差距与尖锐极小值。arXiv preprint arXiv:1609.04836，2016。Mohammad Shoeybi、Mostofa Patwary、Raul Puri、Patrick LeGresley、Jared Casper、Bryan Catanzaro。Megatron-LM：用模型并行训练数十亿参数的语言模型，2019。Deepak Narayanan、Aaron Harlap、Amar Phanishayee、Vivek Seshadri、Nikhil Devanur、Greg Granger、Phil Gibbons、Matei Zaharia。PipeDream：面向 DNN 训练的通用流水线并行。载于 ACM Symposium on Operating"
+      },
+      {
+        "text": "Systems Principles (SOSP 2019), October 2019.",
+        "x": 81.7,
+        "y": 200.5,
+        "w": 191.7,
+        "h": 10,
+        "zh": "Systems Principles（SOSP 2019），2019 年 10 月。"
+      },
+      {
+        "text": "Yanping Huang, Yonglong Cheng, Dehao Chen, HyoukJoong Lee, Jiquan Ngiam, Quoc V. Le, and Zhifeng Chen. Gpipe: Efficient training of giant neural networks using pipeline parallelism. ArXiv, abs/1811.06965, 2018. Deepak Narayanan, Amar Phanishayee, Kaiyu Shi, Xie Chen, and Matei Zaharia. Memory-efficient pipeline-parallel dnn training. In International Conference on Machine Learning, pages 7937–7947. PMLR, 2021. DeepSpeed Team and Rangan Majumder. DeepSpeed: Extreme-scale model training for everyone. https://www. microsoft.com/en-us/research/blog/deepspeed-extreme-scale-model-training-for-everyone/,",
+        "x": 72,
+        "y": 120.5,
+        "w": 471.7,
+        "h": 74.2,
+        "zh": "Yanping Huang、Yonglong Cheng、Dehao Chen、HyoukJoong Lee、Jiquan Ngiam、Quoc V. Le、Zhifeng Chen。GPipe：用流水线并行高效训练巨型神经网络。ArXiv，abs/1811.06965，2018。Deepak Narayanan、Amar Phanishayee、Kaiyu Shi、Xie Chen、Matei Zaharia。内存高效的流水线并行 DNN 训练。载于 International Conference on Machine Learning，页码 7937–7947。PMLR，2021。DeepSpeed Team、Rangan Majumder。DeepSpeed：人人可用的极端规模模型训练。https://www.microsoft.com/en-us/research/blog/deepspeed-extreme-scale-model-training-for-everyone/，"
+      },
+      {
+        "text": "Shaden Smith, Mostofa Patwary, Brandon Norick, Patrick LeGresley, Samyam Rajbhandari, Jared Casper, Zhun Liu, Shrimai Prabhumoye, George Zerveas, Vijay Korthikanti, et al. Using deepspeed and megatron to train megatron-turing nlg 530b, a large-scale generative language model. arXiv preprint arXiv:2201.11990, 2022.",
+        "x": 72,
+        "y": 72,
+        "w": 468,
+        "h": 31.8,
+        "zh": "Shaden Smith、Mostofa Patwary、Brandon Norick、Patrick LeGresley、Samyam Rajbhandari、Jared Casper、Zhun Liu、Shrimai Prabhumoye、George Zerveas、Vijay Korthikanti 等。用 DeepSpeed 和 Megatron 训练 Megatron-Turing NLG 530B，一个大规模生成式语言模型。arXiv preprint arXiv:2201.11990，2022。"
+      }
+    ],
+    "12": [
+      {
+        "text": "Guanhua Wang, Heyang Qin, Sam Ade Jacobs, Connor Holmes, Samyam Rajbhandari, Olatunji Ruwase, Feng Yan, Lei Yang, and Yuxiong He. Zero++: Extremely efficient collective communication for giant model training, 2023. Tal Ben-Nun and Torsten Hoefler. Demystifying parallel and distributed deep learning: An in-depth concurrency",
+        "x": 72,
+        "y": 684.2,
+        "w": 468.3,
+        "h": 35.8,
+        "zh": "Guanhua Wang、Heyang Qin、Sam Ade Jacobs、Connor Holmes、Samyam Rajbhandari、Olatunji Ruwase、Feng Yan、Lei Yang、Yuxiong He。ZeRO++：面向巨型模型训练的极高效集合通信，2023。Tal Ben-Nun、Torsten Hoefler。揭开并行与分布式深度学习的面纱：一份深入的并发"
+      },
+      {
+        "text": "analysis. ACM Computing Surveys (CSUR), 52(4):1–43, 2019.",
+        "x": 82,
+        "y": 673.3,
+        "w": 249.5,
+        "h": 10,
+        "zh": "分析。ACM Computing Surveys (CSUR)，52(4):1–43，2019。"
+      },
+      {
+        "text": "Shenggui Li, Fuzhao Xue, Chaitanya Baranwal, Yongbin Li, and Yang You. Sequence parallelism: Long sequence",
+        "x": 72,
+        "y": 658.4,
+        "w": 468,
+        "h": 10,
+        "zh": "Shenggui Li、Fuzhao Xue、Chaitanya Baranwal、Yongbin Li、Yang You。序列并行：长序列"
+      },
+      {
+        "text": "training from system perspective, 2022b.",
+        "x": 82,
+        "y": 647.5,
+        "w": 162.9,
+        "h": 10,
+        "zh": "训练的系统视角，2022b。"
+      },
+      {
+        "text": "Vijay Korthikanti, Jared Casper, Sangkug Lym, Lawrence McAfee, Michael Andersch, Mohammad Shoeybi, and Bryan Catanzaro. Reducing activation recomputation in large transformer models, 2022. Rewon Child, Scott Gray, Alec Radford, and Ilya Sutskever. Generating long sequences with sparse transformers.",
+        "x": 72,
+        "y": 606.8,
+        "w": 469.7,
+        "h": 35.8,
+        "zh": "Vijay Korthikanti、Jared Casper、Sangkug Lym、Lawrence McAfee、Michael Andersch、Mohammad Shoeybi、Bryan Catanzaro。减少大型 Transformer 模型中的激活重计算，2022。Rewon Child、Scott Gray、Alec Radford、Ilya Sutskever。用稀疏 Transformer 生成长序列。"
+      },
+      {
+        "text": "Krzysztof Choromanski, Valerii Likhosherstov, David Dohan, Xingyou Song, Andreea Gane, Tamás Sarlós, Peter Hawkins, Jared Davis, Afroz Mohiuddin, Lukasz Kaiser, David Belanger, Lucy J. Colwell, and Adrian Weller. Rethinking attention with performers. CoRR, abs/2009.14794, 2020. URL https://arxiv.org/abs/2009.14794. Manzil Zaheer, Guru Guruganesh, Avinava Dubey, Joshua Ainslie, Chris Alberti, Santiago Ontanon, Philip Pham, Anirudh Ravula, Qifan Wang, Li Yang, and Amr Ahmed. Big bird: Transformers for longer sequences, 2021. Tri Dao, Daniel Y. Fu, Stefano Ermon, Atri Rudra, and Christopher Ré. Flashattention: Fast and memory-efficient exact",
+        "x": 72,
+        "y": 518.5,
+        "w": 469.7,
+        "h": 72.5,
+        "zh": "Krzysztof Choromanski、Valerii Likhosherstov、David Dohan、Xingyou Song、Andreea Gane、Tamás Sarlós、Peter Hawkins、Jared Davis、Afroz Mohiuddin、Lukasz Kaiser、David Belanger、Lucy J. Colwell、Adrian Weller。用 Performer 重新思考注意力。CoRR，abs/2009.14794，2020。URL https://arxiv.org/abs/2009.14794。Manzil Zaheer、Guru Guruganesh、Avinava Dubey、Joshua Ainslie、Chris Alberti、Santiago Ontanon、Philip Pham、Anirudh Ravula、Qifan Wang、Li Yang、Amr Ahmed。Big Bird：面向更长序列的 Transformer，2021。Tri Dao、Daniel Y. Fu、Stefano Ermon、Atri Rudra、Christopher Ré。FlashAttention：快速且内存高效的精确"
+      },
+      {
+        "text": "Alec Radford, Jeff Wu, Rewon Child, David Luan, Dario Amodei, and Ilya Sutskever. Language models are unsupervised",
+        "x": 72,
+        "y": 492.7,
+        "w": 468,
+        "h": 10,
+        "zh": "Alec Radford、Jeff Wu、Rewon Child、David Luan、Dario Amodei、Ilya Sutskever。语言模型是无监督的"
+      }
+    ]
+  }
+}

@@ -1,0 +1,393 @@
+{
+  "id": "2209.05433",
+  "title": "2209.05433",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "Paulius Micikevicius, Dusan Stosic, Patrick Judd, John Kamalu, Stuart Oberman, Mohammad Shoeybi,",
+        "x": 86.6,
+        "y": 620.6,
+        "w": 441.3,
+        "h": 10,
+        "zh": "Paulius Micikevicius、Dusan Stosic、Patrick Judd、John Kamalu、Stuart Oberman、Mohammad Shoeybi、"
+      },
+      {
+        "text": "{pauliusm, dstosic, pjudd, jkamalu, soberman, mshoeybi, msiu, skyw}@nvidia.com",
+        "x": 102.1,
+        "y": 587.9,
+        "w": 407.9,
+        "h": 10,
+        "zh": ""
+      },
+      {
+        "text": "Neil Burgess, Sangwon Ha, Richard Grisenthwaite",
+        "x": 198.6,
+        "y": 559.7,
+        "w": 214.8,
+        "h": 10,
+        "zh": "Neil Burgess、Sangwon Ha、Richard Grisenthwaite"
+      },
+      {
+        "text": "{neil.burgess, sangwon.ha, richard.grisenthwaite}@arm.com",
+        "x": 157,
+        "y": 537.9,
+        "w": 298.1,
+        "h": 10,
+        "zh": ""
+      },
+      {
+        "text": "Naveen Mellempudi, Marius Cornea, Alexander Heinecke, Pradeep Dubey",
+        "x": 147.7,
+        "y": 509.7,
+        "w": 316.5,
+        "h": 10,
+        "zh": "Naveen Mellempudi、Marius Cornea、Alexander Heinecke、Pradeep Dubey"
+      },
+      {
+        "text": "{naveen.k.mellempudi, marius.cornea, alexander.heinecke, pradeep.dubey}@intel.com",
+        "x": 94.2,
+        "y": 487.9,
+        "w": 423.6,
+        "h": 10,
+        "zh": ""
+      },
+      {
+        "text": "FP8 is a natural progression for accelerating deep learning training inference beyond the 16-bit formats common in modern processors. In this paper we propose an 8-bit floating point (FP8) binary interchange format consisting of two encodings - E4M3 (4-bit exponent and 3-bit mantissa) and E5M2 (5-bit exponent and 2-bit mantissa). While E5M2 follows IEEE 754 conventions for representatio of special values, E4M3’s dynamic range is extended by not representing infinities and having only one mantissa bit-pattern for NaNs. We demonstrate the efficacy of the FP8 format on a variety of image and language tasks, effectively matching the result quality achieved by 16-bit training sessions. Our study covers the main modern neural network architectures - CNNs, RNNs, and Transformer-based models, leaving all the hyperparameters unchanged from the 16-bit baseline training sessions. Our training experiments include large, up to 175B parameter, language models. We also examine FP8 post-training-quantization of language models trained using 16-bit formats that resisted fixed point",
+        "x": 107.5,
+        "y": 310.5,
+        "w": 396.9,
+        "h": 119.1,
+        "zh": "FP8 是在现代处理器常见的 16 位格式之外，继续加速深度学习训练与推理的自然下一步。本文提出一种 8 位浮点（FP8）二进制交换格式，包含两种编码：E4M3（4 位指数、3 位尾数）和 E5M2（5 位指数、2 位尾数）。E5M2 对特殊值的表示遵循 IEEE 754 约定；E4M3 则不表示无穷大，并且 NaN 只保留一种尾数位型，从而扩大了动态范围。我们在多种图像和语言任务上展示了 FP8 格式的有效性，结果质量与 16 位训练所达到的水平相符。研究覆盖当代主要的神经网络结构——CNN、RNN 以及基于 Transformer 的模型，全部超参数都与 16 位基线训练保持不变。训练实验包含大语言模型，参数量最高达 175B。我们还考察了这类语言模型的 FP8 训练后量化：它们用 16 位格式训练，并且抗拒定点"
+      },
+      {
+        "text": "Continued improvement in state of the art deep learning (DL) results has required continued increase in neural network",
+        "x": 72,
+        "y": 241.1,
+        "w": 468.2,
+        "h": 10,
+        "zh": "深度学习（DL）当前最优结果的持续提高，要求神经网络持续增大"
+      },
+      {
+        "text": "Turing-Megatron [18], PaLM [4], and OPT [25] take weeks to train on thousands of processors. Reduced precision representation of numbers has been the corner stoen for deep learning training and inference acceleration. Common floating point types for training include IEEE single precision, TF32 mode for single precision [19], IEEE half precision [14], and bfloat16 [9]. While some research publications have taken bit-reduction to the extreme, i.e. 1-bit binary networks [5, 7, 26, 24, 17], they have not been successful in maintaining result quality needed for many practical applications. For inference fixed-point int8 representation is a popular option. In some cases even int8 inference can encounter challenges in maintaining the accuracy required for application deployment [1]. Additional number representations, such as log-format [15, 11], posits, and log with posit exponent values [8] have been proposed in literature but have not been adopted in practice because the demonstrated benefits have not been sufficient to justify new math pipeline hardware designs. FP8 is a natural progression from 16-bit floating point types, reducing the compute requirements of neural network training. Furthermore, due to its non-linear sampling of the real numbers, FP8 can also have advantages for inference when compared to int8. Wang et al. [22] proposed using 5-bit exponent format for training neural networks, confirming their methodology on the convolutional neural networks (CNNs) for image classification on CIFAR-10 and ILSVRC12",
+        "x": 71.6,
+        "y": 72,
+        "w": 468.7,
+        "h": 157.3,
+        "zh": "Turing-Megatron [18]、PaLM [4] 和 OPT [25] 在数千个处理器上要训练数周。用更低的精度表示数值，一直是加速深度学习训练和推理的基石。训练常用的浮点类型包括 IEEE 单精度、单精度的 TF32 模式 [19]、IEEE 半精度 [14] 以及 bfloat16 [9]。有些研究把位数削减到极端，也就是 1 位二值网络 [5, 7, 26, 24, 17]，但未能维持许多实际应用所需的结果质量。推理时，定点 int8 表示是常用选择。即便是 int8 推理，有时也难以维持应用部署所要求的精度 [1]。文献里还提出过其他数值表示，例如对数格式 [15, 11]、posit，以及指数取 posit 值的对数格式 [8]，但并没有在实践中被采用，因为已经展示的收益还不足以支持为此设计新的数学流水线硬件。FP8 是从 16 位浮点类型再往前走的自然一步，可以降低神经网络训练的计算需求。此外，由于 FP8 对实数的采样是非线性的，与 int8 相比，它在推理上也可能有优势。Wang 等人 [22] 提出用 5 位指数格式训练神经网络，并在 CIFAR-10 和 ILSVRC12 图像分类的卷积神经网络（CNN）上验证了该方法"
+      }
+    ],
+    "2": [
+      {
+        "text": "datasets. Mellempudi et al. [12] study the 5-bit exponent format for training on the larger CNNs as well as language translation networks based on recurrent and transformer blocks. Both papers investigate 16-bit weight updates as well as stochastic rounding. Use of two FP8 formats, 4- and 5-bit exponent fields, for training is introduced in [20], studying a wider range of CNNs as well as speech and language translation models. [20] also investigates FP8 inference of networks trained in higher precision and introduces returning of batch normalization statistics to improve result accuracy. Noune et al [16] propose a modified FP8 representation that dedicates a single encoding to special values in order to increase the represented dynamic range and present an extensive study of exponent bias effect on result quality. 8-bit inference with various formats, including FP8, with networks trained in higher precision is the focus of [10]. In this paper we describe an 8-bit binary format for floating point representation, using two encodings for FP8. Basic principles of using FP8 for deep learning are summarized in Section 2. In Section 3 we describe the bit encodings and reasoning behind them. Empirical evaluation of training and inference with a variety of tasks and models is presented in Section 4. We show that FP8 training matches FP16 or bfloat16 training results for a variety of tasks and neural network model architectures and sizes, without changing any model or optimizer hyperparameters. Our study includes the training of very large language models, up to 175B parameters. It is important to consider a wide range of model sizes since it has been shown that models of different sizes may have different numerical behaviors (for example, the different behavior of Resnet-18 and Resnet-50 observed in [12].",
+        "x": 71.6,
+        "y": 540.9,
+        "w": 470.1,
+        "h": 179.1,
+        "zh": "数据集。Mellempudi 等人 [12] 研究了 5 位指数格式，用于更大的 CNN，以及基于循环块和 Transformer 块的语言翻译网络。这两篇论文都考察了 16 位权重更新和随机舍入。训练中采用指数域为 4 位和 5 位的两种 FP8 格式，这一做法由 [20] 引入；该文覆盖的范围更广，包括更多 CNN 以及语音和语言翻译模型。[20] 还研究了把更高精度训练出的网络用于 FP8 推理，并引入返回批归一化统计量的做法，以提高结果精度。Noune 等人 [16] 提出一种改动过的 FP8 表示，把单独一种编码留给特殊值，以增大所表示的动态范围，并详细研究了指数偏置对结果质量的影响。以更高精度训练的网络，如何用包括 FP8 在内的多种格式做 8 位推理，是 [10] 的重点。本文描述一种浮点表示的 8 位二进制格式，FP8 使用两种编码。在深度学习中使用 FP8 的基本原则概括在第 2 节。第 3 节说明位编码及其理由。第 4 节给出多种任务和模型上训练与推理的实证评估。我们表明，在不改动任何模型或优化器超参数的情况下，FP8 训练在多种任务、网络结构和规模上都能与 FP16 或 bfloat16 的训练结果相符。研究包括超大语言模型的训练，参数量最高达 175B。把较宽的模型规模范围都考虑进来很重要，因为已有工作表明，不同规模的模型可能有不同的数值行为（例如 [12] 中观察到的 Resnet-18 与 Resnet-50 行为不同）。"
+      },
+      {
+        "text": "Some aspects of FP8 usage affect the choices for binary interchange format. For example, the dynamic ranges required by various networks dictate the need for the two formats as well as the preference for scaling factor handling in software rather than via exponent bias. Other aspects, such as type conversion specifics are orthogonal to the binary format. Both aspects are briefly reviewed in this section. It is expected that mathematical operations on FP8 inputs will produce outputs in higher precision, optionally converting the results to FP8 prior to writing them to memory. This is common practice today for the 16-bit floating point formats (FP16 and bfloat16) found on CPUs, GPUs, and TPUs [3, 14]. For example, matrix-multiplication or dot-product instructions produce single-precision outputs but less arithmetically-intensive operations are typically performed after casting the 16-bit inputs to single precision. Thus, FP8 tensors will be generated by converting to FP8 from wider types, such as single precision floating point. Higher precision values need to be multiplied with a scaling factor prior to their casting to FP8 in order to move them into a range that better overlaps with the representable range of a corresponding FP8 format. This is very similar to the purpose loss-scaling serves in mixed-precision training with FP16, where gradients are moved into FP16-representable range [14],[13](slides 13-16). However, some networks require per-tensor scaling factors as FP8 dynamic range is not sufficient to cover the union of all tensors’ important values (see Section 3.2). Details of the heuristics to select the scaling factors are beyond the scope of this paper, but the general idea is to choose a scaling factor such that the maximum magnitude in the tensor becomes close to the maximum representable magnitude in the corresponding format. Values that overflow are then saturated to the maximum representable value. Weight update skipping (and reduction of the scaling factor) on overflows, as used by FP16 automatic mixed precision training [13], is not a good choice for FP8 as overflows are much more likely due to the narrower dynamic range, resulting in too many skipped updates. Values in higher precision get unscaled by multiplying with the inverse of the scaling factor, either after conversion from FP8 or after arithmetic instructions for a linear operation have produced a higher-precision output. In both cases only a minimal amount of additional arithmetic is required. For matrix multiplications, unscaling is applied once per dot-product, thus amortized by many multiply-accumulates with FP8 inputs. Less arithmetic intensive operations (such as nonlinearities, normalizations, or weight updates by optimizers) are typically memory-bandwidth limited and not sensitive to one additional arithmetic instruction per value. While the mechanics of type conversion are orthogonal to the binary format, we briefly touch on some aspects for completeness of DL uses. Converting a special value from a wider precision to FP8 results in the corresponding special value in FP8. For conversions to E4M3 this means that both infinities and NaNs in the wider type (for example, single precision) turn into NaNs in FP8. This handling of special values is needed when using mixed precision training that involves both FP8 and FP16 types, since automatic mixed precision [13] run-time adjustment of loss-scaling relies on causing and detecting overflows. In addition, non-saturating mode of conversion can be provided for usecases that may require a strict handling of overflows. Rounding mode (round to nearest even, stochastic, etc.) choice is orthogonal to the interchange format is left up to the implementation, software and possibly hardware, for maximum flexibility.",
+        "x": 71.5,
+        "y": 72,
+        "w": 470.2,
+        "h": 386.4,
+        "zh": "FP8 的某些用法会影响二进制交换格式如何选择。例如，各网络所需要的动态范围，既决定了要有这两种格式，也决定了更倾向于在软件中处理缩放因子，而不是通过指数偏置。另一些方面，例如类型转换的具体细节，与二进制格式正交。本节对这两方面都作简要回顾。对 FP8 输入做数学运算，预期会以更高精度给出输出，并可以在写入内存之前把结果转换成 FP8。这是今天 CPU、GPU 和 TPU 上 16 位浮点格式（FP16 和 bfloat16）的通行做法 [3, 14]。例如，矩阵乘法或点积指令产出单精度结果，而算术强度较低的运算，通常先把 16 位输入转换成单精度再做。因此，FP8 张量是从更宽的类型（例如单精度浮点）转换而来。更高精度的数值在转换成 FP8 之前要乘以一个缩放因子，以便移到与相应 FP8 格式可表示范围重叠得更好的区间。这与 FP16 混合精度训练中损失缩放的作用非常接近：梯度被移入 FP16 能够表示的范围 [14]、[13]（幻灯片 13–16）。不过有些网络需要逐张量的缩放因子，因为 FP8 的动态范围不足以覆盖所有张量里重要数值的并集（见第 3.2 节）。选择缩放因子的启发式细节超出本文范围，但基本想法是：选取缩放因子，使张量中的最大幅值接近相应格式可表示的最大幅值。溢出的值随后饱和到最大可表示值。FP16 自动混合精度训练在溢出时会跳过权重更新（并减小缩放因子）[13]，这对 FP8 并不合适，因为动态范围更窄，溢出的可能性大得多，被跳过的更新会太多。更高精度中的数值乘以缩放因子的倒数以去掉缩放，可以在从 FP8 转换之后进行，也可以在线性运算的算术指令已经产出更高精度结果之后进行。两种情形都只增加很少的算术。对矩阵乘法，每个点积只做一次去缩放，因此会被许多使用 FP8 输入的乘加摊销。算术强度较低的运算（例如非线性、归一化，或优化器所做的权重更新）通常受内存带宽限制，每个值多一条算术指令并不敏感。类型转换的机制与二进制格式正交，但为了把深度学习里的用法说完整，这里简要提到几个方面。把特殊值从更宽精度转换成 FP8，会得到 FP8 中对应的特殊值。转换到 E4M3 时，更宽类型（例如单精度）中的无穷大和 NaN 都会变成 FP8 中的 NaN。同时使用 FP8 和 FP16 的混合精度训练需要这样处理特殊值，因为自动混合精度 [13] 在运行时调整损失缩放，依靠的就是造成溢出并检测溢出。此外还可以提供非饱和转换模式，供需要严格处理溢出的用例使用。舍入模式（向最近偶数舍入、随机舍入等）的选择与交换格式正交，留给实现，包括软件以及可能的硬件，以获得最大的灵活性。"
+      }
+    ],
+    "3": [
+      {
+        "text": "FP8 consists of two encodings - E4M3 and E5M2, where the name explicitly states the number of exponent (E) and mantissa (M) bits. We use the common term \"mantissa\" as a synonym for IEEE 754 standard’s trailing significand field (i.e. bits not including the implied leading 1 bit for normal floating point numbers). The recommended use of FP8 encodings is E4M3 for weight and activation tensors, and E5M2 for gradient tensors. While some networks can train with just the E4M3 or the E5M2 type, there are networks that require both types (or must maintain many fewer tensors in FP8). This is consistent with findings in [20, 16], where inference and forward pass of training use a variant of E4M3, gradients in the backward pass of training use a variant of E5M2. FP8 encoding details are specified in Table 1. We use the S.E.M notation to describe binary encodings in the table, where S is the sign bit, E is the exponent field (either 4 or 5 bits containing biased exponent), M is either a 3- or a 2-bit mantissa. Values with a 2 in the subscript are binary, otherwise they are decimal.",
+        "x": 71.6,
+        "y": 575.8,
+        "w": 469.6,
+        "h": 113.6,
+        "zh": "FP8 由两种编码组成，即 E4M3 和 E5M2，名称直接写出指数（E）和尾数（M）的位数。我们用常用说法「mantissa」作为 IEEE 754 标准中尾随有效数字字段的同义词（也就是不含正规浮点数隐含前导 1 的那些位）。建议的用法是：权重和激活张量用 E4M3，梯度张量用 E5M2。有的网络只用 E4M3 或只用 E5M2 就能训练，但也有网络必须两种都用（或者必须让留在 FP8 中的张量少很多）。这与 [20, 16] 的发现一致：推理以及训练的前向使用 E4M3 的一种变体，训练反向中的梯度使用 E5M2 的一种变体。FP8 编码细节见表 1。表中用 S.E.M 记号描述二进制编码，其中 S 是符号位，E 是指数域（4 位或 5 位，存放带偏置的指数），M 是 3 位或 2 位尾数。下标带 2 的值是二进制，其余是十进制。"
+      },
+      {
+        "text": "Design of these FP8 format followed the principle of staying consistent with IEEE-754 conventions, deviating only if a significant benefit is expected for DL application accuracy. Consequently, the E5M2 format follows the IEEE 754 conventions for exponent and special values and can be viewed as IEEE half precision with fewer mantissa bits (similar to how bfloat16 and TF32 can be viewed as IEEE single precision with fewer bits). This allows for straightforward conversion between E5M2 and IEEE FP16 formats. By contrast, the dynamic range of E4M3 is extended by reclaiming most of the bit patterns used for special values because in this case the greater range achieved is much more useful than supporting multiple encodings for the special values.",
+        "x": 72,
+        "y": 324.8,
+        "w": 468.2,
+        "h": 75.4,
+        "zh": "这些 FP8 格式的设计遵循一条原则：尽量与 IEEE-754 约定保持一致，只有在预期能明显提高深度学习应用的精度时才偏离。因此，E5M2 在指数和特殊值上遵循 IEEE 754 约定，可以看成尾数位更少的 IEEE 半精度（正如 bfloat16 和 TF32 可以看成位数更少的 IEEE 单精度）。这样，E5M2 与 IEEE FP16 之间就可以直接转换。E4M3 的动态范围则是靠收回大部分用于特殊值的位型来扩大的，因为对这种格式来说，更大的范围比给特殊值准备多种编码有用得多。"
+      },
+      {
+        "text": "We extend the narrow dynamic range of the E4M3 format by representing fewer special values, adopting their bit patterns for normal values. Infinities are not represented (see Section 2 for overflow handling details) and we retain only one mantissa bit-pattern for NaNs. This modification extents the dynamic range by one extra power of 2, from 17 to 18 binades. We gain the representation of seven more magnitudes (256, 288, 320, 352, 384, 416, 448), corresponding to the biased exponent value 11112. The maximum representable magnitude without this modification would be 240. For consistency with IEEE 754 conventions we retain positive and negative representations for zero and NaN. While we could gain one additional representable magnitude, 480, by having just one encoding for zero and one for NaN, this would require breaking the symmetry of positive and negative representations inherent in the IEEE 754 formats, complicating or invalidating algorithm implementations that rely on this property. For example, IEEE floating point formats allow comparison and sorting of floating point values using integer operations. The benefit of increasing the maximum value from 448 to 480 for DL is not significant to warrant deviating from IEEE convention and losing",
+        "x": 71.5,
+        "y": 153.8,
+        "w": 470.2,
+        "h": 119.1,
+        "zh": "我们减少所表示的特殊值，把它们的位型改用于正常数值，从而扩大 E4M3 偏窄的动态范围。不表示无穷大（溢出如何处理见第 2 节），NaN 也只保留一种尾数位型。这一修改把动态范围再扩大一个 2 的幂，从 17 个 binade（以 2 为底的一档数量级）增至 18 个 binade。由此多表示出七个幅值（256、288、320、352、384、416、448），对应带偏置的指数值 1111₂。若不做这一修改，可表示的最大幅值是 240。为与 IEEE 754 约定一致，零和 NaN 仍保留正、负两种表示。假如零只留一种编码、NaN 也只留一种编码，还可以再多一个可表示幅值 480，但那就得打破 IEEE 754 格式里正负表示固有的对称，使依赖这一性质的算法实现变复杂，甚至不再成立。例如，IEEE 浮点格式允许用整数运算来比较和排序浮点值。把最大值从 448 提高到 480，对深度学习的好处并不足以让我们偏离 IEEE 约定，并因此失去"
+      },
+      {
+        "text": "software implementations that rely on it.",
+        "x": 72,
+        "y": 142.9,
+        "w": 161.5,
+        "h": 10,
+        "zh": "依赖这一性质的软件实现。"
+      },
+      {
+        "text": "As mentioned earlier, E5M2 represents all the special values (infinities, NaNs, and zeros) consistently with IEEE conventions. Our extensive empirical studies (Section 4) indicate that 5 bits of exponent provide sufficient per tensor dynamic range (32 binades, including the subnormal values) for DL. Furthermore, the benefit of having fewer representations of special values would be much smaller for E5M2 than it was for E4M3 - only 3 additional magnitude values would be added due to the smaller mantissa, one additional binade is much less impactful when E5M2 already provides 32 (compared to E4M3’s 17 without the adjustment).",
+        "x": 71.6,
+        "y": 72,
+        "w": 468.7,
+        "h": 64.5,
+        "zh": "如前所述，E5M2 对全部特殊值（无穷大、NaN 和零）的表示都与 IEEE 约定一致。我们的大量实验（第 4 节）表明，5 位指数已经为深度学习提供了足够的逐张量动态范围（32 个 binade，包括次正规值）。再者，减少特殊值的表示种类，对 E5M2 的好处会比 E4M3 小得多：尾数更短，只会再多出 3 个幅值；E5M2 已经提供 32 个 binade（未经这一调整的 E4M3 是 17 个），再多一个 binade 的影响就小得多。"
+      }
+    ],
+    "4": [
+      {
+        "text": "Both E4M3 and E5M2 retain IEEE-like exponent biases: 7 and 15 for E4M3 and E5M2, respectively. Exponent bias controls the placement of representable range on the real number line. The same effect is achieved when maintaining a scale factor per tensor. Our experiments indicate that there are neural networks that cannot use the same exponent bias for all tensors of a given type, requiring a per-tensor adjustment. One such example is discussed in Section 4.3. Consequently, we chose to not deviate from the IEEE convention for exponent bias. Leaving the per-tensor scaling to software implementation enables more flexibility than is possible with a programmable exponent bias approach the scaling factor can take on any real value (typically represented in higher precision), while programmable bias is",
+        "x": 72,
+        "y": 624.6,
+        "w": 469.7,
+        "h": 75.4,
+        "zh": "E4M3 和 E5M2 都保留类似 IEEE 的指数偏置：分别为 7 和 15。指数偏置决定可表示范围落在实数轴上的位置。给每个张量维护一个缩放因子，可以起到同样的作用。实验表明，有的神经网络不能让同一类型的所有张量共用一个指数偏置，而必须逐张量调整。第 4.3 节讨论了一个这样的例子。因此我们选择不偏离 IEEE 对指数偏置的约定。把逐张量缩放交给软件实现，比可编程指数偏置更灵活：缩放因子可以取任意实数值（通常用更高精度表示），而可编程偏置则"
+      },
+      {
+        "text": "equivalent to allowing only powers of 2 as scaling factors.",
+        "x": 72,
+        "y": 613.6,
+        "w": 231.3,
+        "h": 10,
+        "zh": "等价于只允许用 2 的幂作为缩放因子。"
+      },
+      {
+        "text": "Training experiments were carried out with simulated FP8 - tensor values were clipped to only those that could be represented in FP8 (including the scaling factor application and saturation). For example, prior to matrix multiplication for a fully-connected layer, both the incoming activations and the weight tensors were converted to FP8 and back to the wider representation (either FP16 or bfloat16). Arithmetic was carried out using the wider representation for two reasons: the interchange format is the focus of this paper since different processors may choose different vector- and matrix-instruction implementations, emulation of arithmetic not supported in hardware would be prohibitively slow for training of the large models. Obtaining results for large models is imperative as previous studies have identified different numerical behavior for models of different sizes (for example, R18 and R50 in [12]).",
+        "x": 71.7,
+        "y": 485.5,
+        "w": 468.7,
+        "h": 86.3,
+        "zh": "训练实验使用模拟的 FP8：张量值被裁剪，只保留 FP8 能够表示的那些值（包括施加缩放因子以及饱和）。例如，全连接层做矩阵乘法之前，进入该层的激活和权重张量都先转换成 FP8，再转回更宽的表示（FP16 或 bfloat16）。算术使用更宽的表示，原因有两个：本文关注的是交换格式，不同处理器可能会选择不同的向量指令和矩阵指令实现；而仿真硬件并不支持的算术，对大模型训练会慢到无法接受。取得大模型上的结果是必须的，因为先前的研究已经发现不同规模的模型数值行为不同（例如 [12] 中的 R18 和 R50）。"
+      },
+      {
+        "text": "In the FP8 training experiments we retain the same model architectures, weight initializations, and optimizer hyperparameters as are used for higher-precision baseline training sessions. Baselines were trained in either FP16 or bfloat16, which have been shown to match the results of single-precision training sessions [14, 9]. In this study we focused on the input tensors for math-intensive operations - convolutions and matrix multiplies, to which we’ll refer as GEMMoperations as they involve dot-product computations. Thus, unless otherwise specified, we clip to FP8-representable values the activation, weight, and activation gradient tensors that are inputs to GEMMs. Output tensors were left in higher precision as they typically are consumed by non-GEMM operations, such as a non-linearities or normalizations, and in a number of cases get fused with the preceding GEMM operation. Moving more tensors to FP8 is the subject of",
+        "x": 71.6,
+        "y": 364.6,
+        "w": 470,
+        "h": 86.3,
+        "zh": "在 FP8 训练实验中，模型结构、权重初始化以及优化器超参数都与更高精度的基线训练保持相同。基线用 FP16 或 bfloat16 训练，这两种格式已被证明能够达到与单精度训练相同的结果 [14, 9]。本研究关注计算密集运算的输入张量，即卷积和矩阵乘法；由于其中包含点积，下文称为 GEMM 运算。因此，除非另有说明，作为 GEMM 输入的激活、权重和激活梯度张量都会被裁剪到 FP8 可表示的值。输出张量仍留在更高精度，因为它们通常交给非 GEMM 运算使用，例如非线性或归一化，而且在不少情况下会与前面的 GEMM 运算融合。把更多张量移入 FP8 是"
+      },
+      {
+        "text": "Table 2: Image Classification Models, ILSVRC12 Validation Top-1 Accuracy",
+        "x": 151.2,
+        "y": 332.6,
+        "w": 309.6,
+        "h": 10,
+        "zh": "表 2：图像分类模型，ILSVRC12 验证集 Top-1 准确率"
+      },
+      {
+        "text": "Results for image classification task are listed in Table 2. All networks were trained on ImageNet ILSVRC12 dataset, top-1 accuracy was computed on the validation dataset. All GEMM operations’ inputs were clipped to FP8, including the first convolution and the last fully-connected layer, which were left in higher precision by previous studies [12, 22]. DeiT [21] is a Trasnformer-based architecture, the rest of the models are CNNs. With the exception of MobileNet v2, accuracy achieved by FP8 training is within run-to-run variation of higher-precision training (run-to-run variation in achieved accuracy is observed when running training sessions initialized with different random seeds). We continue",
+        "x": 72,
+        "y": 82.9,
+        "w": 469.7,
+        "h": 64.5,
+        "zh": "图像分类任务的结果见表 2。所有网络都在 ImageNet ILSVRC12 数据集上训练，Top-1 准确率在验证集上计算。所有 GEMM 运算的输入都被裁剪到 FP8，包括第一层卷积和最后的全连接层；先前的研究 [12, 22] 把这两层留在更高精度。DeiT [21] 是基于 Transformer 的结构，其余模型是 CNN。除 MobileNet v2 以外，FP8 训练达到的准确率都落在更高精度训练的多次运行波动之内（用不同随机种子初始化训练时，最终准确率会出现这种一次运行与另一次运行之间的波动）。我们继续"
+      },
+      {
+        "text": "work on recovering the remaining accuracy for MobilNet v2.",
+        "x": 71.6,
+        "y": 72,
+        "w": 243.2,
+        "h": 10,
+        "zh": "设法恢复 MobileNet v2 尚未补回的那部分准确率。"
+      }
+    ],
+    "5": [
+      {
+        "text": "Figure 1: Training loss (perplexity) curves for various GPT-3 models. x-axis is normalized number of iterations.",
+        "x": 82.6,
+        "y": 504.7,
+        "w": 446.8,
+        "h": 10,
+        "zh": "图 1：多种 GPT-3 模型的训练损失（困惑度）曲线。横轴是归一化后的迭代次数。"
+      },
+      {
+        "text": "Language translation task was tested using both Transformers and LSTM-based recurrent GNMT neural network. Even though Transformer-based translation models have superseded RNNs in practice, we include GNMT to more completely cover model architecture types, as well as a proxy for other tasks that still use recurrent networks. Models were trained on the WMT 2016 English->German dataset, evaluated using sacreBLEU on newstest2014 data (higher BLEU scores are better). Evaluation scores for FP8-trained models are within run-to-run variation variation bounds when compared to the baseline training sessions.",
+        "x": 71.6,
+        "y": 410.6,
+        "w": 470.1,
+        "h": 64.5,
+        "zh": "语言翻译任务同时用 Transformer 和基于 LSTM 的循环网络 GNMT 做了测试。尽管基于 Transformer 的翻译模型在实践中已经取代了 RNN，我们仍然加入 GNMT，以便把模型结构类型覆盖得更全，并作为那些仍在使用循环网络的任务的代理。模型在 WMT 2016 英语→德语数据集上训练，用 sacreBLEU 在 newstest2014 上评估（BLEU 越高越好）。与基线训练相比，FP8 训练模型的评估分数落在多次运行的波动范围之内。"
+      },
+      {
+        "text": "Table 3: Language Translation Models, English->German, BLEU Scores",
+        "x": 160.6,
+        "y": 382.2,
+        "w": 290.9,
+        "h": 10,
+        "zh": "表 3：语言翻译模型，英语→德语，BLEU 分数"
+      },
+      {
+        "text": "Training losses (perplexity, lower is better) for a variety of language models are listed in Table 4. Transformer models were trained on the Wikipedia dataset. GPT models were trained on a variant of The Pile dataset [6], augmented with Common Crawl and Common Crawl-derived datasets, as described in Section 3 of [18]. As was seen with image networks, training results of the FP8 sessions is within run-to-run noise of 16-bit training sessions. Note that 175B parameter model perplexity is reported at 75% training, as the bfloat16 baseline run has not yet completed. The FP8 training session has completed and its loss curve is consistent with successful training as shown in Figure 1. As with the vision and language translation models, we conclude that FP8 training results match those of 16-bit training sessions.",
+        "x": 71.6,
+        "y": 223.3,
+        "w": 468.4,
+        "h": 75.4,
+        "zh": "表 4 列出了多种语言模型的训练损失（困惑度，越低越好）。Transformer 模型在 Wikipedia 数据集上训练。GPT 模型在 The Pile 数据集的一个变体上训练 [6]，并按 [18] 第 3 节所述，用 Common Crawl 以及由 Common Crawl 派生的数据集做了扩充。与图像网络上看到的情况一样，FP8 训练的结果落在 16 位训练的多次运行噪声之内。需要说明的是，175B 参数模型的困惑度是在训练进行到 75% 时报告的，因为 bfloat16 基线运行尚未完成。FP8 训练已经完成，其损失曲线与成功的训练相符，如图 1 所示。与视觉模型和语言翻译模型一样，我们的结论是：FP8 训练结果与 16 位训练结果相一致。"
+      }
+    ],
+    "6": [
+      {
+        "text": "Figure 2: 1.3B GPT3 perplexity when bfloat16-trained model weight and activation input tensors are cast to E4M3 format with various exponent biases, no per-tensor scaling.",
+        "x": 72,
+        "y": 533.9,
+        "w": 468,
+        "h": 20.9,
+        "zh": "图 2：把 bfloat16 训练所得模型的权重和激活输入张量，以不同指数偏置转换成 E4M3、且不做逐张量缩放时，1.3B GPT3 的困惑度。"
+      },
+      {
+        "text": "8-bit inference deployment is greatly simplified by FP8 training, as inference and training use the same datatypes. This is in contrast to int8 inference with networks trained in 32- or 16-bit floating point, which require post-training quantization (PTQ) calibration and sometimes quantization-aware training (QAT) in order to maintain model accuracy. Furthermore, even with quantization aware training some int8-quantized models may not completely recover the accuracy achieved with floating point [1]. We evaluate FP8 post-training quantization of models trained in 16-bit floating point. Table 5 lists inference accuracies for FP16-trained models quantized to either int8 or E4M3 for inference. Both quantizations use per-channel scaling factors for weights, per-tensor scaling factors for activations, as is common for int8 fixed-point. All input tensors to matrix-multiply operations (including attention batched matrix multiplies) were quantized. Max-calibration (choosing the scaling factor so that the maximum magnitude in a tensor is represented) is used for weights, activation tensors are calibrated using the best calibration chosen from max, percentile, and MSE methods. BERT language model evaluation on Stanford Question Answering Dataset shows that FP8 PTQ maintains accuracy while int8 PTQ leads to a significant loss of model accuracy. We also tried casting the tensors to FP8 without applying a scaling factor, which resulted in a significant accuracy loss, increasing the perplexity to 11.0. Evaluation of GPT models on wikitext103 dataset shows that while FP8 PTQ is much better at retaining model accuracy compared to int8.",
+        "x": 71.5,
+        "y": 325.1,
+        "w": 470.2,
+        "h": 168.2,
+        "zh": "有了 FP8 训练，8 位推理的部署会简单很多，因为推理和训练使用相同的数据类型。这与 int8 推理形成对照：网络若用 32 位或 16 位浮点训练，再做 int8 推理，就需要训练后量化（PTQ）校准，有时还需要量化感知训练（QAT），才能维持模型精度。而且即便做了量化感知训练，有些 int8 量化模型也可能无法完全恢复浮点所达到的精度 [1]。我们评估了用 16 位浮点训练的模型的 FP8 训练后量化。表 5 列出把 FP16 训练的模型量化为 int8 或 E4M3 之后的推理精度。两种量化都对权重使用逐通道缩放因子，对激活使用逐张量缩放因子，与 int8 定点的常见做法相同。矩阵乘法的全部输入张量（包括注意力中的批量矩阵乘法）都做了量化。权重采用最大值校准（选择缩放因子，使张量中的最大幅值能够被表示），激活张量则在最大值、分位数和 MSE 方法中选取最好的校准。BERT 语言模型在 Stanford Question Answering Dataset 上的评估表明，FP8 PTQ 能够保持精度，int8 PTQ 则会使模型精度明显下降。我们还试过不施加缩放因子、直接把张量转换成 FP8，精度损失很大，困惑度升至 11.0。GPT 模型在 wikitext103 数据集上的评估表明，就保持模型精度而言，FP8 PTQ 比 int8 好得多。"
+      },
+      {
+        "text": "Table 5: Post training quantization of models trained in 16-bit floating point. For F1 metrics higher is better, for perplexity lower is better. Best 8-bit result is bolded.",
+        "x": 71.7,
+        "y": 294.1,
+        "w": 468.5,
+        "h": 20.9,
+        "zh": "表 5：对用 16 位浮点训练的模型做训练后量化。F1 越高越好，困惑度越低越好。最好的 8 位结果以粗体标出。"
+      },
+      {
+        "text": "wikitext103 (perplexity) wikitext103 (perplexity) wikitext103 (perplexity)",
+        "x": 227.1,
+        "y": 212.8,
+        "w": 96.8,
+        "h": 31.8,
+        "zh": "wikitext103（困惑度） wikitext103（困惑度） wikitext103（困惑度）"
+      },
+      {
+        "text": "While training and inference for a number of networks can be successfully carried out in FP8 with the same scaling factor for all the tensors of the same type (in other words, choosing a single exponent bias could be possible), there are cases where per-tensor scaling factors are needed to maintain accuracy. This need becomes more pronounced when we store more of the tensors in FP8, not just inputs for GEMM operations. Figure 2 shows the FP8 inference perplexity (measured on wikitext103 dataset), when using post-training-quantization of a bfloat16-trained network. No calibration was done, weight and activation tensors were cast from bfloat16 to E4M3 type with the corresponding exponent bias. As we can see, when casting to FP8 only the inputs to GEMM operations (both weighted GEMMs as wells as two attention batched matrix multiplies that involve only activations), several exponent bias choices in the [7, 10] range lead to results matching the bfloat16 baseline. However, if we also quantize to FP8 the residual connections (input tensors for the",
+        "x": 71.5,
+        "y": 72,
+        "w": 468.8,
+        "h": 97.2,
+        "zh": "不少网络的训练和推理可以用 FP8 完成，而且同一类型的所有张量共用同一个缩放因子（也就是说，有可能只选定一个指数偏置），但也存在必须使用逐张量缩放因子才能保持精度的情况。当更多张量（而不只是 GEMM 运算的输入）以 FP8 存储时，这种需要就更明显。图 2 给出对一个 bfloat16 训练网络做训练后量化时的 FP8 推理困惑度（在 wikitext103 数据集上测量）。这里没有做校准，权重和激活张量按相应的指数偏置从 bfloat16 转换成 E4M3。可以看到，若只把 GEMM 运算的输入转换成 FP8（既包括带权重的 GEMM，也包括两个只涉及激活的注意力批量矩阵乘法），指数偏置在 [7, 10] 区间内的若干取值都能得到与 bfloat16 基线相符的结果。可是，如果把残差连接也量化为 FP8（这些连接的输入张量要送入"
+      }
+    ],
+    "7": [
+      {
+        "text": "Add operations, which further reduces pressure on both storage and memory bandwidth) then no single exponent bias value leads to sufficient accuracy - even exponent bias of 7 results in perplexity of 12.59 which is significantly higher (worse) than 10.19 for the bfloat16 baseline. However, if instead we calibrate the tensors to have their own scaling factors (following the convention of int8 quantization to use per-channel and per-tensor scaling factors for weights and activations, respectively [23]) we achieve 10.29 and 10.44 perplexities for GEMM-only and GEMM+residuals FP8",
+        "x": 71.6,
+        "y": 666.4,
+        "w": 468.5,
+        "h": 53.6,
+        "zh": "Add 运算，从而进一步减轻存储和内存带宽两方面的压力），那么没有任何一个指数偏置能给出足够的精度——即便指数偏置取 7，困惑度也是 12.59，明显高于（即更差）bfloat16 基线的 10.19。不过，如果改为给这些张量各自校准缩放因子（遵循 int8 量化的惯例：权重用逐通道缩放因子，激活用逐张量缩放因子 [23]），则仅 GEMM 的 FP8 困惑度为 10.29，GEMM 加残差的 FP8 困惑度为 10.44"
+      },
+      {
+        "text": "In this paper we propose an FP8 binary interchange format, consisting of E4M3 and E5M2 encodings. By minimally deviating from IEEE-754 conventions for binary encoding of floating point values, we ensure that that software implementations can continue to rely on such IEEE FP properties as ability to compare and sort values using integer operations. The primary motivator for the format is acceleration of Deep Learning training and inference, by enabling smaller and more power efficient math pipelines as well as reducing memory bandwidth pressure. We demonstrate that a wide variety of neural network models for image and language tasks can be trained in FP8 to match model accuracy achieved with 16-bit training sessions, using the same model, optimizer, and training hyperparameters. Using FP8 not only accelerates and reduces resources required to train, but also simplifies 8-bit inference deployment by using the same datatypes for training and inference. Prior to FP8 8-bit inference required calibrating or fine-tuning for int8 models trained in floating point, which added complexity to the deployment process and in some cases failed to",
+        "x": 72,
+        "y": 501.7,
+        "w": 468.3,
+        "h": 108.1,
+        "zh": "本文提出一种 FP8 二进制交换格式，由 E4M3 和 E5M2 两种编码组成。我们对浮点数二进制编码的 IEEE-754 约定只做最小偏离，使软件实现仍然可以依赖 IEEE 浮点的这些性质，例如用整数运算比较和排序数值。提出这一格式，首先是为了加速深度学习的训练和推理：数学流水线可以更小、更省电，内存带宽压力也会减轻。我们表明，面向图像和语言任务的多种神经网络模型都可以用 FP8 训练，在模型、优化器和训练超参数保持相同的情况下，达到与 16 位训练相同的模型精度。使用 FP8 既能加快训练、减少训练所需的资源，也能让训练和推理使用同一数据类型，从而简化 8 位推理的部署。在 FP8 之前，8 位推理需要对用浮点训练的 int8 模型做校准或微调，这增加了部署过程的复杂度，并且在某些情况下未能"
+      },
+      {
+        "text": "[1] Michael J. Anderson, Benny Chen, Stephen Chen, Summer Deng, Jordan Fix, Michael Gschwind, Aravind Kalaiah, Changkyu Kim, Jaewon Lee, Jason Liang, Haixin Liu, Yinghai Lu, Jack Montgomery, Arun Moorthy, Nadathur Satish, Sam Naghshineh, Avinash Nayak, Jongsoo Park, Chris Petersen, Martin Schatz, Narayanan Sundaram, Bangsheng Tang, Peter Tang, Amy Yang, Jiecao Yu, Hector Yuen, Ying Zhang, Aravind Anbudurai, Vandana Balan, Harsha Bojja, Joe Boyd, Matthew Breitbach, Claudio Caldato, Anna Calvo, Garret Catron, Sneh Chandwani, Panos Christeas, Brad Cottel, Brian Coutinho, Arun Dalli, Abhishek Dhanotia, Oniel Duncan, Roman Dzhabarov, Simon Elmir, Chunli Fu, Wenyin Fu, Michael Fulthorp, Adi Gangidi, Nick Gibson, Sean Gordon, Beatriz Padilla Hernandez, Daniel Ho, Yu-Cheng Huang, Olof Johansson, Shishir Juluri, and et al. First-generation inference accelerator deployment at facebook. arxiv, abs/2107.04140, 2021. [2] Tom Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared D Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, Sandhini Agarwal, Ariel Herbert-Voss, Gretchen Krueger, Tom Henighan, Rewon Child, Aditya Ramesh, Daniel Ziegler, Jeffrey Wu, Clemens Winter, Chris Hesse, Mark Chen, Eric Sigler, Mateusz Litwin, Scott Gray, Benjamin Chess, Jack Clark, Christopher Berner, Sam McCandlish, Alec Radford, Ilya Sutskever, and Dario Amodei. Language models are few-shot learners. In H. Larochelle, M. Ranzato, R. Hadsell, M.F. Balcan, and H. Lin, editors, Advances in Neural Information Processing Systems,",
+        "x": 77,
+        "y": 276.2,
+        "w": 464.7,
+        "h": 168.9,
+        "zh": "[1] Michael J. Anderson、Benny Chen、Stephen Chen、Summer Deng、Jordan Fix、Michael Gschwind、Aravind Kalaiah、Changkyu Kim、Jaewon Lee、Jason Liang、Haixin Liu、Yinghai Lu、Jack Montgomery、Arun Moorthy、Nadathur Satish、Sam Naghshineh、Avinash Nayak、Jongsoo Park、Chris Petersen、Martin Schatz、Narayanan Sundaram、Bangsheng Tang、Peter Tang、Amy Yang、Jiecao Yu、Hector Yuen、Ying Zhang、Aravind Anbudurai、Vandana Balan、Harsha Bojja、Joe Boyd、Matthew Breitbach、Claudio Caldato、Anna Calvo、Garret Catron、Sneh Chandwani、Panos Christeas、Brad Cottel、Brian Coutinho、Arun Dalli、Abhishek Dhanotia、Oniel Duncan、Roman Dzhabarov、Simon Elmir、Chunli Fu、Wenyin Fu、Michael Fulthorp、Adi Gangidi、Nick Gibson、Sean Gordon、Beatriz Padilla Hernandez、Daniel Ho、Yu-Cheng Huang、Olof Johansson、Shishir Juluri 等。Facebook 第一代推理加速器的部署。arxiv，abs/2107.04140，2021。[2] Tom Brown、Benjamin Mann、Nick Ryder、Melanie Subbiah、Jared D Kaplan、Prafulla Dhariwal、Arvind Neelakantan、Pranav Shyam、Girish Sastry、Amanda Askell、Sandhini Agarwal、Ariel Herbert-Voss、Gretchen Krueger、Tom Henighan、Rewon Child、Aditya Ramesh、Daniel Ziegler、Jeffrey Wu、Clemens Winter、Chris Hesse、Mark Chen、Eric Sigler、Mateusz Litwin、Scott Gray、Benjamin Chess、Jack Clark、Christopher Berner、Sam McCandlish、Alec Radford、Ilya Sutskever、Dario Amodei。语言模型是少样本学习者。载于 H. Larochelle、M. Ranzato、R. Hadsell、M.F. Balcan、H. Lin 编，Advances in Neural Information Processing Systems，"
+      },
+      {
+        "text": "volume 33, pages 1877–1901. Curran Associates, Inc., 2020.",
+        "x": 93.3,
+        "y": 265.3,
+        "w": 242.5,
+        "h": 10,
+        "zh": "第 33 卷，第 1877–1901 页。Curran Associates, Inc.，2020。"
+      },
+      {
+        "text": "[3] Neil Burgess, Jelena Milanovic, Nigel Stephens, Konstantinos Monachopoulos, and David Mansell. Bfloat16 processing for neural networks. In Martin Langhammer Sylvie Boldo, editor, 26th IEEE Symposium on Computer Arithmetic, ARITH 2019, Kyoto, Japan, June 10-12, 2019, pages 88–91. IEEE, 2017. [4] Aakanksha Chowdhery, Sharan Narang, Jacob Devlin, Maarten Bosma, Gaurav Mishra, Adam Roberts, Paul Barham, Hyung Won Chung, Charles Sutton, Sebastian Gehrmann, Parker Schuh, Kensen Shi, Sasha Tsvyashchenko, Joshua Maynez, Abhishek Rao, Parker Barnes, Yi Tay, Noam Shazeer, Vinodkumar Prabhakaran, Emily Reif, Nan Du, Ben Hutchinson, Reiner Pope, James Bradbury, Jacob Austin, Michael Isard, Guy Gur-Ari, Pengcheng Yin, Toju Duke, Anselm Levskaya, Sanjay Ghemawat, Sunipa Dev, Henryk Michalewski, Xavier Garcia, Vedant Misra, Kevin Robinson, Liam Fedus, Denny Zhou, Daphne Ippolito, David Luan, Hyeontaek Lim, Barret Zoph, Alexander Spiridonov, Ryan Sepassi, David Dohan, Shivani Agrawal, Mark Omernick, Andrew M. Dai, Thanumalayan Sankaranarayana Pillai, Marie Pellat, Aitor Lewkowycz, Erica Moreira, Rewon Child, Oleksandr Polozov, Katherine Lee, Zongwei Zhou, Xuezhi Wang, Brennan Saeta, Mark Diaz, Orhan Firat, Michele Catasta, Jason Wei, Kathy Meier-Hellstern, Douglas Eck, Jeff Dean, Slav Petrov, and Noah Fiedel. Palm: Scaling",
+        "x": 77,
+        "y": 111,
+        "w": 464.8,
+        "h": 147.1,
+        "zh": "[3] Neil Burgess、Jelena Milanovic、Nigel Stephens、Konstantinos Monachopoulos、David Mansell。面向神经网络的 Bfloat16 处理。载于 Martin Langhammer、Sylvie Boldo 编，26th IEEE Symposium on Computer Arithmetic，ARITH 2019，Kyoto, Japan，2019 年 6 月 10–12 日，第 88–91 页。IEEE，2017。[4] Aakanksha Chowdhery、Sharan Narang、Jacob Devlin、Maarten Bosma、Gaurav Mishra、Adam Roberts、Paul Barham、Hyung Won Chung、Charles Sutton、Sebastian Gehrmann、Parker Schuh、Kensen Shi、Sasha Tsvyashchenko、Joshua Maynez、Abhishek Rao、Parker Barnes、Yi Tay、Noam Shazeer、Vinodkumar Prabhakaran、Emily Reif、Nan Du、Ben Hutchinson、Reiner Pope、James Bradbury、Jacob Austin、Michael Isard、Guy Gur-Ari、Pengcheng Yin、Toju Duke、Anselm Levskaya、Sanjay Ghemawat、Sunipa Dev、Henryk Michalewski、Xavier Garcia、Vedant Misra、Kevin Robinson、Liam Fedus、Denny Zhou、Daphne Ippolito、David Luan、Hyeontaek Lim、Barret Zoph、Alexander Spiridonov、Ryan Sepassi、David Dohan、Shivani Agrawal、Mark Omernick、Andrew M. Dai、Thanumalayan Sankaranarayana Pillai、Marie Pellat、Aitor Lewkowycz、Erica Moreira、Rewon Child、Oleksandr Polozov、Katherine Lee、Zongwei Zhou、Xuezhi Wang、Brennan Saeta、Mark Diaz、Orhan Firat、Michele Catasta、Jason Wei、Kathy Meier-Hellstern、Douglas Eck、Jeff Dean、Slav Petrov、Noah Fiedel。PaLM：扩展"
+      },
+      {
+        "text": "[5] Matthieu Courbariaux, Yoshua Bengio, and Jean-Pierre David. Binaryconnect: Training deep neural networks with binary weights during propagations. Advances in neural information processing systems, 28, 2015.",
+        "x": 77,
+        "y": 72,
+        "w": 463,
+        "h": 20.9,
+        "zh": "[5] Matthieu Courbariaux、Yoshua Bengio、Jean-Pierre David。BinaryConnect：在传播过程中用二值权重训练深度神经网络。Advances in neural information processing systems，28，2015。"
+      }
+    ],
+    "8": [
+      {
+        "text": "[6] Leo Gao, Stella Biderman, Sid Black, Laurence Golding, Travis Hoppe, Charles Foster, Jason Phang, Horace He, Anish Thite, Noa Nabeshima, Shawn Presser, and Connor Leahy. The Pile: An 800gb dataset of diverse text for language modeling. arXiv preprint arXiv:2101.00027, 2020. [7] Itay Hubara, Matthieu Courbariaux, Daniel Soudry, Ran El-Yaniv, and Yoshua Bengio. Binarized neural networks. Advances in neural information processing systems, 29, 2016. [8] Jeff Johnson. Rethinking floating point for deep learning. CoRR, abs/1811.01721, 2018. [9] Dhiraj D. Kalamkar, Dheevatsa Mudigere, Naveen Mellempudi, Dipankar Das, Kunal Banerjee, Sasikanth Avancha, Dharma Teja Vooturi, Nataraj Jammalamadaka, Jianyu Huang, Hector Yuen, Jiyan Yang, Jongsoo Park, Alexander Heinecke, Evangelos Georganas, Sudarshan Srinivasan, Abhisek Kundu, Misha Smelyanskiy, Bharat Kaul, and Pradeep Dubey. A study of BFLOAT16 for deep learning training. arxiv, abs/1905.12322, 2019. [10] Andrey Kuzmin, Mart Van Baalen, Yuwei Ren, Markus Nagel, Jorn Peters, and Tijmen Blankevoort. FP8 quantization: The power of the exponent. arXiv, 2208.09225, 2022. [11] Edward H. Lee, Daisuke Miyashita, Elaina Chai, Boris Murmann, and S. Simon Wong. Lognet: Energy-efficient neural networks using logarithmic computation. In 2017 IEEE International Conference on Acoustics, Speech and Signal Processing, ICASSP 2017, New Orleans, LA, USA, March 5-9, 2017, pages 5900–5904. IEEE, 2017. [12] Naveen Mellempudi, Sudarshan Srinivasan, Dipankar Das, and Bharat Kaul. Mixed precision training with 8-bit floating point, 2019.",
+        "x": 72,
+        "y": 510.5,
+        "w": 469.7,
+        "h": 209.5,
+        "zh": "[6] Leo Gao、Stella Biderman、Sid Black、Laurence Golding、Travis Hoppe、Charles Foster、Jason Phang、Horace He、Anish Thite、Noa Nabeshima、Shawn Presser、Connor Leahy。The Pile：一个用于语言建模的 800GB 多样化文本数据集。arXiv preprint arXiv:2101.00027，2020。[7] Itay Hubara、Matthieu Courbariaux、Daniel Soudry、Ran El-Yaniv、Yoshua Bengio。二值化神经网络。Advances in neural information processing systems，29，2016。[8] Jeff Johnson。为深度学习重新思考浮点。CoRR，abs/1811.01721，2018。[9] Dhiraj D. Kalamkar、Dheevatsa Mudigere、Naveen Mellempudi、Dipankar Das、Kunal Banerjee、Sasikanth Avancha、Dharma Teja Vooturi、Nataraj Jammalamadaka、Jianyu Huang、Hector Yuen、Jiyan Yang、Jongsoo Park、Alexander Heinecke、Evangelos Georganas、Sudarshan Srinivasan、Abhisek Kundu、Misha Smelyanskiy、Bharat Kaul、Pradeep Dubey。BFLOAT16 用于深度学习训练的一项研究。arxiv，abs/1905.12322，2019。[10] Andrey Kuzmin、Mart Van Baalen、Yuwei Ren、Markus Nagel、Jorn Peters、Tijmen Blankevoort。FP8 量化：指数的力量。arXiv，2208.09225，2022。[11] Edward H. Lee、Daisuke Miyashita、Elaina Chai、Boris Murmann、S. Simon Wong。LogNet：使用对数计算的高能效神经网络。载于 2017 IEEE International Conference on Acoustics, Speech and Signal Processing，ICASSP 2017，New Orleans, LA, USA，2017 年 3 月 5–9 日，第 5900–5904 页。IEEE，2017。[12] Naveen Mellempudi、Sudarshan Srinivasan、Dipankar Das、Bharat Kaul。使用 8 位浮点的混合精度训练，2019。"
+      },
+      {
+        "text": "https://on-demand.gputechconf.com/gtc/2018/presentation/ s8923-training-neural-networks-with-mixed-precision-theory-and-practice.pdf,",
+        "x": 93.6,
+        "y": 473.6,
+        "w": 447.5,
+        "h": 20.9,
+        "zh": "https://on-demand.gputechconf.com/gtc/2018/presentation/s8923-training-neural-networks-with-mixed-precision-theory-and-practice.pdf，"
+      },
+      {
+        "text": "[14] Paulius Micikevicius, Sharan Narang, Jonah Alben, Gregory F. Diamos, Erich Elsen, David García, Boris Ginsburg, Michael Houston, Oleksii Kuchaiev, Ganesh Venkatesh, and Hao Wu. Mixed precision training. arxiv, 1710.03740,",
+        "x": 72,
+        "y": 436.7,
+        "w": 469.2,
+        "h": 20.9,
+        "zh": "[14] Paulius Micikevicius、Sharan Narang、Jonah Alben、Gregory F. Diamos、Erich Elsen、David García、Boris Ginsburg、Michael Houston、Oleksii Kuchaiev、Ganesh Venkatesh、Hao Wu。混合精度训练。arxiv，1710.03740，"
+      },
+      {
+        "text": "[15] Daisuke Miyashita, Edward H. Lee, and Boris Murmann. Convolutional neural networks using logarithmic data representation. CoRR, abs/1603.01025, 2016. [16] Badreddine Noune, Philip Jones, Daniel Justus, Dominic Masters, and Carlo Luschi. 8-bit numerical formats for deep neural networks. arXiv preprint arXiv:2206.02915, 2022. [17] Mohammad Rastegari, Vicente Ordonez, Joseph Redmon, and Ali Farhadi. Xnor-net: Imagenet classification using binary convolutional neural networks. In Bastian Leibe, Jiri Matas, Nicu Sebe, and Max Welling, editors, Computer Vision – ECCV 2016, pages 525–542, Cham, 2016. Springer International Publishing. [18] Shaden Smith, Mostofa Patwary, Brandon Norick, Patrick LeGresley, Samyam Rajbhandari, Jared Casper, Zhun Liu, Shrimai Prabhumoye, George Zerveas, Vijay Korthikanti, Elton Zheng, Rewon Child, Reza Yazdani Aminabadi, Julie Bernauer, Xia Song, Mohammad Shoeybi, Yuxiong He, Michael Houston, Saurabh Tiwary, and Bryan Catanzaro. Using deepspeed and megatron to train megatron-turing NLG 530b, A large-scale generative language model. arXiv, 2201.11990, 2022. [19] Dusan Stosic and Paulius Micikevicius. Accelerating ai training with nvidia tf32 tensor cores, 2021. https:// developer.nvidia.com/blog/accelerating-ai-training-with-tf32-tensor-cores/, Accessed on",
+        "x": 72,
+        "y": 252.3,
+        "w": 469.2,
+        "h": 168.4,
+        "zh": "[15] Daisuke Miyashita、Edward H. Lee、Boris Murmann。使用对数数据表示的卷积神经网络。CoRR，abs/1603.01025，2016。[16] Badreddine Noune、Philip Jones、Daniel Justus、Dominic Masters、Carlo Luschi。面向深度神经网络的 8 位数值格式。arXiv preprint arXiv:2206.02915，2022。[17] Mohammad Rastegari、Vicente Ordonez、Joseph Redmon、Ali Farhadi。XNOR-Net：使用二值卷积神经网络做 ImageNet 分类。载于 Bastian Leibe、Jiri Matas、Nicu Sebe、Max Welling 编，Computer Vision – ECCV 2016，第 525–542 页，Cham，2016。Springer International Publishing。[18] Shaden Smith、Mostofa Patwary、Brandon Norick、Patrick LeGresley、Samyam Rajbhandari、Jared Casper、Zhun Liu、Shrimai Prabhumoye、George Zerveas、Vijay Korthikanti、Elton Zheng、Rewon Child、Reza Yazdani Aminabadi、Julie Bernauer、Xia Song、Mohammad Shoeybi、Yuxiong He、Michael Houston、Saurabh Tiwary、Bryan Catanzaro。使用 DeepSpeed 和 Megatron 训练 Megatron-Turing NLG 530B，一个大规模生成式语言模型。arXiv，2201.11990，2022。[19] Dusan Stosic、Paulius Micikevicius。用 NVIDIA TF32 Tensor Core 加速 AI 训练，2021。https://developer.nvidia.com/blog/accelerating-ai-training-with-tf32-tensor-cores/，访问于"
+      },
+      {
+        "text": "[20] Xiao Sun, Jungwook Choi, Chia-Yu Chen, Naigang Wang, Swagath Venkataramani, Vijayalakshmi (Viji) Srinivasan, Xiaodong Cui, Wei Zhang, and Kailash Gopalakrishnan. Hybrid 8-bit floating point (hfp8) training and inference for deep neural networks. In H. Wallach, H. Larochelle, A. Beygelzimer, F. d'Alché-Buc, E. Fox, and R. Garnett, editors, Advances in Neural Information Processing Systems, volume 32. Curran Associates, Inc.,",
+        "x": 72,
+        "y": 193.6,
+        "w": 469.6,
+        "h": 42.7,
+        "zh": "[20] Xiao Sun、Jungwook Choi、Chia-Yu Chen、Naigang Wang、Swagath Venkataramani、Vijayalakshmi (Viji) Srinivasan、Xiaodong Cui、Wei Zhang、Kailash Gopalakrishnan。面向深度神经网络的混合 8 位浮点（HFP8）训练与推理。载于 H. Wallach、H. Larochelle、A. Beygelzimer、F. d'Alché-Buc、E. Fox、R. Garnett 编，Advances in Neural Information Processing Systems，第 32 卷。Curran Associates, Inc.，"
+      },
+      {
+        "text": "[21] Hugo Touvron, Matthieu Cord, Matthijs Douze, Francisco Massa, Alexandre Sablayrolles, and Herve Jegou. Training data-efficient image transformers & distillation through attention. In International Conference on Machine Learning, volume 139, pages 10347–10357, July 2021. [22] Naigang Wang, Jungwook Choi, Daniel Brand, Chia-Yu Chen, and Kailash Gopalakrishnan. Training deep neural networks with 8-bit floating point numbers. In S. Bengio, H. Wallach, H. Larochelle, K. Grauman, N. Cesa-Bianchi, and R. Garnett, editors, Advances in Neural Information Processing Systems, volume 31. Curran Associates, Inc., 2018. [23] Hao Wu, Patrick Judd, Xiaojie Zhang, Mikhail Isaev, and Paulius Micikevicius. Integer quantization for deep learning inference: Principles and empirical evaluation. arxiv, 2004.09602, 2020.",
+        "x": 72,
+        "y": 72,
+        "w": 469.7,
+        "h": 105.6,
+        "zh": "[21] Hugo Touvron、Matthieu Cord、Matthijs Douze、Francisco Massa、Alexandre Sablayrolles、Herve Jegou。训练数据高效的图像 Transformer，以及通过注意力进行蒸馏。载于 International Conference on Machine Learning，第 139 卷，第 10347–10357 页，2021 年 7 月。[22] Naigang Wang、Jungwook Choi、Daniel Brand、Chia-Yu Chen、Kailash Gopalakrishnan。用 8 位浮点数训练深度神经网络。载于 S. Bengio、H. Wallach、H. Larochelle、K. Grauman、N. Cesa-Bianchi、R. Garnett 编，Advances in Neural Information Processing Systems，第 31 卷。Curran Associates, Inc.，2018。[23] Hao Wu、Patrick Judd、Xiaojie Zhang、Mikhail Isaev、Paulius Micikevicius。深度学习推理的整数量化：原理与实证评估。arxiv，2004.09602，2020。"
+      }
+    ],
+    "9": [
+      {
+        "text": "[24] Dongqing Zhang, Jiaolong Yang, Dongqiangzi Ye, and Gang Hua. Lq-nets: Learned quantization for highly accurate and compact deep neural networks. European conference on computer vision (ECCV), pages 365–382,",
+        "x": 72,
+        "y": 699.1,
+        "w": 469.2,
+        "h": 20.9,
+        "zh": "[24] Dongqing Zhang、Jiaolong Yang、Dongqiangzi Ye、Gang Hua。LQ-Nets：面向高精度且紧凑的深度神经网络的可学习量化。European conference on computer vision (ECCV)，第 365–382 页，"
+      },
+      {
+        "text": "[25] Susan Zhang, Stephen Roller, Naman Goyal, Mikel Artetxe, Moya Chen, Shuohui Chen, Christopher Dewan, Mona Diab, Xian Li, Xi Victoria Lin, Todor Mihaylov, Myle Ott, Sam Shleifer, Kurt Shuster, Daniel Simig, Punit Singh Koura, Anjali Sridhar, Tianlu Wang, and Luke Zettlemoyer. Opt: Open pre-trained transformer language models, 2022. [26] Shuchang Zhou, Yuxin Wu, Zekun Ni, Xinyu Zhou, He Wen, and Yuheng Zou. Dorefa-net: Training low bitwidth convolutional neural networks with low bitwidth gradients. arXiv preprint, 1606.06160, 2016.",
+        "x": 72,
+        "y": 614.8,
+        "w": 469.2,
+        "h": 68.5,
+        "zh": "[25] Susan Zhang、Stephen Roller、Naman Goyal、Mikel Artetxe、Moya Chen、Shuohui Chen、Christopher Dewan、Mona Diab、Xian Li、Xi Victoria Lin、Todor Mihaylov、Myle Ott、Sam Shleifer、Kurt Shuster、Daniel Simig、Punit Singh Koura、Anjali Sridhar、Tianlu Wang、Luke Zettlemoyer。OPT：开放的预训练 Transformer 语言模型，2022。[26] Shuchang Zhou、Yuxin Wu、Zekun Ni、Xinyu Zhou、He Wen、Yuheng Zou。DoReFa-Net：用低位宽梯度训练低位宽卷积神经网络。arXiv preprint，1606.06160，2016。"
+      }
+    ]
+  }
+}

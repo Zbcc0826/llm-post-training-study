@@ -1,0 +1,2661 @@
+{
+  "id": "2403.03507",
+  "title": "2403.03507",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection",
+        "x": 62,
+        "y": 691.1,
+        "w": 472.9,
+        "h": 14.3,
+        "zh": "GaLore：通过梯度低秩投影实现显存高效的大语言模型训练"
+      },
+      {
+        "text": "presents significant memory challenges, predominantly due to the growing size of weights and",
+        "x": 75.4,
+        "y": 565.9,
+        "w": 194.2,
+        "h": 21.9,
+        "zh": "带来了显著的显存挑战，主要是因为权重规模不断增大，以及"
+      },
+      {
+        "text": "(LoRA), add a trainable low-rank matrix to the frozen pre-trained weight in each layer. However, such approaches typically underperform training with full-rank weights in both pretraining and fine-tuning stages since they limit the parameter search to a low-rank subspace and alter the training dynamics, and further, may require full-rank warm start. In this work,",
+        "x": 75.4,
+        "y": 446.3,
+        "w": 194.2,
+        "h": 93.6,
+        "zh": "（LoRA）在每一层冻结的预训练权重上加入可训练的低秩矩阵。然而，这类方法在预训练和微调阶段通常都不如全秩权重训练：它们把参数搜索限制在低秩子空间里，改变了训练动态，而且还可能需要全秩热身。在本工作中，"
+      },
+      {
+        "text": "Figure 1: Estimated memory consumption of pre-training a LLaMA 7B model with a token batch size of 256 on a single device, without activation checkpointing and memory offloading . Details refer to Section 5.5.",
+        "x": 307.4,
+        "y": 455.2,
+        "w": 234,
+        "h": 39.9,
+        "zh": "图 1：在单台设备上、token 批大小为 256、不做激活检查点也不做显存换出时，预训练 LLaMA 7B 的估计显存占用。细节见第 5.5 节。"
+      },
+      {
+        "text": "Algorithm 1: GaLore, PyTorch-like for weight in model.parameters():",
+        "x": 307.4,
+        "y": 423.4,
+        "w": 157.8,
+        "h": 19.8,
+        "zh": "算法 1：GaLore，类 PyTorch 写法。对 model.parameters() 中的每个 weight："
+      },
+      {
+        "text": "(GaLore), a training strategy that allows fullparameter learning but is more memory-efficient than common low-rank adaptation methods such as LoRA. Our approach reduces memory usage by up to 65.5% in optimizer states while maintaining both efficiency and performance for pre-training on LLaMA 1B and 7B architectures with C4 dataset with up to 19.7B tokens, and on fine-tuning RoBERTa on GLUE tasks. Our 8-bit GaLore further reduces optimizer memory by up to 82.5% and total training memory by 63.3%, compared to a BF16 baseline. demonstrate, for the first time, the feasibility of pre-training a 7B model on consumer GPUs with 24GB memory (e.g., NVIDIA RTX 4090) without model parallel, checkpointing, or offloading strategies. Code is provided in the link.",
+        "x": 75.4,
+        "y": 231.2,
+        "w": 194.2,
+        "h": 201.2,
+        "zh": "（GaLore），一种允许全参数学习、同时又比 LoRA 等常见低秩适配方法更省显存的训练策略。我们的方法把优化器状态的显存最多减少 65.5%，同时仍保持效率与性能：在 C4 数据集上对 LLaMA 1B 和 7B 架构做最多 19.7B token 的预训练，以及在 GLUE 任务上微调 RoBERTa。与 BF16 基线相比，8-bit GaLore 进一步把优化器显存最多减少 82.5%，总训练显存减少 63.3%。本文首次表明，可以在 24GB 显存的消费级 GPU（例如 NVIDIA RTX 4090）上预训练 7B 模型，而不使用模型并行、检查点或换出策略。代码见文中链接。"
+      },
+      {
+        "text": "# original space -> compact space lor grad = project(grad) # update by Adam, Adafactor, etc. lor update = update(lor grad) # compact space -> original space update = project back(lor update) weight.data += update",
+        "x": 322.8,
+        "y": 351.6,
+        "w": 157.8,
+        "h": 61.8,
+        "zh": "# 原始空间 → 紧凑空间；lor_grad = project(grad)  # 用 Adam、Adafactor 等更新；lor_update = update(lor_grad)  # 紧凑空间 → 原始空间；update = project_back(lor_update)；weight.data += update"
+      },
+      {
+        "text": "and fine-tuning LLMs require not only a huge amount of computation but is also memory intensive. The memory requirements include not only billions of trainable parameters, but also their gradients and optimizer states (e.g., gradient momentum and variance in Adam) that can be larger than parameter storage themselves",
+        "x": 307.4,
+        "y": 250.3,
+        "w": 234,
+        "h": 69.7,
+        "zh": "微调大语言模型不仅计算量巨大，也非常吃显存。显存里不仅要放下数十亿可训练参数，还要放下它们的梯度以及优化器状态（例如 Adam 里的梯度动量和方差），后者甚至可能比参数本身更占空间。"
+      },
+      {
+        "text": "ple, pre-training a LLaMA 7B model from scratch with a single batch size requires at least 58 GB memory (14GB for trainable parameters, 42GB for Adam optimizer states and weight gradients, and 2GB for activations ). This makes the training not feasible on consumer-level GPUs such as NVIDIA RTX 4090 with 24GB memory. In addition to engineering and system efforts, such as gradient checkpointing (Chen et al., 2016), memory offload-",
+        "x": 307.4,
+        "y": 136.7,
+        "w": 234,
+        "h": 99.6,
+        "zh": "例如，用单个 batch 从零预训练 LLaMA 7B，至少需要 58 GB 显存（可训练参数 14GB，Adam 优化器状态和权重梯度 42GB，激活 2GB）。因此无法在 NVIDIA RTX 4090 这类 24GB 显存的消费级 GPU 上训练。除了梯度检查点（Chen et al., 2016）、显存换出等工程和系统方面的努力之外，"
+      },
+      {
+        "text": "Large Language Models (LLMs) have shown impressive performance across multiple disciplines, including conversational AI and language translation. However, pre-training",
+        "x": 55.4,
+        "y": 165.7,
+        "w": 234,
+        "h": 33.9,
+        "zh": "大语言模型（LLM）在对话式人工智能、语言翻译等多个领域表现突出。然而，预训练"
+      },
+      {
+        "text": "*Equal advising 1California Institute of Technology 2Meta AI University of Texas at Austin Carnegie Mellon University. Correspondence to: Jiawei Zhao <jiawei@caltech.edu>, Yuandong Tian <yuandong@meta.com>.",
+        "x": 55.4,
+        "y": 116.8,
+        "w": 234,
+        "h": 39.7,
+        "zh": "*共同指导。1 加州理工学院。2 Meta AI。德克萨斯大学奥斯汀分校。卡内基梅隆大学。通信作者：Jiawei Zhao <jiawei@caltech.edu>，Yuandong Tian <yuandong@meta.com>。"
+      },
+      {
+        "text": "The calculation is based on LLaMA architecture, BF16 numerical format, and maximum sequence length of 2048. In the figure, “no retaining grad” denotes the application of per-layer weight update to reduce memory consumption of storing weight gradient (Lv et al., 2023b).",
+        "x": 307.4,
+        "y": 76.9,
+        "w": 234,
+        "h": 49.7,
+        "zh": "计算基于 LLaMA 架构、BF16 数值格式，以及最大序列长度 2048。图中 “no retaining grad” 表示采用逐层权重更新，以减少保存权重梯度的显存（Lv et al., 2023b）。"
+      },
+      {
+        "text": "International Conference on Machine Learning, Vienna, Austria. PMLR 235, 2024. Copyright 2024",
+        "x": 55.4,
+        "y": 86.9,
+        "w": 234,
+        "h": 18.9,
+        "zh": "国际机器学习会议，奥地利维也纳。PMLR 235，2024。版权所有 2024"
+      }
+    ],
+    "2": [
+      {
+        "text": "GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection",
+        "x": 150.6,
+        "y": 737.9,
+        "w": 295.6,
+        "h": 9,
+        "zh": "GaLore：通过梯度低秩投影实现显存高效的大语言模型训练"
+      },
+      {
+        "text": "ing (Rajbhandari et al., 2020), etc., to achieve faster and more efficient distributed training, researchers also seek to develop various optimization techniques to reduce the memory usage during pre-training and fine-tuning. Parameter-efficient fine-tuning (PEFT) techniques allow for the efficient adaptation of pre-trained language models (PLMs) to different downstream applications without the need to fine-tune all of the model’s parameters (Ding et al., 2022). Among them, the popular Low-Rank Adaptation (LoRA Hu et al. (2022)) reparameterizes weight ma-",
+        "x": 55.4,
+        "y": 601.4,
+        "w": 234,
+        "h": 123.5,
+        "zh": "（Rajbhandari et al., 2020）等，以取得更快、更高效的分布式训练；研究者也在开发各种优化技术，降低预训练和微调时的显存。参数高效微调（PEFT）可以让预训练语言模型（PLM）适配不同下游任务，而不必微调全部参数（Ding et al., 2022）。其中流行的低秩适配（LoRA，Hu et al. (2022)）对权重矩阵做重新参数化"
+      },
+      {
+        "text": "C4 dataset, 8-bit GaLore, combined with 8-bit optimizers and layer-wise weight updates techniques, achieves comparable performance to its full-rank counterpart, with less than 10% memory cost of optimizer states. Notably, for pre-training, GaLore keeps low memory throughout the entire training, without requiring full-rank training warmup like ReLoRA. Thanks to GaLore’s memory efficiency, it is possible to train LLaMA 7B from scratch on a single GPU with 24GB memory (e.g., on NVIDIA RTX 4090), without any costly memory offloading techniques (Fig. 1). GaLore is also used to fine-tune pre-trained LLMs on GLUE benchmarks with comparable or better results than existing low-rank methods. When fine-tuning RoBERTaBase on GLUE tasks with a rank of 4, GaLore achieves an average score of 85.89, outperforming LoRA, which achieves a score of 85.61. As a gradient projection method, GaLore is independent of the choice of optimizers and can be easily plugged into existing ones with only two lines of code, as shown in Algorithm 1. Our experiment (Fig. 3) shows that it works for popular optimizers such as AdamW, 8-bit Adam, and Adafactor. In addition, its performance is insensitive to very few hyper-parameters it introduces. We also provide theoretical justification on the low-rankness of gradient update, as well as the convergence analysis of GaLore.",
+        "x": 307.4,
+        "y": 398.2,
+        "w": 234,
+        "h": 326.8,
+        "zh": "在 C4 数据集上，8-bit GaLore 结合 8-bit 优化器和逐层权重更新，能达到与全秩方法相当的性能，优化器状态的显存不到其 10%。值得注意的是，预训练时 GaLore 在整个训练过程中都保持低显存，不像 ReLoRA 那样需要全秩训练热身。得益于这种显存效率，可以在单张 24GB 显存的 GPU（例如 NVIDIA RTX 4090）上从零训练 LLaMA 7B，而不使用昂贵的显存换出（图 1）。GaLore 也用于在 GLUE 基准上微调预训练大语言模型，结果与现有低秩方法相当或更好。以秩 4 微调 RoBERTa-Base 时，GaLore 在 GLUE 上的平均分为 85.89，高于 LoRA 的 85.61。作为一种梯度投影方法，GaLore 不依赖具体优化器，只需两行代码就能接入现有优化器，如算法 1 所示。实验（图 3）表明，它适用于 AdamW、8-bit Adam 和 Adafactor 等常用优化器。此外，性能对它引入的极少数超参数并不敏感。我们还给出梯度更新为何低秩的理论说明，以及 GaLore 的收敛性分析。"
+      },
+      {
+        "text": "into W = W0 + BA, where W0 is a frozen full-rank matrix and B ∈ R additive low-rank adaptors to be learned. Since the rank r ≪ min(m, n), A and B contain fewer number of trainable parameters and thus smaller optimizer states. LoRA has been used extensively to reduce memory usage for finetuning in which W0 is the frozen pre-trained weight. Its variant ReLoRA is also used in pre-training, by periodically updating W0 using previously learned low-rank adaptors (Lialin et al., 2024). However, many recent works demonstrate the limitation of such a low-rank reparameterization. For fine-tuning, LoRA is not shown to reach a comparable performance as fullrank fine-tuning (Xia et al., 2024). For pre-training from scratch, it is shown to require a full-rank model training as a warmup (Lialin et al., 2024), before optimizing in the low-rank subspace. There are two possible reasons: (1) the optimal weight matrices may not be low-rank, and (2) the reparameterization changes the gradient training dynamics. Our approach: To address the above challenge, we propose Gradient Low-Rank Projection (GaLore), a training strategy that allows full-parameter learning but is more memory-efficient than common low-rank adaptation methods, such as LoRA. Our key idea is to leverage the slowchanging low-rank structure of the gradient G ∈ R the weight matrix W, rather than trying to approximate the weight matrix itself as low rank. We first show theoretically that the gradient matrix G becomes low-rank during training. Then, we propose GaLore that computes two projection matrices P ∈ Rm×r and Q ∈ Rn×r to project the gradient matrix G into a low-",
+        "x": 55.4,
+        "y": 212.9,
+        "w": 234,
+        "h": 386.6,
+        "zh": "写成 W = W0 + BA，其中 W0 是冻结的全秩矩阵，B ∈ R 是待学习的加性低秩适配器。由于秩 r ≪ min(m, n)，A 和 B 的可训练参数更少，优化器状态也更小。LoRA 被广泛用于降低微调显存，此时 W0 是冻结的预训练权重。其变体 ReLoRA 也用于预训练：用已经学到的低秩适配器周期性地更新 W0（Lialin et al., 2024）。然而，许多近期工作指出这种低秩重参数化的局限。微调时，LoRA 并未达到与全秩微调相当的性能（Xia et al., 2024）。从零预训练时，则需要先做全秩模型训练作为热身（Lialin et al., 2024），再在低秩子空间里优化。可能的原因有两个：(1) 最优权重矩阵未必低秩；(2) 重参数化改变了梯度训练动态。我们的方法：针对上述问题，我们提出梯度低秩投影（GaLore）。它允许全参数学习，又比 LoRA 等常见低秩适配方法更省显存。核心想法是利用权重矩阵 W 的梯度 G ∈ R 里变化缓慢的低秩结构，而不是把权重矩阵本身近似成低秩。我们先从理论上说明，梯度矩阵 G 在训练中会变成低秩。随后 GaLore 计算两个投影矩阵 P ∈ R^{m×r} 和 Q ∈ R^{n×r}，把梯度矩阵 G 投影到低秩"
+      },
+      {
+        "text": "Hu et al. (2022) proposed LowRank Adaptation (LoRA) to fine-tune pre-trained models with low-rank adaptors. This method reduces the memory footprint by maintaining a low-rank weight adaptor for each layer. There are a few variants of LoRA proposed to enhance its performance (Renduchintala et al., 2023; Sheng et al., 2023; Zhang et al., 2023; Xia et al., 2024), supporting multi-task learning (Wang et al., 2023b), and further reducing the memory footprint (Dettmers et al., 2024). Lialin et al. (2024) proposed ReLoRA, a variant of LoRA designed for pre-training, but requires a full-rank training warmup to achieve comparable performance as the standard baseline. Inspired by LoRA, Hao et al. (2024) also suggested that gradients can be compressed in a low-rank subspace, and they proposed to use random projections to compress the gradients. There have also been approaches that propose training networks with low-rank factorized weights from scratch (Kamalakara et al., 2022; Wang et al., 2023a; Zhao et al., 2023).",
+        "x": 307.4,
+        "y": 135,
+        "w": 234,
+        "h": 225.2,
+        "zh": "Hu et al. (2022) 提出低秩适配（LoRA），用低秩适配器微调预训练模型。它为每一层保留一个低秩权重适配器，从而降低显存。已有若干变体用于提升性能（Renduchintala et al., 2023; Sheng et al., 2023; Zhang et al., 2023; Xia et al., 2024）、支持多任务学习（Wang et al., 2023b），以及进一步省显存（Dettmers et al., 2024）。Lialin et al. (2024) 提出面向预训练的 ReLoRA，但要达到与标准基线相当的性能，需要全秩训练热身。受 LoRA 启发，Hao et al. (2024) 指出梯度可以压缩到低秩子空间，并提出用随机投影压缩梯度。也有工作主张从零开始用低秩分解的权重训练网络（Kamalakara et al., 2022; Wang et al., 2023a; Zhao et al., 2023）。"
+      },
+      {
+        "text": "GQ. In this case, the memory cost of optimizer states, which rely on component-wise gradient statistics, can be substantially reduced. Occasional updates of P and Q (e.g., every 200 iterations) incur minimal amortized additional computational cost. GaLore is more memoryefficient than LoRA as shown in Table 1. In practice, this yields up to 30% memory reduction compared to LoRA during pre-training. We demonstrate that GaLore works well in both LLM pretraining and fine-tuning. When pre-training LLaMA 7B on",
+        "x": 55.4,
+        "y": 87.3,
+        "w": 234,
+        "h": 123.5,
+        "zh": "GQ。此时，依赖逐分量梯度统计量的优化器状态，其显存可以大幅下降。偶尔更新 P 和 Q（例如每 200 次迭代）带来的摊销额外计算很小。如表 1 所示，GaLore 比 LoRA 更省显存。实践中，预训练阶段相对 LoRA 最多可减少 30% 显存。我们表明 GaLore 在大语言模型预训练和微调中都有效。在预训练 LLaMA 7B 时，"
+      },
+      {
+        "text": "Recent studies have demonstrated that the learning primarily occurs within a significantly low-dimensional parameter subspace (Gur-Ari et al., 2018;",
+        "x": 307.4,
+        "y": 76.9,
+        "w": 234,
+        "h": 33.9,
+        "zh": "近期研究表明，学习主要发生在一个维数低得多的参数子空间里（Gur-Ari et al., 2018；"
+      }
+    ],
+    "3": [
+      {
+        "text": "GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection",
+        "x": 150.6,
+        "y": 737.9,
+        "w": 295.6,
+        "h": 9,
+        "zh": "GaLore：通过梯度低秩投影实现显存高效的大语言模型训练"
+      },
+      {
+        "text": "These findings promote a special type of learning called subspace learning, where the model weights are optimized within a low-rank subspace. This notion has been widely used in different domains of machine learning, including meta-learning and continual learning (Lee & Choi, 2018; Chaudhry et al., 2020).",
+        "x": 55.4,
+        "y": 655.2,
+        "w": 234,
+        "h": 69.7,
+        "zh": "这些发现推动了一种称为子空间学习的做法：模型权重在低秩子空间内优化。这一概念已广泛用于机器学习的不同领域，包括元学习和持续学习（Lee & Choi, 2018; Chaudhry et al., 2020）。"
+      },
+      {
+        "text": "Mt = β1Mt−1 + (1 − β1)Gt Vt = β2Vt−1 + (1 − β2)G2t",
+        "x": 365.2,
+        "y": 673.4,
+        "w": 118,
+        "h": 28.6,
+        "zh": ""
+      },
+      {
+        "text": "Vt + ϵ means element-wise multiplication and division. η is the learning rate. Together with W ∈ Rm×n, this takes 3mn memory. Low-rank updates. For a linear layer W ∈ R and its variants utilize the low-rank structure of the update matrix by introducing a low-rank adaptor AB:",
+        "x": 307.4,
+        "y": 568.6,
+        "w": 234,
+        "h": 75.7,
+        "zh": "与 Vt + ϵ 一起表示逐元素乘法和除法。η 是学习率。连同 W ∈ R^{m×n}，这部分占用 3mn 的显存。低秩更新。对线性层 W ∈ R 及其变体，通过引入低秩适配器 AB，利用更新矩阵的低秩结构："
+      },
+      {
+        "text": "GaLore is closely related to the traditional topic of projected gradient descent (PGD) (Chen & Wainwright, 2015; Chen et al., 2019). A key difference is that, GaLore considers the specific gradient form that naturally appears in training multi-layer neural networks (e.g., it is a matrix with specific structures), proving many of its properties (e.g., Lemma 3.3, Theorem 3.2, and Theorem 3.8). In contrast, traditional PGD mostly treats the objective as a general blackbox nonlinear function, and study the gradients in the vector space only.",
+        "x": 55.4,
+        "y": 519.8,
+        "w": 234,
+        "h": 117.6,
+        "zh": "GaLore 与传统的投影梯度下降（PGD）密切相关（Chen & Wainwright, 2015; Chen et al., 2019）。关键区别在于，GaLore 针对多层神经网络训练中自然出现的特定梯度形式（例如具有特定结构的矩阵），并证明了它的多项性质（例如引理 3.3、定理 3.2 和定理 3.8）。传统 PGD 则多把目标看成一般的黑箱非线性函数，而且只在向量空间里研究梯度。"
+      },
+      {
+        "text": ", and r ≪ min(m, n). A and B are the learnable low-rank adaptors and W0 is a fixed weight matrix (e.g., pre-trained weight).",
+        "x": 307.4,
+        "y": 498.8,
+        "w": 234,
+        "h": 33.9,
+        "zh": "，且 r ≪ min(m, n)。A 和 B 是可学习的低秩适配器，W0 是固定权重矩阵（例如预训练权重）。"
+      },
+      {
+        "text": "Gradient is naturally low-rank during training of neural networks, and this property have been studied in both theory and practice (Zhao et al., 2022; Cosson et al., 2023; Yang et al., 2023). It has been applied to reduce communication cost (Wang et al., 2018; Vogels et al., 2020), and memory footprint during training (Gooneratne et al., 2020; Huang et al., 2023; Modoranu et al.,",
+        "x": 55.4,
+        "y": 420.3,
+        "w": 234,
+        "h": 81.7,
+        "zh": "神经网络训练时梯度天然是低秩的，这一性质已有理论和实证工作讨论（Zhao et al., 2022; Cosson et al., 2023; Yang et al., 2023）。它被用来降低通信开销（Wang et al., 2018; Vogels et al., 2020），以及训练时的显存占用（Gooneratne et al., 2020; Huang et al., 2023; Modoranu et al.,"
+      },
+      {
+        "text": "3.2. Low-Rank Property of Weight Gradient",
+        "x": 307.4,
+        "y": 473.7,
+        "w": 188.1,
+        "h": 10,
+        "zh": "3.2. 权重梯度的低秩性质"
+      },
+      {
+        "text": "While low-rank updates are proposed to reduce memory usage, it remains an open question whether the weight matrix should be parameterized as low-rank. In many situations, this may not be true. For example, in linear regression y = Wx, if the optimal W∗ is high-rank, then imposing a low-rank assumption on W never leads to the optimal solution, regardless of what optimizers are used. Surprisingly, while the weight matrices are not necessarily low-rank, the gradient indeed becomes low-rank during the training for certain gradient forms and associated network",
+        "x": 307.4,
+        "y": 341.5,
+        "w": 234,
+        "h": 123.5,
+        "zh": "低秩更新是为了省显存而提出的，但权重矩阵是否应当参数化成低秩，仍是开放问题。很多情况下答案是否定的。例如线性回归 y = Wx，若最优的 W∗ 是高秩的，那么无论用什么优化器，对 W 施加低秩约束都到不了最优解。令人意外的是，权重矩阵不一定低秩，但在某些梯度形式和相应的网络里，梯度在训练过程中确实会变成低秩。"
+      },
+      {
+        "text": "There have been some works trying to reduce the memory cost of gradient statistics for adaptive optimization algorithms (Shazeer & Stern, 2018; Anil et al., 2019; Dettmers et al., 2022). Quantization is widely used to reduce the memory cost of optimizer states (Dettmers et al., 2022; Li et al., 2024). Recent works have also proposed to reduce weight gradient memory by fusing the backward operation with the optimizer update (Lv et al., 2023a;b).",
+        "x": 55.4,
+        "y": 284.9,
+        "w": 234,
+        "h": 105.6,
+        "zh": "已有工作试图降低自适应优化算法中梯度统计量的显存（Shazeer & Stern, 2018; Anil et al., 2019; Dettmers et al., 2022）。量化被广泛用于压缩优化器状态（Dettmers et al., 2022; Li et al., 2024）。近期工作还把反向计算与优化器更新融合，以减少权重梯度的显存（Lv et al., 2023a;b）。"
+      },
+      {
+        "text": "Reversible networks. Obviously, for a general loss function, its gradient can be arbitrary and is not necessarily low rank. Here we study the gradient structure for a general family of nonlinear networks known as “reversible networks” (Tian et al., 2020), which includes not only simple linear networks but also deep ReLU/polynomial networks: Definition 3.1 (Reversiblity (Tian et al., 2020)). A network N that maps input x to output y = N(x) is reversible, if there exists L(x; W) so that y = L(x; W)x, and the backpropagated gradient gx satisfies gx = L (x; W)gy, where gy is the backpropagated gradient at the output y. Here L(x; W) depends on the input x and weight W in the",
+        "x": 307.4,
+        "y": 175.6,
+        "w": 234,
+        "h": 146,
+        "zh": "可逆网络。显然，一般损失函数的梯度可以是任意的，并不必然低秩。这里研究一类称为“可逆网络”的非线性网络的梯度结构（Tian et al., 2020），它既包括简单线性网络，也包括深层 ReLU / 多项式网络。定义 3.1（可逆性（Tian et al., 2020））。把输入 x 映射到输出 y = N(x) 的网络 N 是可逆的，如果存在 L(x; W)，使得 y = L(x; W)x，并且反向传播梯度满足 gx = L(x; W) gy，其中 gy 是输出 y 处的反向传播梯度。这里 L(x; W) 依赖于输入 x 和权重 W。"
+      },
+      {
+        "text": "is the backpropagated (negative) gradient matrix. Then the regular pre-training weight update can be written down as follows (η is the learning rate):",
+        "x": 55.4,
+        "y": 182.5,
+        "w": 234,
+        "h": 33.9,
+        "zh": "是反向传播得到的（负）梯度矩阵。于是常规的预训练权重更新可以写成（η 为学习率）："
+      },
+      {
+        "text": "Please check Appendix B.1 for its properties. versible networks, the gradient takes a specific form.",
+        "x": 307.4,
+        "y": 129.2,
+        "w": 209.7,
+        "h": 21.9,
+        "zh": "其性质见附录 B.1。对可逆网络，梯度取一种特定形式。"
+      },
+      {
+        "text": "where G˜t is the final processed gradient to be added to the weight matrix and ρt is an entry-wise stateful gradient regularizer (e.g., Adam). The state of ρt can be memoryintensive. For example, for Adam, we need M, V ∈ R",
+        "x": 55.4,
+        "y": 76.9,
+        "w": 234,
+        "h": 48.3,
+        "zh": "其中 G˜t 是最终加到权重矩阵上的处理后梯度，ρt 是逐元素、带状态的梯度正则化器（例如 Adam）。ρt 的状态可能非常占显存。例如对 Adam，需要 M, V ∈ R"
+      },
+      {
+        "text": "NL(NL−1(. . . N1(x))) Jacobian(NL) . . . Jacobian(Nl+1)",
+        "x": 375.8,
+        "y": 75.4,
+        "w": 142.6,
+        "h": 23.4,
+        "zh": ""
+      }
+    ],
+    "4": [
+      {
+        "text": "GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection",
+        "x": 150.6,
+        "y": 737.9,
+        "w": 295.6,
+        "h": 9,
+        "zh": "GaLore：通过梯度低秩投影实现显存高效的大语言模型训练"
+      },
+      {
+        "text": "fl := Nl(. . . N1(x)). Then the weight matrix Wl at layer l has gradient Gl in the following form for batch size 1: (a) For ℓ2-objective φ := 2∥y − fL∥2:",
+        "x": 55.4,
+        "y": 681.7,
+        "w": 234,
+        "h": 43.3,
+        "zh": "fl := Nl(…N1(x))。于是 batch size 为 1 时，第 l 层权重矩阵 Wl 的梯度 Gl 具有如下形式：(a) 对 ℓ2 目标 φ := 2∥y − fL∥2："
+      },
+      {
+        "text": "dynamics has smaller null space V1, which also makes Gt low-rank. The full-rank assumption of {Bi} is reasonable, e.g., in LLMs, the output dimensions of the networks (i.e., the vocabulary size) is often huge compared to matrix di-",
+        "x": 307.4,
+        "y": 679.1,
+        "w": 234,
+        "h": 45.8,
+        "zh": "动态对应的零空间 V1 更小，这也会使 Gt 成为低秩。{Bi} 满秩的假设是合理的，例如在大语言模型里，网络输出维度（即词表大小）相对矩阵维度往往大得多。"
+      },
+      {
+        "text": "In general if the batch size N is large, then it becomes a bit tricky to characterize the minimal eigenspace V1 of S. On the other hand, if V1 has nice structure, then sr(Gt) can be bounded even further: Corollary 3.5 (Low-rank Gt with special structure of V1). If V1(S) is 1-dimensional with decomposable eigenvector v = y ⊗ z, then sr(Gt ) = 1 and thus Gt becomes rank-1.",
+        "x": 307.4,
+        "y": 569.1,
+        "w": 234,
+        "h": 90.1,
+        "zh": "一般而言，batch size N 很大时，S 的最小特征空间 V1 就不那么好刻画。另一方面，如果 V1 结构良好，sr(Gt) 还可以进一步被界定。推论 3.5（V1 具有特殊结构时 Gt 低秩）。若 V1(S) 是一维的，且特征向量可分解为 v = y ⊗ z，则 sr(Gt) = 1，从而 Gt 变为秩 1。"
+      },
+      {
+        "text": "(b) Left P⊥ := I − 1 11⊤ be the zero-mean PSD projection matrix. For K-way logsoftmax loss φ(y; f ) :=",
+        "x": 55.4,
+        "y": 621.2,
+        "w": 234,
+        "h": 22.9,
+        "zh": "(b) 令 P⊥ := I − 1 11⊤ 为去均值的半正定投影矩阵。对 K 路 logsoftmax 损失 φ(y; f) :="
+      },
+      {
+        "text": "where γ ≈ 1 and y is a data label with y 1 = 1.",
+        "x": 55.4,
+        "y": 557.2,
+        "w": 197.5,
+        "h": 10,
+        "zh": "其中 γ ≈ 1，y 是数据标签，且 y 1 = 1。"
+      },
+      {
+        "text": "One rare failure case of Lemma 3.3 is when Gt is precisely zero, in which sr(G∥ ) becomes undefined. This happens to be true if t0 = 0, i.e., Ai, Bi and Ci are constant throughout the entire training process. Fortunately, for practical training, this does not happen. Transformers. For Transformers, we can also separately prove that the weight gradient of the lower layer (i.e., project-up) weight of feed forward network (FFN) becomes low rank over time, using the JoMA framework (Tian et al., 2024). Please check Appendix (Sec. B.3) for details.",
+        "x": 307.4,
+        "y": 430.3,
+        "w": 234,
+        "h": 126.4,
+        "zh": "引理 3.3 的一种少见失效情形是 Gt 恰好为零，此时 sr(G∥) 没有定义。若 t0 = 0，也就是 Ai、Bi、Ci 在整个训练中都是常数，就会出现这种情况。实际训练中并不会如此。Transformer。对 Transformer，还可以用 JoMA 框架（Tian et al., 2024）单独证明：前馈网络（FFN）较低层（即 project-up）权重的梯度会随时间变为低秩。细节见附录 B.3 节。"
+      },
+      {
+        "text": "From the theoretical analysis above, we can see that for",
+        "x": 55.4,
+        "y": 535.4,
+        "w": 234,
+        "h": 10,
+        "zh": "从上面的理论分析可以看到，对于"
+      },
+      {
+        "text": "N, the gradient G has certain structures: G = i=1(Ai − BiW Ci) for input-dependent matrix Ai, Positive Semi-definite (PSD) matrices Bi and Ci. In the following, we prove that such a gradient will become lowrank during training in certain conditions: Lemma 3.3 (Gradient becomes low-rank during training). Suppose the gradient follows the parametric form:",
+        "x": 55.4,
+        "y": 447.8,
+        "w": 234,
+        "h": 85.6,
+        "zh": "在 N 的情形下，梯度 G 具有某种结构：G = i=1(Ai − Bi W Ci)，其中 Ai 是依赖输入的矩阵，Bi 和 Ci 是半正定（PSD）矩阵。下面证明，在一定条件下这种梯度会在训练中变为低秩。引理 3.3（梯度在训练中变为低秩）。设梯度遵循如下参数形式："
+      },
+      {
+        "text": "3.3. Gradient Low-rank Projection (GaLore)",
+        "x": 307.4,
+        "y": 405.1,
+        "w": 189.9,
+        "h": 10,
+        "zh": "3.3. 梯度低秩投影（GaLore）"
+      },
+      {
+        "text": "Since the gradient G may have a low-rank structure, if we can keep the gradient statistics of a small “core” of gradient G in optimizer states, rather than G itself, then the memory consumption can be reduced substantially. This leads to our proposed GaLore strategy: Definition 3.6 (Gradient Low-rank Projection (GaLore)). Gradient low-rank projection (GaLore) denotes the following gradient update rules (η is the learning rate):",
+        "x": 307.4,
+        "y": 298.8,
+        "w": 234,
+        "h": 97.6,
+        "zh": "既然梯度 G 可能低秩，如果优化器状态里只保留 G 的一小块“核心”的统计量，而不是整个 G，显存就可以大幅下降。由此得到 GaLore。定义 3.6（梯度低秩投影（GaLore））。梯度低秩投影（GaLore）指下面的梯度更新规则（η 为学习率）："
+      },
+      {
+        "text": "with constant Ai, PSD matrices Bi and Ci after t ≥ t0. We study vanilla SGD weight update: Wt = Wt−1 + ηGt−1.",
+        "x": 55.4,
+        "y": 372.9,
+        "w": 234,
+        "h": 23.4,
+        "zh": "在 t ≥ t0 之后，Ai 为常数，Bi 和 Ci 为半正定矩阵。我们考虑普通 SGD 的权重更新：Wt = Wt−1 + η Gt−1。"
+      },
+      {
+        "text": "Ci ⊗ Bi and λ1 < λ2 its two smallest distinct eigenvalues. Then the stable rank sr(Gt) satisfies:",
+        "x": 55.4,
+        "y": 347.9,
+        "w": 234,
+        "h": 23.4,
+        "zh": "为 Ci ⊗ Bi，且 λ1 < λ2 是它的两个最小的不同特征值。于是稳定秩 sr(Gt) 满足："
+      },
+      {
+        "text": "is the projection of Gt0 onto the minimal eigenspace V1 of S corresponding to λ1.",
+        "x": 55.4,
+        "y": 271,
+        "w": 234,
+        "h": 23.4,
+        "zh": "是把 Gt0 投影到 S 的、对应于 λ1 的最小特征空间 V1 上的结果。"
+      },
+      {
+        "text": "In practice, the constant assumption can approximately hold for some time, in which the second term in Eq. 9 goes to zero exponentially and the stable rank of Gt goes down, yielding low-rank gradient Gt. The final stable rank is determined by sr(Gt ), which is estimated to be low-rank by",
+        "x": 55.4,
+        "y": 198.8,
+        "w": 234,
+        "h": 61.8,
+        "zh": "实践中，常数假设可以在一段时间内近似成立。此时式 9 的第二项指数衰减到 0，Gt 的稳定秩下降，从而得到低秩的 Gt。最终稳定秩由 sr(Gt) 决定，并按下面的方式被估计为低秩："
+      },
+      {
+        "text": "where P ∈ Rm×r and Q ∈ Rn×r are projection matrices.",
+        "x": 307.4,
+        "y": 222.9,
+        "w": 234,
+        "h": 10.6,
+        "zh": "其中 P ∈ R^{m×r}、Q ∈ R^{n×r} 是投影矩阵。"
+      },
+      {
+        "text": "Different from LoRA, GaLore explicitly utilizes the lowrank updates instead of introducing additional low-rank adaptors and hence does not alter the training dynamics. In the following, we show that GaLore converges under a similar (but more general) form of gradient update rule (Eqn. 8). This form corresponds to Eqn. 6 but with a larger",
+        "x": 307.4,
+        "y": 135.2,
+        "w": 234,
+        "h": 75.7,
+        "zh": "与 LoRA 不同，GaLore 直接使用低秩更新，而不另加低秩适配器，因此不改变训练动态。下面证明，GaLore 在一种类似、但更一般的梯度更新规则（式 8）下收敛。这一形式对应式 6，但比它更大。"
+      },
+      {
+        "text": "Corollary 3.4 (Low-rank Gt). If the gradient takes the",
+        "x": 55.4,
+        "y": 171.9,
+        "w": 234,
+        "h": 11.5,
+        "zh": "推论 3.4（低秩的 Gt）。若梯度取如下形式："
+      },
+      {
+        "text": "i=1(ai −BiWtfi)fi with all parametric form Gt = N Bi full-rank, and N := rank({fi}) < n, then sr(Gt ) ≤ n − N′ and thus sr(Gt) ≤ n/2 for large t.",
+        "x": 55.4,
+        "y": 133.2,
+        "w": 234,
+        "h": 38.2,
+        "zh": "参数形式为从 i=1 起的 (ai − Bi Wt fi) fi，且所有 Bi 满秩，N := rank({fi}) < n，则 sr(Gt) ≤ n − N′，从而当 t 较大时 sr(Gt) ≤ n/2。"
+      },
+      {
+        "text": "Remarks. The gradient form is justified by Theorem 3.2. Intuitively, when N is small, Gt is a summation of N rank-1 update and is naturally low rank; on the other hand, when N becomes larger and closer to n, then the training",
+        "x": 55.4,
+        "y": 76.9,
+        "w": 234,
+        "h": 45.8,
+        "zh": "评注。这一梯度形式由定理 3.2 支持。直观地说，N 较小时，Gt 是 N 个秩 1 更新之和，天然低秩；另一方面，当 N 变大并接近 n 时，训练"
+      },
+      {
+        "text": "Definition 3.7 (L-continuity). A function h(W) has (Lipschitz) L-continuity, if for any W1 and W2, ∥h(W1) − h(W2)∥F ≤ L∥W1 − W2∥F .",
+        "x": 307.4,
+        "y": 81.9,
+        "w": 234,
+        "h": 35.4,
+        "zh": "定义 3.7（L-连续性）。若对任意 W1、W2 都有 ∥h(W1) − h(W2)∥F ≤ L∥W1 − W2∥F，则称函数 h(W) 具有（Lipschitz）L-连续性。"
+      }
+    ],
+    "5": [
+      {
+        "text": "GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection",
+        "x": 150.6,
+        "y": 737.9,
+        "w": 295.6,
+        "h": 9,
+        "zh": "GaLore：通过梯度低秩投影实现显存高效的大语言模型训练"
+      },
+      {
+        "text": "Theorem 3.8 (Convergence of GaLore with fixed projections). Suppose the gradient has the form of Eqn. 8 and Ai, Bi and Ci have LA, LB and LC continuity with respect to W and ∥Wt∥ ≤ D. Bˆit := Pt⊤Bi(Wt)Pt, Cˆit := Q⊤t Ci(Wt)Qt and κt := i λmin( Bˆit)λmin( Cˆit). If we choose constant Pt = P and Qt = Q, then GaLore with ρt ≡ 1 satisfies:",
+        "x": 55.4,
+        "y": 641.8,
+        "w": 234,
+        "h": 83.2,
+        "zh": "定理 3.8（投影固定时 GaLore 的收敛）。设梯度具有式 8 的形式，Ai、Bi、Ci 关于 W 分别具有 LA、LB、LC 连续性，且 ∥Wt∥ ≤ D。记 Bˆit := Pt⊤ Bi(Wt) Pt，Cˆit := Qt⊤ Ci(Wt) Qt，κt := i λmin(Bˆit) λmin(Cˆit)。若取常数 Pt = P、Qt = Q，则 ρt ≡ 1 的 GaLore 满足："
+      },
+      {
+        "text": "∥Rt∥F ≤ 1−η(κt−1−LA−LBLCD ) ∥Rt−1∥F (11)",
+        "x": 61,
+        "y": 618.6,
+        "w": 228.4,
+        "h": 11.5,
+        "zh": ""
+      },
+      {
+        "text": "As a result, if mint κt > LA +LBLCD , Rt → 0 and thus GaLore converges with fixed Pt and Qt.",
+        "x": 55.4,
+        "y": 583.6,
+        "w": 234,
+        "h": 23.4,
+        "zh": "因此，若对所有 t 都有 κt > LA + LB LC D，则 Rt → 0，从而在固定的 Pt 和 Qt 下 GaLore 收敛。"
+      },
+      {
+        "text": "Learning through low-rank subspaces ∆W ∆WT2 using GaLore. For t1 ∈ [0, T1 − 1], W are updated by projected gradients G˜",
+        "x": 307.4,
+        "y": 559.1,
+        "w": 234,
+        "h": 30.4,
+        "zh": "用 GaLore 在低秩子空间中学习 ∆W、∆WT2。对 t1 ∈ [0, T1 − 1]，W 由投影梯度 G˜ 更新。"
+      },
+      {
+        "text": "Setting P and Q. The theorem tells that P and Q should project into the subspaces corresponding to the first few largest eigenvectors of Bˆit and Cˆit for faster convergence (large κt). While all eigenvalues of the positive semidefinite (PSD) matrix B and C are non-negative, some of them can be very small and hinder convergence (i.e., it takes a long time for Gt to become 0). With the projection P and BitP and Q CitQ only contain the largest eigen subspaces of B and C, improving the convergence of Rt and at the same time, reduces the memory usage. While it is tricky to obtain the eigenstructure of Bit and Cit (they are parts of Jacobian), one way is to instead use the spectrum of Gt via Singular Value Decomposition (SVD):",
+        "x": 55.4,
+        "y": 411.6,
+        "w": 234,
+        "h": 160.9,
+        "zh": "如何设定 P 和 Q。定理说明，为了更快收敛（更大的 κt），P 和 Q 应投到 Bˆit 和 Cˆit 前几个最大特征向量所张成的子空间。半正定矩阵 B 和 C 的特征值都非负，但其中一些可能非常小，从而拖慢收敛（Gt 要很久才变成 0）。加上投影后，Bit 经由 P、Cit 经由 Q 只保留 B 和 C 最大的特征子空间，既改善 Rt 的收敛，又降低显存。Bit 和 Cit 的特征结构不好直接得到（它们是 Jacobian 的一部分），一种替代是对 Gt 做奇异值分解（SVD），用它的谱："
+      },
+      {
+        "text": "in a subspace determined by fixed P and Qt1. After T1 steps, the subspace is changed by recomputing Pt2 and Qt2 for t2 ∈ [T1, T2 − 1], and the process repeats until",
+        "x": 307.4,
+        "y": 537.1,
+        "w": 234,
+        "h": 31,
+        "zh": "位于由固定的 P 和 Qt1 决定的子空间中。经过 T1 步后，重新计算 Pt2 和 Qt2，在 t2 ∈ [T1, T2 − 1] 上更换子空间，并如此重复，直到"
+      },
+      {
+        "text": "We allow GaLore to switch across low-rank subspaces:",
+        "x": 307.4,
+        "y": 487.5,
+        "w": 219.8,
+        "h": 10,
+        "zh": "我们允许 GaLore 在不同的低秩子空间之间切换："
+      },
+      {
+        "text": "Ti−1 G˜ is the summation of all T updates within the",
+        "x": 324.9,
+        "y": 425.6,
+        "w": 216.5,
+        "h": 12.5,
+        "zh": "Ti−1 处的 G˜ 是该段里全部 T 次更新之和"
+      },
+      {
+        "text": "When switching to i-th subspace at step t = Ti, we re-initialize the projector Pt and Qt by performing SVD on the current gradient Gt by Equation 12. We illustrate how the trajectory of G˜ traverses through multiple low-rank subspaces in Fig. 2. In the experiment section, we show that allowing multiple low-rank subspaces is the key to achieving the successful pre-training of LLMs. Following the above procedure, the switching frequency T becomes a hyperparameter. The ablation study (Fig. 5) shows a sweet spot exists. A very frequent subspace change increases the overhead (since new P and Q need to be computed) and breaks the condition of constant projection in Theorem 3.8. In practice, it may also impact the fidelity of the optimizer states, which accumulate over multiple training steps. On the other hand, a less frequent change may make the algorithm stuck into a region that is no longer important to optimize (convergence proof in Theorem 3.8 only means good progress in the designated subspace, but does not mean good overall performance). While optimal T depends on the total training iterations and task complexity, we find that a value between T = 50 to T = 1000 makes no much difference. Thus, the total computational overhead induced by SVD is negligible (< 10%) compared to other memory-efficient training techniques such as memory offloading (Rajbhandari et al., 2020).",
+        "x": 307.4,
+        "y": 120.7,
+        "w": 234,
+        "h": 302.9,
+        "zh": "在第 i 个子空间的起点 t = Ti，我们对当前梯度 Gt 按式 12 做 SVD，重新初始化投影 Pt 和 Qt。图 2 说明 G˜ 的轨迹如何穿过多个低秩子空间。实验表明，允许多个低秩子空间，是成功预训练大语言模型的关键。按上述步骤，切换频率 T 成为一个超参数。消融（图 5）显示存在一个合适的区间。换得太勤会增加开销（每次都要重算 P 和 Q），也破坏定理 3.8 里投影保持常数的条件；实践中还会影响跨多步累积的优化器状态是否还可靠。换得太稀，则可能停在一个已经不值得继续优化的区域（定理 3.8 只保证在指定子空间里有进展，并不保证整体表现好）。最优 T 取决于总训练步数和任务难度，但我们发现 T 取 50 到 1000 差别不大。因此相对显存换出等其他省显存技术（Rajbhandari et al., 2020），SVD 带来的总计算开销可以忽略（< 10%）。"
+      },
+      {
+        "text": "Difference between GaLore and LoRA. While both GaLore and LoRA have “low-rank” in their names, they follow very different training trajectories. For example, when r = min(m, n), GaLore with ρt ≡ 1 follows the exact training trajectory of the original model, as G˜t =",
+        "x": 55.4,
+        "y": 278.8,
+        "w": 234,
+        "h": 59.3,
+        "zh": "GaLore 与 LoRA 的差别。两者名字里都有“低秩”，训练轨迹却很不一样。例如当 r = min(m, n) 时，ρt ≡ 1 的 GaLore 与原模型的训练轨迹完全一致，因为 G˜t ="
+      },
+      {
+        "text": "On the other hand, when BA reaches full rank (i.e., B ∈ R timizing B and A simultaneously follows a very different training trajectory compared to the original model.",
+        "x": 55.4,
+        "y": 232.5,
+        "w": 234,
+        "h": 45.8,
+        "zh": "另一方面，当 BA 达到满秩（即 B ∈ R）时，同时优化 B 和 A，会走出与原模型很不同的训练轨迹。"
+      },
+      {
+        "text": "For a complex optimization problem such as LLM pretraining, it may be difficult to capture the entire gradient trajectory with a single low-rank subspace. One reason is that the principal subspaces of Bt and Ct (and thus Gt) may change over time. In fact, if we keep the same projection P and Q, then the learned weights will only grow along these subspaces, which is not longer full-parameter training. Fortunately, for this, GaLore can switch subspaces during training and learn full-rank weights without increasing the memory footprint.",
+        "x": 55.4,
+        "y": 76.9,
+        "w": 234,
+        "h": 117.6,
+        "zh": "对大语言模型预训练这类复杂优化问题，单个低秩子空间很难覆盖整条梯度轨迹。原因之一是 Bt 和 Ct（因而 Gt）的主子空间会随时间变化。如果一直用同一组 P 和 Q，学到的权重只会沿这些子空间增长，那就不再是全参数训练。GaLore 可以在训练中切换子空间，从而在不增加显存的情况下学到满秩权重。"
+      },
+      {
+        "text": "Reducing memory footprint of gradient statistics. Ga-",
+        "x": 307.4,
+        "y": 76.9,
+        "w": 234,
+        "h": 10,
+        "zh": "降低梯度统计量的显存占用。GaLore"
+      }
+    ],
+    "6": [
+      {
+        "text": "GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection",
+        "x": 150.6,
+        "y": 737.9,
+        "w": 295.6,
+        "h": 9,
+        "zh": "GaLore：通过梯度低秩投影实现显存高效的大语言模型训练"
+      },
+      {
+        "text": "Table 1: Comparison between GaLore and LoRA. Assume W ∈",
+        "x": 307.4,
+        "y": 716.6,
+        "w": 234,
+        "h": 10,
+        "zh": "表 1：GaLore 与 LoRA 的比较。设 W ∈"
+      },
+      {
+        "text": "with m ≤ n. Step size η, scale factor α, decay rates β1, β2, rank r, subspace change frequency",
+        "x": 63.4,
+        "y": 689.3,
+        "w": 222.6,
+        "h": 18,
+        "zh": "且 m ≤ n。步长 η，缩放因子 α，衰减率 β1、β2，秩 r，子空间更换频率"
+      },
+      {
+        "text": "Initialize first-order moment M0 ∈ R Initialize second-order moment V0 ∈ R",
+        "x": 63.4,
+        "y": 662.4,
+        "w": 127.2,
+        "h": 18,
+        "zh": "初始化一阶矩 M0 ∈ R。初始化二阶矩 V0 ∈ R"
+      },
+      {
+        "text": "cost of projection matrices by quantization and efficient parameterization, which we leave for future work.",
+        "x": 307.4,
+        "y": 584.5,
+        "w": 234,
+        "h": 21.9,
+        "zh": "投影矩阵的开销还可以用量化和更省参数的形式进一步降低，我们留作未来工作。"
+      },
+      {
+        "text": "Mt ← β1 · Mt−1 + (1 − β1) · Rt Vt ← β2 · Vt−1 + (1 − β2) · Rt2",
+        "x": 93.3,
+        "y": 535.6,
+        "w": 116.3,
+        "h": 19.2,
+        "zh": ""
+      },
+      {
+        "text": "GaLore is compatible with existing memory-efficient optimization techniques. In our work, we mainly consider applying GaLore with 8-bit optimizers and per-layer weight",
+        "x": 307.4,
+        "y": 516.9,
+        "w": 234,
+        "h": 33.9,
+        "zh": "GaLore 可以和现有的省显存优化技术一起用。本文主要考虑把它与 8-bit 优化器以及逐层权重一起使用。"
+      },
+      {
+        "text": "Dettmers et al. (2022) proposed 8-bit Adam optimizer that maintains 32-bit optimizer performance at a fraction of the memory footprint. We apply GaLore directly to the existing implementation of 8-bit Adam.",
+        "x": 307.4,
+        "y": 444.7,
+        "w": 234,
+        "h": 45.8,
+        "zh": "Dettmers et al. (2022) 提出的 8-bit Adam，能以一小部分显存保持 32-bit 优化器的性能。我们把 GaLore 直接用到现有的 8-bit Adam 实现上。"
+      },
+      {
+        "text": "In practice, the optimizer typically performs a single weight update for all layers after backpropagation. This is done by storing the entire weight gradients in memory. To further reduce the memory footprint during training, we adopt per-layer weight updates to GaLore, which performs the weight updates during backpropagation. This is the same technique proposed in recent works to reduce memory requirement (Lv et al., 2023a;b).",
+        "x": 307.4,
+        "y": 336.7,
+        "w": 234,
+        "h": 93.6,
+        "zh": "实践中，优化器通常等反向传播结束后，再对所有层做一次权重更新，因此要把全部权重梯度留在显存里。为了进一步省显存，我们在 GaLore 里采用逐层权重更新：反向传播进行到某一层就更新该层权重。这与近期用来降低显存的做法相同（Lv et al., 2023a;b）。"
+      },
+      {
+        "text": "Lore significantly reduces the memory cost of optimizer that heavily rely on component-wise gradient statistics, such as Adam (Kingma & Ba, 2015). When ρt ≡ Adam, by projecting Gt into its low-rank form Rt, Adam’s gradient regularizer ρt(Rt) only needs to track low-rank gradient statistics. where Mt and Vt are the first-order and second-order momentum, respectively. GaLore computes the low-rank normalized gradient Nt as follows:",
+        "x": 55.4,
+        "y": 332.4,
+        "w": 234,
+        "h": 95.1,
+        "zh": "GaLore 能显著降低那些依赖逐分量梯度统计量的优化器的显存，例如 Adam（Kingma & Ba, 2015）。当 ρt 取 Adam 时，把 Gt 投影成低秩形式 Rt 之后，Adam 的梯度正则化器 ρt(Rt) 只需要跟踪低秩梯度的统计量。其中 Mt 和 Vt 分别是一阶动量和二阶动量。GaLore 按下面的方式计算低秩归一化梯度 Nt："
+      },
+      {
+        "text": "In addition to Adam’s original hyperparameters, GaLore only introduces very few additional hyperparameters: the rank r which is also present in LoRA, the subspace change frequency T (see Sec. 4.1), and the scale factor α. Scale factor α controls the strength of the low-rank update, which is similar to the scale factor α/r appended to the low-rank adaptor in Hu et al. (2022). We note that the α does not depend on the rank r in our case. This is because, when r is small during pre-training, α/r significantly affects the convergence rate, unlike fine-tuning.",
+        "x": 307.4,
+        "y": 179.4,
+        "w": 234,
+        "h": 123.5,
+        "zh": "除 Adam 原有的超参数外，GaLore 只多引入很少几个：秩 r（LoRA 里也有）、子空间更换频率 T（见第 4.1 节），以及缩放因子 α。α 控制低秩更新的强度，作用类似于 Hu et al. (2022) 加在低秩适配器上的 α/r。需要说明的是，在我们这里 α 并不随秩 r 变化。因为预训练时 r 往往较小，α/r 会明显改变收敛速度，这和微调不同。"
+      },
+      {
+        "text": "GaLore can also apply to other optimizers (e.g., Adafactor) that have similar update rules and require a large amount of memory to store gradient statistics.",
+        "x": 55.4,
+        "y": 268.6,
+        "w": 234,
+        "h": 33.9,
+        "zh": "GaLore 也可以用于其他优化器（例如 Adafactor），只要更新规则类似，并且本来就要用大量显存存放梯度统计量。"
+      },
+      {
+        "text": "Reducing memory usage of projection matrices. achieve the best memory-performance trade-off, we only use one project matrix P or Q, projecting the gradient G G if m ≤ n and GQ otherwise. We present the algorithm applying GaLore to Adam in Algorithm 2. With this setting, GaLore requires less memory than LoRA",
+        "x": 55.4,
+        "y": 178.6,
+        "w": 234,
+        "h": 75.7,
+        "zh": "降低投影矩阵的显存。为了在显存和性能之间取得最好的折中，我们只使用一个投影矩阵 P 或 Q：当 m ≤ n 时投影梯度 G，否则使用 GQ。算法 2 给出了把 GaLore 用于 Adam 的过程。在这一设定下，GaLore 比 LoRA 更省显存。"
+      },
+      {
+        "text": "As GaLore can always merge ∆Wt to W0 during weight updates, it does not need to store a separate low-rank factorization BA. In total, GaLore requires (mn + mr + 2nr) memory, while LoRA requires (mn + 3mr + 3nr) memory. A comparison between GaLore and LoRA is shown in Table 1. As Theorem 3.8 does not require the projection matrix to be carefully calibrated, we can further reduce the memory",
+        "x": 55.4,
+        "y": 76.9,
+        "w": 234,
+        "h": 99.6,
+        "zh": "GaLore 在更新权重时总能把 ∆Wt 合并进 W0，因此不必单独保存低秩分解 BA。总计 GaLore 需要 (mn + mr + 2nr) 的显存，LoRA 需要 (mn + 3mr + 3nr)。二者的比较见表 1。定理 3.8 并不要求投影矩阵经过仔细标定，所以投影矩阵的显存还可以再降。"
+      },
+      {
+        "text": "We evaluate GaLore on both pre-training and fine-tuning of LLMs. All experiments run on NVIDIA A100 GPUs.",
+        "x": 307.4,
+        "y": 119.5,
+        "w": 234,
+        "h": 21.9,
+        "zh": "我们在大语言模型的预训练和微调上评估 GaLore。全部实验在 NVIDIA A100 GPU 上运行。"
+      },
+      {
+        "text": "To evaluate its performance, we apply GaLore to train LLaMA-based large language models on the C4 dataset. C4 dataset is a colossal, cleaned version",
+        "x": 307.4,
+        "y": 76.9,
+        "w": 234,
+        "h": 33.9,
+        "zh": "为了看它的效果，我们用 GaLore 在 C4 数据集上训练基于 LLaMA 的大语言模型。C4 是一个规模很大、经过清洗的版本"
+      }
+    ],
+    "7": [
+      {
+        "text": "GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection",
+        "x": 150.6,
+        "y": 737.9,
+        "w": 295.6,
+        "h": 9,
+        "zh": "GaLore：通过梯度低秩投影实现显存高效的大语言模型训练"
+      },
+      {
+        "text": "Table 2: Comparison with low-rank algorithms on pre-training various sizes of LLaMA models on C4 dataset. Validation perplexity is reported, along with a memory estimate of the total of parameters and optimizer states based on BF16 format. The actual memory footprint of GaLore is reported in Fig. 4.",
+        "x": 55.4,
+        "y": 696.6,
+        "w": 486,
+        "h": 29.9,
+        "zh": "表 2：在 C4 上预训练不同规模的 LLaMA，与低秩算法的比较。报告验证困惑度，以及按 BF16 估计的参数与优化器状态总显存。GaLore 的实际显存占用见图 4。"
+      },
+      {
+        "text": "Figure 3: Applying GaLore to different optimizers for pre-training LLaMA 1B on C4 dataset for 10K steps. Validation perplexity over training steps is reported. We apply GaLore to each optimizer with the rank of 512 and 1024, where the 1B model dimension is 2048.",
+        "x": 55.4,
+        "y": 435.3,
+        "w": 486,
+        "h": 19.9,
+        "zh": "图 3：把 GaLore 用于不同优化器，在 C4 上预训练 LLaMA 1B，共 10K 步。图中是验证困惑度随训练步数的变化。每个优化器都试了秩 512 和 1024；该 1B 模型的维度是 2048。"
+      },
+      {
+        "text": "Table 3: Pre-training LLaMA 7B on C4 dataset for 150K steps.",
+        "x": 55.4,
+        "y": 412.6,
+        "w": 234,
+        "h": 10,
+        "zh": "表 3：在 C4 上预训练 LLaMA 7B，共 150K 步。"
+      },
+      {
+        "text": "GLUE is a benchmark for Validation perplexity and memory estimate are reported.",
+        "x": 55.4,
+        "y": 402.6,
+        "w": 486,
+        "h": 18.3,
+        "zh": "GLUE 是一个基准。报告了验证困惑度和显存估计。"
+      },
+      {
+        "text": "evaluating the performance of NLP models on a variety of tasks, including sentiment analysis, question answering, and textual entailment (Wang et al., 2019). We use GLUE tasks to benchmark GaLore against LoRA for memoryefficient fine-tuning.",
+        "x": 307.4,
+        "y": 351.2,
+        "w": 234,
+        "h": 57.8,
+        "zh": "用来评估 NLP 模型在多种任务上的表现，包括情感分析、问答和文本蕴含（Wang et al., 2019）。我们用 GLUE 任务，把 GaLore 和 LoRA 做省显存微调的对比。"
+      },
+      {
+        "text": "5.1. Comparison with Existing Low-Rank Methods of Common Crawl’s web crawl corpus, which is mainly",
+        "x": 55.4,
+        "y": 310,
+        "w": 468,
+        "h": 26.1,
+        "zh": "5.1. 与现有低秩方法的比较。它来自 Common Crawl 的网页爬取语料，主要为"
+      },
+      {
+        "text": "We first compare GaLore with existing low-rank methods intended to pre-train language models and word represen-",
+        "x": 55.4,
+        "y": 298,
+        "w": 486,
+        "h": 19.4,
+        "zh": "我们首先把 GaLore 与已有的、面向语言模型和词表示预训练的低秩方法进行比较。"
+      },
+      {
+        "text": "using Adam optimizer across a range of model sizes. tations (Raffel et al., 2020). To best simulate the practical pre-training scenario, we train without data repetition over",
+        "x": 55.4,
+        "y": 274.1,
+        "w": 462.6,
+        "h": 31.3,
+        "zh": "在一系列模型规模上使用 Adam。词表示（Raffel et al., 2020）。为了尽量贴近实际预训练，我们在不重复数据的前提下训练，数据量覆盖"
+      },
+      {
+        "text": "Our baseline method that applies Adam optia sufficiently large amount of data, across a range of model",
+        "x": 55.4,
+        "y": 262.1,
+        "w": 486,
+        "h": 18.5,
+        "zh": "我们的基线用 Adam 优化。足够多的数据，并覆盖一系列模型"
+      },
+      {
+        "text": "mizer with full-rank weights and optimizer states. sizes up to 7 Billion parameters.",
+        "x": 55.4,
+        "y": 250.2,
+        "w": 450.4,
+        "h": 18.5,
+        "zh": "使用全秩权重和优化器状态。规模最大到 70 亿参数。"
+      },
+      {
+        "text": "We also evaluate a traditional low-rank apArchitecture and hyperparameters.",
+        "x": 55.4,
+        "y": 225.5,
+        "w": 486,
+        "h": 18.5,
+        "zh": "我们也评估了一种传统的低秩做法。架构与超参数。"
+      },
+      {
+        "text": "proach that represents the weights by learnable low-rank periment setup from Lialin et al. (2024), which adopts a",
+        "x": 55.4,
+        "y": 213.5,
+        "w": 486,
+        "h": 18.5,
+        "zh": "用可学习的低秩形式表示权重。实验设置沿用 Lialin et al. (2024)，采用"
+      },
+      {
+        "text": "factorization: W = BA (Kamalakara et al., 2022). LLaMA-based architecture with RMSNorm and SwiGLU activations (Zhang & Sennrich, 2019; Shazeer, 2020; Tou-",
+        "x": 55.4,
+        "y": 189.6,
+        "w": 454.2,
+        "h": 30.5,
+        "zh": "分解 W = BA（Kamalakara et al., 2022）。基于 LLaMA 的架构，并使用 RMSNorm 和 SwiGLU 激活（Zhang & Sennrich, 2019; Shazeer, 2020; Touvron"
+      },
+      {
+        "text": "Hu et al. (2022) proposed LoRA to fine-tune prevron et al., 2023). For each model size, we use the same",
+        "x": 55.4,
+        "y": 177.6,
+        "w": 486,
+        "h": 17.7,
+        "zh": "Hu et al. (2022) 提出用 LoRA 微调预训练模型。Touvron et al., 2023）。对每个模型规模，我们使用相同的"
+      },
+      {
+        "text": "trained models with low-rank adaptors: W = W0 + BA, set of hyperparameters across methods, except the learn-",
+        "x": 55.4,
+        "y": 165.7,
+        "w": 486,
+        "h": 17.7,
+        "zh": "训练得到的模型使用低秩适配器：W = W0 + BA。各方法共用一组超参数，只有学习率除外。"
+      },
+      {
+        "text": "where W0 is fixed initial weights and BA is a learnable ing rate. We run all experiments with BF16 format to re-",
+        "x": 55.4,
+        "y": 153.7,
+        "w": 486,
+        "h": 17.7,
+        "zh": "其中 W0 是固定的初始权重，BA 是可学习的。学习率。全部实验用 BF16，以降低"
+      },
+      {
+        "text": "low-rank adaptor. In the case of pre-training, W0 is the duce memory usage, and we tune the learning rate for each",
+        "x": 55.4,
+        "y": 141.8,
+        "w": 486,
+        "h": 17.7,
+        "zh": "低秩适配器。预训练时，W0 是。显存占用，并且我们为每一种"
+      },
+      {
+        "text": "full-rank initialization matrix. We set LoRA alpha to 32 method under the same amount of computational budget",
+        "x": 55.4,
+        "y": 129.8,
+        "w": 486,
+        "h": 17.7,
+        "zh": "全秩初始化矩阵。我们将 LoRA 的 alpha 设为 32。方法，在相同计算预算下"
+      },
+      {
+        "text": "and LoRA dropout to 0.05 as their default settings. and report the best performance. The details of our task setups and hyperparameters are provided in the appendix.",
+        "x": 55.4,
+        "y": 105.9,
+        "w": 454.5,
+        "h": 29.6,
+        "zh": "LoRA dropout 设为 0.05，作为它们的默认设置。并报告最好的结果。任务设置和超参数见附录。"
+      },
+      {
+        "text": "Lialin et al. (2024) proposed ReLoRA, a variant of LoRA designed for pre-training, which periodically 3LLaMA materials in our paper are subject to LLaMA com-",
+        "x": 68.1,
+        "y": 86.9,
+        "w": 473.3,
+        "h": 23.9,
+        "zh": "Lialin et al. (2024) 提出 ReLoRA，一种面向预训练的 LoRA 变体，它会周期性地。3 本文中的 LLaMA 材料受 LLaMA 许可约束。"
+      },
+      {
+        "text": "merges BA into W, and initializes new BA with a reset on",
+        "x": 307.4,
+        "y": 76.9,
+        "w": 234,
+        "h": 10,
+        "zh": "把 BA 合并进 W，并在重置之后重新初始化新的 BA。"
+      }
+    ],
+    "8": [
+      {
+        "text": "GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection",
+        "x": 150.6,
+        "y": 737.9,
+        "w": 295.6,
+        "h": 9,
+        "zh": "GaLore：通过梯度低秩投影实现显存高效的大语言模型训练"
+      },
+      {
+        "text": "optimizer states and learning rate. ReLoRA requires careful tuning of merging frequency, learning rate reset, and optimizer states reset. We evaluate ReLoRA without a fullrank training warmup for a fair comparison. For GaLore, we set subspace frequency T to 200 and scale factor α to 0.25 across all model sizes in Table 2. For each model size, we pick the same rank r for all low-rank methods, and we apply them to all multi-head attention layers and feed-forward layers in the models. We train all models using Adam optimizer with the default hyperparameters (e.g., β1 = 0.9, β2 = 0.999, ϵ = 10 estimate the memory usage based on BF16 format, including the memory for weight parameters and optimizer states. As shown in Table 2, GaLore outperforms other low-rank methods and achieves comparable performance to full-rank training. We note that for 1B model size, GaLore even outperforms full-rank baseline when r = 1024 instead of r = 512. Compared to LoRA and ReLoRA, GaLore requires less memory for storing model parameters and optimizer states. A detailed training setting of each model and memory estimation for each method are in the appendix.",
+        "x": 55.4,
+        "y": 469.9,
+        "w": 234,
+        "h": 255,
+        "zh": "优化器状态和学习率。ReLoRA 需要仔细调节合并频率、学习率重置和优化器状态重置。为了公平比较，我们评估的 ReLoRA 不做全秩训练热身。GaLore 在表 2 的所有模型规模上把子空间频率 T 设为 200、缩放因子 α 设为 0.25。每个规模上，所有低秩方法使用同一个秩 r，并作用到全部多头注意力层和前馈层。所有模型都用 Adam 训练，采用默认超参数（例如 β1 = 0.9，β2 = 0.999，ϵ = 10）。显存按 BF16 估计，包括权重参数和优化器状态。如表 2 所示，GaLore 优于其他低秩方法，并与全秩训练相当。对 1B 模型，当秩取 r = 1024 而不是 r = 512 时，GaLore 甚至超过全秩基线。与 LoRA 和 ReLoRA 相比，GaLore 保存模型参数和优化器状态所需的显存更少。各模型的详细训练设置和各方法的显存估计见附录。"
+      },
+      {
+        "text": "Figure 4: Memory usage for different methods at various model sizes, evaluated with a token batch size of 256. 8-bit GaLore (retaining grad) disables per-layer weight updates but stores weight gradients during training.",
+        "x": 307.4,
+        "y": 543.6,
+        "w": 234,
+        "h": 39.9,
+        "zh": "图 4：不同方法在各模型规模下的显存，token 批大小为 256。8-bit GaLore（retaining grad）不做逐层权重更新，但训练时仍保存权重梯度。"
+      },
+      {
+        "text": "150K steps, 8-bit GaLore achieves a perplexity of 14.65, comparable to 8-bit Adam with a perplexity of 14.61.",
+        "x": 307.4,
+        "y": 505.2,
+        "w": 234,
+        "h": 21.9,
+        "zh": "训练 150K 步后，8-bit GaLore 的困惑度为 14.65，与 8-bit Adam 的 14.61 相当。"
+      },
+      {
+        "text": "GaLore not only achieves memory-efficient pre-training but also can be used for memory-efficient fine-tuning. We fine-tune pre-trained RoBERTa models on GLUE tasks using GaLore and compare its performance with a full finetuning baseline and LoRA. We use hyperparameters from Hu et al. (2022) for LoRA and tune the learning rate and scale factor for GaLore.",
+        "x": 307.4,
+        "y": 389.7,
+        "w": 234,
+        "h": 81.7,
+        "zh": "GaLore 既能省显存地预训练，也能省显存地微调。我们用它在 GLUE 上微调预训练的 RoBERTa，并与全量微调和 LoRA 比较。LoRA 使用 Hu et al. (2022) 的超参数；GaLore 则调节学习率和缩放因子。"
+      },
+      {
+        "text": "5.2. GaLore with Memory-Efficient Optimizers",
+        "x": 55.4,
+        "y": 444.8,
+        "w": 200.1,
+        "h": 10,
+        "zh": "5.2. 与省显存优化器结合的 GaLore"
+      },
+      {
+        "text": "We demonstrate that GaLore can be applied to various learning algorithms, especially memory-efficient optimizers, to further reduce the memory footprint. GaLore to AdamW, 8-bit Adam, and Adafactor optimizers (Shazeer & Stern, 2018; Loshchilov & Hutter, 2019; Dettmers et al., 2022). We consider Adafactor with firstorder statistics to avoid performance degradation. We evaluate them on LLaMA 1B architecture with 10K training steps, and we tune the learning rate for each setting and report the best performance. As shown in Fig. 3, applying GaLore does not significantly affect their convergence. By using GaLore with a rank of 512, the memory footprint is reduced by up to 62.5%, on top of the memory savings from using 8-bit Adam or Adafactor optimizer. Since 8-bit Adam requires less memory than others, we denote 8-bit GaLore as GaLore with 8-bit Adam, and use it as the default method for the following experiments on 7B model pre-training and memory measurement.",
+        "x": 55.4,
+        "y": 216.9,
+        "w": 234,
+        "h": 219.2,
+        "zh": "我们说明 GaLore 可以接到多种学习算法上，尤其是省显存的优化器，从而把显存再降一截。这里把它用于 AdamW、8-bit Adam 和 Adafactor（Shazeer & Stern, 2018; Loshchilov & Hutter, 2019; Dettmers et al., 2022）。Adafactor 保留一阶统计量，以免性能下降。在 LLaMA 1B 上训练 10K 步，每种设置单独调学习率，并报告最好的结果。如图 3 所示，加上 GaLore 并不明显改变它们的收敛。秩取 512 时，在 8-bit Adam 或 Adafactor 已经省下的显存之外，显存占用最多再减少 62.5%。由于 8-bit Adam 比其他优化器更省显存，下文把 8-bit GaLore 定义为 GaLore 加 8-bit Adam，并把它作为 7B 预训练和显存测量的默认方法。"
+      },
+      {
+        "text": "As shown in Table 4, GaLore achieves better performance than LoRA on most tasks with less memory footprint. This demonstrates that GaLore can serve as a full-stack memory-efficient training strategy for both LLM pre-training and fine-tuning.",
+        "x": 307.4,
+        "y": 341.9,
+        "w": 234,
+        "h": 57.8,
+        "zh": "如表 4 所示，GaLore 在大多数任务上优于 LoRA，显存也更小。这说明它可以作为同时覆盖预训练和微调的整套省显存训练方法。"
+      },
+      {
+        "text": "5.5. Measurement of Memory and Throughput",
+        "x": 307.4,
+        "y": 316.8,
+        "w": 198.6,
+        "h": 10,
+        "zh": "5.5. 显存与吞吐的测量"
+      },
+      {
+        "text": "While Table 2 gives the theoretical benefit of GaLore compared to other methods in terms of memory usage, we also measure the actual memory footprint of training LLaMA models by various methods, with a token batch size of 256. The training is conducted on a single device setup without activation checkpointing, memory offloading, and optimizer states partitioning (Rajbhandari et al., 2020). Training 7B models on consumer GPUs with 24G memory. As shown in Fig. 4, 8-bit GaLore requires significantly less memory than BF16 baseline and 8-bit Adam, and only requires 22.0G memory to pre-train LLaMA 7B with a small per-GPU token batch size (up to 500 tokens). This memory footprint is within 24GB VRAM capacity of a single GPU such as NVIDIA RTX 4090. In addition, when activation checkpointing is enabled, per-GPU token batch size can be increased up to 4096. While the batch size is small per GPU, it can be scaled up with data parallelism, which requires much lower bandwidth for inter-GPU communication, compared to model parallelism. Therefore, it",
+        "x": 307.4,
+        "y": 76.9,
+        "w": 234,
+        "h": 231.1,
+        "zh": "表 2 给出的是 GaLore 相对其他方法在显存上的理论收益。我们也实测了用各种方法训练 LLaMA 时的真实显存，token 批大小为 256。训练在单机上进行，不做激活检查点、显存换出，也不做优化器状态切分（Rajbhandari et al., 2020）。在 24GB 显存的消费级 GPU 上训练 7B。如图 4 所示，8-bit GaLore 的显存明显低于 BF16 基线和 8-bit Adam；预训练 LLaMA 7B 时，每张 GPU 的 token 批较小（最多 500 个 token），只需 22.0G 显存。这落在单张 NVIDIA RTX 4090 的 24GB 显存之内。若打开激活检查点，每张 GPU 的 token 批可以增大到 4096。单卡 batch 虽小，但可以用数据并行扩出去；相对模型并行，卡间通信对带宽的要求低得多。因此，"
+      },
+      {
+        "text": "5.3. Scaling up to LLaMA 7B Architecture",
+        "x": 55.4,
+        "y": 191.8,
+        "w": 180.6,
+        "h": 10,
+        "zh": "5.3. 扩展到 LLaMA 7B"
+      },
+      {
+        "text": "Scaling ability to 7B models is a key factor for demonstrating if GaLore is effective for practical LLM pre-training scenarios. We evaluate GaLore on an LLaMA 7B architecture with an embedding size of 4096 and total layers of 32. We train the model for 150K steps with 19.7B tokens, using 8-node training in parallel with a total of 64 A100 GPUs. Due to computational constraints, we compare 8-bit GaLore (r = 1024) with 8-bit Adam with a single trial without tuning the hyperparameters. As shown in Table 3, after",
+        "x": 55.4,
+        "y": 77.5,
+        "w": 234,
+        "h": 105.6,
+        "zh": "能否扩到 7B，是判断 GaLore 能否用于实际大语言模型预训练的关键。我们在嵌入维度 4096、共 32 层的 LLaMA 7B 上做评估，用 8 机共 64 张 A100 训练 150K 步、19.7B token。受算力限制，只比较了 8-bit GaLore（r = 1024）和 8-bit Adam，各跑一次，不调超参数。如表 3 所示，在"
+      }
+    ],
+    "9": [
+      {
+        "text": "GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection",
+        "x": 150.6,
+        "y": 737.9,
+        "w": 295.6,
+        "h": 9,
+        "zh": "GaLore：通过梯度低秩投影实现显存高效的大语言模型训练"
+      },
+      {
+        "text": "Table 4: Evaluating GaLore for memory-efficient fine-tuning on GLUE benchmark using pre-trained RoBERTa-Base. We report the average score of all tasks.",
+        "x": 55.4,
+        "y": 706.6,
+        "w": 486,
+        "h": 19.9,
+        "zh": "表 4：用预训练的 RoBERTa-Base，在 GLUE 上评估 GaLore 的省显存微调。报告所有任务的平均分。"
+      },
+      {
+        "text": "is possible that GaLore can be used for elastic training (Lin et al., 2019) 7B models on consumer GPUs such as RTX",
+        "x": 55.4,
+        "y": 566.2,
+        "w": 234,
+        "h": 21.9,
+        "zh": "GaLore 有可能用于弹性训练（Lin et al., 2019），在 RTX 这类消费级 GPU 上训练 7B 模型。"
+      },
+      {
+        "text": "Specifically, we present the memory breakdown in Fig. 1. It shows that 8-bit GaLore reduces 37.92G (63.3%) and 24.5G (52.3%) total memory compared to BF16 Adam baseline and 8-bit Adam, respectively. bit Adam, 8-bit GaLore mainly reduces the memory in two parts: (1) low-rank gradient projection reduces 9.6G",
+        "x": 55.4,
+        "y": 476.5,
+        "w": 234,
+        "h": 69.7,
+        "zh": "图 1 给出了具体的显存分解。相对 BF16 Adam 基线和 8-bit Adam，8-bit GaLore 的总显存分别少 37.92G（63.3%）和 24.5G（52.3%）。相对 8-bit Adam，减少主要来自两部分：(1) 低秩梯度投影少掉 9.6G"
+      },
+      {
+        "text": "Figure 5: Ablation study of GaLore on 130M models. Left: (65.5%) memory of storing optimizer states, and (2) using",
+        "x": 55.4,
+        "y": 464.6,
+        "w": 486,
+        "h": 10.8,
+        "zh": "图 5：在 130M 模型上对 GaLore 做消融。左：保存优化器状态的那部分显存（65.5%），以及 (2) 使用"
+      },
+      {
+        "text": "varying subspace update frequency T. Right: varying subspace per-layer weight updates reduces 13.5G memory of storing",
+        "x": 55.4,
+        "y": 452.6,
+        "w": 486,
+        "h": 11.7,
+        "zh": "改变子空间更新频率 T。右：改变子空间。逐层权重更新少掉 13.5G、用于保存"
+      },
+      {
+        "text": "Throughput overhead of GaLore. We also measure the throughput of the pre-training LLaMA 1B model with 8-bit",
+        "x": 55.4,
+        "y": 410.8,
+        "w": 234,
+        "h": 21.9,
+        "zh": "GaLore 的吞吐开销。我们也测量了用 8-bit 方法预训练 LLaMA 1B 的吞吐。"
+      },
+      {
+        "text": "This shows that GaLore can be used to trade-off between GaLore and other methods, where the results can be found",
+        "x": 55.4,
+        "y": 398.8,
+        "w": 486,
+        "h": 11,
+        "zh": "这表明可以用 GaLore 在显存和计算之间做取舍。与其他方法的对比结果见"
+      },
+      {
+        "text": "memory and computational cost. In a memory-constrained in the appendix. Particularly, the current implementation",
+        "x": 55.4,
+        "y": 386.9,
+        "w": 486,
+        "h": 11,
+        "zh": "显存与计算成本。在显存受限的情形下，见附录。特别地，当前实现"
+      },
+      {
+        "text": "scenario, reducing the rank allows us to stay within the of 8-bit GaLore achieves 1019.63 tokens/second, which",
+        "x": 55.4,
+        "y": 374.9,
+        "w": 486,
+        "h": 11,
+        "zh": "降低秩就能把占用留在限度之内。8-bit GaLore 达到每秒 1019.63 个 token，这"
+      },
+      {
+        "text": "memory budget while training for more steps to preserve induces 17% overhead compared to 8-bit Adam implementation. Disabling per-layer weight updates for GaLore achieves 1109.38 tokens/second, improving the throughput by 8.8%. We note that our results do not require offloading strategies or checkpointing, which can significantly impact",
+        "x": 55.4,
+        "y": 315.1,
+        "w": 486,
+        "h": 58.8,
+        "zh": "显存预算之内，并用更多训练步来保持。相对 8-bit Adam 的实现有 17% 的开销。若关掉 GaLore 的逐层权重更新，吞吐为每秒 1109.38 个 token，提高 8.8%。这些结果不依赖换出或检查点，而那类做法会明显影响"
+      },
+      {
+        "text": "We propose GaLore, a memory-efficient pre-training and training throughput. We leave optimizing the efficiency of",
+        "x": 55.4,
+        "y": 303.2,
+        "w": 486,
+        "h": 10.9,
+        "zh": "我们提出 GaLore，一种省显存的预训练和。训练吞吐。我们把实现效率的优化留到"
+      },
+      {
+        "text": "fine-tuning strategy for large language models. GaLore sigGaLore implementation for future work.",
+        "x": 55.4,
+        "y": 291.2,
+        "w": 486,
+        "h": 10.9,
+        "zh": "大语言模型的微调策略。GaLore 显著。GaLore 的实现留作未来工作。"
+      },
+      {
+        "text": "nificantly reduces memory usage by up to 65.5% in optimizer states while maintaining both efficiency and performance for large-scale LLM pre-training and fine-tuning. How many subspaces are needed during pre-training?",
+        "x": 55.4,
+        "y": 248.9,
+        "w": 486,
+        "h": 41.2,
+        "zh": "把优化器状态的显存最多减少 65.5%，同时在大规模预训练和微调里保持效率与性能。预训练期间需要多少个子空间？"
+      },
+      {
+        "text": "We identify several open problems for GaLore, which inWe observe that both too frequent and too slow changes of",
+        "x": 55.4,
+        "y": 237,
+        "w": 486,
+        "h": 11.3,
+        "zh": "我们列出 GaLore 的几个开放问题，其中包括。子空间换得太勤或太慢，都会"
+      },
+      {
+        "text": "clude (1) applying GaLore on training of various modsubspaces hurt the convergence, as shown in Fig. 5 (left).",
+        "x": 55.4,
+        "y": 225,
+        "w": 486,
+        "h": 11.3,
+        "zh": "（1）把 GaLore 用到多种模型的训练上。损害收敛，如图 5（左）所示。"
+      },
+      {
+        "text": "els such as vision transformers (Dosovitskiy et al., 2021) The reason has been discussed in Sec. 4.1. In general, for",
+        "x": 55.4,
+        "y": 213.1,
+        "w": 486,
+        "h": 11.3,
+        "zh": "例如视觉 Transformer（Dosovitskiy et al., 2021）。原因已在第 4.1 节讨论。一般而言，对于"
+      },
+      {
+        "text": "and diffusion models (Ho et al., 2020), (2) further enhancsmall r, the subspace switching should happen more to",
+        "x": 55.4,
+        "y": 201.1,
+        "w": 486,
+        "h": 11.3,
+        "zh": "以及扩散模型（Ho et al., 2020）；（2）进一步增强。r 较小时，子空间切换应当更频繁，以便"
+      },
+      {
+        "text": "ing memory efficiency by employing low-memory projecavoid wasting optimization steps in the wrong subspace,",
+        "x": 55.4,
+        "y": 189.2,
+        "w": 486,
+        "h": 11.3,
+        "zh": "显存效率，办法是采用低显存的投影。避免把优化步浪费在错误的子空间里，"
+      },
+      {
+        "text": "tion matrices, and (3) exploring the feasibility of elastic while for large r the gradient updates cover more sub-",
+        "x": 55.4,
+        "y": 177.2,
+        "w": 486,
+        "h": 11.3,
+        "zh": "投影矩阵，以及（3）探索弹性方案是否可行。而 r 较大时，梯度更新覆盖更多的子"
+      },
+      {
+        "text": "data distributed training on low-bandwidth consumer-grade spaces, providing more cushion.",
+        "x": 55.4,
+        "y": 165.3,
+        "w": 486,
+        "h": 11.3,
+        "zh": "在低带宽消费级设备上做数据分布式训练。空间，从而留出更大余地。"
+      },
+      {
+        "text": "We hope that our work will inspire future research on How does the rank of subspace affect the convergence?",
+        "x": 55.4,
+        "y": 136.7,
+        "w": 486,
+        "h": 10,
+        "zh": "希望这项工作能推动今后关于。子空间的秩如何影响收敛？"
+      },
+      {
+        "text": "memory-efficient training from the perspective of gradiWithin a certain range of rank values, decreasing the rank",
+        "x": 55.4,
+        "y": 124.8,
+        "w": 486,
+        "h": 10,
+        "zh": "从梯度视角研究省显存训练。在一定的秩范围内，把秩降低"
+      },
+      {
+        "text": "ent low-rank projection. We believe that GaLore will be only slightly affects the convergence rate, causing a slow-",
+        "x": 55.4,
+        "y": 112.8,
+        "w": 486,
+        "h": 10,
+        "zh": "低秩投影。我们相信 GaLore 会成为。只会使收敛略慢，慢下来的幅度"
+      },
+      {
+        "text": "a valuable tool for the community, enabling the training of down with a nearly linear trend. As shown in Fig. 5 (right),",
+        "x": 55.4,
+        "y": 100.8,
+        "w": 486,
+        "h": 10,
+        "zh": "对社区有用的工具，让人能够训练。近乎线性。如图 5（右）所示，"
+      },
+      {
+        "text": "large-scale models on consumer-grade hardware with limtraining with a rank of 128 using 80K steps achieves a lower loss than training with a rank of 512 using 20K steps.",
+        "x": 55.4,
+        "y": 76.9,
+        "w": 486,
+        "h": 21.9,
+        "zh": "在显存有限的消费级硬件上训练大规模模型。用秩 128 训练 80K 步，损失低于用秩 512 训练 20K 步。"
+      }
+    ],
+    "10": [
+      {
+        "text": "GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection",
+        "x": 150.6,
+        "y": 737.9,
+        "w": 295.6,
+        "h": 9,
+        "zh": "GaLore：通过梯度低秩投影实现显存高效的大语言模型训练"
+      },
+      {
+        "text": "Dettmers, T., Lewis, M., Shleifer, S., and Zettlemoyer, L. 8-bit optimizers via block-wise quantization. Tenth International Conference on Learning Representations, ICLR 2022, Virtual Event, April 25-29, 2022. OpenReview.net, 2022.",
+        "x": 307.4,
+        "y": 667.2,
+        "w": 234,
+        "h": 57.8,
+        "zh": "Dettmers, T., Lewis, M., Shleifer, S., and Zettlemoyer, L. 用分块量化实现 8-bit 优化器。Tenth International Conference on Learning Representations, ICLR 2022，线上会议，2022 年 4 月 25–29 日。OpenReview.net，2022。"
+      },
+      {
+        "text": "This paper aims to improve the memory efficiency of training LLMs in order to reduce the environmental impact of LLM pre-training and fine-tuning. By enabling the training of larger models on hardware with lower memory, our approach helps to minimize energy consumption and carbon footprint associated with training LLMs.",
+        "x": 55.4,
+        "y": 635.8,
+        "w": 234,
+        "h": 69.7,
+        "zh": "本文希望提高大语言模型训练的显存效率，从而减轻预训练和微调的环境负担。更大的模型可以在显存更小的硬件上训练，有助于降低相关的能耗和碳足迹。"
+      },
+      {
+        "text": "Dettmers, T., Pagnoni, A., Holtzman, A., and Zettlemoyer, L. Qlora: Efficient finetuning of quantized llms. Advances in Neural Information Processing Systems, 2024.",
+        "x": 307.4,
+        "y": 620.2,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Dettmers, T., Pagnoni, A., Holtzman, A., and Zettlemoyer, L. QLoRA：量化大语言模型的高效微调。Advances in Neural Information Processing Systems，2024。"
+      },
+      {
+        "text": "Ding, N., Qin, Y., Yang, G., Wei, F., Yang, Z., Su, Y., Hu, S., Chen, Y., Chan, C.-M., Chen, W., Yi, J., Zhao, W., Wang, X., Liu, Z., Zheng, H.-T., Chen, J., Liu, Y., Tang, J., Li, J., and Sun, M. Delta Tuning: A Comprehensive Study of Parameter Efficient Methods for Pre-trained",
+        "x": 307.4,
+        "y": 549.3,
+        "w": 234,
+        "h": 57.8,
+        "zh": "Ding, N., Qin, Y., Yang, G., Wei, F., Yang, Z., Su, Y., Hu, S., Chen, Y., Chan, C.-M., Chen, W., Yi, J., Zhao, W., Wang, X., Liu, Z., Zheng, H.-T., Chen, J., Liu, Y., Tang, J., Li, J., and Sun, M. Delta Tuning：预训练模型参数高效方法综述"
+      },
+      {
+        "text": "We thank Meta AI for computational support. preciate the helpful feedback and discussion from Florian Sch¨afer, Jeremy Bernstein, and Vladislav Lialin. B. Chen greatly appreciates the support by Moffett AI. Z. Wang is in part supported by NSF Awards 2145346 (CAREER), 02133861 (DMS), 2113904 (CCSS), and the NSF AI Institute for Foundations of Machine Learning (IFML). A. Anandkumar is supported by the Bren Foundation and the Schmidt Sciences through AI 2050 senior fellow program.",
+        "x": 55.4,
+        "y": 492.2,
+        "w": 234,
+        "h": 105.6,
+        "zh": "感谢 Meta AI 提供算力支持。感谢 Florian Schäfer、Jeremy Bernstein 和 Vladislav Lialin 的反馈与讨论。B. Chen 非常感谢 Moffett AI 的支持。Z. Wang 的部分资助来自 NSF 2145346（CAREER）、02133861（DMS）、2113904（CCSS），以及 NSF 机器学习基础人工智能研究所（IFML）。A. Anandkumar 得到 Bren Foundation 的支持，并由 Schmidt Sciences 通过 AI 2050 高级学者计划资助。"
+      },
+      {
+        "text": "Dosovitskiy, A., Beyer, L., Kolesnikov, A., Weissenborn, D., Zhai, X., Unterthiner, T., Dehghani, M., Minderer, M., Heigold, G., Gelly, S., Uszkoreit, J., and Houlsby, N. An image is worth 16x16 words: Transformers for image recognition at scale. In International Conference on Learning Representations, 2021.",
+        "x": 307.4,
+        "y": 442.5,
+        "w": 234,
+        "h": 69.7,
+        "zh": "Dosovitskiy, A., Beyer, L., Kolesnikov, A., Weissenborn, D., Zhai, X., Unterthiner, T., Dehghani, M., Minderer, M., Heigold, G., Gelly, S., Uszkoreit, J., and Houlsby, N. 一张图像相当于 16×16 个词：用 Transformer 做大规模图像识别。International Conference on Learning Representations，2021。"
+      },
+      {
+        "text": "Anil, R., Gupta, V., Koren, T., and Singer, Y. efficient adaptive optimization. Advances in Neural Information Processing Systems, 2019.",
+        "x": 55.4,
+        "y": 421.8,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Anil, R., Gupta, V., Koren, T., and Singer, Y. 高效的自适应优化。Advances in Neural Information Processing Systems，2019。"
+      },
+      {
+        "text": "Gooneratne, M., Sim, K. C., Zadrazil, P., Kabel, A., Beaufays, F., and Motta, G. Low-rank gradient approximation for memory-efficient on-device training of deep neural",
+        "x": 307.4,
+        "y": 395.5,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Gooneratne, M., Sim, K. C., Zadrazil, P., Kabel, A., Beaufays, F., and Motta, G. 低秩梯度近似：面向深度神经网络端侧训练的省显存方法"
+      },
+      {
+        "text": "BELLEGroup. Belle: Be everyone’s large language model",
+        "x": 55.4,
+        "y": 403.3,
+        "w": 234,
+        "h": 10,
+        "zh": "BELLEGroup. Belle：让每个人都有自己的大语言模型"
+      },
+      {
+        "text": "In 2020 IEEE International Conference on Acoustics, Speech and Signal Processing, ICASSP 2020, Barcelona, Spain, May 4-8, 2020. IEEE, 2020.",
+        "x": 317.4,
+        "y": 359.7,
+        "w": 224,
+        "h": 33.9,
+        "zh": "见 2020 IEEE International Conference on Acoustics, Speech and Signal Processing, ICASSP 2020，西班牙巴塞罗那，2020 年 5 月 4–8 日。IEEE，2020。"
+      },
+      {
+        "text": "Chaudhry, A., Khan, N., Dokania, P., and Torr, P. Continual learning in low-rank orthogonal subspaces. Advances in Neural Information Processing Systems, 2020.",
+        "x": 55.4,
+        "y": 337,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Chaudhry, A., Khan, N., Dokania, P., and Torr, P. 在低秩正交子空间中做持续学习。Advances in Neural Information Processing Systems，2020。"
+      },
+      {
+        "text": "Gur-Ari, G., Roberts, D. A., and Dyer, E. Gradient Descent Happens in a Tiny Subspace. arXiv:1812.04754, 2018.",
+        "x": 307.4,
+        "y": 312.7,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Gur-Ari, G., Roberts, D. A., and Dyer, E. 梯度下降发生在一个极小的子空间里。arXiv:1812.04754，2018。"
+      },
+      {
+        "text": "Chen, H., Raskutti, G., and Yuan, M. Non-Convex Projected Gradient Descent for Generalized Low-Rank Tensor Regression. Journal of Machine Learning Research,",
+        "x": 55.4,
+        "y": 294.5,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Chen, H., Raskutti, G., and Yuan, M. 广义低秩张量回归的非凸投影梯度下降。Journal of Machine Learning Research，"
+      },
+      {
+        "text": "Hao, Y., Cao, Y., and Mou, L. Flora: Low-Rank Adapters Are Secretly Gradient Compressors. arXiv:2402.03293, 2024.",
+        "x": 307.4,
+        "y": 265.7,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Hao, Y., Cao, Y., and Mou, L. Flora：低秩适配器其实是梯度压缩器。arXiv:2402.03293，2024。"
+      },
+      {
+        "text": "Chen, T., Xu, B., Zhang, C., and Guestrin, C. Training Deep Nets with Sublinear Memory Cost. ArXiv preprint arXiv:1604.06174, 2016.",
+        "x": 55.4,
+        "y": 240.1,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Chen, T., Xu, B., Zhang, C., and Guestrin, C. 以次线性显存代价训练深度网络。ArXiv preprint arXiv:1604.06174，2016。"
+      },
+      {
+        "text": "Ho, J., Jain, A., and Abbeel, P. Denoising diffusion probabilistic models. Advances in neural information process-",
+        "x": 307.4,
+        "y": 230.7,
+        "w": 234,
+        "h": 21.9,
+        "zh": "Ho, J., Jain, A., and Abbeel, P. 去噪扩散概率模型。Advances in Neural Information Processing Systems，"
+      },
+      {
+        "text": "Chen, Y. and Wainwright, M. J. Fast low-rank estimation by projected gradient descent: General statistical and algorithmic guarantees. ArXiv preprint arXiv:1509.03025,",
+        "x": 55.4,
+        "y": 197.7,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Chen, Y. and Wainwright, M. J. 用投影梯度下降做快速低秩估计：一般性的统计与算法保证。ArXiv preprint arXiv:1509.03025，"
+      },
+      {
+        "text": "Hu, E. J., Shen, Y., Wallis, P., Allen-Zhu, Z., Li, Y., Wang, S., Wang, L., and Chen, W. Lora: Low-rank adaptation of large language models. In The Tenth International Conference on Learning Representations, ICLR 2022, Virtual Event, April 25-29, 2022. OpenReview.net, 2022.",
+        "x": 307.4,
+        "y": 147.8,
+        "w": 234,
+        "h": 57.8,
+        "zh": "Hu, E. J., Shen, Y., Wallis, P., Allen-Zhu, Z., Li, Y., Wang, S., Wang, L., and Chen, W. LoRA：大语言模型的低秩适配。The Tenth International Conference on Learning Representations, ICLR 2022，线上会议，2022 年 4 月 25–29 日。OpenReview.net，2022。"
+      },
+      {
+        "text": "Chowdhery, A., Narang, S., Devlin, J., Bosma, M., Mishra, G., Roberts, A., Barham, P., Chung, H. W., Sutton, C., Gehrmann, S., et al. Palm: Scaling language modeling with pathways. Journal of Machine Learning Research,",
+        "x": 55.4,
+        "y": 131.3,
+        "w": 234,
+        "h": 45.8,
+        "zh": "Chowdhery, A., Narang, S., Devlin, J., Bosma, M., Mishra, G., Roberts, A., Barham, P., Chung, H. W., Sutton, C., Gehrmann, S., et al. PaLM：用 Pathways 扩展语言建模。Journal of Machine Learning Research，"
+      },
+      {
+        "text": "Huang, S., Hoskins, B. D., Daniels, M. W., Stiles, M. D.,",
+        "x": 307.4,
+        "y": 124.8,
+        "w": 234,
+        "h": 10,
+        "zh": "Huang, S., Hoskins, B. D., Daniels, M. W., Stiles, M. D.,"
+      },
+      {
+        "text": "Low-Rank Gradient Descent for Memory-Efficient Training of Deep In-Memory Arrays. ACM Journal on Emerging Technologies in Computing",
+        "x": 317.4,
+        "y": 88.9,
+        "w": 224,
+        "h": 33.9,
+        "zh": "面向深度存内阵列、省显存训练的低秩梯度下降。ACM Journal on Emerging Technologies in Computing"
+      },
+      {
+        "text": "Cosson, R., Jadbabaie, A., Makur, A., Reisizadeh, A., and Shah, D. Low-Rank Gradient Descent. IEEE Open Journal of Control Systems, 2023.",
+        "x": 55.4,
+        "y": 76.9,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Cosson, R., Jadbabaie, A., Makur, A., Reisizadeh, A., and Shah, D. 低秩梯度下降。IEEE Open Journal of Control Systems，2023。"
+      }
+    ],
+    "11": [
+      {
+        "text": "GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection",
+        "x": 150.6,
+        "y": 737.9,
+        "w": 295.6,
+        "h": 9,
+        "zh": "GaLore：通过梯度低秩投影实现显存高效的大语言模型训练"
+      },
+      {
+        "text": "Kamalakara, S. R., Locatelli, A., Venkitesh, B., Ba, J., Gal, Y., and Gomez, A. N. Training of Deep Neural Networks. arXiv:2209.13569, 2022.",
+        "x": 55.4,
+        "y": 679.1,
+        "w": 234,
+        "h": 45.8,
+        "zh": "Kamalakara, S. R., Locatelli, A., Venkitesh, B., Ba, J., Gal, Y., and Gomez, A. N. 深度神经网络的训练。arXiv:2209.13569，2022。"
+      },
+      {
+        "text": "Modoranu, I.-V., Kalinov, A., Kurtic, E., Frantar, E., and Alistarh, D. Error Feedback Can Accurately Compress",
+        "x": 307.4,
+        "y": 703,
+        "w": 234,
+        "h": 21.9,
+        "zh": "Modoranu, I.-V., Kalinov, A., Kurtic, E., Frantar, E., and Alistarh, D. 误差反馈可以准确地压缩"
+      },
+      {
+        "text": "Kingma, D. P. and Ba, J. Adam: A method for stochastic optimization. In 3rd International Conference on Learning Representations, ICLR 2015, San Diego, CA, USA, May 7-9, 2015, Conference Track Proceedings, 2015.",
+        "x": 55.4,
+        "y": 621.3,
+        "w": 234,
+        "h": 45.8,
+        "zh": "Kingma, D. P. and Ba, J. Adam：一种随机优化方法。3rd International Conference on Learning Representations, ICLR 2015，美国圣迭戈，2015 年 5 月 7–9 日，Conference Track Proceedings，2015。"
+      },
+      {
+        "text": "Rae, J. W., Borgeaud, S., Cai, T., Millican, K., Hoffmann, J., Song, F., Aslanides, J., Henderson, S., Ring, R., Young, S., et al. Scaling language models: Methods, analysis & insights from training gopher. arXiv preprint arXiv:2112.11446, 2021.",
+        "x": 307.4,
+        "y": 609.3,
+        "w": 234,
+        "h": 57.8,
+        "zh": "Rae, J. W., Borgeaud, S., Cai, T., Millican, K., Hoffmann, J., Song, F., Aslanides, J., Henderson, S., Ring, R., Young, S., et al. 扩展语言模型：训练 Gopher 的方法、分析与认识。arXiv preprint arXiv:2112.11446，2021。"
+      },
+      {
+        "text": "K¨opf, A., Kilcher, Y., von R¨utte, D., Anagnostidis, S., Tam, Z. R., Stevens, K., Barhoum, A., Nguyen, D., Stanley, O., Nagyfi, R., et al. Openassistant conversationsdemocratizing large language model alignment. vances in Neural Information Processing Systems, 2024.",
+        "x": 55.4,
+        "y": 551.5,
+        "w": 234,
+        "h": 57.8,
+        "zh": "Köpf, A., Kilcher, Y., von Rütte, D., Anagnostidis, S., Tam, Z. R., Stevens, K., Barhoum, A., Nguyen, D., Stanley, O., Nagyfi, R., et al. OpenAssistant 对话：让大语言模型对齐走向更多人。Advances in Neural Information Processing Systems，2024。"
+      },
+      {
+        "text": "Raffel, C., Shazeer, N., Roberts, A., Lee, K., Narang, S., Matena, M., Zhou, Y., Li, W., and Liu, P. J. Exploring the limits of transfer learning with a unified text-to-text transformer. J. Mach. Learn. Res., 2020.",
+        "x": 307.4,
+        "y": 551.5,
+        "w": 234,
+        "h": 45.8,
+        "zh": "Raffel, C., Shazeer, N., Roberts, A., Lee, K., Narang, S., Matena, M., Zhou, Y., Li, W., and Liu, P. J. 用统一的文本到文本 Transformer 探索迁移学习的极限。J. Mach. Learn. Res.，2020。"
+      },
+      {
+        "text": "Larsen, B. W., Fort, S., Becker, N., and Ganguli, S. How many degrees of freedom do we need to train deep networks: a loss landscape perspective. In The Tenth International Conference on Learning Representations, ICLR 2022, Virtual Event, April 25-29, 2022. OpenReview.net,",
+        "x": 55.4,
+        "y": 481.7,
+        "w": 234,
+        "h": 57.8,
+        "zh": "Larsen, B. W., Fort, S., Becker, N., and Ganguli, S. 训练深度网络需要多少自由度：从损失景观看。The Tenth International Conference on Learning Representations, ICLR 2022，线上会议，2022 年 4 月 25–29 日。OpenReview.net，"
+      },
+      {
+        "text": "Rajbhandari, S., Rasley, J., Ruwase, O., and He, Y. Zero: Memory optimizations toward training trillion param-",
+        "x": 307.4,
+        "y": 517.6,
+        "w": 234,
+        "h": 21.9,
+        "zh": "Rajbhandari, S., Rasley, J., Ruwase, O., and He, Y. ZeRO：面向万亿参数训练的显存优化"
+      },
+      {
+        "text": "In SC20: International Conference for High Performance Computing, Networking, Storage and",
+        "x": 317.4,
+        "y": 493.7,
+        "w": 224,
+        "h": 21.9,
+        "zh": "见 SC20: International Conference for High Performance Computing, Networking, Storage and"
+      },
+      {
+        "text": "Rajpurkar, P., Zhang, J., Lopyrev, K., and Liang, P. SQuAD: 100,000+ questions for machine comprehen-",
+        "x": 307.4,
+        "y": 447.8,
+        "w": 234,
+        "h": 21.9,
+        "zh": "Rajpurkar, P., Zhang, J., Lopyrev, K., and Liang, P. SQuAD：供机器阅读理解使用的 10 万多个问题"
+      },
+      {
+        "text": "Lee, Y. and Choi, S. Gradient-based meta-learning with learned layerwise metric and subspace. In Proceedings of the 35th International Conference on Machine Learning, ICML 2018, Stockholmsm¨assan, Stockholm, Sweden, July 10-15, 2018. PMLR, 2018.",
+        "x": 55.4,
+        "y": 400,
+        "w": 234,
+        "h": 57.8,
+        "zh": "Lee, Y. and Choi, S. 带可学习逐层度量和子空间的梯度元学习。Proceedings of the 35th International Conference on Machine Learning, ICML 2018，瑞典斯德哥尔摩 Stockholmsmässan，2018 年 7 月 10–15 日。PMLR，2018。"
+      },
+      {
+        "text": "In Proceedings of the 2016 Conference on Empirical Methods in Natural Language Processing. Association for Computational Linguistics, 2016.",
+        "x": 317.4,
+        "y": 411.9,
+        "w": 224,
+        "h": 33.9,
+        "zh": "见 Proceedings of the 2016 Conference on Empirical Methods in Natural Language Processing。Association for Computational Linguistics，2016。"
+      },
+      {
+        "text": "Renduchintala, A., Konuk, T., and Kuchaiev, O. Tied-Lora: Enhacing parameter efficiency of LoRA with weight tying. ArXiv preprint arXiv:2311.09578, 2023.",
+        "x": 307.4,
+        "y": 366.1,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Renduchintala, A., Konuk, T., and Kuchaiev, O. Tied-LoRA：用权重绑定提高 LoRA 的参数效率。ArXiv preprint arXiv:2311.09578，2023。"
+      },
+      {
+        "text": "Li, B., Chen, J., and Zhu, J. Memory efficient optimizers with 4-bit states. Advances in Neural Information Processing Systems, 2024.",
+        "x": 55.4,
+        "y": 354.1,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Li, B., Chen, J., and Zhu, J. 状态只用 4-bit 的省显存优化器。Advances in Neural Information Processing Systems，2024。"
+      },
+      {
+        "text": "Glu variants improve transformer. preprint arXiv:2002.05202, 2020.",
+        "x": 317.4,
+        "y": 332.2,
+        "w": 191.1,
+        "h": 21.9,
+        "zh": "GLU 变体可以改进 Transformer。preprint arXiv:2002.05202，2020。"
+      },
+      {
+        "text": "Lialin, V., Muckatira, S., Shivagunde, N., and Rumshisky, A. ReloRA: High-rank training through low-rank up-",
+        "x": 55.4,
+        "y": 320.2,
+        "w": 234,
+        "h": 21.9,
+        "zh": "Lialin, V., Muckatira, S., Shivagunde, N., and Rumshisky, A. ReLoRA：借低秩更新做高秩训练"
+      },
+      {
+        "text": "Shazeer, N. and Stern, M. Adafactor: Adaptive learning rates with sublinear memory cost. the 35th International Conference on Machine Learning, ICML 2018, Stockholmsm¨assan, Stockholm, Sweden, July 10-15, 2018. PMLR, 2018.",
+        "x": 307.4,
+        "y": 262.4,
+        "w": 234,
+        "h": 57.8,
+        "zh": "Shazeer, N. and Stern, M. Adafactor：显存开销次线性的自适应学习率。第 35 届 International Conference on Machine Learning, ICML 2018，瑞典斯德哥尔摩 Stockholmsmässan，2018 年 7 月 10–15 日。PMLR，2018。"
+      },
+      {
+        "text": "In The Twelfth International Conference on Learning Representations, 2024.",
+        "x": 65.4,
+        "y": 296.3,
+        "w": 224,
+        "h": 21.9,
+        "zh": "见 The Twelfth International Conference on Learning Representations，2024。"
+      },
+      {
+        "text": "Lin, H., Zhang, H., Ma, Y., He, T., Zhang, Z., Zha, S., and Li, M. Dynamic mini-batch sgd for elastic distributed training: Learning in the limbo of resources. preprint arXiv:1904.12043, 2019.",
+        "x": 55.4,
+        "y": 238.5,
+        "w": 234,
+        "h": 45.8,
+        "zh": "Lin, H., Zhang, H., Ma, Y., He, T., Zhang, Z., Zha, S., and Li, M. 面向弹性分布式训练的动态 mini-batch SGD：在有限资源里学习。preprint arXiv:1904.12043，2019。"
+      },
+      {
+        "text": "Sheng, Y., Cao, S., Li, D., Hooper, C., Lee, N., Yang, S., Chou, C., Zhu, B., Zheng, L., Keutzer, K., Gonzalez, J. E., and Stoica, I.",
+        "x": 307.4,
+        "y": 216.5,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Sheng, Y., Cao, S., Li, D., Hooper, C., Lee, N., Yang, S., Chou, C., Zhu, B., Zheng, L., Keutzer, K., Gonzalez, J. E., and Stoica, I."
+      },
+      {
+        "text": "Loshchilov, I. and Hutter, F. Decoupled weight decay regularization. In 7th International Conference on Learning Representations, ICLR 2019, New Orleans, LA, USA, May 6-9, 2019. OpenReview.net, 2019.",
+        "x": 55.4,
+        "y": 180.6,
+        "w": 234,
+        "h": 45.8,
+        "zh": "Loshchilov, I. and Hutter, F. 解耦的权重衰减正则。7th International Conference on Learning Representations, ICLR 2019，美国新奥尔良，2019 年 5 月 6–9 日。OpenReview.net，2019。"
+      },
+      {
+        "text": "S-LoRA: Serving Thousands of Concurrent LoRA Adapters. arXiv:2311.03285, 2023.",
+        "x": 317.4,
+        "y": 192.6,
+        "w": 224,
+        "h": 33.9,
+        "zh": "S-LoRA：同时服务数千个并发的 LoRA 适配器。arXiv:2311.03285，2023。"
+      },
+      {
+        "text": "Team, G., Mesnard, T., Hardin, C., Dadashi, R., Bhupatiraju, S., Pathak, S., Sifre, L., Rivi`ere, M., Kale, M. S., Love, J., et al.",
+        "x": 307.4,
+        "y": 146.7,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Team, G., Mesnard, T., Hardin, C., Dadashi, R., Bhupatiraju, S., Pathak, S., Sifre, L., Rivière, M., Kale, M. S., Love, J., et al."
+      },
+      {
+        "text": "Lv, K., Yan, H., Guo, Q., Lv, H., and Qiu, X. AdaLomo: Low-memory Optimization with Adaptive Learning Rate. ArXiv preprint arXiv:2310.10195, 2023a.",
+        "x": 55.4,
+        "y": 134.8,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Lv, K., Yan, H., Guo, Q., Lv, H., and Qiu, X. AdaLomo：带自适应学习率的低显存优化。ArXiv preprint arXiv:2310.10195，2023a。"
+      },
+      {
+        "text": "Gemma: Open models based on gemini research and technology. arXiv:2403.08295, 2024.",
+        "x": 317.4,
+        "y": 122.8,
+        "w": 224,
+        "h": 33.9,
+        "zh": "Gemma：基于 Gemini 研究与技术的开放模型。arXiv:2403.08295，2024。"
+      },
+      {
+        "text": "Lv, K., Yang, Y., Liu, T., Gao, Q., Guo, Q., and Qiu, X. Full Parameter Fine-tuning for Large Language Models with Limited Resources. ArXiv preprint arXiv:2306.09782,",
+        "x": 55.4,
+        "y": 88.9,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Lv, K., Yang, Y., Liu, T., Gao, Q., Guo, Q., and Qiu, X. 在有限资源下对大语言模型做全参数微调。ArXiv preprint arXiv:2306.09782，"
+      },
+      {
+        "text": "Tian, Y., Yu, L., Chen, X., and Ganguli, S. Understanding self-supervised learning with dual deep networks. ArXiv preprint arXiv:2010.00578, 2020.",
+        "x": 307.4,
+        "y": 76.9,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Tian, Y., Yu, L., Chen, X., and Ganguli, S. 用对偶深度网络理解自监督学习。ArXiv preprint arXiv:2010.00578，2020。"
+      }
+    ],
+    "12": [
+      {
+        "text": "GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection",
+        "x": 150.6,
+        "y": 737.9,
+        "w": 295.6,
+        "h": 9,
+        "zh": "GaLore：通过梯度低秩投影实现显存高效的大语言模型训练"
+      },
+      {
+        "text": "Tian, Y., Wang, Y., Zhang, Z., Chen, B., and Du, S. S. JoMA: Demystifying multilayer transformers via joint dynamics of MLP and attention. In The Twelfth International Conference on Learning Representations, 2024.",
+        "x": 55.4,
+        "y": 679.1,
+        "w": 234,
+        "h": 45.8,
+        "zh": "Tian, Y., Wang, Y., Zhang, Z., Chen, B., and Du, S. S. JoMA：用 MLP 与注意力的联合动态解释多层 Transformer。The Twelfth International Conference on Learning Representations，2024。"
+      },
+      {
+        "text": "Zhang, L., Zhang, L., Shi, S., Chu, X., and Li, B. Lora-fa: Memory-efficient low-rank adaptation for large language models fine-tuning. arXiv preprint arXiv:2308.03303,",
+        "x": 307.4,
+        "y": 691.1,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Zhang, L., Zhang, L., Shi, S., Chu, X., and Li, B. LoRA-FA：面向大语言模型微调、更省显存的低秩适配。arXiv preprint arXiv:2308.03303，"
+      },
+      {
+        "text": "Zhao, J., Schaefer, F. T., and Anandkumar, A. Zero initialization: Initializing neural networks with only zeros and ones. Transactions on Machine Learning Research,",
+        "x": 307.4,
+        "y": 635.3,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Zhao, J., Schaefer, F. T., and Anandkumar, A. 零初始化：只用 0 和 1 初始化神经网络。Transactions on Machine Learning Research，"
+      },
+      {
+        "text": "Touvron, H., Martin, L., Stone, K., Albert, P., Almahairi, A., Babaei, Y., Bashlykov, N., Batra, S., Bhargava, P., Bhosale, S., et al. Llama 2: Open foundation and fine-",
+        "x": 55.4,
+        "y": 635.2,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Touvron, H., Martin, L., Stone, K., Albert, P., Almahairi, A., Babaei, Y., Bashlykov, N., Batra, S., Bhargava, P., Bhosale, S., et al. Llama 2：开放的基础模型与微调"
+      },
+      {
+        "text": "Zhao, J., Zhang, Y., Chen, B., Sch¨afer, F., and Anandkumar, A. Inrank: Incremental low-rank learning. arXiv preprint arXiv:2306.11250, 2023.",
+        "x": 307.4,
+        "y": 579.5,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Zhao, J., Zhang, Y., Chen, B., Schäfer, F., and Anandkumar, A. InRank：增量式低秩学习。arXiv preprint arXiv:2306.11250，2023。"
+      },
+      {
+        "text": "Vogels, T., Karimireddy, S. P., and Jaggi, M. Practical lowrank communication compression in decentralized deep",
+        "x": 55.4,
+        "y": 579.4,
+        "w": 234,
+        "h": 21.9,
+        "zh": "Vogels, T., Karimireddy, S. P., and Jaggi, M. 去中心化深度网络里实用的低秩通信压缩"
+      },
+      {
+        "text": "Advances in Neural Information Processing",
+        "x": 108.8,
+        "y": 567.5,
+        "w": 180.7,
+        "h": 10,
+        "zh": "Advances in Neural Information Processing（神经信息处理进展）"
+      },
+      {
+        "text": "Wang, A., Singh, A., Michael, J., Hill, F., Levy, O., and",
+        "x": 55.4,
+        "y": 535.5,
+        "w": 234,
+        "h": 10,
+        "zh": "Wang, A., Singh, A., Michael, J., Hill, F., Levy, O., and"
+      },
+      {
+        "text": "GLUE: A multi-task benchmark and analysis platform for natural language understanding. In 7th International Conference on Learning Representations, ICLR 2019, New Orleans, LA, USA, May 6-9, 2019. OpenReview.net, 2019.",
+        "x": 65.4,
+        "y": 475.8,
+        "w": 224,
+        "h": 57.8,
+        "zh": "GLUE：自然语言理解的多任务基准与分析平台。7th International Conference on Learning Representations, ICLR 2019，美国新奥尔良，2019 年 5 月 6–9 日。OpenReview.net，2019。"
+      },
+      {
+        "text": "Wang, H., Sievert, S., Liu, S., Charles, Z., Papailiopoulos,",
+        "x": 55.4,
+        "y": 455.8,
+        "w": 234,
+        "h": 10,
+        "zh": "Wang, H., Sievert, S., Liu, S., Charles, Z., Papailiopoulos,"
+      },
+      {
+        "text": "Atomo: Communication-efficient learning via atomic sparsification. Advances in neural information processing systems, 31, 2018.",
+        "x": 65.4,
+        "y": 419.9,
+        "w": 224,
+        "h": 33.9,
+        "zh": "Atomo：用原子稀疏化做通信高效的学习。Advances in Neural Information Processing Systems, 31，2018。"
+      },
+      {
+        "text": "Wang, H., Agarwal, S., Tanaka, Y., Xing, E., Papailiopoulos, D., et al. Cuttlefish: Low-rank model training without all the tuning. Proceedings of Machine Learning and",
+        "x": 55.4,
+        "y": 376.1,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Wang, H., Agarwal, S., Tanaka, Y., Xing, E., Papailiopoulos, D., et al. Cuttlefish：不必把超参数都调一遍的低秩模型训练。Proceedings of Machine Learning and"
+      },
+      {
+        "text": "Wang, Y., Lin, Y., Zeng, X., and Zhang, G. MultiLoRA: Democratizing LoRA for Better Multi-Task Learning. ArXiv preprint arXiv:2311.11501, 2023b.",
+        "x": 55.4,
+        "y": 320.2,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Wang, Y., Lin, Y., Zeng, X., and Zhang, G. MultiLoRA：让 LoRA 更好地做多任务学习。ArXiv preprint arXiv:2311.11501，2023b。"
+      },
+      {
+        "text": "Wortsman, M., Dettmers, T., Zettlemoyer, L., Morcos, A., Farhadi, A., and Schmidt, L. Stable and low-precision training for large-scale vision-language models. vances in Neural Information Processing Systems, 2023.",
+        "x": 55.4,
+        "y": 264.4,
+        "w": 234,
+        "h": 45.8,
+        "zh": "Wortsman, M., Dettmers, T., Zettlemoyer, L., Morcos, A., Farhadi, A., and Schmidt, L. 大规模视觉–语言模型的稳定低精度训练。Advances in Neural Information Processing Systems，2023。"
+      },
+      {
+        "text": "Xia, W., Qin, C., and Hazan, E. Chain of LoRA: Efficient Fine-tuning of Language Models via Residual Learning. ArXiv preprint arXiv:2401.04151, 2024.",
+        "x": 55.4,
+        "y": 220.5,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Xia, W., Qin, C., and Hazan, E. Chain of LoRA：用残差学习高效微调语言模型。ArXiv preprint arXiv:2401.04151，2024。"
+      },
+      {
+        "text": "Yang, G., Simon, J. B., and Bernstein, J. tral condition for feature learning. arXiv:2310.17813, 2023.",
+        "x": 55.4,
+        "y": 176.6,
+        "w": 186.5,
+        "h": 33.9,
+        "zh": "Yang, G., Simon, J. B., and Bernstein, J. 特征学习的谱条件。arXiv:2310.17813，2023。"
+      },
+      {
+        "text": "Zhai, X., Kolesnikov, A., Houlsby, N., and Beyer, L. Scaling Vision Transformers. In 2022 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR).",
+        "x": 55.4,
+        "y": 132.8,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Zhai, X., Kolesnikov, A., Houlsby, N., and Beyer, L. 扩展 Vision Transformer。2022 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)。"
+      },
+      {
+        "text": "Zhang, B. and Sennrich, R. Root mean square layer normalization. Advances in Neural Information Processing",
+        "x": 55.4,
+        "y": 88.9,
+        "w": 234,
+        "h": 21.9,
+        "zh": "Zhang, B. and Sennrich, R. 均方根层归一化。Advances in Neural Information Processing"
+      }
+    ],
+    "13": [
+      {
+        "text": "GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection",
+        "x": 150.6,
+        "y": 737.9,
+        "w": 295.6,
+        "h": 9,
+        "zh": "GaLore：通过梯度低秩投影实现显存高效的大语言模型训练"
+      },
+      {
+        "text": "Adafactor (Shazeer & Stern, 2018) achieves sub-linear memory cost by factorizing the second-order statistics by a rowcolumn outer product. GaLore shares similarities with Adafactor in terms of utilizing low-rank factorization to reduce memory cost, but GaLore focuses on the low-rank structure of the gradients, while Adafactor focuses on the low-rank structure of the second-order statistics. GaLore can reduce the memory cost for both first-order and second-order statistics, and can be combined with Adafactor to achieve further memory reduction. In contrast to the previous memory-efficient optimization methods, GaLore operates independently as the optimizers directly receive the low-rank gradients without knowing their full-rank counterparts. The fused backward operation proposed by LOMO (Lv et al., 2023b) mitigates the memory cost of storing weight gradients during training. Integrated with the standard SGD optimizer, LOMO achieves zero optimizer and gradient memory cost during training. AdaLOMO (Lv et al., 2023a) enhances this approach by combining the fused backward operation with adaptive learning rate for each parameter, similarly achieving minimal optimizer memory cost. While LOMO and AdaLOMO represent significant advancements in memory-efficient optimization for fine-tuning or continual pre-training, they might not be directly applicable to pre-training from scratch at larger scales. For example, the vanilla Adafactor, adopted by AdaLOMO, has been demonstrated to lead to increased training instabilities at larger scales (Rae et al., 2021; Chowdhery et al., 2023; Wortsman et al., 2023; Zhai et al., 2022). We believe integrating GaLore with the fused backward operation may offer a promising avenue for achieving memory-efficient large-scale pre-training from",
+        "x": 55.4,
+        "y": 498.3,
+        "w": 486,
+        "h": 207.2,
+        "zh": "Adafactor（Shazeer & Stern, 2018）把二阶统计量分解成行向量与列向量的外积，从而把显存降到次线性。GaLore 和它都用低秩分解来省显存，但 GaLore 利用的是梯度本身的低秩结构，Adafactor 利用的是二阶统计量的低秩结构。GaLore 可以同时压缩一阶和二阶统计量，也可以再和 Adafactor 合用，把显存进一步降下来。和以往的省显存优化不同，GaLore 是独立起作用的：优化器直接收到低秩梯度，并不知道原来的全秩梯度。LOMO（Lv et al., 2023b）提出的融合反向，减轻了训练时保存权重梯度的显存。把它和标准 SGD 合在一起，训练过程中优化器和梯度的显存可以降到零。AdaLOMO（Lv et al., 2023a）在融合反向之上，为每个参数使用自适应学习率，同样把优化器显存压到很低。LOMO 和 AdaLOMO 对微调或持续预训练是重要进展，但未必能直接用于更大规模的从零预训练。例如 AdaLOMO 采用的普通 Adafactor，在更大规模上会带来更严重的训练不稳定（Rae et al., 2021; Chowdhery et al., 2023; Wortsman et al., 2023; Zhai et al., 2022）。把 GaLore 和融合反向合在一起，有望成为大规模从零预训练的一条省显存途径。"
+      },
+      {
+        "text": "Definition B.1 (Reversiblity (Tian et al., 2020)). A network N that maps input x to output y = N(x) is reversible, if there exists L(x; W) so that y = L(x; W)x, and the backpropagated gradient gx satisfies gx = L (x; W)gy, where gy is the backpropagated gradient at the output y. Here L(x; W) depends on the input x and weight W in the network N.",
+        "x": 55.4,
+        "y": 395.9,
+        "w": 486,
+        "h": 33.9,
+        "zh": "定义 B.1（可逆性（Tian et al., 2020））。把输入 x 映射到输出 y = N(x) 的网络 N 是可逆的，如果存在 L(x; W)，使得 y = L(x; W)x，并且反向传播梯度满足 gx = L(x; W) gy，其中 gy 是输出 y 处的反向传播梯度。这里 L(x; W) 依赖于输入 x 以及网络 N 中的权重 W。"
+      },
+      {
+        "text": "Note that many layers are reversible, including linear layer (without bias), reversible activations (e.g., ReLU, leaky ReLU, polynomials, etc). Furthermore, they can be combined to construct more complicated architectures: Property 1. If N1 and N2 are reversible networks, then (Parallel) y = α1N1(x) + α2N2(x) is reversible for constants α1 and α2, and (Composition) y = N2(N1(x)) is reversible.",
+        "x": 55.4,
+        "y": 331.6,
+        "w": 486,
+        "h": 51.8,
+        "zh": "许多层都是可逆的，包括无偏置的线性层，以及可逆激活（例如 ReLU、leaky ReLU、多项式等）。它们还可以拼成更复杂的结构。性质 1。若 N1 和 N2 都可逆，则并行形式 y = α1 N1(x) + α2 N2(x) 对常数 α1、α2 可逆，复合形式 y = N2(N1(x)) 也可逆。"
+      },
+      {
+        "text": "From this property, it is clear that ResNet architecture x + N(x) is reversible, if N contains bias-free linear layers and reversible activations, which is often the case in practice. For a detailed analysis, please check Appendix A in (Tian et al., 2020). For architectures like self-attention, one possibility is to leverage JoMA (Tian et al., 2024) to analyze, and we leave",
+        "x": 55.4,
+        "y": 286.8,
+        "w": 486,
+        "h": 33.9,
+        "zh": "由这条性质可以看出，若 N 由无偏置线性层和可逆激活组成（实践中常常如此），则 ResNet 结构 x + N(x) 是可逆的。更细的分析见 Tian et al. (2020) 的附录 A。对自注意力这类结构，一种可能是用 JoMA（Tian et al., 2024）来分析，我们留待"
+      },
+      {
+        "text": "The gradient of chained reversible networks has the following structure: Theorem 3.2 (Gradient Form of reversible models). Consider a chained reversible neural network N(x) NL(NL−1(. . . N1(x))) and define Jl := Jacobian(NL) . . . Jacobian(Nl+1) and fl := Nl(. . . N1(x)). Then the weight matrix Wl at layer l has gradient Gl in the following form for batch size 1: (a) For ℓ2-objective φ := 2∥y − fL∥2:",
+        "x": 55.4,
+        "y": 195.2,
+        "w": 486,
+        "h": 71.7,
+        "zh": "串联的可逆网络，其梯度有如下结构。定理 3.2（可逆模型的梯度形式）。考虑串联的可逆网络 N(x) = NL(NL−1(…N1(x)))，定义 Jl := Jacobian(NL) … Jacobian(Nl+1)，以及 fl := Nl(…N1(x))。则 batch size 为 1 时，第 l 层权重 Wl 的梯度 Gl 具有如下形式：(a) 对 ℓ2 目标 φ := 2∥y − fL∥2："
+      },
+      {
+        "text": "For K-way logsoftmax loss φ(y; fL) := with small logits ∥P1 fL∥∞ ≪",
+        "x": 135.9,
+        "y": 125.9,
+        "w": 405.5,
+        "h": 28.3,
+        "zh": "对 K 路 logsoftmax 损失 φ(y; fL) := ，且 logits 较小，∥P1 fL∥∞ ≪"
+      },
+      {
+        "text": "where γ ≈ 1 and y is a data label with y 1 = 1.",
+        "x": 55.4,
+        "y": 76.9,
+        "w": 197.5,
+        "h": 10,
+        "zh": "其中 γ ≈ 1，y 是数据标签，且 y 1 = 1。"
+      }
+    ],
+    "14": [
+      {
+        "text": "GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection",
+        "x": 150.6,
+        "y": 737.9,
+        "w": 295.6,
+        "h": 9,
+        "zh": "GaLore：通过梯度低秩投影实现显存高效的大语言模型训练"
+      },
+      {
+        "text": "Proof. Note that for layered reversible network, we have",
+        "x": 55.4,
+        "y": 715,
+        "w": 226.4,
+        "h": 10,
+        "zh": "证明。对分层的可逆网络，我们有"
+      },
+      {
+        "text": "N(x) = NL(NL−1(...N1(x))) = KL(x)KL−1(x) . . . K1(x)x",
+        "x": 170.3,
+        "y": 691.7,
+        "w": 256.2,
+        "h": 11.5,
+        "zh": ""
+      },
+      {
+        "text": "Let fl := Nl(Nl−1(. . . N1(x))) and Jl := KL(x) . . . Kl+1(x), and for linear layer l, we can write N(x) = JlWlfl−1. Therefore, for the linear layer l with weight matrix Wl, we have:",
+        "x": 55.4,
+        "y": 657.9,
+        "w": 486,
+        "h": 23.4,
+        "zh": "令 fl := Nl(Nl−1(…N1(x)))，Jl := KL(x) … Kl+1(x)。对线性层 l，可以写成 N(x) = Jl Wl fl−1。因此，对权重为 Wl 的线性层 l，有："
+      },
+      {
+        "text": "dφ = (y − N(x)) dN(x) = (y − N(x)) KL(x) . . . Kl+1(x)dWlfl−1 + terms not related to dWl = (y − JlWlfl−1) JldWlfl−1 = tr(dWl Jl (y − JlWlfl−1)fl−1)",
+        "x": 135.2,
+        "y": 585.5,
+        "w": 325.9,
+        "h": 62,
+        "zh": "dφ = (y − N(x)) dN(x) = (y − N(x)) KL(x) … Kl+1(x) dWl fl−1 + 与 dWl 无关的项 = (y − Jl Wl fl−1) Jl dWl fl−1 = tr(dWl Jl (y − Jl Wl fl−1) fl−1)"
+      },
+      {
+        "text": "Softmax Case. Note that for softmax objective with small logits, we can also prove a similar structure of backpropagated gradient, and thus Theorem 3.2 can also apply.",
+        "x": 55.4,
+        "y": 485.6,
+        "w": 486,
+        "h": 21.9,
+        "zh": "Softmax 情形。对 logits 较小的 softmax 目标，也可以证明反向传播梯度有类似结构，因此定理 3.2 同样适用。"
+      },
+      {
+        "text": "exp(y f) , let fˆ = P⊥f Lemma B.2 (Gradient structure of softmax loss). For K-way logsoftmax loss φ(y; f) := − log be the zero-mean version of network output f, where P1 := I −",
+        "x": 55.4,
+        "y": 448.7,
+        "w": 484.9,
+        "h": 31,
+        "zh": "引理 B.2（softmax 损失的梯度结构）。对 K 路 logsoftmax 损失 φ(y; f) := −log，其中出现 exp(y f)。令 fˆ = P⊥f 为网络输出 f 的去均值版本，其中 P1 := I −"
+      },
+      {
+        "text": "−dφ = y⊤d fˆ− γfˆ⊤d fˆ/K + O( fˆ2/K)d fˆ",
+        "x": 207.6,
+        "y": 427.3,
+        "w": 182.7,
+        "h": 12.6,
+        "zh": ""
+      },
+      {
+        "text": "where γ(y, f) ≈ 1 and y is a data label with y 1 = 1.",
+        "x": 55.4,
+        "y": 404.4,
+        "w": 222.6,
+        "h": 10,
+        "zh": "其中 γ(y, f) ≈ 1，y 是数据标签，且 y 1 = 1。"
+      },
+      {
+        "text": "Proof. Let fˆ := P1⊥f be the zero-mean version of network output f. Then we have 1⊤fˆ = 0 and f = fˆ+c1. Therefore,",
+        "x": 55.4,
+        "y": 375.9,
+        "w": 486,
+        "h": 15.1,
+        "zh": "证明。令 fˆ := P1⊥f 为网络输出 f 的去均值版本。于是 1⊤fˆ = 0，且 f = fˆ + c1。因此，"
+      },
+      {
+        "text": "Using the Taylor expansion exp(x) = 1 + x +",
+        "x": 55.4,
+        "y": 304.6,
+        "w": 186.7,
+        "h": 10,
+        "zh": "利用泰勒展开 exp(x) = 1 + x +"
+      },
+      {
+        "text": "1⊤ exp( fˆ) = 1⊤(1 + fˆ+ 1fˆ2) + o( fˆ2) = K(1 + fˆ⊤fˆ/2K + o( fˆ2/K))",
+        "x": 145.6,
+        "y": 277.1,
+        "w": 305.6,
+        "h": 16.7,
+        "zh": ""
+      },
+      {
+        "text": "−φ = y⊤fˆ− log(1 + fˆ⊤fˆ/2K + o( fˆ2/K)) − log K",
+        "x": 187.1,
+        "y": 230.8,
+        "w": 221.9,
+        "h": 12.6,
+        "zh": ""
+      },
+      {
+        "text": "where γ := (1 + fˆ⊤fˆ/2K + o( fˆ2/K))−1 ≈ 1.",
+        "x": 55.4,
+        "y": 147.7,
+        "w": 194.5,
+        "h": 12.6,
+        "zh": "其中 γ := (1 + fˆ⊤fˆ/2K + o(fˆ2/K))−1 ≈ 1。"
+      },
+      {
+        "text": "Remarks. With this lemma, it is clear that for a reversible network f := N(x) = Jl(x)Wlfl−1(x), the gradient Gl of Wl has the following form:",
+        "x": 55.4,
+        "y": 109.3,
+        "w": 486,
+        "h": 23.4,
+        "zh": "评注。由这条引理，对可逆网络 f := N(x) = Jl(x) Wl fl−1(x)，Wl 的梯度 Gl 具有如下形式："
+      },
+      {
+        "text": "Gl = JlP1 yfl−1 − γJl P1 Jl Wl fl−1fl−1/K",
+        "x": 201.8,
+        "y": 86.6,
+        "w": 192.6,
+        "h": 12.4,
+        "zh": ""
+      }
+    ],
+    "15": [
+      {
+        "text": "GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection",
+        "x": 150.6,
+        "y": 737.9,
+        "w": 295.6,
+        "h": 9,
+        "zh": "GaLore：通过梯度低秩投影实现显存高效的大语言模型训练"
+      },
+      {
+        "text": "Lemma B.3 (Gradient becomes low-rank during training). Suppose the gradient follows the parametric form:",
+        "x": 55.4,
+        "y": 696.3,
+        "w": 439.4,
+        "h": 10,
+        "zh": "引理 B.3（梯度在训练中变为低秩）。设梯度遵循如下参数形式："
+      },
+      {
+        "text": "with constant Ai, PSD matrices Bi and Ci after t ≥ t0. We study vanilla SGD weight update: Wt = Wt−1 + ηGt−1. Let",
+        "x": 55.4,
+        "y": 630.8,
+        "w": 486,
+        "h": 11.5,
+        "zh": "在 t ≥ t0 之后，Ai 为常数，Bi、Ci 为半正定矩阵。考虑普通 SGD 的权重更新 Wt = Wt−1 + η Gt−1。令"
+      },
+      {
+        "text": "i=1 Ci ⊗ Bi and λ1 < λ2 its two smallest distinct eigenvalues. Then the stable rank sr(Gt) satisfies:",
+        "x": 99.8,
+        "y": 616.2,
+        "w": 401,
+        "h": 13,
+        "zh": "从 i=1 起的 Ci ⊗ Bi，且 λ1 < λ2 是它的两个最小的不同特征值。于是稳定秩 sr(Gt) 满足："
+      },
+      {
+        "text": "where Gt is the projection of Gt0 onto the minimal eigenspace V1 of S corresponding to λ1.",
+        "x": 55.4,
+        "y": 548.3,
+        "w": 371.3,
+        "h": 12.5,
+        "zh": "其中 Gt 是 Gt0 在 S 的、对应于 λ1 的最小特征空间 V1 上的投影。"
+      },
+      {
+        "text": "Ci ⊗ Bi, and gt := vec(Gt) ∈ Rmn be a vectorized version of the gradient Gt ∈ Rm×n. Using ⊗ B)vec(W), we have:",
+        "x": 135.3,
+        "y": 443.6,
+        "w": 406.2,
+        "h": 22.5,
+        "zh": "记为 Ci ⊗ Bi，并令 gt := vec(Gt) ∈ R^{mn} 为梯度 Gt ∈ R^{m×n} 的向量化。利用 ⊗ B 与 vec(W) 的关系，我们有："
+      },
+      {
+        "text": "Now λ1 < λ2 are the smallest two distinct eigenvectors of S. The smallest eigenvalue λ1 has multiplicity κ1. We can decompose g0 into two components, g0 = g0 + g0 , in which g0 lies in the κ1-dimensional eigenspace V1 that corresponds to the minimal eigenvalue λ1, and g0 is its residue. Then V1 ⊂ R",
+        "x": 55.4,
+        "y": 312.8,
+        "w": 486,
+        "h": 37.9,
+        "zh": "这里 λ1 < λ2 是 S 最小的两个不同特征值。最小特征值 λ1 的重数为 κ1。把 g0 分成两部分，g0 = g0 + g0：一部分落在对应于 λ1 的 κ1 维特征空间 V1 里，另一部分是剩余项。于是 V1 ⊂ R"
+      },
+      {
+        "text": "and its orthogonal complements are invariant subspaces under S and thus:",
+        "x": 55.4,
+        "y": 303.3,
+        "w": 486,
+        "h": 21.9,
+        "zh": "它与其正交补都是 S 的不变子空间，因此："
+      },
+      {
+        "text": "∥Gt∥F = ∥gt∥2 = ∥(I − ηS) g0∥2 = ∥(I − ηS) g0∥2 + ∥(I − ηS) g0 ∥2 ≤ (1 − ηλ2) ∥g0 ∥2 + (1 − ηλ1) ∥g0∥2",
+        "x": 149.2,
+        "y": 258.1,
+        "w": 297.9,
+        "h": 30.6,
+        "zh": ""
+      },
+      {
+        "text": "On the other hand, by our assumption, G0 is rank L and thus has SVD decomposition:",
+        "x": 55.4,
+        "y": 232.1,
+        "w": 344.3,
+        "h": 12.6,
+        "zh": "另一方面，按假设 G0 的秩为 L，因此有奇异值分解："
+      },
+      {
+        "text": "with orthonormal unit vectors {zl}l=1 and {yl}l=1 and singular values {cl}l=11. This means that",
+        "x": 55.4,
+        "y": 165.6,
+        "w": 389.9,
+        "h": 12.8,
+        "zh": "其中 {zl} 和 {yl} 是标准正交的单位向量，{cl} 是奇异值。这意味着"
+      },
+      {
+        "text": "with unit vector vl := yl ⊗ zl ∈ V1. It is clear that",
+        "x": 55.4,
+        "y": 102,
+        "w": 202.7,
+        "h": 11.5,
+        "zh": "单位向量为 vl := yl ⊗ zl ∈ V1。显然，"
+      },
+      {
+        "text": "vl vl′ = (yl ⊗ zl )(yl′ ⊗ zl′) = (yl yl′)(zl zl′) = I(l = l )",
+        "x": 173.2,
+        "y": 78.1,
+        "w": 250.5,
+        "h": 12.4,
+        "zh": ""
+      }
+    ],
+    "16": [
+      {
+        "text": "GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection",
+        "x": 150.6,
+        "y": 737.9,
+        "w": 295.6,
+        "h": 9,
+        "zh": "GaLore：通过梯度低秩投影实现显存高效的大语言模型训练"
+      },
+      {
+        "text": "Therefore, by the definition of spectral norm (or matrix 2-norm), we know it corresponds to the largest singular value,",
+        "x": 55.4,
+        "y": 715,
+        "w": 486,
+        "h": 10,
+        "zh": "因此，按谱范数（也就是矩阵 2-范数）的定义，它对应最大的奇异值，"
+      },
+      {
+        "text": "≥ max zl Gtyl = max(yl ⊗ zl) gt = max vl (1 − ηS) g0 = (1 − ηλ1) max vl g0",
+        "x": 215.6,
+        "y": 634,
+        "w": 193.7,
+        "h": 32.9,
+        "zh": ""
+      },
+      {
+        "text": "Note that the last equation is because any v ∈ V1 is an eigenvector of S with eigenvalue of λ1. Since vl g0 = vl (g0 + g0) = cl, maxl cl = ∥G0∥2 and ∥g0∥2 = ∥G0∥F , we have:",
+        "x": 55.4,
+        "y": 587.1,
+        "w": 376.4,
+        "h": 32.3,
+        "zh": "最后一个等号成立，是因为任意 v ∈ V1 都是 S 的特征向量，特征值为 λ1。又因为 vl 与 g0 的内积等于 vl 与 (g0 + g0) 的内积，即 cl，且 max cl = ∥G0∥2、∥g0∥2 = ∥G0∥F，所以"
+      },
+      {
+        "text": "Corollary B.4 (Low-rank Gt). If the gradient takes the parametric form Gt = N full-rank, and N := rank({fi}) < n, then sr(Gt ) ≤ n − N and thus sr(Gt) ≤ n/2 for large t.",
+        "x": 55.4,
+        "y": 485.2,
+        "w": 390.4,
+        "h": 27.3,
+        "zh": "推论 B.4（低秩的 Gt）。若梯度取参数形式 Gt = N，且相关矩阵满秩，N := rank({fi}) < n，则 sr(Gt) ≤ n − N，从而当 t 较大时 sr(Gt) ≤ n/2。"
+      },
+      {
+        "text": ". Since N := rank({fi}i=1) < n and fi ∈ R , the collections of vectors {fi}i=1 cannot span the entire space R . Let {uj}j=1",
+        "x": 55.4,
+        "y": 441.1,
+        "w": 486,
+        "h": 26.4,
+        "zh": "由于 N := rank({fi}) < n，且 fi ∈ R，这组向量 {fi} 张不成整个空间 R。令 {uj}"
+      },
+      {
+        "text": "be the orthonormal bases for the null space of {fi}i=1, and {ek}k=1 be any orthonormal bases for R . Then the product bases {uj ⊗ ek} form a set of bases for the minimal eigenspace V1 of S with the minimal eigenvalue of 0. Since Bi are full-rank, no extra dimensions exist for V1. Therefore, when we project Gt0 onto V1, we have:",
+        "x": 55.4,
+        "y": 399.5,
+        "w": 486,
+        "h": 54.3,
+        "zh": "是 {fi} 零空间的一组标准正交基，{ek} 是 R 的任意一组标准正交基。乘积基 {uj ⊗ ek} 就构成 S 的最小特征空间 V1 的一组基，对应的最小特征值为 0。因为 Bi 满秩，V1 没有额外的维度。因此把 Gt0 投影到 V1 时，有："
+      },
+      {
+        "text": "and thus sr(Gt ) ≤ rank(Gt ) ≤ n − N , since stable rank is a lower-bound of the rank.",
+        "x": 55.4,
+        "y": 327.5,
+        "w": 354.6,
+        "h": 12.4,
+        "zh": "从而 sr(Gt) ≤ rank(Gt) ≤ n − N。稳定秩是秩的一个下界。"
+      },
+      {
+        "text": "On the other hand, Gt can be written as a summation of N rank-1 matrices, by representing each fi = linear combination of {fj}j=1:",
+        "x": 55.4,
+        "y": 291.5,
+        "w": 416.8,
+        "h": 27.3,
+        "zh": "另一方面，把每个 fi 写成 {fj} 的线性组合后，Gt 可以写成 N 个秩 1 矩阵之和："
+      },
+      {
+        "text": "and thus has rank at most N . Therefore, when t is sufficiently large so that the second term in Eqn. 39 is negligible, by Lemma 3.3, we have (notice that N < n):",
+        "x": 55.4,
+        "y": 207.2,
+        "w": 486,
+        "h": 21.9,
+        "zh": "因此秩至多为 N。当 t 足够大、式 39 的第二项可以忽略时，由引理 3.3（并注意到 N < n），我们有："
+      },
+      {
+        "text": "Corollary B.5 (Low-rank Gt with special structure of V1). If V1(S) is 1-dimensional with decomposable eigenvector v = y ⊗ z, then sr(Gt ) = 1 and thus Gt becomes rank-1.",
+        "x": 55.4,
+        "y": 119.5,
+        "w": 486,
+        "h": 26.3,
+        "zh": "推论 B.5（V1 具有特殊结构时 Gt 低秩）。若 V1(S) 是一维的，且特征向量可分解为 v = y ⊗ z，则 sr(Gt) = 1，从而 Gt 变为秩 1。"
+      },
+      {
+        "text": "Proof. In this case, we have g0 = vv g0 ∝ v. Since v = y ⊗ z, the resulting G0 is a rank-1 matrix and thus sr(Gt ) =",
+        "x": 55.4,
+        "y": 86.2,
+        "w": 486,
+        "h": 12.6,
+        "zh": "证明。此时 g0 与 v 成比例，因为 g0 = v v g0。又因 v = y ⊗ z，得到的 G0 是秩 1 矩阵，所以 sr(Gt) ="
+      }
+    ],
+    "17": [
+      {
+        "text": "GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection",
+        "x": 150.6,
+        "y": 737.9,
+        "w": 295.6,
+        "h": 9,
+        "zh": "GaLore：通过梯度低秩投影实现显存高效的大语言模型训练"
+      },
+      {
+        "text": "B.3. Gradient Low-rank property for Transformers",
+        "x": 55.4,
+        "y": 715,
+        "w": 218.5,
+        "h": 10,
+        "zh": "B.3. Transformer 梯度的低秩性质"
+      },
+      {
+        "text": "Note that Transformers do not belong to the family of reversible networks. However, we can still show that the gradient of the lower layer (i.e., project-up) weight W ∈ R",
+        "x": 55.4,
+        "y": 684.4,
+        "w": 486,
+        "h": 21.9,
+        "zh": "Transformer 并不属于可逆网络。不过仍然可以证明，较低层（即 project-up）的权重 W ∈ R 的梯度"
+      },
+      {
+        "text": "of feed forward network (FFN) becomes low rank over time, using the JoMA framework (Tian et al., 2024). Here m is the embedding dimension, and n is the number of hidden nodes in FFNs. Lemma B.6 (Gradient of Project-up in Transformer FFNs). Suppose the embedding matrix U ∈ R column-orthonormal (M is vocabulary size), the activation functions are linear and the backpropagated gradient are stationary (Tian et al., 2024), then the training dynamics of transformed project-up matrix V := U W ∈ R",
+        "x": 55.4,
+        "y": 632.1,
+        "w": 486,
+        "h": 62.2,
+        "zh": "会随时间变为低秩。这里用的是 JoMA 框架（Tian et al., 2024），对象是前馈网络（FFN）。m 是嵌入维度，n 是 FFN 的隐藏节点数。引理 B.6（Transformer FFN 中 project-up 的梯度）。设嵌入矩阵 U ∈ R 列正交（M 为词表大小），激活是线性的，反向传播梯度是平稳的（Tian et al., 2024），则变换后的 project-up 矩阵 V := U W ∈ R 的训练动态为"
+      },
+      {
+        "text": "where A is the normalization factor of softmax, ◦ is the Hadamard (element-wise) product and ∆ is defined in the proof. As a result, the gradient of V is “exponentially more low-rank” than V itself.",
+        "x": 55.4,
+        "y": 551.7,
+        "w": 486,
+        "h": 21.9,
+        "zh": "其中 A 是 softmax 的归一化因子，◦ 是 Hadamard（逐元素）积，∆ 在证明里定义。因此，V 的梯度比 V 本身“在指数意义上更低秩”。"
+      },
+      {
+        "text": ". Here gj is the backpropagated gradient of hidden node j in FFN layer, Eq[·] is the conditional expectation given the query is token q, and x is the representation of token distribution in the previous layer of Transformer. Specifically, for intermediate layer, x represents the activation output of the previous project-up layer; for the first layer, x represents the frequency count of the input tokens. Then following the derivation of Theorem 2 (Tian et al., 2024), we have for each hidden node j and its weight wj, the transformed weight vj := U wj satisfies the following dynamics:",
+        "x": 55.4,
+        "y": 462.6,
+        "w": 486,
+        "h": 71.2,
+        "zh": "这里 gj 是 FFN 层隐藏节点 j 的反向传播梯度，Eq[·] 是在 query 为 token q 的条件下取的条件期望，x 是 Transformer 前一层里 token 分布的表示。对中间层，x 是前一个 project-up 层的激活；对第一层，x 是输入 token 的出现次数。按定理 2（Tian et al., 2024）的推导，对每个隐藏节点 j 及其权重 wj，变换后的权重 vj := U wj 满足下面的动态："
+      },
+      {
+        "text": "where vj := vj ◦ vj is the element-wise square of a vector and ◦ is the Hadamard (element-wise) product. Since V := [v1, . . . , vn], Eqn. 43 follows. Note that the dynamics of vj shows that the direction of vj will change over time (because of exp(vj /2)), and it is not clear how such dynamics leads to low-rank V and even more low-rank V˙ . For this, we per-row decompose the matrix V :",
+        "x": 55.4,
+        "y": 365.4,
+        "w": 486,
+        "h": 54,
+        "zh": "其中 vj := vj ◦ vj 表示向量逐元素平方，◦ 是 Hadamard（逐元素）积。由于 V := [v1, …, vn]，式 43 成立。vj 的动态表明它的方向会随时间改变（因为有 exp(vj / 2)）。这种动态为何会让 V 变低秩、并让 V˙ 更低秩，并不直接看得出。为此，把矩阵 V 按行拆开："
+      },
+      {
+        "text": "where ul ∈ R . We can also do the same for ∆:",
+        "x": 55.4,
+        "y": 283.1,
+        "w": 192.7,
+        "h": 11.5,
+        "zh": "其中 ul ∈ R。对 ∆ 也可以同样拆："
+      },
+      {
+        "text": "where μl ∈ R . Then Eqn. 43 can be decomposed along each row:",
+        "x": 55.4,
+        "y": 202.9,
+        "w": 267.7,
+        "h": 11.5,
+        "zh": "其中 μl ∈ R。于是式 43 可以按每一行写成："
+      },
+      {
+        "text": "Then it is clear that ul is always along the direction of μl, which is a fixed quality since the backpropagated gradient gj and input x are assumed to be stationary (and thus ∆j := Eq[gjx] is a constant). Therefore, let ul(t) = αl(t)μl with initial condition of the magnitude αl(0) = 0, and we have:",
+        "x": 55.4,
+        "y": 120.4,
+        "w": 485.1,
+        "h": 41.3,
+        "zh": "可见 ul 始终沿着 μl 的方向，而这个方向是固定的：反向传播梯度 gj 和输入 x 被假设为平稳，因此 ∆j := Eq[gj x] 是常数。令 ul(t) = αl(t) μl，初始幅度 αl(0) = 0，于是有："
+      }
+    ],
+    "18": [
+      {
+        "text": "GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection",
+        "x": 150.6,
+        "y": 737.9,
+        "w": 295.6,
+        "h": 9,
+        "zh": "GaLore：通过梯度低秩投影实现显存高效的大语言模型训练"
+      },
+      {
+        "text": "where 1 ≤ l ≤ M is the token index. In the following we will show that for different l, the growth of αl can be very different. This leads to very different row norms of V and V˙ over time, leading to their low-rank structures. Note that Eqn. 48 does not have a close form solution, instead we could estimate its growth:",
+        "x": 55.4,
+        "y": 691.1,
+        "w": 486,
+        "h": 33.9,
+        "zh": "其中 1 ≤ l ≤ M 是 token 的下标。下面说明，不同 l 上 αl 的增长速度可以差很多。这会让 V 和 V˙ 各行的范数随时间拉开差距，从而出现低秩结构。式 48 没有闭式解，但可以估计它如何增长："
+      },
+      {
+        "text": "dt ∈ [−1, 1]. Specifically, Note that both sides have analytic solutions using Gaussian error functions erf(x) = √ for dynamic system like x˙ = Ce",
+        "x": 55.4,
+        "y": 601.7,
+        "w": 486,
+        "h": 26.2,
+        "zh": "dt ∈ [−1, 1]。具体地说，两边都可以用高斯误差函数 erf(x) 写出解析形式。对 x˙ = C e 这类动力系统，"
+      },
+      {
+        "text": ", similar equation can be derived. Plug that in, we have:",
+        "x": 242.8,
+        "y": 440.6,
+        "w": 221.5,
+        "h": 10,
+        "zh": "可以得到类似的方程。代进去之后，我们有："
+      },
+      {
+        "text": "then limt→A√π/2a h(t; a) = +∞, and h(t; ¯μl) ≤ αl(t) ≤ nh(t; nμ¯l).",
+        "x": 55.4,
+        "y": 330.3,
+        "w": 279,
+        "h": 12.2,
+        "zh": "于是 lim t→A√π/2a 时 h(t; a) = +∞，并且 h(t; μ̄_l) ≤ α_l(t) ≤ n h(t; n μ̄_l)。"
+      },
+      {
+        "text": "= arg maxl μ¯l be the row with the largest entry of μ, then if μ¯l > nμ¯l for all l ̸= l , then when t → t := 2¯μ∗ , the magnitude αl∗(t) ≥ h(t; ¯μl∗) → +∞, while αl(t) ≤ nh(t; nμ¯l) still stay finite, since its critical time t := Since αl(t) controls the magnitude of each row of V , This means that V eventually becomes rank-1 and so does W. Finally, V˙ is even more low rank than V , since α˙l has αl in its exponents.",
+        "x": 55.4,
+        "y": 261.3,
+        "w": 486,
+        "h": 59.9,
+        "zh": "取 μ 里最大的那一行。若这一行大于其余每一行的 n 倍，则当 t 趋向临界时间 t := 2μ̄∗ 时，该行幅度趋于 +∞，而其他行的幅度仍然有限，因为它们的临界时间是 t := 。行幅度控制着 V 每一行的大小，因此 V 最终变成秩 1，W 也是如此。最后，V˙ 比 V 更低秩，因为幅度导数的指数里还带着幅度本身。"
+      },
+      {
+        "text": "Theorem 3.8 (Convergence of GaLore with fixed projections). Suppose the gradient has the form of Eqn. 8 and Ai, Bi",
+        "x": 55.4,
+        "y": 217.5,
+        "w": 485.5,
+        "h": 11.5,
+        "zh": "定理 3.8（投影固定时 GaLore 的收敛）。设梯度具有式 8 的形式，且 Ai、Bi"
+      },
+      {
+        "text": "W and ∥Wt∥ ≤ D. Let Rt := Pt⊤GtQt, Bˆit := Pt⊤Bi(Wt)Pt, and Ci have LA, LB and LC continuity with respect toP",
+        "x": 55.4,
+        "y": 202.5,
+        "w": 486,
+        "h": 17,
+        "zh": "关于 W，且 ∥Wt∥ ≤ D。令 Rt := Pt⊤GtQt，Bˆit := Pt⊤Bi(Wt)Pt；Ci 关于 P 具有 LA、LB、LC 连续性。"
+      },
+      {
+        "text": "i λmin( Bˆit)λmin( Cˆit). If we choose constant Pt = P and Qt = Q, then GaLore Cˆit := Q⊤t Ci(Wt)Qt and κt := 1 with ρt ≡ 1 satisfies:",
+        "x": 55.4,
+        "y": 181.6,
+        "w": 486,
+        "h": 25.9,
+        "zh": "即各 i 上 λmin(Bˆit) λmin(Cˆit)。若取常数 Pt = P、Qt = Q，则 Cˆit := Qt⊤ Ci(Wt) Qt，且在 ρt ≡ 1 时 GaLore 满足："
+      },
+      {
+        "text": "As a result, if mint κt > LA + LBLCD , Rt → 0 and thus GaLore converges with fixed Pt and Qt.",
+        "x": 55.4,
+        "y": 137.8,
+        "w": 400.5,
+        "h": 11.5,
+        "zh": "因此，若对所有 t 都有 κt > LA + LB LC D，则 Rt → 0，从而在固定的 Pt 和 Qt 下 GaLore 收敛。"
+      },
+      {
+        "text": "⊗ A)vec(X) where ⊗ is the Kronecker product, the gradient assumption can be written",
+        "x": 191.9,
+        "y": 114.4,
+        "w": 349.6,
+        "h": 10,
+        "zh": "写成 (⊗ A) vec(X)，其中 ⊗ 是 Kronecker 积。于是梯度的假设可以写成"
+      }
+    ],
+    "19": [
+      {
+        "text": "GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection",
+        "x": 150.6,
+        "y": 737.9,
+        "w": 295.6,
+        "h": 9,
+        "zh": "GaLore：通过梯度低秩投影实现显存高效的大语言模型训练"
+      },
+      {
+        "text": "be the vectorized versions of Gt and Wt, at := N i Cit ⊗ Bit are mn-by-mn PSD matrix. Using the same notation, it is clear to show that:",
+        "x": 55.4,
+        "y": 685.1,
+        "w": 414.6,
+        "h": 39.9,
+        "zh": "分别是 Gt 和 Wt 的向量化。at := 各 i 的 Cit ⊗ Bit 之和，是 mn × mn 的半正定矩阵。用同一套记号，容易得到："
+      },
+      {
+        "text": "GtQ) = vec(Rt) =: rt g˜t := vec( G˜t) = vec(P P⊤GtQQ⊤) = (Q ⊗ P)vec(Rt) = (Q ⊗ P)rt",
+        "x": 152.9,
+        "y": 644.9,
+        "w": 290.6,
+        "h": 28.2,
+        "zh": ""
+      },
+      {
+        "text": "Then we derive the recursive update rule for gt:",
+        "x": 55.4,
+        "y": 617,
+        "w": 189.5,
+        "h": 11.5,
+        "zh": "接着推导 gt 的递推："
+      },
+      {
+        "text": "= (at − at−1) + (St−1 − St)wt + at−1 − St−1wt = et + at−1 − St−1(wt−1 + ηg˜t−1) = et + gt−1 − ηSt−1g˜t−1",
+        "x": 201.9,
+        "y": 550.3,
+        "w": 203.6,
+        "h": 41.3,
+        "zh": ""
+      },
+      {
+        "text": "where et := (at − at−1) + (St−1 − St)wt. Left multiplying by (Q ⊗ P) , we have:",
+        "x": 55.4,
+        "y": 527.3,
+        "w": 339.6,
+        "h": 11.5,
+        "zh": "其中 et := (at − at−1) + (St−1 − St) wt。左乘 (Q ⊗ P) 之后，得到："
+      },
+      {
+        "text": "rt = (Q ⊗ P) et + rt−1 − η(Q ⊗ P) St−1(Q ⊗ P)rt−1",
+        "x": 177.9,
+        "y": 505.4,
+        "w": 235,
+        "h": 11.5,
+        "zh": ""
+      },
+      {
+        "text": "Now we bound the norm. Note that since P and Q are projection matrices with P",
+        "x": 55.4,
+        "y": 385.3,
+        "w": 324.5,
+        "h": 10,
+        "zh": "现在界定这个范数。由于 P 和 Q 是投影矩阵，并且 P"
+      },
+      {
+        "text": "i(Bi,t−1WtCi,t−1 − BitWtCit). So we only need to bound ∥Et∥F . Note that: ∥At − At−1∥F ≤ LA∥Wt − Wt−1∥F = ηLA∥G˜t−1∥F ≤ ηLA∥Rt−1∥F ∥(Bt − Bt−1)WtCt−1∥F ≤ LB∥Wt − Wt−1∥F ∥Wt∥F ∥Ct−1∥F = ηLBLCD ∥Rt−1∥F ∥BtWt(Ct−1 − Ct)∥F ≤ LC∥Bt∥F ∥Wt∥F ∥Wt−1 − Wt∥F = ηLBLCD ∥Rt−1∥F",
+        "x": 119.6,
+        "y": 283,
+        "w": 421.8,
+        "h": 67.4,
+        "zh": "来自各项 (Bi,t−1 Wt Ci,t−1 − Bit Wt Cit)。因此只需界定 ∥Et∥F。注意：∥At − At−1∥F ≤ LA ∥Wt − Wt−1∥F = η LA ∥G˜t−1∥F ≤ η LA ∥Rt−1∥F；∥(Bt − Bt−1) Wt Ct−1∥F ≤ LB ∥Wt − Wt−1∥F ∥Wt∥F ∥Ct−1∥F = η LB LC D ∥Rt−1∥F；∥Bt Wt (Ct−1 − Ct)∥F ≤ LC ∥Bt∥F ∥Wt∥F ∥Wt−1 − Wt∥F = η LB LC D ∥Rt−1∥F。"
+      },
+      {
+        "text": "Now we estimate the minimal eigenvalue of Sˆt−1.",
+        "x": 55.4,
+        "y": 253,
+        "w": 213.8,
+        "h": 14,
+        "zh": "接下来估计 Ŝt−1 的最小特征值。"
+      },
+      {
+        "text": "Let λit := λmin(P⊤BitP) and νit := λmin(Q⊤CitQ), then BitP) ⊗ (Q CitQ)) = λitνit and for any unit vector v:",
+        "x": 97.2,
+        "y": 240.1,
+        "w": 444.2,
+        "h": 25,
+        "zh": "令 λit := λmin(P⊤ Bit P)，νit := λmin(Q⊤ Cit Q)。于是投影后的 Kronecker 积等于 λit νit，并且对任意单位向量 v："
+      },
+      {
+        "text": "i λi,t−1νi,t−1. Therefore, let κt := i λitνit and using the fact that ∥rt∥2 = ∥Rt∥F , we have:",
+        "x": 77.1,
+        "y": 166.6,
+        "w": 464.4,
+        "h": 26.2,
+        "zh": "即各 i 的 λ_{i,t−1} ν_{i,t−1}。因此令 κt := i λit νit，并用 ∥rt∥2 = ∥Rt∥F，得到："
+      },
+      {
+        "text": "i λitνit. Therefore, λmax(I − ηSt−1) ≤ 1 − N",
+        "x": 174.2,
+        "y": 179.4,
+        "w": 203.8,
+        "h": 13.4,
+        "zh": "即各 i 的 λit νit。因此 λmax(I − η St−1) ≤ 1 − N"
+      },
+      {
+        "text": "∥Rt∥F ≤ 1 − η(κt−1 − LA − 2LBLCD ) ∥Rt−1∥F",
+        "x": 187.9,
+        "y": 145.1,
+        "w": 219.6,
+        "h": 11.5,
+        "zh": ""
+      }
+    ],
+    "20": [
+      {
+        "text": "GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection",
+        "x": 150.6,
+        "y": 737.9,
+        "w": 295.6,
+        "h": 9,
+        "zh": "GaLore：通过梯度低秩投影实现显存高效的大语言模型训练"
+      },
+      {
+        "text": "We introduce details of the LLaMA architecture and hyperparameters used for pre-training. Table 5 shows the most hyperparameters of LLaMA models across model sizes. We use a max sequence length of 256 for all models, with a batch size of 131K tokens. For all experiments, we adopt learning rate warmup for the first 10% of the training steps, and use cosine annealing for the learning rate schedule, decaying to 10% of the initial learning rate.",
+        "x": 55.4,
+        "y": 641.1,
+        "w": 486,
+        "h": 45.8,
+        "zh": "这里补充预训练所用的 LLaMA 架构和超参数。表 5 列出了各规模 LLaMA 的主要超参数。所有模型的最大序列长度都是 256，批大小为 131K 个 token。所有实验都在前 10% 的训练步上做学习率预热，随后用余弦退火，把学习率降到初始值的 10%。"
+      },
+      {
+        "text": "Table 5: Hyperparameters of LLaMA models for evaluation. Data amount are specified in tokens.",
+        "x": 103.9,
+        "y": 618.6,
+        "w": 389.1,
+        "h": 10,
+        "zh": "表 5：评估用的 LLaMA 超参数。数据量以 token 计。"
+      },
+      {
+        "text": "For all methods on each size of models (from 60M to 1B), we tune their favorite learning rate from a set of {0.01, 0.005, 0.001, 0.0005, 0.0001}, and the best learning rate is chosen based on the validation perplexity. We find GaLore is insensitive to hyperparameters and tends to be stable with the same learning rate across different model sizes. For all models, GaLore use the same hyperparameters, including the learning rate of 0.01, scale factor α of 0.25, and the subspace change frequency of T of 200. We note that since α can be viewed as a fractional learning rate, most of the modules (e.g., multi-head attention and feed-forward layers) in LLaMA models have the actual learning rate of 0.0025. This is, still, a relatively large stable learning rate compared to the full-rank baseline, which usually uses a learning rate",
+        "x": 55.4,
+        "y": 420.2,
+        "w": 486,
+        "h": 81.7,
+        "zh": "对 60M 到 1B 的每个规模，所有方法都从 {0.01, 0.005, 0.001, 0.0005, 0.0001} 里选学习率，按验证困惑度取最好的一个。GaLore 对超参数不敏感，不同规模往往可以用同一个学习率。所有模型上，GaLore 的超参数都相同：学习率 0.01，缩放因子 α = 0.25，子空间更换频率 T = 200。α 可以看成学习率上的一个比例因子，因此 LLaMA 里多头注意力、前馈层等大多数模块的实际学习率是 0.0025。相对全秩基线，这仍然是一个偏大但稳定的学习率。全秩基线通常使用的学习率"
+      },
+      {
+        "text": "≤ 0.001 to avoid spikes in the training loss.",
+        "x": 55.4,
+        "y": 408.2,
+        "w": 173.9,
+        "h": 10,
+        "zh": "不超过 0.001，以免训练损失出现尖峰。"
+      },
+      {
+        "text": "As the GPU memory usage for a specific component is hard to measure directly, we estimate the memory usage of the weight parameters and optimizer states for each method on different model sizes. The estimation is based on the number of original parameters and the number of low-rank parameters, trained by BF16 format. For example, for a 60M model, LoRA (r = 128) requires 42.7M parameters on low-rank adaptors and 60M parameters on the original weights, resulting in a memory cost of 0.20G for weight parameters and 0.17G for optimizer states. Table 6 shows the memory estimates for weight parameters and optimizer states for different methods on different model sizes, as a compliment to the total memory",
+        "x": 55.4,
+        "y": 304.6,
+        "w": 486,
+        "h": 69.7,
+        "zh": "某一部分的 GPU 显存很难直接测到，所以我们按参数个数估计各方法、各规模上权重和优化器状态的显存，格式按 BF16。例如 60M 模型上，LoRA（r = 128）的低秩适配器有 42.7M 个参数，原始权重有 60M 个参数，对应权重显存 0.20G、优化器状态 0.17G。表 6 列出不同方法和规模下这两部分的估计，用来补充总显存。"
+      },
+      {
+        "text": "Table 6: Memory estimates for weight parameters and optimizer states.",
+        "x": 156.6,
+        "y": 270.2,
+        "w": 283.7,
+        "h": 10,
+        "zh": "表 6：权重参数和优化器状态的显存估计。"
+      },
+      {
+        "text": "(a) Memory estimate of weight parameters.",
+        "x": 99.3,
+        "y": 249.7,
+        "w": 155.4,
+        "h": 9,
+        "zh": "(a) 权重参数的显存估计。"
+      },
+      {
+        "text": "(b) Memory estimate of optimizer states.",
+        "x": 346.7,
+        "y": 249.7,
+        "w": 146.4,
+        "h": 9,
+        "zh": "(b) 优化器状态的显存估计。"
+      }
+    ],
+    "21": [
+      {
+        "text": "GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection",
+        "x": 150.6,
+        "y": 737.9,
+        "w": 295.6,
+        "h": 9,
+        "zh": "GaLore：通过梯度低秩投影实现显存高效的大语言模型训练"
+      },
+      {
+        "text": "We show the training progression of 130M, 350M, 1B and 7B models in Figure 6. Compared to LoRA, GaLore closely matches the training trajectory of the full-rank baseline, and it even converges slightly faster at the beginning of the training.",
+        "x": 55.4,
+        "y": 684.4,
+        "w": 486,
+        "h": 21.9,
+        "zh": "图 6 给出 130M、350M、1B 和 7B 的训练过程。和 LoRA 相比，GaLore 的轨迹紧贴全秩基线，而且训练刚开始时收敛还略快一些。"
+      }
+    ],
+    "22": [
+      {
+        "text": "GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection",
+        "x": 150.6,
+        "y": 737.9,
+        "w": 295.6,
+        "h": 9,
+        "zh": "GaLore：通过梯度低秩投影实现显存高效的大语言模型训练"
+      },
+      {
+        "text": "We fine-tune the pre-trained RoBERTa-Base model on the GLUE benchmark using the model provided by the Hugging Face . We trained the model for 30 epochs with a batch size of 16 for all tasks except for CoLA, which uses a batch size of 32. We tune the learning rate and scale factor for GaLore. Table 7 shows the hyperparameters used for fine-tuning RoBERTa-Base for GaLore.",
+        "x": 55.4,
+        "y": 641.1,
+        "w": 486,
+        "h": 45.8,
+        "zh": "我们用 Hugging Face 提供的 RoBERTa-Base，在 GLUE 上做微调。除 CoLA 的 batch size 为 32 外，其余任务都训练 30 个 epoch、batch size 为 16。GaLore 的学习率和缩放因子做了调节。表 7 是 GaLore 微调 RoBERTa-Base 的超参数。"
+      },
+      {
+        "text": "Table 7: Hyperparameters of fine-tuning RoBERTa base for GaLore.",
+        "x": 161.9,
+        "y": 620.6,
+        "w": 273.1,
+        "h": 10,
+        "zh": "表 7：用 GaLore 微调 RoBERTa-Base 的超参数。"
+      },
+      {
+        "text": "We evaluate GaLore on the SQuAD dataset (Rajpurkar et al., 2016) using the pre-trained BERT-Base model. We use rank 16 for both GaLore and LoRA. GaLore outperforms LoRA in both Exact Match and F1 scores.",
+        "x": 55.4,
+        "y": 347.7,
+        "w": 486,
+        "h": 21.9,
+        "zh": "我们在 SQuAD（Rajpurkar et al., 2016）上，用预训练的 BERT-Base 评估 GaLore。GaLore 和 LoRA 的秩都是 16。GaLore 的 Exact Match 和 F1 都高于 LoRA。"
+      },
+      {
+        "text": "Table 8: Evaluating GaLore on SQuAD dataset. Both Exact Match and F1 scores are reported.",
+        "x": 110.2,
+        "y": 325.2,
+        "w": 376.4,
+        "h": 10,
+        "zh": "表 8：在 SQuAD 上评估 GaLore。同时给出 Exact Match 和 F1。"
+      },
+      {
+        "text": "D.3. Fine-Tuning on OpenAssistant Conversations Dataset",
+        "x": 55.4,
+        "y": 220,
+        "w": 246.6,
+        "h": 10,
+        "zh": "D.3. 在 OpenAssistant Conversations 数据集上微调"
+      },
+      {
+        "text": "We apply GaLore on fine-tuning experiments on the OpenAssistant Conversations dataset (K¨opf et al., 2024), using the pre-trained models, including Gemma-2b, Phi-2, and LLaMA-7B (Touvron et al., 2023; Team et al., 2024). We use rank of 128 for both GaLore and LoRA. The results are shown in Table 9.",
+        "x": 55.4,
+        "y": 177.5,
+        "w": 486,
+        "h": 33.9,
+        "zh": "我们在 OpenAssistant Conversations 数据集（Köpf et al., 2024）上用 GaLore 做微调，预训练模型包括 Gemma-2b、Phi-2 和 LLaMA-7B（Touvron et al., 2023; Team et al., 2024）。GaLore 和 LoRA 的秩都是 128。结果见表 9。"
+      },
+      {
+        "text": "We also apply GaLore on fine-tuning experiments on the Belle-1M dataset (BELLEGroup, 2023), using the pre-trained models, including Gemma-2b, Phi-2, and LLaMA-7B. We use rank of 128 for both GaLore and LoRA. The results are",
+        "x": 55.4,
+        "y": 121.7,
+        "w": 486,
+        "h": 21.9,
+        "zh": "我们也在 Belle-1M 数据集（BELLEGroup, 2023）上用 GaLore 做微调，预训练模型包括 Gemma-2b、Phi-2 和 LLaMA-7B。GaLore 和 LoRA 的秩都是 128。结果见"
+      },
+      {
+        "text": "https://huggingface.co/transformers/model_doc/roberta.html",
+        "x": 71.6,
+        "y": 76.9,
+        "w": 312,
+        "h": 9,
+        "zh": ""
+      }
+    ],
+    "23": [
+      {
+        "text": "GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection",
+        "x": 150.6,
+        "y": 737.9,
+        "w": 295.6,
+        "h": 9,
+        "zh": "GaLore：通过梯度低秩投影实现显存高效的大语言模型训练"
+      },
+      {
+        "text": "Table 9: Evaluating GaLore on OpenAssistant Conversations dataset. Testing perplexity is reported.",
+        "x": 99.4,
+        "y": 716.6,
+        "w": 398,
+        "h": 10,
+        "zh": "表 9：在 OpenAssistant Conversations 数据集上评估 GaLore。报告测试困惑度。"
+      },
+      {
+        "text": "Table 10: Evaluating GaLore on Belle-1M dataset. Testing perplexity is reported.",
+        "x": 136.4,
+        "y": 626,
+        "w": 324.1,
+        "h": 10,
+        "zh": "表 10：在 Belle-1M 数据集上评估 GaLore。报告测试困惑度。"
+      },
+      {
+        "text": "We empirically measure the memory usage of different methods for pre-training LLaMA 1B model on C4 dataset with a",
+        "x": 55.4,
+        "y": 506.4,
+        "w": 486,
+        "h": 10,
+        "zh": "我们实测了不同方法在 C4 上预训练 LLaMA 1B 的显存，"
+      },
+      {
+        "text": "token batch size of 256, as shown in Table 11.",
+        "x": 55.4,
+        "y": 494.5,
+        "w": 183.4,
+        "h": 10,
+        "zh": "token 批大小为 256，结果见表 11。"
+      },
+      {
+        "text": "Table 11: Measuring memory and throughput on LLaMA 1B model.",
+        "x": 161.8,
+        "y": 472.8,
+        "w": 273.2,
+        "h": 10,
+        "zh": "表 11：在 LLaMA 1B 上测量显存和吞吐。"
+      }
+    ]
+  }
+}

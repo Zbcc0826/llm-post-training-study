@@ -1,0 +1,1573 @@
+{
+  "id": "1909.08053",
+  "title": "1909.08053",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "Megatron-LM: Training Multi-Billion Parameter Language Models Using",
+        "x": 72,
+        "y": 691.1,
+        "w": 452.8,
+        "h": 14.3,
+        "zh": "Megatron-LM：训练数十亿参数的语言模型，使用"
+      },
+      {
+        "text": "Natural Language Processing (NLP) is advancing quickly in part due to an increase in available compute and dataset size. The abundance of compute and data enables training increasingly larger language models via unsupervised pretraining (Devlin et al., 2018; Radford et al., 2019). Empirical evidence indicates that larger language models are dramatically more useful for NLP tasks such as article completion, question answering, and natural language inference (Lan et al., 2019; Raffel et al., 2019). By finetuning these pretrained language models on downstream natural language tasks, one can achieve state of the art results as shown in recent work (Devlin et al., 2018; Peters et al., 2018; Howard & Ruder, 2018; Radford et al., 2018; 2017; Ramachandran et al., 2016; Liu et al., 2019b; Dai et al., 2019; Yang et al., 2019; Liu et al., 2019a; Lan et al., 2019). As these models become larger, they exceed the memory limit of modern processors, and require additional memory management techniques such as activation checkpointing (Chen et al., 2016). Widely used optimization algorithms such as ADAM require additional memory per parameter to store momentum and other optimizer state, which reduces the size of models that can be effectively trained. Several approaches to model parallelism overcome this limit by partitioning the model such that the weights and their associated optimizer state do not need to reside concurrently on the processor. For example, GPipe (Huang et al., 2018) and Mesh-Tensorflow (Shazeer et al., 2018) provide frameworks",
+        "x": 307.1,
+        "y": 243.4,
+        "w": 236.1,
+        "h": 326.8,
+        "zh": "自然语言处理（NLP）进展很快，一部分原因是可用算力和数据集规模都在增长。算力和数据都很充裕，因此可以经由无监督预训练，训练越来越大的语言模型（Devlin et al., 2018; Radford et al., 2019）。经验证据表明，更大的语言模型在文章补全、问答、自然语言推理等 NLP 任务上有用得多（Lan et al., 2019; Raffel et al., 2019）。把这些预训练语言模型拿到下游自然语言任务上微调，就能达到近期工作所展示的当前最优结果（Devlin et al., 2018; Peters et al., 2018; Howard & Ruder, 2018; Radford et al., 2018; 2017; Ramachandran et al., 2016; Liu et al., 2019b; Dai et al., 2019; Yang et al., 2019; Liu et al., 2019a; Lan et al., 2019）。这些模型再变大，就会超出现代处理器的显存上限，于是需要激活检查点（activation checkpointing）这类额外的显存管理技术（Chen et al., 2016）。ADAM 这类常用优化算法还要为每个参数额外存放动量和其他优化器状态，能够有效训练的模型规模因此更小。若干模型并行方法通过把模型划分开，突破了这一限制，使权重及其优化器状态不必同时驻留在同一块处理器上。例如，GPipe（Huang et al., 2018）和 Mesh-Tensorflow（Shazeer et al., 2018）提供了框架"
+      },
+      {
+        "text": "Recent work in language modeling demonstrates that training large transformer models advances the state of the art in Natural Language Processing applications. However, very large models can be quite difficult to train due to memory constraints. In this work, we present our techniques for training very large transformer models and implement a simple, efficient intra-layer model parallel approach that enables training transformer models with billions of parameters. Our approach does not require a new compiler or library changes, is orthogonal and complimentary to pipeline model parallelism, and can be fully implemented with the insertion of a few communication operations in native PyTorch. We illustrate this approach by converging transformer based models up to 8.3 billion parameters using 512 GPUs. We sustain 15.1 PetaFLOPs across the entire application with 76% scaling efficiency when compared to a strong single GPU baseline that sustains 39 TeraFLOPs, which is 30% of peak FLOPs. To demonstrate that large language models can further advance the state of the art (SOTA), we train an 8.3 billion parameter transformer language model similar to GPT-2 and a 3.9 billion parameter model similar to BERT. We show that careful attention to the placement of layer normalization",
+        "x": 75,
+        "y": 245.4,
+        "w": 196.3,
+        "h": 320.8,
+        "zh": "近期的语言建模工作表明，训练大型 Transformer 模型，把自然语言处理应用的当前最优水平往前推了一截。然而，特别大的模型会因为显存限制而相当难训练。本文给出我们训练超大 Transformer 模型的技术，并实现了一种简单、高效的层内模型并行方法，从而能够训练具有数十亿参数的 Transformer 模型。我们的方法不需要新的编译器，也不需要改库；它与流水线模型并行正交且互补，只需在原生 PyTorch 里插入少数几次通信操作就能完整实现。我们用这个方法，在 512 块 GPU 上把基于 Transformer 的模型训练到收敛，规模最大到 83 亿参数。整个应用持续达到 15.1 PetaFLOPs；对照一条强单 GPU 基线（持续 39 TeraFLOPs，即峰值 FLOPs 的 30%），扩展效率为 76%。为了表明大语言模型还能把当前最优（SOTA）再往前推，我们训练了一个类似 GPT-2 的 83 亿参数 Transformer 语言模型，以及一个类似 BERT 的 39 亿参数模型。我们表明，只要仔细处理层归一化放在什么位置"
+      },
+      {
+        "text": "for model parallelism of different kinds. However, they",
+        "x": 307.4,
+        "y": 231.5,
+        "w": 234.4,
+        "h": 10,
+        "zh": "，用来做不同形式的模型并行。不过，它们"
+      },
+      {
+        "text": "creased performance as the model size grows. Using the GPT-2 model we achieve SOTA results on the WikiText103 (10.8 compared to SOTA perplexity of 15.8) and LAMBADA (66.5% compared to SOTA accuracy of 63.2%) datasets. Our BERT model achieves SOTA results on the RACE dataset (90.9% compared to SOTA accuracy of",
+        "x": 75.4,
+        "y": 149.7,
+        "w": 195.8,
+        "h": 81.7,
+        "zh": "性能会随着模型变大而提高。使用 GPT-2 模型，我们在 WikiText103（10.8，对照的 SOTA 困惑度是 15.8）和 LAMBADA（66.5%，对照的 SOTA 准确率是 63.2%）数据集上取得了 SOTA。我们的 BERT 模型在 RACE 数据集上取得了 SOTA（90.9%，对照的 SOTA 准确率是"
+      },
+      {
+        "text": "require rewriting the model, and rely on custom compilers and frameworks that are still under development. In this work, we implement a simple and efficient model parallel approach using intra-layer model-parallelism. We exploit the inherent structure in transformer based language models to make a simple model-parallel implementation that trains efficiently in PyTorch, with no custom C++ code or compiler required. This approach is orthogonal to pipelinebased model parallelism as advocated by approaches such as GPipe (Huang et al., 2018). To demonstrate the scalability of our approach, we establish",
+        "x": 307.1,
+        "y": 88,
+        "w": 236,
+        "h": 141.5,
+        "zh": "得把模型重写一遍，并且依赖仍在开发中的定制编译器和框架。本文用层内模型并行，实现了一种简单而高效的模型并行方法。我们利用基于 Transformer 的语言模型里固有的结构，做出一种简单的模型并行实现，能在 PyTorch 里高效训练，不需要定制的 C++ 代码，也不需要编译器。这一方法与 GPipe（Huang et al., 2018）等所主张的、基于流水线的模型并行相互正交。为展示本方法的可扩展性，我们建立"
+      },
+      {
+        "text": "Equal contribution NVIDIA. Correspondence to: Mohammad Shoeybi <mshoeybi@nvidia.com>.",
+        "x": 55.4,
+        "y": 96.9,
+        "w": 234,
+        "h": 18.9,
+        "zh": "同等贡献。NVIDIA。通信联系：Mohammad Shoeybi <mshoeybi@nvidia.com>。"
+      }
+    ],
+    "2": [
+      {
+        "text": "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+        "x": 120.9,
+        "y": 737.9,
+        "w": 355.2,
+        "h": 9,
+        "zh": "Megatron-LM：用模型并行训练数十亿参数的语言模型"
+      },
+      {
+        "text": "• We show that careful attention to the placement of layer normalization in BERT-like models is critical to achieving increased accuracies as the model grows.",
+        "x": 317.4,
+        "y": 691.1,
+        "w": 224,
+        "h": 33.9,
+        "zh": "• 我们表明：在类 BERT 模型里，层归一化放在什么位置必须仔细处理，这是模型变大之后准确率还能继续上升的关键。"
+      },
+      {
+        "text": "• We demonstrate that scaling the model size results in improved accuracies for both GPT-2 (studied up to 8.3 billion parameters) and BERT (studied up to 3.9B",
+        "x": 317.4,
+        "y": 646.7,
+        "w": 224,
+        "h": 33.9,
+        "zh": "• 我们证明，把模型做大，GPT-2（我们研究到 83 亿参数）和 BERT（我们研究到 3.9B"
+      },
+      {
+        "text": "• We showcase that our models achieve state of the art results on test sets: perplexity on WikiText103 (10.8 ppl), accuracy on LAMBADA (66.5%), and accuracy",
+        "x": 317.4,
+        "y": 590.4,
+        "w": 224.4,
+        "h": 33.9,
+        "zh": "• 我们展示，这些模型在测试集上达到了当前最优：WikiText103 上的困惑度（10.8 ppl）、LAMBADA 上的准确率（66.5%），以及准确率"
+      },
+      {
+        "text": "Figure 1. Model (blue) and model+data (green) parallel FLOPS as a function of number of GPUs. Model parallel (blue): up to 8-way model parallel weak scaling with approximately 1 billion parameters per GPU (e.g. 2 billion for 2 GPUs and 4 billion for 4 GPUs). Model+data parallel (green): similar configuration as model parallel combined with 64-way data parallel.",
+        "x": 54.9,
+        "y": 515.5,
+        "w": 234.7,
+        "h": 63.8,
+        "zh": "图 1. 模型并行（蓝色）以及模型并行加数据并行（绿色）的 FLOPS，随 GPU 数量变化。模型并行（蓝色）：最多 8 路模型并行的弱扩展，大约每块 GPU 10 亿参数（例如 2 块 GPU 为 20 亿，4 块 GPU 为 40 亿）。模型并行加数据并行（绿色）：配置与模型并行类似，再叠上 64 路数据并行。"
+      },
+      {
+        "text": "• We open source our code along with the training and evaluation pipelines at https://github.com/",
+        "x": 317.4,
+        "y": 546,
+        "w": 225.2,
+        "h": 21.9,
+        "zh": "• 我们把代码连同训练和评估流水线一起开源，地址是 https://github.com/"
+      },
+      {
+        "text": "a baseline by training a model of 1.2 billion parameters on a single NVIDIA V100 32GB GPU, that sustains 39 TeraFLOPs. This is 30% of the theoretical peak FLOPS for a single GPU as configured in a DGX-2H server, and is thus a strong baseline. Scaling the model to 8.3 billion parameters on 512 GPUs with 8-way model parallelism, we achieve up to 15.1 PetaFLOPs per second sustained over the entire application. This is 76% scaling efficiency compared to the single GPU case. Figure 1 shows more detailed scaling results. To analyze the effect of model size scaling on accuracy, we train both left-to-right GPT-2 (Radford et al., 2019) language models as well as BERT (Devlin et al., 2018) bidirectional transformers and evaluate them on several downstream tasks. We show that the existing BERT architecture results in model degradation as the size increases. We overcome this challenge by rearranging the layer normalization and residual connection in the transformer layers and show that with this change, results for the downstream tasks on development sets improve monotonically as the model size increases. In addition, we show that our models achieve test set state of the art (SOTA) results on WikiText103, cloze-style prediction accuracy on LAMBADA, and reading comprehension RACE datasets. In summary, our contributions are as follows:",
+        "x": 55.1,
+        "y": 177.5,
+        "w": 236,
+        "h": 308.8,
+        "zh": "一条基线：在单块 NVIDIA V100 32GB GPU 上训练一个 12 亿参数的模型，持续达到 39 TeraFLOPs。按 DGX-2H 服务器里单块 GPU 的配置，这是理论峰值 FLOPS 的 30%，因此是一条强基线。把模型扩到 83 亿参数、放到 512 块 GPU 上、使用 8 路模型并行，整个应用持续达到每秒最高 15.1 PetaFLOPs。相对单 GPU 的情形，扩展效率为 76%。图 1 给了更细的扩展结果。为了分析模型变大对准确率的影响，我们既训练从左到右的 GPT-2（Radford et al., 2019）语言模型，也训练 BERT（Devlin et al., 2018）双向 Transformer，并在若干下游任务上评估。我们表明，现有的 BERT 架构会随着规模增大而退化。我们把 Transformer 层里的层归一化和残差连接重新排列，克服了这个问题，并表明做了这个改动之后，开发集上的下游任务结果随着模型变大而单调变好。此外，我们的模型在 WikiText103 的测试集困惑度、LAMBADA 的完形填空式预测准确率，以及阅读理解数据集 RACE 上，都达到了当前最优（SOTA）。概括起来，我们的贡献如下："
+      },
+      {
+        "text": "Pretrained language models have become an indispensable part of NLP researchers’ toolkits. Leveraging large corpus pretraining to learn robust neural representations of language is an active area of research that has spanned the past decade. Early examples of pretraining and transferring neural representations of language demonstrated that pretrained word embedding tables improve downstream task results compared to word embedding tables learned from scratch (Mikolov et al., 2013; Pennington et al., 2014; Turian et al., 2010). Later work advanced research in this area by learning and transferring neural models that capture contextual representations of words (Melamud et al., 2016; McCann et al., 2017; Peters et al., 2018; Radford et al., 2017; 2019). Recent parallel work (Ramachandran et al., 2016; Howard & Ruder, 2018; Radford et al., 2018; Devlin et al., 2018; Liu et al., 2019b; Dai et al., 2019; Yang et al., 2019; Liu et al., 2019a; Lan et al., 2019) further builds upon these ideas by not just transferring the language model to extract contextual word representations, but by also finetuning the language model in an end to end fashion on downstream tasks. Through these works, the state of the art has advanced from transferring just word embedding tables to transferring entire multi-billion parameter language models. This progression of methods has necessitated the need for hardware, systems techniques, and frameworks that are able to operate efficiently at scale and satisfy increasing computational needs. Our work aims to provide the tools necessary to take another step forward in this trend.",
+        "x": 307.4,
+        "y": 144.6,
+        "w": 235.7,
+        "h": 332.8,
+        "zh": "预训练语言模型已经成为 NLP 研究者手头离不开的工具。用大规模语料做预训练，学出稳健的语言神经表示，是过去十年里一直很活跃的研究方向。早期的预训练和迁移表明，预训练好的词嵌入表，比从头学的词嵌入表更能提高下游任务的结果（Mikolov et al., 2013; Pennington et al., 2014; Turian et al., 2010）。后来的工作又进了一步：学习并迁移那些能抓住词的上下文表示的神经模型（Melamud et al., 2016; McCann et al., 2017; Peters et al., 2018; Radford et al., 2017; 2019）。同期的一批工作（Ramachandran et al., 2016; Howard & Ruder, 2018; Radford et al., 2018; Devlin et al., 2018; Liu et al., 2019b; Dai et al., 2019; Yang et al., 2019; Liu et al., 2019a; Lan et al., 2019）在这些想法上再往前走：不只是把语言模型迁过去、用来抽取上下文中的词表示，还把语言模型端到端地微调到下游任务上。经过这些工作，当前最优已经从“只迁移词嵌入表”，走到了“迁移整整一个数十亿参数的语言模型”。方法走到这一步，就需要能在大规模上高效运转、并且扛得住不断增长的计算需求的硬件、系统技术和框架。我们的工作想提供的，就是再把这个趋势往前推一步所需要的工具。"
+      },
+      {
+        "text": "• We implement a simple and efficient model parallel approach by making only a few targeted modifications to an existing PyTorch transformer implementation.",
+        "x": 65.4,
+        "y": 125.4,
+        "w": 224,
+        "h": 33.9,
+        "zh": "• 我们只对一份现成的 PyTorch Transformer 实现做少数几处有针对性的修改，就实现了一种简单而高效的模型并行方法。"
+      },
+      {
+        "text": "2.2. Transformer Language Models and Multi-Head",
+        "x": 307.4,
+        "y": 119.5,
+        "w": 220.7,
+        "h": 10,
+        "zh": "2.2. Transformer 语言模型与多头"
+      },
+      {
+        "text": "• We perform an in-depth empirical analysis of our model and data parallel technique and demonstrate up to 76% scaling efficiency using 512 GPUs.",
+        "x": 65.4,
+        "y": 76.9,
+        "w": 224.2,
+        "h": 33.9,
+        "zh": "• 我们对这套模型并行和数据并行技术做了深入的实证分析，并表明用 512 块 GPU 时，扩展效率最高可达 76%。"
+      },
+      {
+        "text": "Current work in NLP trends towards using transformer models (Vaswani et al., 2017) due to their superior accuracy",
+        "x": 307.4,
+        "y": 76.9,
+        "w": 235.7,
+        "h": 21.9,
+        "zh": "当前 NLP 的趋势是使用 Transformer 模型（Vaswani et al., 2017），因为它们的准确率更高"
+      }
+    ],
+    "3": [
+      {
+        "text": "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+        "x": 120.9,
+        "y": 737.9,
+        "w": 355.2,
+        "h": 9,
+        "zh": "Megatron-LM：用模型并行训练数十亿参数的语言模型"
+      },
+      {
+        "text": "gate these effects and drive down the training time of large neural networks. To scale out training even further, parallel work (Chen et al., 2016) has combined data parallelism with activation checkpointing: recomputing activations in the backward pass without storing them in the forward pass to reduce memory requirements. However, these techniques have one fundamental limitation in the problem size they can tackle: the model must fit entirely on one worker. With language models of increasing size and complexity like BERT and GPT-2, neural networks have approached the memory capacity of modern hardware accelerators. One solution to this problem is to employ parameter sharing to reduce the memory footprint of the model (Lan et al., 2019), but this limits the overall capacity of the model. Our approach is to utilize model parallelism to split the model across multiple accelerators. This not only alleviates the memory pressure, but also increases the amount of parallelism independently of the microbatch size. Within model parallelism, there are two further paradigms: layer-wise pipeline parallelism, and more general distributed tensor computation. In pipeline model parallelism, groups of operations are performed on one device before the outputs are passed to the next device in the pipeline where a different group of operations are performed. Some approaches (Harlap et al., 2018; Chen et al., 2018) use a parameter server (Li et al., 2014) in conjunction with pipeline parallelism. However these suffer from inconsistency issues. The GPipe framework for TensorFlow (Huang et al., 2018) overcomes this inconsistency issue by using synchronous gradient decent. This approach requires additional logic to handle the efficient pipelining of these communication and computation operations, and suffers from pipeline bubbles that reduce efficiency, or changes to the optimizer itself which impact accuracy. Distributed tensor computation is an orthogonal and more general approach that partitions a tensor operation across multiple devices to accelerate computation or increase model size. FlexFlow (Jia et al., 2018), a deep learning framework orchestrating such parallel computation, provides a method to pick the best parallelization strategy. Recently, Mesh-TensorFlow (Shazeer et al., 2018) introduced a language for specifying a general class of distributed tensor computations in TensorFlow (Abadi et al., 2015). The parallel dimensions are specified in the language by the end user and the resulting graph is compiled with proper collective primitives. We utilize similar insights to those leveraged in Mesh-TensorFlow and exploit parallelism in computing the transformer’s attention heads to parallelize our transformer model. However, rather than implementing a framework and compiler for model parallelism, we make only a few targeted modifications to existing PyTorch transformer implementations. Our approach is simple, does not",
+        "x": 307,
+        "y": 87.3,
+        "w": 236.2,
+        "h": 637.6,
+        "zh": "这些影响，并把大型神经网络的训练时间压下来。为了把训练再往外扩，同期的一项工作（Chen et al., 2016）把数据并行和激活检查点合在一起：反向时重新计算激活，正向时不把它们存下来，以此降低显存需求。不过这些技术有一个根本限制，卡住了它们能处理的问题规模：模型必须整份放进一个 worker。语言模型的规模和复杂度还在涨，BERT 和 GPT-2 就是例子，神经网络已经逼近现代硬件加速器的显存容量。一种办法是用参数共享来缩小模型的显存占用（Lan et al., 2019），但这会限制模型的总容量。我们的做法是用模型并行，把模型拆到多个加速器上。这不但减轻显存压力，还让并行度可以脱离微批次大小、单独增加。模型并行内部还有两种范式：按层的流水线并行，以及更一般的分布式张量计算。在流水线模型并行里，一组运算先在一台设备上做完，输出再传给流水线中的下一台设备，在那里做另一组运算。有些方法（Harlap et al., 2018; Chen et al., 2018）把参数服务器（Li et al., 2014）和流水线并行一起用，但会遇到不一致的问题。TensorFlow 上的 GPipe 框架（Huang et al., 2018）用同步梯度下降解决了这个不一致。这种做法要另写逻辑，才能把这些通信和计算高效地排进流水线，而且会受到流水线气泡的拖累，效率下降；不然就要去改优化器本身，准确率会受到影响。分布式张量计算是一条正交、也更一般的路：把一次张量运算划分到多台设备上，用来加速计算，或者把模型做大。FlexFlow（Jia et al., 2018）这个深度学习框架负责编排这类并行计算，并给出一种挑选最佳并行策略的方法。最近，Mesh-TensorFlow（Shazeer et al., 2018）引入了一种语言，用来在 TensorFlow（Abadi et al., 2015）里指定一大类分布式张量计算。并行维度由最终用户在这门语言里指定，得到的计算图再用合适的集合通信原语编译出来。我们借用了和 Mesh-TensorFlow 相近的看法，并利用计算 Transformer 注意力头时的并行性，来并行化我们的 Transformer 模型。不过我们并不去实现一套模型并行的框架和编译器，只对现有的 PyTorch Transformer 实现做少数几处有针对性的修改。我们的方法很简单，并不"
+      },
+      {
+        "text": "Figure 2. Transformer Architecture. Purple blocks correspond to fully connected layers. Each blue block represents a single transformer layer that is replicated N times.",
+        "x": 54.9,
+        "y": 519,
+        "w": 236,
+        "h": 30.9,
+        "zh": "图 2. Transformer 架构。紫色块对应全连接层。每个蓝色块表示一个 Transformer 层，并复制 N 次。"
+      },
+      {
+        "text": "and compute efficiency. The original transformer formulation was designed as a machine translation architecture that transforms an input sequence into another output sequence using two parts, an Encoder and Decoder. However, recent work leveraging transformers for language modeling such as BERT (Devlin et al., 2018) and GPT-2 (Radford et al., 2019) use only the Encoder or Decoder depending on their needs. This work explores both a decoder architecture, GPT-2, and an encoder architecture, BERT. Figure 2 shows a schematic diagram of the model we used. We refer the reader to prior work for a detailed description of the model architecture (Vaswani et al., 2017; Devlin et al., 2018; Radford et al., 2019). It is worthwhile to mention that both GPT-2 and BERT use GeLU (Hendrycks & Gimpel, 2016) nonlinearities and layer normalization (Ba et al., 2016) to the input of the multi-head attention and feed forward layers, whereas the original transformer (Vaswani et al., 2017) uses ReLU nonlinearities and applies layer normalization to outputs.",
+        "x": 55,
+        "y": 276.1,
+        "w": 236.2,
+        "h": 231.1,
+        "zh": "，计算效率也更高。最初的 Transformer 是作为机器翻译架构提出的：用编码器（Encoder）和解码器（Decoder）两部分，把一个输入序列变成另一个输出序列。不过，近来把 Transformer 用于语言建模的工作，例如 BERT（Devlin et al., 2018）和 GPT-2（Radford et al., 2019），按各自的需要只使用 Encoder 或只使用 Decoder。本文两种都考察：解码器架构 GPT-2，以及编码器架构 BERT。图 2 是我们所用模型的示意图。架构的详细说明请读者参阅先前的工作（Vaswani et al., 2017; Devlin et al., 2018; Radford et al., 2019）。值得一提的是，GPT-2 和 BERT 都在多头注意力和前馈层的输入上使用 GeLU（Hendrycks & Gimpel, 2016）非线性以及层归一化（Ba et al., 2016），而原始 Transformer（Vaswani et al., 2017）使用的是 ReLU 非线性，并把层归一化加在输出上。"
+      },
+      {
+        "text": "2.3. Data and Model Parallelism in Deep Learning",
+        "x": 55.4,
+        "y": 251,
+        "w": 213.1,
+        "h": 10,
+        "zh": "2.3. 深度学习中的数据并行与模型并行"
+      },
+      {
+        "text": "There are two central paradigms for scaling out deep neural network training to numerous hardware accelerators: data parallelism (Valiant, 1990) where a training minibatch is split across multiple workers, and model parallelism in which the memory usage and computation of a model is distributed across multiple workers. By increasing the minibatch size proportionally to the number of available workers (i.e. weak scaling), one observes near linear scaling in training data throughput. However, large batch training introduces complications into the optimization process that can result in reduced accuracy or longer time to convergence, offsetting the benefit of increased training throughput (Keskar et al., 2017). Further research (Goyal et al., 2017; You et al., 2017; 2019) has developed techniques to miti-",
+        "x": 54.9,
+        "y": 76.9,
+        "w": 236.2,
+        "h": 165.4,
+        "zh": "把深度神经网络的训练扩到大量硬件加速器上，有两种核心范式。一种是数据并行（Valiant, 1990）：把一个训练小批次拆到多个 worker 上。另一种是模型并行：把模型的显存占用和计算分到多个 worker 上。让小批次大小随着可用 worker 的数量成比例增大（也就是弱扩展），训练数据的吞吐会接近线性扩展。然而，大批次训练会给优化带来麻烦，可能让准确率下降，或者让收敛时间变长，从而抵消吞吐提高带来的好处（Keskar et al., 2017）。进一步的研究（Goyal et al., 2017; You et al., 2017; 2019）已经发展出一些技术，用来缓解"
+      }
+    ],
+    "4": [
+      {
+        "text": "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+        "x": 120.9,
+        "y": 737.9,
+        "w": 355.2,
+        "h": 9,
+        "zh": "Megatron-LM：用模型并行训练数十亿参数的语言模型"
+      },
+      {
+        "text": "require any new compiler or code re-writing, and can be fully implemented by inserting a few simple primitives, as described in the next section.",
+        "x": 55.4,
+        "y": 691.1,
+        "w": 234,
+        "h": 33.9,
+        "zh": "需要任何新的编译器，也不需要重写代码，只要插入几个简单原语就能完整实现，如下一节所述。"
+      },
+      {
+        "text": "We take advantage of the structure of transformer networks to create a simple model parallel implementation by adding a few synchronization primitives. A transformer layer consists of a self attention block followed by a two-layer, multi-layer perceptron (MLP) as shown in Figure 2. We introduce model parallelism in both of these blocks separately. We start by detailing the MLP block. The first part of the block is a GEMM followed by a GeLU nonlinearity:",
+        "x": 55,
+        "y": 553.5,
+        "w": 234.6,
+        "h": 99.6,
+        "zh": "我们利用 Transformer 网络的结构，加上少数几个同步原语，做出一种简单的模型并行实现。一个 Transformer 层由一个自注意力块，再接一个两层的多层感知机（MLP）组成，如图 2。我们在这两个块里分别加入模型并行。先把 MLP 块说清楚。这个块的第一部分是一次 GEMM，后面接一个 GeLU 非线性："
+      },
+      {
+        "text": "One option to parallelize the GEMM is to split the weight matrix A along its rows and input X along its columns as:",
+        "x": 55.4,
+        "y": 506.8,
+        "w": 234,
+        "h": 21.9,
+        "zh": "并行化这次 GEMM 的一种做法，是把权重矩阵 A 按行拆开，把输入 X 按列拆开："
+      },
+      {
+        "text": "Figure 3. Blocks of Transformer with Model Parallelism. f and g are conjugate. f is an identity operator in the forward pass and all reduce in the backward pass while g is an all reduce in the forward pass and identity in the backward pass.",
+        "x": 306.9,
+        "y": 448.9,
+        "w": 234.5,
+        "h": 41.8,
+        "zh": "图 3. 带模型并行的 Transformer 块。f 和 g 互为共轭。f 在前向是恒等算子，在反向是 all-reduce；g 在前向是 all-reduce，在反向是恒等。"
+      },
+      {
+        "text": "This partitioning will result in Y X2A2). Since GeLU is a nonlinear function, GeLU(X1A1+ X2A2) 6= GeLU(X1A1)+GeLU(X2A2) and this approach will require a synchronization point before the GeLU func-",
+        "x": 55.1,
+        "y": 424.6,
+        "w": 236.3,
+        "h": 45.8,
+        "zh": "这种划分会得到 Y X2A2)。由于 GeLU 是非线性函数，GeLU(X1A1 + X2A2) ≠ GeLU(X1A1) + GeLU(X2A2)，所以这种做法必须在 GeLU 函数之前放一个同步点。"
+      },
+      {
+        "text": "As shown in Figure 3b, for the self attention block we exploit inherent parallelism in the multihead attention operation, partitioning the GEMMs associated with key (K), query (Q), and value (V ) in a column parallel fashion such that the matrix multiply corresponding to each attention head is done locally on one GPU. This allows us to split per attention head parameters and workload across the GPUs, and doesnt require any immediate communication to complete the self-attention. The subsequent GEMM from the output linear layer (after self attention) is parallelized along its rows and takes the output of the parallel attention layer directly, without requiring communication between the GPUs. This approach for both the MLP and self attention layer fuses groups of two GEMMs, eliminates a synchronization point in between, and results in better scaling. This enables us to perform all GEMMs in a simple transformer layer using only two all-reduces in the forward path and two in the backward path (see Figure 4). The transformer language model has an output embedding with the dimension of hidden-size (H) times vocabularysize (v). Since the vocabulary size is on the order of tens of thousands of tokens for modern language models (for example, GPT-2 used a vocabulary size of 50,257), it is beneficial to parallelize the output embedding GEMM. However, in transformer language models, the output embedding layer shares weights with the input embedding, requiring modifications to both. We parallelize the input embedding weight matrix EH×v along the vocabulary dimension E = [E1, E2] (column-wise). Since each partition now only",
+        "x": 307.1,
+        "y": 75.4,
+        "w": 236.1,
+        "h": 352.2,
+        "zh": "如图 3b，对自注意力块，我们利用多头注意力运算里固有的并行性，把与键（K）、查询（Q）、值（V）对应的 GEMM 按列并行拆开，让每个注意力头对应的矩阵乘法都在一块 GPU 上本地完成。这样就能把每个注意力头的参数和工作量分到各块 GPU 上，而且做完自注意力不需要立刻通信。后面那次来自输出线性层（自注意力之后）的 GEMM 按行并行，直接吃进并行注意力层的输出，GPU 之间不用通信。MLP 和自注意力层都用这个做法，把两组 GEMM 合到一起，去掉中间那个同步点，扩展因此更好。于是，一个简单 Transformer 层里的全部 GEMM，前向路径只需要两次 all-reduce，反向路径也只需要两次（见图 4）。Transformer 语言模型有一个输出嵌入，维度是隐藏大小（H）乘以词表大小（v）。现代语言模型的词表大小在数万个 token 这个量级（例如 GPT-2 的词表大小是 50,257），所以把输出嵌入的 GEMM 并行化是划算的。不过在 Transformer 语言模型里，输出嵌入层和输入嵌入共用权重，因此两边都要改。我们把输入嵌入的权重矩阵 E_{H×v} 沿词表维度按列拆开，E = [E1, E2]。由于每个分块现在只"
+      },
+      {
+        "text": "Another option is to split A along its columns A = [A1, A2]. This partitioning allows the GeLU nonlinearity to be independently applied to the output of each partitioned GEMM:",
+        "x": 55.1,
+        "y": 370.8,
+        "w": 236.1,
+        "h": 33.9,
+        "zh": "另一种做法是把 A 按列拆开，A = [A1, A2]。这样划分之后，GeLU 非线性可以分别作用在每个分块 GEMM 的输出上："
+      },
+      {
+        "text": "[Y1, Y2] = [GeLU(XA1), GeLU(XA2)] This is advantageous as it removes a synchronization point. Hence, we partition the first GEMM in this column parallel fashion and split the second GEMM along its rows so it takes the output of the GeLU layer directly without requiring any communication as shown in Figure 3a. The output of the second GEMM is then reduced across the GPUs before passing the output to the dropout layer. This approach splits both GEMMs in the MLP block across GPUs and requires only a single all-reduce operation in the forward pass (g operator) and a single all-reduce in the backward pass (f operator). These two operators are conjugates of each other and can be implemented in PyTorch with only a few lines of code. As an example, the implementation of the f operator",
+        "x": 55.1,
+        "y": 192.7,
+        "w": 236,
+        "h": 170.8,
+        "zh": "[Y1, Y2] = [GeLU(XA1), GeLU(XA2)]。好处是少掉一个同步点。因此，我们把第一个 GEMM 按这种列并行方式划分，并把第二个 GEMM 按行拆开，让它直接接住 GeLU 层的输出，中间不需要任何通信，如图 3a。第二个 GEMM 的输出先在各 GPU 之间做归约，再送进 dropout 层。这个做法把 MLP 块里的两次 GEMM 都拆到各 GPU 上，前向只需要一次 all-reduce（g 算子），反向也只需要一次 all-reduce（f 算子）。这两个算子互为共轭，在 PyTorch 里几行代码就能实现。例如，f 算子的实现"
+      },
+      {
+        "text": "class f(torch.autograd.Function): def forward(ctx, x):",
+        "x": 55.4,
+        "y": 156.6,
+        "w": 177.5,
+        "h": 18.9,
+        "zh": ""
+      },
+      {
+        "text": "def backward(ctx, gradient): all_reduce(gradient)",
+        "x": 77,
+        "y": 126.8,
+        "w": 150.6,
+        "h": 18.9,
+        "zh": ""
+      },
+      {
+        "text": "Code 1. Implementation of f operator. g is similar to f with identity in the backward and all-reduce in the forward",
+        "x": 55.1,
+        "y": 86.9,
+        "w": 216.1,
+        "h": 18.9,
+        "zh": "代码 1. f 算子的实现。g 和 f 类似，只是反向为恒等、前向为 all-reduce。"
+      }
+    ],
+    "5": [
+      {
+        "text": "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+        "x": 120.9,
+        "y": 737.9,
+        "w": 355.2,
+        "h": 9,
+        "zh": "Megatron-LM：用模型并行训练数十亿参数的语言模型"
+      },
+      {
+        "text": "Pretrained language understanding models are central tasks in natural language processing and language understanding. There are several formulations of language modeling. In this work we focus on GPT-2 (Radford et al., 2019), a leftto-right generative transformer based language model, and BERT (Devlin et al., 2018), a bi-directional transformer model based on language model masking. We explain our configurations for these models in the following section and refer to the original papers for more details.",
+        "x": 307.1,
+        "y": 600,
+        "w": 236.1,
+        "h": 105.6,
+        "zh": "预训练的语言理解模型，是自然语言处理与语言理解里的核心任务。语言建模有好几种表述。本文关注两种：GPT-2（Radford et al., 2019），一种从左到右的、基于生成式 Transformer 的语言模型；以及 BERT（Devlin et al., 2018），一种基于语言模型掩码的双向 Transformer 模型。这些模型的配置在下一节说明，更多细节请参阅原始论文。"
+      },
+      {
+        "text": "Figure 4. Communication operations in a transformer layer. There are 4 total communication operations in the forward and backward pass of a single model parallel transformer layer.",
+        "x": 54.9,
+        "y": 575.2,
+        "w": 234.5,
+        "h": 30.9,
+        "zh": "图 4. 一个 Transformer 层里的通信操作。单个模型并行 Transformer 层的前向和反向，一共有 4 次通信。"
+      },
+      {
+        "text": "To collect a large diverse training set with longterm dependencies we aggregate several of the largest language modeling datasets. We create an aggregate dataset consisting of Wikipedia (Devlin et al., 2018), CC-Stories (Trinh & Le, 2018), RealNews (Zellers et al., 2019), and OpenWebtext (Radford et al., 2019). To avoid training set leakage into our downstream tasks we remove the Wikipedia articles present in the WikiText103 test set (Merity et al., 2016). We also remove unnecessary newlines from the CC-Stories corpus introduced by preprocessing artifacts. For BERT models we include BooksCorpus (Zhu et al., 2015) in the training dataset, however, this dataset is excluded for GPT-2 trainings as it overlaps with LAMBADA task. We combined all the datasets and then filtered out all the documents with content length less than 128 tokens from the aggregated dataset. Since similar content might appear multiple times in the aggregated datasets, we used localitysensitive hashing (LSH) to deduplicate content with a jaccard similarity greater than 0.7. The resulting aggregate corpus contains 174 GB of deduplicated text.",
+        "x": 307,
+        "y": 323.1,
+        "w": 236.2,
+        "h": 243.1,
+        "zh": "为了收集一份又大、又多样、而且带有长期依赖的训练集，我们把几个最大的语言建模数据集合到一起。汇总后的数据集包括 Wikipedia（Devlin et al., 2018）、CC-Stories（Trinh & Le, 2018）、RealNews（Zellers et al., 2019）和 OpenWebtext（Radford et al., 2019）。为避免训练集泄漏进下游任务，我们去掉了出现在 WikiText103 测试集（Merity et al., 2016）里的那些 Wikipedia 文章。我们还去掉了 CC-Stories 语料里由预处理痕迹带进来的多余换行。BERT 模型的训练数据另外包括 BooksCorpus（Zhu et al., 2015）；GPT-2 的训练则排除了这份数据，因为它和 LAMBADA 任务有重叠。我们先把所有数据集合并，再从汇总结果里滤掉内容长度短于 128 个 token 的全部文档。相似内容可能在汇总数据里出现多次，因此我们用局部敏感哈希（LSH）去掉 Jaccard 相似度大于 0.7 的重复内容。得到的汇总语料有 174 GB 去重后的文本。"
+      },
+      {
+        "text": "contains a portion of the embedding table, an all-reduce (g operator) is required after the input embedding. For the output embedding, one approach is to perform the parallel GEMM [Y1, Y2] = [XE1, XE2] to obtain the logits, add an all-gather Y = all-gather([Y1, Y2]), and send the results to the cross-entropy loss function. However, for this case, the all-gather will communicate b × s × v elements (b is the batch-size and s is the sequence length) which is huge due to vocabulary size being large. To reduce the communication size, we fuse the output of the parallel GEMM [Y1, Y2] with the cross entropy loss which reduces the dimension to b × s. Communicating scalar losses instead of logits is a huge reduction in communication that improves the efficiency of our model parallel approach. Much of our model parallel approach can be characterized as techniques aimed at reducing communication and keeping the GPUs compute bound. Rather than having one GPU compute part of the dropout, layer normalization, or residual connections and broadcast the results to other GPUs, we choose to duplicate the computation across GPUs. Specifically, we maintain duplicate copies of layer normalization parameters on each GPU, and take the output of the model parallel region and run dropout and residual connection on these tensors before feeding them as input to the next model parallel regions. To optimize the model we allow each model parallel worker to optimize its own set of parameters. Since all values are either local to or duplicated on a GPU, there is no need for communicating updated parameter values in this formulation. We present further details about the hybrid model and data parallelism and handling random number generation in Appendix B for reference. In summary, our approach as described above is simple to implement, requiring only a few extra all-reduce operations added to the forward and backward pass. It does not require a compiler, and is orthogonal and complementary to the pipeline model parallelism advocated by approaches such as (Huang et al., 2018).",
+        "x": 55,
+        "y": 76.9,
+        "w": 236.2,
+        "h": 452.3,
+        "zh": "含有嵌入表的一部分，所以输入嵌入之后要做一次 all-reduce（g 算子）。对输出嵌入，一种做法是先做并行 GEMM，[Y1, Y2] = [XE1, XE2]，得到 logits，再做一次 all-gather，Y = all-gather([Y1, Y2])，然后把结果送进交叉熵损失。但这样一来，all-gather 要通信 b × s × v 个元素（b 是批次大小，s 是序列长度）。词表很大，这个量就非常大。为了把通信量降下来，我们把并行 GEMM 的输出 [Y1, Y2] 和交叉熵损失融合到一起，维度因此降到 b × s。传的是标量损失，而不是 logits，通信量大幅下降，模型并行的效率也就更高。我们这套模型并行，很大程度上就是在减通信，并让 GPU 保持在计算受限的状态。我们不让某一块 GPU 先算 dropout、层归一化或残差连接的一部分、再把结果广播给其他 GPU，而是选择把这些计算在各块 GPU 上各做一份。具体来说，每块 GPU 上都留着层归一化参数的副本；取出模型并行区域的输出之后，先在这些张量上做 dropout 和残差连接，再送进下一个模型并行区域。优化时，每个模型并行 worker 只优化它自己那一组参数。所有的值要么只在某一块 GPU 上，要么在每块 GPU 上都有一份副本，因此这种写法不需要把更新后的参数值再通信一遍。混合模型并行与数据并行、以及随机数生成的进一步细节放在附录 B，供查阅。概括来说，上面这套方法实现起来很简单，只是在前向和反向里多加几次 all-reduce。它不需要编译器，并且与（Huang et al., 2018）这类工作所主张的流水线模型并行正交、也互补。"
+      },
+      {
+        "text": "4.2. Training Optimization and Hyperparameters",
+        "x": 307.4,
+        "y": 297.9,
+        "w": 210,
+        "h": 10,
+        "zh": "4.2. 训练优化与超参数"
+      },
+      {
+        "text": "To train our models efficiently we utilize mixed precision training with dynamic loss scaling to take advantage of the V100’s Tensor Cores (Micikevicius et al., 2017; NVIDIA, 2018). We start by initializing our weights W with a simple normal distribution W ∼ N(0, 0.02). We then scale weights immediately before residual layers by √ N is the number of transformer layers comprised of self attention and MLP blocks. For our optimizer we utilize Adam (Kingma & Ba, 2014) with weight decay (Loshchilov & Hutter, 2019) λ = 0.01. Additionally, we use global gradient norm clipping of 1.0 to improve the stability of training large models. In all cases, a dropout of 0.1 is used. Lastly, to better manage our memory footprint we utilize activation checkpointing (Chen et al., 2016) after every transformer",
+        "x": 307.1,
+        "y": 122.6,
+        "w": 236,
+        "h": 166.6,
+        "zh": "为了把模型训得有效率，我们使用带动态损失缩放的混合精度训练，以便用上 V100 的 Tensor Core（Micikevicius et al., 2017; NVIDIA, 2018）。权重 W 用一个简单的正态分布来初始化，W ∼ N(0, 0.02)。然后在紧挨残差层之前，把权重乘上 1/√(2N)，其中 N 是 Transformer 层的层数，每一层都由自注意力块和 MLP 块组成。优化器使用带权重衰减的 Adam（Kingma & Ba, 2014; Loshchilov & Hutter, 2019），λ = 0.01。另外，我们把全局梯度范数裁剪到 1.0，让大模型的训练更稳。所有情况下 dropout 都取 0.1。最后，为了更好地控制显存占用，我们在每一个 Transformer 层之后使用激活检查点（Chen et al., 2016）。"
+      },
+      {
+        "text": "For GPT-2 models, all training is performed with sequences of 1024 subword units at a batch size of 512 for 300k itera-",
+        "x": 307.4,
+        "y": 80.8,
+        "w": 235.7,
+        "h": 21.9,
+        "zh": "对 GPT-2 模型，全部训练都用长度为 1024 个子词单元的序列，批次大小为 512，共 300k 次迭代"
+      }
+    ],
+    "6": [
+      {
+        "text": "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+        "x": 120.9,
+        "y": 737.9,
+        "w": 355.2,
+        "h": 9,
+        "zh": "Megatron-LM：用模型并行训练数十亿参数的语言模型"
+      },
+      {
+        "text": "Table 1. Parameters used for scaling studies. Hidden size per attention head is kept constant at 96.",
+        "x": 306.9,
+        "y": 706.4,
+        "w": 236,
+        "h": 19.9,
+        "zh": "表 1. 扩展实验使用的参数。每个注意力头的隐藏大小固定为 96。"
+      },
+      {
+        "text": "tions. Our learning rate of 1.5e-4 utilizes a warmup period of 3k iterations before following a single cycle cosine decay over the remaining 297k iterations. We stop the decay at a minimum learning rate of 1e-5. For BERT models, we largely follow the training process described in (Lan et al., 2019). We use the original BERT dictionary with vocab size of 30,522. In addition, we replace the next sentence prediction head with sentence order prediction as suggested by (Lan et al., 2019) and use whole word n-gram masking of (Joshi et al., 2019). For all cases, we set the batch size to 1024 and use a learning rate of 1.0e- 4 warmed up over 10,000 iterations and decayed linearly over 2 million iterations. Other training parameters are kept the same as (Devlin et al., 2018).",
+        "x": 55.1,
+        "y": 553.6,
+        "w": 236,
+        "h": 171.4,
+        "zh": "。学习率取 1.5e-4，先用 3k 次迭代做预热，然后在剩下的 297k 次迭代上按单周期余弦衰减。衰减停在最低学习率 1e-5。BERT 模型大体沿用（Lan et al., 2019）描述的训练过程。我们使用原始的 BERT 词典，词表大小为 30,522。另外，按（Lan et al., 2019）的建议，用句子顺序预测换掉下一句预测头，并使用（Joshi et al., 2019）的整词 n-gram 掩码。所有情况下批次大小都设为 1024，学习率为 1.0e-4，在 10,000 次迭代上预热，再在 200 万次迭代上线性衰减。其余训练参数与（Devlin et al., 2018）保持相同。"
+      },
+      {
+        "text": "All of our experiments use up to 32 DGX-2H servers (a total of 512 Tesla V100 SXM3 32GB GPUs). Our infrastructure is optimized for multi-node deep learning applications, with 300 GB/sec bandwidth between GPUs inside a server via NVSwitch and 100 GB/sec of interconnect bandwidth between servers using 8 InfiniBand adapters per server.",
+        "x": 55.1,
+        "y": 445.9,
+        "w": 236,
+        "h": 69.7,
+        "zh": "全部实验最多用到 32 台 DGX-2H 服务器（一共 512 块 Tesla V100 SXM3 32GB GPU）。这套基础设施是按多节点深度学习应用来优化的：服务器内部，GPU 之间经 NVSwitch 的带宽为 300 GB/sec；服务器之间用每台服务器 8 块 InfiniBand 适配器互连，带宽为 100 GB/sec。"
+      },
+      {
+        "text": "Figure 5. Model and model + data parallel weak scaling efficiency as a function of the number of GPUs.",
+        "x": 306.9,
+        "y": 483.8,
+        "w": 234.8,
+        "h": 19.9,
+        "zh": "图 5. 模型并行，以及模型并行加数据并行的弱扩展效率，随 GPU 数量变化。"
+      },
+      {
+        "text": "done by scaling the batch-size, however, this approach does not address training large models that do not fit on a single GPU and it leads to training convergence degradation for large batch sizes. In contrast, here we use weak scaling to train larger models that were not possible otherwise. The baseline for all the scaling numbers is the first configuration (1.2 billion parameters) in Table 1 running on a single GPU. This is a strong baseline as it achieves 39 TeraFLOPS during the overall training process, which is 30% of the theoretical peak FLOPS for a single GPU in a DGX-2H server. Figure 5 shows scaling values for both model and model+data parallelism. We observe excellent scaling numbers in both settings. For example, the 8.3 billion parameters case with 8-way (8 GPU) model parallelism achieves 77% of linear scaling. Model+data parallelism requires further communication of gradients and as a result the scaling numbers drop slightly. However, even for the largest configuration (8.3 billion parameters) running on 512 GPUs, we achieve 74% scaling relative to linear scaling of the strong single GPU baseline configuration (1.2 billion parameters). Further scaling analysis is provided in Appendix D",
+        "x": 307.1,
+        "y": 204.4,
+        "w": 236.1,
+        "h": 255,
+        "zh": "是靠把批次放大来实现的。不过这种做法解决不了单块 GPU 放不下的大模型，而且批次一大，训练收敛就会变差。与此不同，这里我们用弱扩展来训练那些原本训不了的更大模型。所有扩展数字的基线，都是表 1 里的第一个配置（12 亿参数），跑在单块 GPU 上。这是一条强基线：整个训练过程达到 39 TeraFLOPS，即 DGX-2H 服务器中单块 GPU 理论峰值 FLOPS 的 30%。图 5 给出了模型并行、以及模型并行加数据并行的扩展数字。两种设置下扩展都很好。例如，83 亿参数、8 路（8 块 GPU）模型并行，达到线性扩展的 77%。模型并行加数据并行还要再通信梯度，扩展数字因此略降。不过即便是最大的配置（83 亿参数）跑在 512 块 GPU 上，相对那条强单 GPU 基线配置（12 亿参数）的线性扩展，我们仍达到 74%。更进一步的扩展分析见附录 D。"
+      },
+      {
+        "text": "To test the scalability of our implementation, we consider GPT-2 models with four sets of parameters detailed in Table 1. To have consistent GEMM sizes in the self attention layer, the hidden size per attention head is kept constant at 96 while the number of heads and layers are varied to obtain configurations ranging from 1 billion to 8 billion parameters. The configuration with 1.2 billion parameters fits on a single GPU whereas the 8 billion parameter model requires 8-way model parallelism (8 GPUs). The original vocabulary size was 50,257, however, to have efficient GEMMs for the logit layer, it is beneficial for the per-GPU vocabulary size to be a multiple of 128. Since we study up to 8-way model parallelism, we pad the vocabulary such that it is divisible by 128 × 8 = 1024, resulting in a padded vocabulary size of 51,200. We study both model and model+data parallel scaling. For the model parallel scaling, a fixed batch size of 8 is used across all configurations. Data parallel scaling is necessary for training many state of the art models which typically use a much larger global batch size. To this end, for the model+data parallel cases we fix the global batch size to 512 for all experiments which corresponds to 64-way",
+        "x": 54.7,
+        "y": 163,
+        "w": 236.5,
+        "h": 249.1,
+        "zh": "为了测试这套实现的可扩展性，我们考虑表 1 列出的四组 GPT-2 参数。为了让自注意力层里的 GEMM 尺寸保持一致，每个注意力头的隐藏大小固定为 96，再通过改变头数和层数，得到从 10 亿到 80 亿参数的配置。12 亿参数的配置放得进单块 GPU，80 亿参数的模型则需要 8 路模型并行（8 块 GPU）。原始词表大小是 50,257；不过为了让 logit 层的 GEMM 更高效，每块 GPU 上的词表大小最好是 128 的倍数。我们最多研究到 8 路模型并行，因此把词表填充到能被 128 × 8 = 1024 整除，填充后的词表大小为 51,200。我们同时考察模型并行，以及模型并行加数据并行的扩展。做模型并行扩展时，所有配置都用固定的批次大小 8。很多当前最优模型的全局批次要大得多，训练它们就需要数据并行扩展。因此在模型并行加数据并行的实验里，我们把全局批次大小一律固定为 512，对应 64 路"
+      },
+      {
+        "text": "5.2. Language Modeling Results Using GPT-2",
+        "x": 307.4,
+        "y": 179.3,
+        "w": 193.1,
+        "h": 10,
+        "zh": "5.2. 用 GPT-2 做语言建模的结果"
+      },
+      {
+        "text": "To demonstrate that large language models can further advance the state of the art, we consider training GPT-2 models of the sizes and configurations listed in Table 2. The 355M model is equivalent in size and configuration of BERT-Large model (Devlin et al., 2018). The 2.5B model is bigger than the previous largest GPT-2 model, and the 8.3B model is larger than any left-to-right transformer language model ever trained, to the best of our knowledge. To train and eval-",
+        "x": 307.1,
+        "y": 76.9,
+        "w": 236,
+        "h": 93.6,
+        "zh": "为了表明大语言模型还能把当前最优再往前推，我们按表 2 的规模和配置训练 GPT-2 模型。355M 模型在规模和配置上与 BERT-Large 相当（Devlin et al., 2018）。2.5B 模型大于此前最大的 GPT-2，而 8.3B 模型大于我们所知道的、此前训练过的任何从左到右的 Transformer 语言模型。为了训练和评估"
+      },
+      {
+        "text": "Throughout this section, we will showcase weak scaling with respect to the model parameters for both model parallel and model+data parallel cases. Weak scaling is typically",
+        "x": 55.1,
+        "y": 84.8,
+        "w": 234.7,
+        "h": 33.9,
+        "zh": "本节针对模型参数，展示模型并行以及模型并行加数据并行两种情形下的弱扩展。弱扩展通常"
+      }
+    ],
+    "7": [
+      {
+        "text": "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+        "x": 120.9,
+        "y": 737.9,
+        "w": 355.2,
+        "h": 9,
+        "zh": "Megatron-LM：用模型并行训练数十亿参数的语言模型"
+      },
+      {
+        "text": "Table 2. Model configurations used for GPT-2.",
+        "x": 88.4,
+        "y": 708.9,
+        "w": 168.1,
+        "h": 9,
+        "zh": "表 2. GPT-2 使用的模型配置。"
+      },
+      {
+        "text": "Table 3. Zero-shot results. SOTA are from (Khandelwal et al., 2019) for Wikitext103 and (Radford et al., 2019) for LAMBADA.",
+        "x": 54.9,
+        "y": 586.4,
+        "w": 236.1,
+        "h": 19.9,
+        "zh": "表 3. 零样本结果。WikiText103 的 SOTA 来自（Khandelwal et al., 2019），LAMBADA 的 SOTA 来自（Radford et al., 2019）。"
+      },
+      {
+        "text": "Figure 6. Validation set perplexity. All language models are trained for 300k iterations. Larger language models converge noticeably faster and converge to lower validation perplexities than their smaller counterparts.",
+        "x": 306.9,
+        "y": 544.6,
+        "w": 236,
+        "h": 41.8,
+        "zh": "图 6. 验证集困惑度。所有语言模型都训练 300k 次迭代。更大的语言模型明显收敛得更快，并且收敛到比更小的模型更低的验证困惑度。"
+      },
+      {
+        "text": "Table 4. Model configurations used for BERT.",
+        "x": 341.3,
+        "y": 501.1,
+        "w": 166.3,
+        "h": 9,
+        "zh": "表 4. BERT 使用的模型配置。"
+      },
+      {
+        "text": "uate our language models we use the procedure described in section 4. Table 2 also lists the time it takes to advance one epoch which is equivalent to 68,507 iterations. For example, for the 8.3B model on 512 GPUs, each epoch takes around two days. Compared to the configurations used for our scaling studies in Table 1, the 2.5B model is the same, the 8.3B model has 24 attention heads instead of 32, and the 355M is much smaller than any seen previously while still using 64 GPUs to train, leading to the much lower time per epoch. Figure 6 shows validation perpelixity as a function of number of iterations. As the model size increases, the validation perpelixity decreases and reaches a validation perplexity of 9.27 for the 8.3B model. We report the zero-shot evaluation of the trained models on the LAMBADA and WikiText103 datasets in Table 3. For more details on evaluation methodology, see Appendix E. We observe the trend that increasing model size also leads to lower perplexity on WikiText103 and higher cloze accuracy on LAMBADA. Our 8.3B model achieves state of the art perplexity on the WikiText103 test set at a properly adjusted perplexity of 10.81. At 66.51% accuracy, the 8.3B model similarly surpasses prior cloze accuracy results on the LAMBADA task. We have included samples generated from the 8.3 billion parameters model in the Appendix C. Recently researchers from Microsoft in collaboration with NVIDIA trained a 17 billion parameter GPT-2 model called Turing-NLG (Microsoft, 2020) using Megatron and showed that the accuracies further improve as they scale the model, highlighting the value of larger",
+        "x": 55.4,
+        "y": 142.7,
+        "w": 235.7,
+        "h": 338.7,
+        "zh": "这些语言模型，我们使用第 4 节描述的流程。表 2 还列出推进一个 epoch 要花的时间，一个 epoch 相当于 68,507 次迭代。例如 8.3B 模型在 512 块 GPU 上，每个 epoch 大约两天。和表 1 里用于扩展实验的配置相比，2.5B 与之相同；8.3B 的注意力头是 24 个而不是 32 个；355M 比此前任何一个配置都小得多，但仍然用 64 块 GPU 来训练，所以每个 epoch 的时间低得多。图 6 是验证困惑度随迭代次数的变化。模型越大，验证困惑度越低，8.3B 模型达到 9.27。表 3 报告这些模型在 LAMBADA 和 WikiText103 上的零样本评估。评估方法的细节见附录 E。可以看到这样的趋势：模型变大，WikiText103 上的困惑度会更低，LAMBADA 上的完形填空准确率会更高。我们的 8.3B 模型在 WikiText103 测试集上达到当前最优的困惑度，经过适当调整后为 10.81。在 LAMBADA 上，8.3B 模型以 66.51% 的准确率同样超过了此前的完形填空准确率。83 亿参数模型生成的样例放在附录 C。最近，微软的研究者与 NVIDIA 合作，用 Megatron 训练了一个 170 亿参数的 GPT-2 模型，称为 Turing-NLG（Microsoft, 2020），并表明模型继续做大之后准确率还会再提高，这显出了把模型做得更大的价值。"
+      },
+      {
+        "text": "10.8% overlap and the LAMBADA test set (Paperno et al., 2016) has at most 1.4% overlap. We should note that the WikiText103 test set has already 9.09% overlap with the WikiText103 training set (Radford et al., 2019). As these are consistent with previous work, we are confident that no documents from our test data are inadvertently included in",
+        "x": 306.9,
+        "y": 341.9,
+        "w": 235.7,
+        "h": 69.7,
+        "zh": "重叠为 10.8%，LAMBADA 测试集（Paperno et al., 2016）最多重叠 1.4%。需要说明的是，WikiText103 测试集和 WikiText103 训练集之间本来就有 9.09% 的重叠（Radford et al., 2019）。这些数字和先前的工作一致，因此我们有把握：测试数据里的文档没有被无意放进我们的训练数据。"
+      },
+      {
+        "text": "5.3. Bi-directional Transformer Results Using BERT",
+        "x": 307.4,
+        "y": 304.8,
+        "w": 222.3,
+        "h": 10,
+        "zh": "5.3. 用 BERT 得到的双向 Transformer 结果"
+      },
+      {
+        "text": "In this section, we apply our methodology to BERT-style transformer models and study the effect of model scaling on several downstream tasks. Prior work (Lan et al., 2019) found that increasing model size beyond BERT-large with 336M parameters results in unexpected model degradation. To address this degradation, the authors of that work (Lan et al., 2019) introduced parameter sharing and showed that that their models scale much better compared to the original",
+        "x": 307.1,
+        "y": 202.5,
+        "w": 236.1,
+        "h": 93.6,
+        "zh": "这一节把我们的方法用到 BERT 风格的 Transformer 上，并研究模型变大对若干下游任务的影响。先前的工作（Lan et al., 2019）发现，把模型做到超过 336M 参数的 BERT-large 之后，会出现意料之外的退化。为了解决这种退化，该工作的作者（Lan et al., 2019）引入了参数共享，并表明他们的模型比原来的"
+      },
+      {
+        "text": "We further investigated this behaviour and empirically demonstrated that rearranging the order of the layer normalization and the residual connections as shown in Figure 7 is critical to enable the scaling of the BERT-style models beyond BERT-Large. The architecture (b) in Figure 7 eliminates instabilities observed using the original BERT architecture in (a) and also has a lower training loss. To the best of our knowledge, we are the first to report such a change enables training larger BERT models.",
+        "x": 307,
+        "y": 76.9,
+        "w": 236.1,
+        "h": 105.6,
+        "zh": "我们进一步查了这个现象，并用实验表明：如图 7 那样，把层归一化和残差连接的顺序重排，是把 BERT 风格的模型扩到 BERT-Large 以上的关键。图 7 里的架构 (b) 消除了原始 BERT 架构 (a) 上看到的不稳定，训练损失也更低。据我们所知，我们是第一个报告“这样一个改动就能训练更大的 BERT 模型”的工作。"
+      },
+      {
+        "text": "To ensure we do not train on any data found in our test sets, we calculate the percentage of test set 8-grams that also appear in our training set as done in previous work (Radford et al., 2019). The WikiText103 test set has at most",
+        "x": 55.1,
+        "y": 76.9,
+        "w": 236,
+        "h": 45.8,
+        "zh": "为了确保训练不会用到测试集里出现过的任何数据，我们沿用先前工作（Radford et al., 2019）的做法，计算测试集 8-gram 里有多少也出现在训练集中。WikiText103 测试集最多有"
+      }
+    ],
+    "8": [
+      {
+        "text": "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+        "x": 120.9,
+        "y": 737.9,
+        "w": 355.2,
+        "h": 9,
+        "zh": "Megatron-LM：用模型并行训练数十亿参数的语言模型"
+      },
+      {
+        "text": "Table 5. Development set results for MNLI, QQP, SQuAD 1.1 and SQuAD 2.0 and test set results for RACE. The trained tokens represents consumed tokens during model pretraining (proportional to batch size times number of iterations) normalized by consumed tokens during",
+        "x": 54.9,
+        "y": 697.9,
+        "w": 486.6,
+        "h": 19.9,
+        "zh": "表 5. MNLI、QQP、SQuAD 1.1 和 SQuAD 2.0 的开发集结果，以及 RACE 的测试集结果。trained tokens 表示模型预训练期间消耗的 token 数（正比于批次大小乘以迭代次数），并按……期间消耗的 token 数做归一化。"
+      },
+      {
+        "text": "RoBERTa (Liu et al., 2019b) ALBERT (Lan et al., 2019) XLNet (Yang et al., 2019)",
+        "x": 71.1,
+        "y": 624.4,
+        "w": 103.3,
+        "h": 28.9,
+        "zh": "RoBERTa（Liu et al., 2019b）、ALBERT（Lan et al., 2019）、XLNet（Yang et al., 2019）"
+      },
+      {
+        "text": "ALBERT ensemble (Lan et al., 2019) Megatron-3.9B ensemble",
+        "x": 71.1,
+        "y": 574.2,
+        "w": 134.7,
+        "h": 18.9,
+        "zh": "ALBERT 集成（Lan et al., 2019）、Megatron-3.9B 集成"
+      },
+      {
+        "text": "size and learning rate. Once we obtain the best values, we report the median development set results over 5 different random seeds for initialization. The hyperparameters used for each model and task are provided in the Appendix A. Table 5 shows the development set results for MNLI, QQP, SQuAD 1.1, and SQuAD 2.0 and test set results for RACE. For the test set results of RACE, we first use the development set to find the checkpoint that gives us the median score on the 5 random seeds and we report the results from that checkpoint on the test set. We also report 5-way ensemble results for the development set of SQuAD and test set of RACE. From Table 5 we observe that (a) as the model size increases, the downstream task performance improves in all cases, (b) our 3.9B model establishes state of the art results on the development set compared to other BERT based models, and (c) our 3.9B model achieves both single model as well as ensembled SOTA results on RACE test set.",
+        "x": 307.1,
+        "y": 344.7,
+        "w": 236.1,
+        "h": 201.2,
+        "zh": "大小和学习率做超参数调优。拿到最好的取值之后，我们对 5 个不同的初始化随机种子，报告开发集结果的中位数。每个模型和每个任务用的超参数见附录 A。表 5 给出 MNLI、QQP、SQuAD 1.1 和 SQuAD 2.0 的开发集结果，以及 RACE 的测试集结果。RACE 的测试集结果是这样得到的：先在开发集上找出 5 个随机种子里处在中位数的那个检查点，再报告这个检查点在测试集上的结果。我们还报告了 SQuAD 开发集和 RACE 测试集的 5 路集成结果。从表 5 可以看到：（a）模型变大之后，所有下游任务的表现都在提高；（b）相对其他基于 BERT 的模型，我们的 3.9B 模型在开发集上达到了当前最优；（c）我们的 3.9B 模型在 RACE 测试集上，单模型和集成都达到了 SOTA。"
+      },
+      {
+        "text": "Figure 7. Training loss for BERT model using the original architecture (a) and the rearranged architecture (b). Left figure shows the training loss for 336M and 752M BERT model. While the original architecture performs well on the 336M model, the modifications in (b) enable stable training with lower training loss.",
+        "x": 54.9,
+        "y": 349.6,
+        "w": 236,
+        "h": 52.8,
+        "zh": "图 7. 使用原始架构 (a) 和重排后架构 (b) 时，BERT 模型的训练损失。左图是 336M 和 752M 这两个 BERT 模型的训练损失。原始架构在 336M 模型上表现良好；(b) 里的改动则让训练保持稳定，并且训练损失更低。"
+      },
+      {
+        "text": "Using the architecture change in Figure 7(b), we consider three different cases as detailed in Table 4. The 336M model has the same size as BERT-large. The 1.3B is the same as the BERT-xlarge configuration that was previously shown to get worse results than the 336M BERT-large model (Lan et al., 2019). We further scale the BERT model using both larger hidden size as well as more layers to arrive at the 3.9B parameter case. In all cases, the hidden size per attention head is kept constant at 64. 336M and 1.3B models are trained for 2 million iterations while the 3.9B model is trained for 1.5 million iterations and is still training. On a 3% held-out set, 336M, 1.3B, and 3.9B models achieve validation set perplexity of 1.58, 1.30, and 1.16, respectively, a monotonic decrease with the model size. We finetune the trained models on several downstream tasks including MNLI and QQP from the GLUE benchmark (Wang et al., 2019), SQuAD 1.1 and SQuAD 2.0 from the Stanford Question answering dataset (Rajpurkar et al., 2016; 2018), and the reading comprehension RACE dataset (Lai et al., 2017). For finetuning, we follow the same procedure as (Liu et al., 2019b). We first perform hyperparameter tuning on batch",
+        "x": 55.2,
+        "y": 76.9,
+        "w": 236,
+        "h": 255,
+        "zh": "采用图 7(b) 的架构改动之后，我们考虑表 4 里的三种情形。336M 模型和 BERT-large 一样大。1.3B 与 BERT-xlarge 的配置相同，而这个配置此前被证明结果不如 336M 的 BERT-large（Lan et al., 2019）。我们再把隐藏大小和层数一起加大，得到 3.9B 参数的情形。所有情况下，每个注意力头的隐藏大小都固定为 64。336M 和 1.3B 训练 200 万次迭代；3.9B 训练了 150 万次迭代，并且还在训练。在一份 3% 的留出集上，336M、1.3B 和 3.9B 的验证困惑度分别是 1.58、1.30 和 1.16，随模型变大而单调下降。我们把训好的模型微调到若干下游任务上，包括 GLUE 基准（Wang et al., 2019）里的 MNLI 和 QQP、斯坦福问答数据集里的 SQuAD 1.1 和 SQuAD 2.0（Rajpurkar et al., 2016; 2018），以及阅读理解数据集 RACE（Lai et al., 2017）。微调流程与（Liu et al., 2019b）相同。我们先对批次"
+      },
+      {
+        "text": "In this work, we successfully surpassed the limitations posed by traditional single-GPU-per-model training by implementing model parallelism with only a few modifications to the existing PyTorch transformer implementations. We efficiently trained transformer based models up to 8.3 billion parameter on 512 NVIDIA V100 GPUs with 8-way model parallelism and achieved up to 15.1 PetaFLOPs sustained over the entire application. We also showed that for BERT models, careful attention to the placement of layer normalization in BERT-like models is critical to achieving increased accuracies as the model size increases. We study the effect of model size on down-stream task accuracy and achieve far superior results on downstream tasks and establish new SOTA for WikiText103, LAMBADA, and RACE datasets. Finally, we open sourced our code to enable future work leveraging model parallel transformers. There are several directions for future work. Continuing to increase the scale of pretraining is a promising line of",
+        "x": 307.1,
+        "y": 87.5,
+        "w": 236,
+        "h": 219.2,
+        "zh": "本文只对现有的 PyTorch Transformer 实现做了少量修改，就实现了模型并行，从而越过了传统“一个模型一块 GPU”训练所设下的限制。我们在 512 块 NVIDIA V100 GPU 上，用 8 路模型并行，高效地训练了最大达 83 亿参数的 Transformer 模型，整个应用持续达到最高 15.1 PetaFLOPs。我们还表明，对 BERT 来说，类 BERT 模型里层归一化放在何处，是模型变大之后准确率还能继续提高的关键。我们研究了模型规模对下游任务准确率的影响，在下游任务上得到了好得多的结果，并在 WikiText103、LAMBADA 和 RACE 上确立了新的 SOTA。最后，我们开源了代码，便于后续工作使用模型并行的 Transformer。未来工作有几个方向。继续把预训练的规模做大，是一条有前景的"
+      }
+    ],
+    "9": [
+      {
+        "text": "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+        "x": 120.9,
+        "y": 737.9,
+        "w": 355.2,
+        "h": 9,
+        "zh": "Megatron-LM：用模型并行训练数十亿参数的语言模型"
+      },
+      {
+        "text": "investigation that will further test existing deep learning hardware and software. To realize this, improvements in the efficiency and memory footprint of optimizers will be needed. In addition, training a model with more than 16 billion parameters will demand more memory than is available within 16 GPUs of a DGX-2H box. For such models, a hybrid intra-layer and inter-layer model parallelism along with inter-node model parallelism would be more suitable. Three other directions of investigation include (a) pretraining different model families (XLNet, T5), (b) evaluating performance of large models across more difficult and diverse downstream tasks (e.g. Generative Question Answering, Summarization, and Conversation), and (c) using knowledge distillation to train small student models from these large pretrained teacher models.",
+        "x": 55.1,
+        "y": 547.6,
+        "w": 236.1,
+        "h": 177.3,
+        "zh": "探索方向，并且会进一步考验现有的深度学习硬件和软件。要做到这一点，优化器的效率得提高，显存占用也得降下来。另外，训练超过 160 亿参数的模型，所需显存会超过一台 DGX-2H 里 16 块 GPU 能提供的容量。对这样的模型，更合适的是把层内模型并行、层间模型并行和节点间模型并行合在一起用。另外三个方向是：（a）预训练别的模型家族（XLNet、T5）；（b）在更难、也更多样的下游任务上评估大模型（例如生成式问答、摘要和对话）；（c）用知识蒸馏，从这些大型预训练教师模型里训出小的学生模型。"
+      },
+      {
+        "text": "He, K. Accurate, large minibatch SGD: training imagenet in 1 hour. CoRR, abs/1706.02677, 2017.",
+        "x": 317.4,
+        "y": 703,
+        "w": 224,
+        "h": 21.9,
+        "zh": "He, K. 准确的大批次 SGD：用 1 小时训练 ImageNet。CoRR, abs/1706.02677, 2017。"
+      },
+      {
+        "text": "shadri, V., Devanur, N., Ganger, G., and Gibbons, P. Pipedream: Fast and efficient pipeline parallel dnn training. arXiv:1806.03377, 2018.",
+        "x": 317.4,
+        "y": 648.4,
+        "w": 225.8,
+        "h": 33.9,
+        "zh": "shadri, V.、Devanur, N.、Ganger, G. 与 Gibbons, P. PipeDream：快速高效的流水线并行 DNN 训练。arXiv:1806.03377, 2018。"
+      },
+      {
+        "text": "Bridging nonlinearities and stochastic regularizers with gaussian error linear CoRR, abs/1606.08415, 2016. //arxiv.org/abs/1606.08415.",
+        "x": 316.8,
+        "y": 593.8,
+        "w": 224.8,
+        "h": 45.8,
+        "zh": "用高斯误差线性单元，把非线性与随机正则化连接到一起。CoRR, abs/1606.08415, 2016。//arxiv.org/abs/1606.08415。"
+      },
+      {
+        "text": "Howard, J. and Ruder, S. Fine-tuned language models for text classification. CoRR, abs/1801.06146, 2018.",
+        "x": 307.4,
+        "y": 563.1,
+        "w": 234.2,
+        "h": 21.9,
+        "zh": "Howard, J. 与 Ruder, S. 面向文本分类的微调语言模型。CoRR, abs/1801.06146, 2018。"
+      },
+      {
+        "text": "Huang, Y., Cheng, Y., Chen, D., Lee, H., Ngiam, J., Le,",
+        "x": 307.4,
+        "y": 544.4,
+        "w": 235.2,
+        "h": 10,
+        "zh": "Huang, Y.、Cheng, Y.、Chen, D.、Lee, H.、Ngiam, J.、Le、"
+      },
+      {
+        "text": "Gpipe: Efficient training of giant neural networks using pipeline parallelism. CoRR, abs/1811.06965, 2018. URL http://arxiv.org/",
+        "x": 317.4,
+        "y": 508.5,
+        "w": 225.7,
+        "h": 33.9,
+        "zh": "GPipe：用流水线并行高效训练巨型神经网络。CoRR, abs/1811.06965, 2018。URL http://arxiv.org/"
+      },
+      {
+        "text": "Abadi, M., Agarwal, A., Barham, P., Brevdo, E., Chen, Z., Citro, C., Corrado, G. S., Davis, A., Dean, J., Devin, M., Ghemawat, S., Goodfellow, I., Harp, A., Irving, G., Isard, M., Jia, Y., Jozefowicz, R., Kaiser, L., Kudlur, M., Levenberg, J., Mane, D., Monga, R., Moore, S., Mur-´ ray, D., Olah, C., Schuster, M., Shlens, J., Steiner, B., Sutskever, I., Talwar, K., Tucker, P., Vanhoucke, V., Vasudevan, V., Viegas, F., Vinyals, O., Warden, P., Watten-´ berg, M., Wicke, M., Yu, Y., and Zheng, X. TensorFlow: Large-scale machine learning on heterogeneous systems, 2015. URL http://tensorflow.org/. Software available from tensorflow.org.",
+        "x": 55.4,
+        "y": 369.6,
+        "w": 235.7,
+        "h": 141.5,
+        "zh": "Abadi, M.、Agarwal, A.、Barham, P.、Brevdo, E.、Chen, Z.、Citro, C.、Corrado, G. S.、Davis, A.、Dean, J.、Devin, M.、Ghemawat, S.、Goodfellow, I.、Harp, A.、Irving, G.、Isard, M.、Jia, Y.、Jozefowicz, R.、Kaiser, L.、Kudlur, M.、Levenberg, J.、Mane, D.、Monga, R.、Moore, S.、Murray, D.、Olah, C.、Schuster, M.、Shlens, J.、Steiner, B.、Sutskever, I.、Talwar, K.、Tucker, P.、Vanhoucke, V.、Vasudevan, V.、Viegas, F.、Vinyals, O.、Warden, P.、Wattenberg, M.、Wicke, M.、Yu, Y. 与 Zheng, X. TensorFlow：异构系统上的大规模机器学习，2015。URL http://tensorflow.org/。软件可从 tensorflow.org 获取。"
+      },
+      {
+        "text": "Jia, Z., Zaharia, M., and Aiken, A. Beyond data and model parallelism for deep neural networks. arXiv:1807.05358,",
+        "x": 307.4,
+        "y": 465.9,
+        "w": 235.2,
+        "h": 21.9,
+        "zh": "Jia, Z.、Zaharia, M. 与 Aiken, A. 超越深度神经网络中的数据并行与模型并行。arXiv:1807.05358,"
+      },
+      {
+        "text": "Joshi, M., Chen, D., Liu, Y., Weld, D. S., Zettlemoyer, L., and Levy, O. Spanbert: Improving pre-training by representing and predicting spans. arXiv:1907.10529,",
+        "x": 307.4,
+        "y": 411.3,
+        "w": 235.2,
+        "h": 33.9,
+        "zh": "Joshi, M.、Chen, D.、Liu, Y.、Weld, D. S.、Zettlemoyer, L. 与 Levy, O. SpanBERT：通过表示并预测 span 来改进预训练。arXiv:1907.10529,"
+      },
+      {
+        "text": "Keskar, N. S., Mudigere, D., Nocedal, J., Smelyanskiy, M., and Tang, P. T. P. On large- batch training for deep learning: Generalization gap and sharp minima. ICLR,",
+        "x": 307.4,
+        "y": 356.7,
+        "w": 235.2,
+        "h": 33.9,
+        "zh": "Keskar, N. S.、Mudigere, D.、Nocedal, J.、Smelyanskiy, M. 与 Tang, P. T. P. 关于深度学习里的大批次训练：泛化差距与尖锐极小值。ICLR,"
+      },
+      {
+        "text": "Ba, J. L., Kiros, J. R., and Hinton, G. E. Layernorm. CoRR, abs/1607.06450, 2016. URL http://arxiv.org/",
+        "x": 55.4,
+        "y": 336.8,
+        "w": 235.2,
+        "h": 21.9,
+        "zh": "Ba, J. L.、Kiros, J. R. 与 Hinton, G. E. LayerNorm。CoRR, abs/1607.06450, 2016。URL http://arxiv.org/"
+      },
+      {
+        "text": "Khandelwal, U., Levy, O., Jurafsky, D., Zettlemoyer, L., and Lewis, M. Generalization through memorization: Nearest neighbor language models. arXiv:1911.00172, 2019.",
+        "x": 307.4,
+        "y": 302.1,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Khandelwal, U.、Levy, O.、Jurafsky, D.、Zettlemoyer, L. 与 Lewis, M. 经由记忆得到泛化：最近邻语言模型。arXiv:1911.00172, 2019。"
+      },
+      {
+        "text": "Chen, C.-C., Yang, C.-L., and Cheng, H.-Y. Efficient and robust parallel dnn training through model parallelism on multi-gpu platform. arXiv:1809.02839, 2018.",
+        "x": 55.4,
+        "y": 280,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Chen, C.-C.、Yang, C.-L. 与 Cheng, H.-Y. 在多 GPU 平台上，用模型并行做高效且稳健的并行 DNN 训练。arXiv:1809.02839, 2018。"
+      },
+      {
+        "text": "Kingma, D. P. and Ba, J. Adam: A method for stochastic optimization. arXiv preprint arXiv:1412.6980, 2014.",
+        "x": 307.4,
+        "y": 271.4,
+        "w": 234,
+        "h": 21.9,
+        "zh": "Kingma, D. P. 与 Ba, J. Adam：一种随机优化方法。arXiv preprint arXiv:1412.6980, 2014。"
+      },
+      {
+        "text": "Chen, T., Xu, B., Zhang, C., and Guestrin, C. ing deep nets with sublinear memory cost. abs/1604.06174, 2016. URL http://arxiv.org/",
+        "x": 55.4,
+        "y": 235.2,
+        "w": 235.2,
+        "h": 33.9,
+        "zh": "Chen, T.、Xu, B.、Zhang, C. 与 Guestrin, C. 以亚线性的显存代价训练深度网络。abs/1604.06174, 2016。URL http://arxiv.org/"
+      },
+      {
+        "text": "Lai, G., Xie, Q., Liu, H., Yang, Y., and Hovy, E. Race: Large-scale reading comprehension dataset from examinations. arXiv:1704.04683, 2017.",
+        "x": 307.4,
+        "y": 228.8,
+        "w": 235.7,
+        "h": 33.9,
+        "zh": "Lai, G.、Xie, Q.、Liu, H.、Yang, Y. 与 Hovy, E. RACE：来自考试的大规模阅读理解数据集。arXiv:1704.04683, 2017。"
+      },
+      {
+        "text": "Lan, Z., Chen, M., Goodman, S., Gimpel, K., and Soricut, P. S. R. Albert: A lite bert for self-supervised learning of language representations. arXiv:1909.11942, 2019.",
+        "x": 307.4,
+        "y": 186.1,
+        "w": 235.7,
+        "h": 33.9,
+        "zh": "Lan, Z.、Chen, M.、Goodman, S.、Gimpel, K. 与 Soricut, P. S. R. ALBERT：用于语言表示自监督学习的轻量 BERT。arXiv:1909.11942, 2019。"
+      },
+      {
+        "text": "Dai, Z., Yang, Z., Yang, Y., Carbonell, J. G., Le, Q. V., and Salakhutdinov, R. Transformer-xl: Attentive language models beyond a fixed-length context. abs/1901.02860, 2019. URL http://arxiv.org/",
+        "x": 55.4,
+        "y": 166.5,
+        "w": 235.7,
+        "h": 45.8,
+        "zh": "Dai, Z.、Yang, Z.、Yang, Y.、Carbonell, J. G.、Le, Q. V. 与 Salakhutdinov, R. Transformer-XL：越过固定长度上下文的注意力语言模型。abs/1901.02860, 2019。URL http://arxiv.org/"
+      },
+      {
+        "text": "Li, M., Andersen, D. G., Park, J. W., Smola, A. J., Ahmed, A., Josifovski, V., Long, J., Shekita, E. J., and Su, B.-Y. Scaling distributed machine learning with the parameter",
+        "x": 307.4,
+        "y": 143.5,
+        "w": 235.7,
+        "h": 33.9,
+        "zh": "Li, M.、Andersen, D. G.、Park, J. W.、Smola, A. J.、Ahmed, A.、Josifovski, V.、Long, J.、Shekita, E. J. 与 Su, B.-Y. 用参数服务器扩展分布式机器学习"
+      },
+      {
+        "text": "Devlin, J., Chang, M.-W., Lee, K., and Toutanova, K. Bert: Pre-training of deep bidirectional transformers for language understanding, 2018.",
+        "x": 55.4,
+        "y": 109.8,
+        "w": 235.7,
+        "h": 33.9,
+        "zh": "Devlin, J.、Chang, M.-W.、Lee, K. 与 Toutanova, K. BERT：面向语言理解的深度双向 Transformer 预训练，2018。"
+      },
+      {
+        "text": "Liu, X., He, P., Chen, W., and Gao, J. Multi-task deep neural networks for natural language understanding. CoRR, abs/1901.11504, 2019a. URL http://arxiv.org/",
+        "x": 307.4,
+        "y": 88.9,
+        "w": 235.7,
+        "h": 33.9,
+        "zh": "Liu, X.、He, P.、Chen, W. 与 Gao, J. 面向自然语言理解的多任务深度神经网络。CoRR, abs/1901.11504, 2019a。URL http://arxiv.org/"
+      },
+      {
+        "text": "Goyal, P., Dollar, P., Girshick, R. B., Noordhuis, P.,´ Wesolowski, L., Kyrola, A., Tulloch, A., Jia, Y., and",
+        "x": 55.4,
+        "y": 76.9,
+        "w": 235.2,
+        "h": 22,
+        "zh": "Goyal, P.、Dollar, P.、Girshick, R. B.、Noordhuis, P.、Wesolowski, L.、Kyrola, A.、Tulloch, A.、Jia, Y. 与"
+      }
+    ],
+    "10": [
+      {
+        "text": "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+        "x": 120.9,
+        "y": 737.9,
+        "w": 355.2,
+        "h": 9,
+        "zh": "Megatron-LM：用模型并行训练数十亿参数的语言模型"
+      },
+      {
+        "text": "Liu, Y., Ott, M., Goyal, N., Du, J., Joshi, M., Chen, D., Levy, O., Lewis, M., Zettlemoyer, L., and Stoyanov, V. Roberta: A robustly optimized BERT pretraining approach. CoRR, abs/1907.11692, 2019b. URL http://arxiv.org/",
+        "x": 55.4,
+        "y": 679.1,
+        "w": 235.4,
+        "h": 45.8,
+        "zh": "Liu, Y.、Ott, M.、Goyal, N.、Du, J.、Joshi, M.、Chen, D.、Levy, O.、Lewis, M.、Zettlemoyer, L. 与 Stoyanov, V. RoBERTa：一种经过稳健优化的 BERT 预训练方法。CoRR, abs/1907.11692, 2019b。URL http://arxiv.org/"
+      },
+      {
+        "text": "Pennington, J., Socher, R., and Manning, C. D. Glove: Global vectors for word representation, 2014. https : / / www.aclweb.org / anthology / D14 -",
+        "x": 307.4,
+        "y": 691.1,
+        "w": 236.5,
+        "h": 33.9,
+        "zh": "Pennington, J.、Socher, R. 与 Manning, C. D. GloVe：用于词表示的全局向量，2014。https : / / www.aclweb.org / anthology / D14 -"
+      },
+      {
+        "text": "Peters, M. E., Neumann, M., Iyyer, M., Gardner, M., Clark, C., Lee, K., and Zettlemoyer, L. Deep contextualized word representations. CoRR, abs/1802.05365, 2018. URL http://arxiv.org/abs/1802.05365.",
+        "x": 307.4,
+        "y": 622.2,
+        "w": 235.2,
+        "h": 45.8,
+        "zh": "Peters, M. E.、Neumann, M.、Iyyer, M.、Gardner, M.、Clark, C.、Lee, K. 与 Zettlemoyer, L. 深度上下文化的词表示。CoRR, abs/1802.05365, 2018。URL http://arxiv.org/abs/1802.05365。"
+      },
+      {
+        "text": "Decoupled weight deIn International Conference on Learning Representations, 2019. openreview.net/forum?id=Bkg6RiCqY7.",
+        "x": 65.1,
+        "y": 610.5,
+        "w": 226,
+        "h": 45.8,
+        "zh": "解耦的权重衰减。见 International Conference on Learning Representations, 2019。openreview.net/forum?id=Bkg6RiCqY7。"
+      },
+      {
+        "text": "Radford, A., Jozefowicz, R., and Sutskever, I.´ to generate reviews and discovering sentiment. CoRR, abs/1704.01444, 2017.",
+        "x": 307.4,
+        "y": 577.2,
+        "w": 235.2,
+        "h": 33.9,
+        "zh": "Radford, A.、Jozefowicz, R. 与 Sutskever, I. 用以生成评论，并发现情感。CoRR, abs/1704.01444, 2017。"
+      },
+      {
+        "text": "McCann, B., Bradbury, J., Xiong, C., and Socher, R. Learned in translation: Contextualized word vectors. CoRR, abs/1708.00107, 2017.",
+        "x": 55.4,
+        "y": 565.9,
+        "w": 235.7,
+        "h": 33.9,
+        "zh": "McCann, B.、Bradbury, J.、Xiong, C. 与 Socher, R. 在翻译中学到的：上下文化的词向量。CoRR, abs/1708.00107, 2017。"
+      },
+      {
+        "text": "Radford, A., Narasimhan, K., Salimans, T., and Sutskever, I. Improving language understanding by generative pretraining, 2018. URL https://blog.openai.com/ language-unsupervised/.",
+        "x": 307.4,
+        "y": 520.3,
+        "w": 235.7,
+        "h": 45.8,
+        "zh": "Radford, A.、Narasimhan, K.、Salimans, T. 与 Sutskever, I. 用生成式预训练改进语言理解，2018。URL https://blog.openai.com/ language-unsupervised/。"
+      },
+      {
+        "text": "Melamud, O., Goldberger, J., and Dagan, I. context2vec: Learning generic context embedding with bidirectional lstm. In Proceedings of The 20th SIGNLL Conference on Computational Natural Language Learning, pp. 51–61,",
+        "x": 55.4,
+        "y": 509.2,
+        "w": 235.4,
+        "h": 45.8,
+        "zh": "Melamud, O.、Goldberger, J. 与 Dagan, I. context2vec：用双向 LSTM 学习通用的上下文嵌入。见 The 20th SIGNLL Conference on Computational Natural Language Learning 论文集，第 51–61 页，"
+      },
+      {
+        "text": "Radford, A., Wu, J., Child, R., Luan, D., Amodei, D., and Sutskever, I. Better language models and their implications, 2019. URL https://openai.com/blog/ better-language-models/.",
+        "x": 307.4,
+        "y": 463.4,
+        "w": 235.7,
+        "h": 45.8,
+        "zh": "Radford, A.、Wu, J.、Child, R.、Luan, D.、Amodei, D. 与 Sutskever, I. 更好的语言模型及其影响，2019。URL https://openai.com/blog/ better-language-models/。"
+      },
+      {
+        "text": "Merity, S., Xiong, C., Bradbury, J., and Socher, R. Pointer sentinel mixture models. CoRR, abs/1609.07843, 2016. URL http://arxiv.org/abs/1609.07843.",
+        "x": 55.4,
+        "y": 452.6,
+        "w": 235.7,
+        "h": 33.9,
+        "zh": "Merity, S.、Xiong, C.、Bradbury, J. 与 Socher, R. 指针哨兵混合模型。CoRR, abs/1609.07843, 2016。URL http://arxiv.org/abs/1609.07843。"
+      },
+      {
+        "text": "Raffel, C., Shazeer, N., Roberts, A., Lee, K., Narang, S., Matena, M., Zhou, Y., Li, W., and Liu, P. J. Exploring the limits of transfer learning with a unified text-to-text transformer. arXiv:1910.10683, 2019.",
+        "x": 307.4,
+        "y": 406.5,
+        "w": 235.2,
+        "h": 45.8,
+        "zh": "Raffel, C.、Shazeer, N.、Roberts, A.、Lee, K.、Narang, S.、Matena, M.、Zhou, Y.、Li, W. 与 Liu, P. J. 用统一的文本到文本 Transformer，探索迁移学习的极限。arXiv:1910.10683, 2019。"
+      },
+      {
+        "text": "Micikevicius, P., Narang, S., Alben, J., Diamos, G. F., Elsen, E., Garcia, D., Ginsburg, B., Houston, M., Kuchaiev, O., Venkatesh, G., and Wu, H. Mixed precision training. CoRR, abs/1710.03740, 2017.",
+        "x": 55.4,
+        "y": 396,
+        "w": 235.7,
+        "h": 45.8,
+        "zh": "Micikevicius, P.、Narang, S.、Alben, J.、Diamos, G. F.、Elsen, E.、Garcia, D.、Ginsburg, B.、Houston, M.、Kuchaiev, O.、Venkatesh, G. 与 Wu, H. 混合精度训练。CoRR, abs/1710.03740, 2017。"
+      },
+      {
+        "text": "Rajpurkar, P., Zhang, J., Lopyrev, K., and Liang, P. Squad: 100,000+ questions for machine comprehension of text.",
+        "x": 307.4,
+        "y": 373.5,
+        "w": 235.7,
+        "h": 21.9,
+        "zh": "Rajpurkar, P.、Zhang, J.、Lopyrev, K. 与 Liang, P. SQuAD：十万多道用于文本机器阅读理解的问题。"
+      },
+      {
+        "text": "A 17-billion-parameter language model by microsoft, 2020. www.microsoft.com/en-us/research/blog/ turing - nlg - a - 17 - billion - parameter language-model-by-microsoft/.",
+        "x": 65.1,
+        "y": 327.4,
+        "w": 226.8,
+        "h": 57.8,
+        "zh": "微软的一个 170 亿参数语言模型，2020。www.microsoft.com/en-us/research/blog/ turing - nlg - a - 17 - billion - parameter language-model-by-microsoft/。"
+      },
+      {
+        "text": "Rajpurkar, P., Jia, R., and Liang, P. Know what you dont know: Unanswerable questions for squad. ACL, 2018.",
+        "x": 307.4,
+        "y": 328.5,
+        "w": 234,
+        "h": 21.9,
+        "zh": "Rajpurkar, P.、Jia, R. 与 Liang, P. 知道自己不知道什么：SQuAD 中无法回答的问题。ACL, 2018。"
+      },
+      {
+        "text": "Ramachandran, P., Liu, P. J., and Le, Q. V. Unsupervised pretraining for sequence to sequence learning. CoRR, abs/1611.02683, 2016. URL http://arxiv.org/",
+        "x": 307.4,
+        "y": 283.6,
+        "w": 235.2,
+        "h": 33.9,
+        "zh": "Ramachandran, P.、Liu, P. J. 与 Le, Q. V. 面向序列到序列学习的无监督预训练。CoRR, abs/1611.02683, 2016。URL http://arxiv.org/"
+      },
+      {
+        "text": "Mikolov, T., Deoras, A., Kombrink, S., Burget, L., and",
+        "x": 55.4,
+        "y": 306.6,
+        "w": 234,
+        "h": 10,
+        "zh": "Mikolov, T.、Deoras, A.、Kombrink, S.、Burget, L. 与"
+      },
+      {
+        "text": "y, J. Empirical evaluation and combination of ad-` vanced language modeling techniques. In Twelfth Annual Conference of the International Speech Communication",
+        "x": 65.1,
+        "y": 270.7,
+        "w": 226,
+        "h": 33.9,
+        "zh": "y, J. 对先进语言建模技术的实证评估与组合。见第十二届国际语音通信年会"
+      },
+      {
+        "text": "Shazeer, N., Cheng, Y., Parmar, N., Tran, D., Vaswani, A., Koanantakool, P., Hawkins, P., Lee, H., Hong, M., Young, C., Sepassi, R., and Hechtman, B. Mesh-TensorFlow: Deep learning for supercomputers. In Neural Information Processing Systems, 2018.",
+        "x": 307.4,
+        "y": 202.7,
+        "w": 235.4,
+        "h": 57.8,
+        "zh": "Shazeer, N.、Cheng, Y.、Parmar, N.、Tran, D.、Vaswani, A.、Koanantakool, P.、Hawkins, P.、Lee, H.、Hong, M.、Young, C.、Sepassi, R. 与 Hechtman, B. Mesh-TensorFlow：面向超级计算机的深度学习。见 Neural Information Processing Systems, 2018。"
+      },
+      {
+        "text": "Mikolov, T., Sutskever, I., Chen, K., Corrado, G., and Dean, J. Distributed representations of words and phrases and their compositionality. CoRR, abs/1310.4546, 2013.",
+        "x": 55.4,
+        "y": 214.1,
+        "w": 235.2,
+        "h": 33.9,
+        "zh": "Mikolov, T.、Sutskever, I.、Chen, K.、Corrado, G. 与 Dean, J. 词与短语的分布式表示及其组合性。CoRR, abs/1310.4546, 2013。"
+      },
+      {
+        "text": "NVIDIA. Mixed precision training: Choosing a scaling",
+        "x": 55.4,
+        "y": 193.3,
+        "w": 234,
+        "h": 10,
+        "zh": "NVIDIA. 混合精度训练：如何选择缩放"
+      },
+      {
+        "text": "Trinh, T. H. and Le, Q. V. A simple method for commonsense reasoning. CoRR, abs/1806.02847, 2018. URL http://arxiv.org/abs/1806.02847.",
+        "x": 307.4,
+        "y": 157.8,
+        "w": 235.7,
+        "h": 33.9,
+        "zh": "Trinh, T. H. 与 Le, Q. V. 一种做常识推理的简单方法。CoRR, abs/1806.02847, 2018。URL http://arxiv.org/abs/1806.02847。"
+      },
+      {
+        "text": "URL https://docs.nvidia.com/ deeplearning / sdk / mixed - precision training/index.html#scalefactor.",
+        "x": 65.4,
+        "y": 157.5,
+        "w": 226.5,
+        "h": 33.9,
+        "zh": ""
+      },
+      {
+        "text": "Paperno, D., Kruszewski, G., Lazaridou, A., Pham, Q. N., Bernardi, R., Pezzelle, S., Baroni, M., Boleda, G., and",
+        "x": 55.4,
+        "y": 124.8,
+        "w": 235.2,
+        "h": 21.9,
+        "zh": "Paperno, D.、Kruszewski, G.、Lazaridou, A.、Pham, Q. N.、Bernardi, R.、Pezzelle, S.、Baroni, M.、Boleda, G. 与"
+      },
+      {
+        "text": "Turian, J., Ratinov, L., and Bengio, Y. Word representations: A simple and general method for semi-supervised learning. In Proceedings of the 48th Annual Meeting of the Association for Computational Linguistics, ACL ’10, pp. 384–394, Stroudsburg, PA, USA, 2010. Association for Computational Linguistics.",
+        "x": 307.4,
+        "y": 76.9,
+        "w": 235.7,
+        "h": 69.7,
+        "zh": "Turian, J.、Ratinov, L. 与 Bengio, Y. 词表示：半监督学习的一种简单而通用的方法。见计算语言学协会第 48 届年会论文集，ACL ’10，第 384–394 页，美国宾夕法尼亚州 Stroudsburg，2010。计算语言学协会。"
+      },
+      {
+        "text": "The LAMBADA dataset: Word prediction requiring a broad discourse context. abs/1606.06031, 2016. URL http://arxiv.org/",
+        "x": 65.4,
+        "y": 88.9,
+        "w": 225.7,
+        "h": 33.9,
+        "zh": "LAMBADA 数据集：需要宽广篇章上下文的词语预测。abs/1606.06031, 2016。URL http://arxiv.org/"
+      }
+    ],
+    "11": [
+      {
+        "text": "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+        "x": 120.9,
+        "y": 737.9,
+        "w": 355.2,
+        "h": 9,
+        "zh": "Megatron-LM：用模型并行训练数十亿参数的语言模型"
+      },
+      {
+        "text": "Valiant, L. G. A bridging model for parallel computation. Communications of the ACM, 33(8):103-111, 1990.",
+        "x": 55.4,
+        "y": 703,
+        "w": 235.7,
+        "h": 21.9,
+        "zh": "Valiant, L. G. 并行计算的一种桥接模型。Communications of the ACM, 33(8):103-111, 1990。"
+      },
+      {
+        "text": "Table 6. Hyperparameters for finetuning BERT model on down-",
+        "x": 306.9,
+        "y": 708.9,
+        "w": 236,
+        "h": 9,
+        "zh": "表 6. 在下游任务上微调 BERT 模型时使用的超参数"
+      },
+      {
+        "text": "Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, L., and Polosukhin, I. Attention is all you need. CoRR, abs/1706.03762, 2017.",
+        "x": 55.4,
+        "y": 658.8,
+        "w": 235.2,
+        "h": 33.9,
+        "zh": "Vaswani, A.、Shazeer, N.、Parmar, N.、Uszkoreit, J.、Jones, L.、Gomez, A. N.、Kaiser, L. 与 Polosukhin, I. 注意力就是你所需要的全部。CoRR, abs/1706.03762, 2017。"
+      },
+      {
+        "text": "Wang, A., Singh, A., Michael, J., Hill, F., Levy, O., and Bowman, S. R. Glue: A multi-task benchmark and analysis platform for natural language understanding. ICLR,",
+        "x": 55.4,
+        "y": 614.5,
+        "w": 235.7,
+        "h": 33.9,
+        "zh": "Wang, A.、Singh, A.、Michael, J.、Hill, F.、Levy, O. 与 Bowman, S. R. GLUE：自然语言理解的多任务基准和分析平台。ICLR,"
+      },
+      {
+        "text": "Yang, Z., Dai, Z., Yang, Y., Carbonell, J. G., Salakhutdinov, R., and Le, Q. V.",
+        "x": 55.4,
+        "y": 570.2,
+        "w": 235.7,
+        "h": 21.9,
+        "zh": "Yang, Z.、Dai, Z.、Yang, Y.、Carbonell, J. G.、Salakhutdinov, R. 与 Le, Q. V."
+      },
+      {
+        "text": "Xlnet: Generalized autoregressive pretraining for language understanding. CoRR, abs/1906.08237, 2019. URL http://arxiv.org/",
+        "x": 65.4,
+        "y": 546.3,
+        "w": 225.7,
+        "h": 33.9,
+        "zh": "XLNet：面向语言理解的广义自回归预训练。CoRR, abs/1906.08237, 2019。URL http://arxiv.org/"
+      },
+      {
+        "text": "You, Y., Gitman, I., and Ginsburg, B. Large batch training of convolutional networks. arXiv:1708.03888, 2017.",
+        "x": 55.4,
+        "y": 502.1,
+        "w": 234,
+        "h": 21.9,
+        "zh": "You, Y.、Gitman, I. 与 Ginsburg, B. 卷积网络的大批次训练。arXiv:1708.03888, 2017。"
+      },
+      {
+        "text": "You, Y., Li, J., Reddi, S., Hseu, J., Kumar, S., Bhojanapalli, S., Song, X., Demmel, J., and Hsieh, C.-J. Large batch optimization for deep learning: Training bert in 76 minutes. arXiv:1904.00962, 2019.",
+        "x": 55.4,
+        "y": 445.9,
+        "w": 235.7,
+        "h": 45.8,
+        "zh": "You, Y.、Li, J.、Reddi, S.、Hseu, J.、Kumar, S.、Bhojanapalli, S.、Song, X.、Demmel, J. 与 Hsieh, C.-J. 深度学习里的大批次优化：76 分钟训练 BERT。arXiv:1904.00962, 2019。"
+      },
+      {
+        "text": "instance of the model distributed across these GPUs. The remaining GPUs, which could be within the same server but more typically are located in other servers, run additional model parallel groups. GPUs with the same position in each of the model parallel groups (for example GPUs 1, 9, ..., 505 in Figure 8) form data parallel groups so that all GPUs within a data parallel group hold the same model parameters. During back propagation we run multiple gradient all-reduce operations in parallel to reduce weight gradients within each distinct data parallel group. The total number of required GPUs is the product of the number of model and data parallel groups. For example, for the 8.3 billion parameter model we use 8 GPUs per model parallel group and 64-way data parallelism, for a total of 512 GPUs. All communication is implemented in PyTorch by Python calls to NCCL. GPUs within each model parallel group perform all-reduces amongst all GPUs within the group. For data parallelism, each of the all-reduce operations takes place with one of the GPUs from each model parallel group.",
+        "x": 307.1,
+        "y": 264.2,
+        "w": 236,
+        "h": 225.2,
+        "zh": "模型实例，分布在这些 GPU 上。其余 GPU 也可能在同一台服务器里，但更常见的是在别的服务器上，跑另外的模型并行组。每个模型并行组里位置相同的那些 GPU（例如图 8 中的 GPU 1、9、……、505）组成数据并行组，因此同一个数据并行组里的所有 GPU 持有相同的模型参数。反向传播时，我们并行地做多次梯度 all-reduce，在每一个数据并行组内部归约权重梯度。需要的 GPU 总数，是模型并行组数和数据并行组数的乘积。例如 83 亿参数的模型，每个模型并行组用 8 块 GPU，再加 64 路数据并行，一共 512 块 GPU。全部通信都在 PyTorch 里通过对 NCCL 的 Python 调用来实现。每个模型并行组内部，会在组内所有 GPU 之间做 all-reduce。数据并行的每一次 all-reduce，则由每个模型并行组里的一块 GPU 参加。"
+      },
+      {
+        "text": "Zellers, R., Holtzman, A., Rashkin, H., Bisk, Y., Farhadi, A., Roesner, F., and Choi, Y. Defending against neural fake news. CoRR, abs/1905.12616, 2019. URL http: //arxiv.org/abs/1905.12616.",
+        "x": 55.4,
+        "y": 389.6,
+        "w": 237,
+        "h": 45.8,
+        "zh": "Zellers, R.、Holtzman, A.、Rashkin, H.、Bisk, Y.、Farhadi, A.、Roesner, F. 与 Choi, Y. 抵御神经假新闻。CoRR, abs/1905.12616, 2019。URL http://arxiv.org/abs/1905.12616。"
+      },
+      {
+        "text": "Zhu, Y., Kiros, R., Zemel, R. S., Salakhutdinov, R., Urtasun, R., Torralba, A., and Fidler, S. Aligning books and movies: Towards story-like visual explanations by watching movies and reading books. CoRR, abs/1506.06724,",
+        "x": 55.4,
+        "y": 333.4,
+        "w": 235.7,
+        "h": 45.8,
+        "zh": "Zhu, Y.、Kiros, R.、Zemel, R. S.、Salakhutdinov, R.、Urtasun, R.、Torralba, A. 与 Fidler, S. 把书和电影对齐：靠看电影、读书，走向像故事一样的视觉解释。CoRR, abs/1506.06724,"
+      },
+      {
+        "text": "Table 6 presents the hyperparameters used for each model and task during finetuning.",
+        "x": 55.1,
+        "y": 252.3,
+        "w": 234.3,
+        "h": 21.9,
+        "zh": "表 6 列出了微调时每个模型、每个任务使用的超参数。"
+      },
+      {
+        "text": "B.2. Model Parallel Random Number Generation Techniques that utilize random number generation, such as dropout, are a staple of modern deep learning training. Transformers have dropout layers outside the model parallel regions before residual connections and within model parallel regions in the self attention block. Because some dropout layers are in a model parallel region, while others are not, we need to treat random number generation carefully to ensure dropout works correctly. To synchronize residual connection dropout across model parallel workers we seed the random number generators at the beginning of training with the same seed. This results in identical dropout patterns across all model parallel workers. However, dropout within a model parallel region should result in different random",
+        "x": 307.1,
+        "y": 76.9,
+        "w": 236.1,
+        "h": 172.1,
+        "zh": "B.2. 模型并行里的随机数生成。dropout 这类要用到随机数的技术，是现代深度学习训练的常备手段。Transformer 在模型并行区域之外、残差连接之前有 dropout，在模型并行区域之内的自注意力块里也有 dropout。有的 dropout 在模型并行区域里，有的不在，所以随机数必须小心处理，dropout 才能是对的。为了让各模型并行 worker 上残差连接的 dropout 彼此同步，我们在训练开始时用同一个种子去初始化随机数生成器。这样，所有模型并行 worker 上的 dropout 模式都相同。不过，模型并行区域内部的 dropout 应当给出不同的随机"
+      },
+      {
+        "text": "B. Model Parallel Supplementary Material",
+        "x": 55.4,
+        "y": 223.8,
+        "w": 218.1,
+        "h": 12,
+        "zh": "B. 模型并行的补充材料"
+      },
+      {
+        "text": "In this section, we present further details about the hybrid model and data parallelism and handling random number",
+        "x": 55.4,
+        "y": 192.5,
+        "w": 234.2,
+        "h": 21.9,
+        "zh": "这一节进一步说明混合的模型并行与数据并行，以及随机数如何处理。"
+      },
+      {
+        "text": "Model parallelism is orthogonal to data parallelism, and so we can use both simultaneously to train large models in a reasonable amount of time. Figure 8 shows a grouping of GPUs for hybrid model and data parallelism. Two or more GPUs within the same server form model parallel groups (for example GPUs 1 to 8 in Figure 8), and contain one",
+        "x": 55.1,
+        "y": 76.9,
+        "w": 234.4,
+        "h": 69.7,
+        "zh": "模型并行和数据并行是正交的，所以两者可以同时用，在合理的时间里把大模型训完。图 8 画出了混合模型并行与数据并行时的 GPU 分组。同一台服务器里的两块或更多 GPU 组成一个模型并行组（例如图 8 里的 GPU 1 到 8），里面放着一份"
+      }
+    ],
+    "12": [
+      {
+        "text": "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+        "x": 120.9,
+        "y": 737.9,
+        "w": 355.2,
+        "h": 9,
+        "zh": "Megatron-LM：用模型并行训练数十亿参数的语言模型"
+      },
+      {
+        "text": "patterns for each worker to achieve randomness across the entire operation. To achieve this we maintain a separate random number generator for dropout within model parallel regions. This random number generator is uniquely seeded for each model parallel worker.",
+        "x": 55.4,
+        "y": 667.2,
+        "w": 234,
+        "h": 57.8,
+        "zh": "模式，好让每个 worker 在整次运算上都有随机性。为此，我们给模型并行区域内部的 dropout 单独留一个随机数生成器。每个模型并行 worker 上，这个生成器的种子都不一样。"
+      },
+      {
+        "text": "Context: There is a major force uniting Americas fiercely partisan politicians: big technology companies. Democrats and Republicans at the federal and state levels are coming together to scrutinize the power of the Silicon Valley giants and, potentially, to rein them in. Letitia James, the Democratic attorney general of New York, announced on Friday that attorneys general in eight states four Democrats and four Republicans and the District of Columbia had begun an antitrust investigation of Facebook.",
+        "x": 313.3,
+        "y": 613.6,
+        "w": 234.9,
+        "h": 105.6,
+        "zh": "上下文：有一股重要的力量，把美国那些党争激烈的政客拉到了同一边：大型科技公司。联邦和各州的民主党人与共和党人正在一起行动，审视硅谷巨头的权力，并有可能把它们约束住。纽约州民主党司法部长 Letitia James 于周五宣布，八个州的司法部长——四位民主党人、四位共和党人——以及哥伦比亚特区，已经开始对 Facebook 进行反垄断调查。"
+      },
+      {
+        "text": "Megatron-LM: The probe, which Ms. James said was likely to result in a lawsuit, is the latest in a string of highprofile regulatory actions, in state and federal courts, that challenge the market dominance of tech companies. The Justice Department is also investigating Facebook’s data practices and whether the company violated a 2011 consent decree with the Federal Trade Commission that required the company to obtain explicit consent from users before sharing their personal information with third parties.",
+        "x": 313.1,
+        "y": 494,
+        "w": 235.1,
+        "h": 105.6,
+        "zh": "Megatron-LM：James 女士说，这项调查很可能以一场诉讼告终。它是一连串高调监管行动里的最新一起；这些行动在州法院和联邦法院挑战科技公司的市场支配地位。司法部也在调查 Facebook 的数据做法，以及该公司是否违反了 2011 年与联邦贸易委员会达成的同意令。该同意令要求公司在把用户的个人信息分享给第三方之前，先取得用户的明确同意。"
+      },
+      {
+        "text": "What might prompt a bipartisan coalition to sue Facebook? It isn’t clear that there’s any one thing. But lawmakers and regulators have been increasingly alarmed by the company’s recent controversies, which include a data breach affecting more than 50 million users, the spread of fake news on the platform, and the spreading of propaganda by Russianbacked accounts during the 2016 election.",
+        "x": 312.9,
+        "y": 398.4,
+        "w": 235.4,
+        "h": 81.7,
+        "zh": "是什么会让一个两党联盟去起诉 Facebook？看不出来有没有单独的某一件事。不过，议员和监管者对公司最近的争议越来越警惕。这些争议包括一次影响超过 5000 万用户的数据泄露、平台上虚假新闻的传播，以及有俄罗斯背景的账号在 2016 年选举期间散布宣传。"
+      },
+      {
+        "text": "It’s also not clear how serious the Democratic attorneys general are about filing a lawsuit. While the attorneys general announced their investigation in a press release, they said they had not yet reached a decision on whether to sue. In the past, some of the attorneys general have focused their efforts on trying to extract settlements from the tech companies without filing lawsuits.",
+        "x": 313.3,
+        "y": 302.7,
+        "w": 234.9,
+        "h": 81.7,
+        "zh": "民主党的这些司法部长对提起诉讼到底有多认真，同样看不清楚。他们在新闻稿里宣布了调查，但也说还没有决定要不要起诉。过去，有些司法部长把力气花在不起诉、而是设法从科技公司那里拿到和解上。"
+      },
+      {
+        "text": "Figure 8. Grouping of GPUs for hybrid model and data parallelism with 8-way model parallel and 64-way data parallel.",
+        "x": 54.9,
+        "y": 296.8,
+        "w": 234.5,
+        "h": 19.9,
+        "zh": "图 8. 混合模型并行与数据并行的 GPU 分组：8 路模型并行，64 路数据并行。"
+      },
+      {
+        "text": "”As attorneys general who have investigated and prosecuted health-care fraud, price-fixing, and other violations of our states’ antitrust laws, we are committed to holding companies accountable when they fail to protect consumers and competition in the market,” Ms. James said in a statement.",
+        "x": 312,
+        "y": 231,
+        "w": 236.3,
+        "h": 57.8,
+        "zh": "“作为调查并起诉过医疗欺诈、操纵价格，以及其他违反本州反垄断法行为的司法部长，我们承诺：公司如果不能保护消费者、也不能保护市场上的竞争，我们就会追究它们。”James 女士在一份声明中说。"
+      },
+      {
+        "text": "The investigation, which was first reported by The New York Times, was announced as the companies that dominate the tech industry are facing scrutiny from antitrust regulators around the world. Google, Twitter, Facebook and Amazon have faced a series of antitrust probes and class-action lawsuits in the United States and Europe ...",
+        "x": 312.7,
+        "y": 147.3,
+        "w": 235.5,
+        "h": 69.7,
+        "zh": "这项调查最先由《纽约时报》报道。它宣布的时候，主导科技行业的那些公司正面临世界各地反垄断监管机构的审视。Google、Twitter、Facebook 和 Amazon 在美国和欧洲遇到了一系列反垄断调查和集体诉讼……"
+      },
+      {
+        "text": "Below are some text samples generated by Megatron-LM using a context prompt. Some of the texts are cut short.",
+        "x": 55.4,
+        "y": 76.9,
+        "w": 235.7,
+        "h": 21.9,
+        "zh": "下面是 Megatron-LM 根据一段上下文提示生成的一些文本。其中有的文本被截短了。"
+      }
+    ],
+    "13": [
+      {
+        "text": "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+        "x": 120.9,
+        "y": 737.9,
+        "w": 355.2,
+        "h": 9,
+        "zh": "Megatron-LM：用模型并行训练数十亿参数的语言模型"
+      },
+      {
+        "text": "A flower, sometimes known as a bloom or blossom, is the reproductive structure found in flowering plants (plants of the division Magnoliophyta, also called angiosperms). The biological function of a flower is to effect reproduction, usually by providing a mechanism for the union of sperm with eggs.",
+        "x": 58.8,
+        "y": 649.4,
+        "w": 234.9,
+        "h": 69.7,
+        "zh": "花，有时也称 bloom 或 blossom，是开花植物（木兰门 Magnoliophyta 的植物，也叫被子植物）里的生殖结构。花在生物学上的功能是实现繁殖，通常是为精子与卵子的结合提供一种机制。"
+      },
+      {
+        "text": "Context: OpenAI did not release the full GPT-2 model due to concerns of malicious use, but they did release a smaller version equivalent in size to the original GPT (117 M parameters), trained on the new, larger dataset. Although not as powerful as the large model, the smaller version still has some language generation chops.",
+        "x": 310.8,
+        "y": 649.4,
+        "w": 233.8,
+        "h": 69.7,
+        "zh": "上下文：OpenAI 担心被恶意使用，没有发布完整的 GPT-2 模型，但发布了一个较小的版本，规模与最初的 GPT 相当（117M 参数），并在新的、更大的数据集上训练。它不如大模型强，不过这个较小的版本仍然有些语言生成的本事。"
+      },
+      {
+        "text": "Megatron-LM: The structural components of the flower are the petals and sepals, which are the reproductive organs, the hypanthium, which forms the base of the flower, and the calyx, which is the stigma. A flower is a composite structure, made up of sepals and petals, the sepals being composed of three fused tepals and the petals of two fused petals, though there are a few exceptions to this rule. The three sepals are fused to form a tube called the calyx, which is the structure that attracts the pollinating insects. The petals are composed of two fused sepals (the outer ones) which open and fold inward (clasp) at the tips, forming the petals. The four sepals and petals are united to form a corolla, the outermost structure of a flower that carries",
+        "x": 58.5,
+        "y": 482.1,
+        "w": 234.9,
+        "h": 153.4,
+        "zh": "Megatron-LM：花的结构部分是花瓣和萼片，它们是生殖器官；还有托杯（hypanthium），它构成花的基部；以及花萼（calyx），也就是柱头。花是一种复合结构，由萼片和花瓣组成。萼片由三枚融合的被片构成，花瓣由两枚融合的花瓣构成，不过这条规则有少数例外。三枚萼片融合成一根叫花萼的管，这个结构用来吸引传粉的昆虫。花瓣由两枚融合的萼片（靠外的那两枚）组成，它们在尖端张开并向内折叠（扣住），从而形成花瓣。四枚萼片和花瓣连成花冠，也就是一朵花最外面、承载着"
+      },
+      {
+        "text": "Megatron-LM: In December 2016, DeepMind released an even larger model, GPT-3, with more than 1.5 billion parameters. DeepMind has no plans to release the model, so the question remains whether other AI researchers will be able to copy and build on it.",
+        "x": 310.8,
+        "y": 577.7,
+        "w": 234.9,
+        "h": 57.8,
+        "zh": "Megatron-LM：2016 年 12 月，DeepMind 发布了一个更大的模型 GPT-3，参数超过 15 亿。DeepMind 不打算发布这个模型，因此问题仍然是：别的 AI 研究者能不能把它复制出来，并在上面继续做。"
+      },
+      {
+        "text": "Other language models have been built using other techniques. In 2016, a team of researchers at Columbia University, the University of Toronto, and Google DeepMind showed that neural network-based models, including deep neural networks, can learn the grammatical rules of a language. A group at Google DeepMind demonstrated that these rules could be represented in a network as a kind of decision tree, where the nodes in the tree are the words in the sentence, and the rules for the words are represented by the decision nodes at the end of the tree. The network would go through the network in order to choose the next word in the sentence based on whether it follows the rules or not. In 2017, the team at DeepMind released a paper detailing the training and performance of their model.",
+        "x": 310.5,
+        "y": 398.4,
+        "w": 235.3,
+        "h": 165.4,
+        "zh": "还有人用别的技术做过语言模型。2016 年，哥伦比亚大学、多伦多大学和 Google DeepMind 的一组研究者表明，基于神经网络的模型，包括深度神经网络，可以学会一门语言的语法规则。Google DeepMind 的一个小组证明，这些规则可以在网络里表示成一种决策树：树里的节点是句子中的词，词的规则则由树末端的决策节点来表示。网络会在网络里走一遍，根据下一个词是否符合规则，来选择句子里的下一个词。2017 年，DeepMind 的团队发了一篇论文，详细写了他们模型的训练和表现。"
+      },
+      {
+        "text": "The structure of the flower has important functional significance, including protection of the ovary from insects and the transfer of pollen between the male and female parts of a flower. The structure of the flower is also used by the plants to attract pollinators, for example by the shape of the petals and the colours of the stamens.",
+        "x": 58.5,
+        "y": 386.4,
+        "w": 235.2,
+        "h": 69.7,
+        "zh": "花的结构有重要的功能意义，包括保护子房不受昆虫侵扰，以及在一朵花的雄性部分和雌性部分之间传递花粉。植物也靠花的结构来吸引传粉者，例如靠花瓣的形状和雄蕊的颜色。"
+      },
+      {
+        "text": "The problems with the model are many. One of the biggest issues is that grammatical rules are ambiguous. For example, the phrase ”I came down” could mean I came down from the stairs, or I came down from the sky. In English, there are numerous other examples of sentences that are ambiguous. The model does not have any way to tell the difference between the ambiguous sentences, and so it simply makes a prediction about the entire sentence based on what rules it does know. This makes the model vulnerable to the phenomenon of overfitting. In order to avoid this, models must be trained using a large set of data, so that the model can find useful patterns in the data, and use those patterns to help make predictions. This approach is also prone to errors, as it relies on the training data to help make correct predictions, and the data might be incorrectly labeled, resulting in a model that produces a poor set of predictions. In the case of GPT-2, the model only has about 100 training sentences for each type of phrase (subject-verb-object).",
+        "x": 310.5,
+        "y": 171.2,
+        "w": 235.3,
+        "h": 213.2,
+        "zh": "这个模型的问题很多。最大的问题之一是，语法规则是有歧义的。例如短语 “I came down”，既可以是我从楼梯上下来，也可以是我从天上下来。英语里还有大量别的有歧义的句子。模型没有任何办法分辨这些有歧义的句子，于是只根据自己确实知道的规则，对整个句子给出一个预测。这让模型容易过拟合。为了避免这一点，模型必须用很大的数据集来训练，才能在数据里找到有用的模式，并用这些模式来帮助预测。这种做法也容易出错，因为它靠训练数据来作出正确预测，而数据可能标错了，模型就会给出一串很差的预测。就 GPT-2 而言，每种短语类型（主—谓—宾）大约只有 100 个训练句。"
+      },
+      {
+        "text": "The structure of a flower varies widely between plants. The simplest flowers are unbranched and made up of only two sepals and a single petal. Other examples are composed of several petals joined together, with the innermost sepals completely fused to form a tube called the calyx. The petals are usually coloured to attract insects, which can only see certain wavelengths of light. The sepals are often coloured too, but usually have a more limited range of colours.",
+        "x": 58.5,
+        "y": 278.8,
+        "w": 233.6,
+        "h": 93.6,
+        "zh": "不同植物的花，结构差别很大。最简单的花不分枝，只有两枚萼片和一枚花瓣。另一些则由好几枚花瓣连在一起，最里面的萼片完全融合，形成一根叫花萼的管。花瓣通常有颜色，用来吸引昆虫，而昆虫只能看见某些波长的光。萼片也常常有颜色，但颜色的范围通常更窄。"
+      },
+      {
+        "text": "Some flowers have additional structures, such as stamens, anthers and ovaries. The presence of stamens and anthers in some flowers is used for cross-pollination. The ovary is the organ where the female gametes are produced, and is the first structure that is developed in an embryo of a flower. The ovary is the female flower’s reproductive system, and consists of the ovary wall, the ovule, and the oviduct.",
+        "x": 58.5,
+        "y": 183.2,
+        "w": 235.3,
+        "h": 81.7,
+        "zh": "有些花还有额外的结构，例如雄蕊、花药和子房。某些花里出现雄蕊和花药，是用来做异花传粉的。子房是产生雌配子的器官，也是一朵花的胚胎里最先长出来的结构。子房是雌花的生殖系统，由子房壁、胚珠和输卵管组成。"
+      },
+      {
+        "text": "Flowers vary in their size and shape, from tiny to huge, and are often brightly coloured. Flowers may be seen as part of a larger structure, such as a flower head, an inflorescence, a bract, a spathe, or a carpels.",
+        "x": 58.8,
+        "y": 123.4,
+        "w": 233.3,
+        "h": 45.8,
+        "zh": "花的大小和形状差得很远，从极小到极大，而且常常颜色鲜艳。花也可以被看成某个更大结构的一部分，例如头状花序、花序、苞片、佛焰苞，或者心皮。"
+      },
+      {
+        "text": "Additionally, languages have different rules for different types of phrasing. In English, the subject-verb-object construction is fairly universal, but other languages have different rules, which makes training a GPT more complicated.",
+        "x": 310.5,
+        "y": 111.4,
+        "w": 235.3,
+        "h": 45.8,
+        "zh": "另外，不同的语言对不同类型的说法有不同的规则。英语里，主—谓—宾结构相当普遍，但别的语言规则不同，这让训练一个 GPT 变得更复杂。"
+      },
+      {
+        "text": "The term ”flower” is usually applied to the floral structures that are visible externally, but many ...",
+        "x": 58.5,
+        "y": 87.5,
+        "w": 233.6,
+        "h": 21.9,
+        "zh": "“花”这个词通常用来指那些从外面就能看见的花结构，但许多……"
+      },
+      {
+        "text": "Finally, there is an inherent trade-off between the number of rules and the performance of the model ...",
+        "x": 310.8,
+        "y": 75.6,
+        "w": 233.4,
+        "h": 21.9,
+        "zh": "最后，规则的数量和模型的表现之间，有一种固有的权衡……"
+      }
+    ],
+    "14": [
+      {
+        "text": "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+        "x": 120.9,
+        "y": 737.9,
+        "w": 355.2,
+        "h": 9,
+        "zh": "Megatron-LM：用模型并行训练数十亿参数的语言模型"
+      },
+      {
+        "text": "Context: The 36th International Conference on Machine Learning (ICML 2019) will be held in Long Beach, CA, USA from June 10th to June 15th, 2019. The conference will consist of one day of tutorials (June 10), followed by three days of main conference sessions (June 11-13),",
+        "x": 58.5,
+        "y": 661.4,
+        "w": 234.9,
+        "h": 57.8,
+        "zh": "上下文：第 36 届国际机器学习大会（ICML 2019）将于 2019 年 6 月 10 日至 6 月 15 日在美国加利福尼亚州长滩举行。大会包括一天教程（6 月 10 日），接着是三天主会（6 月 11–13 日），"
+      },
+      {
+        "text": "Rescue workers on Tuesday found a flight recorder from the Russian plane that crashed into the Black Sea over the weekend, the defense ministry said. All 92 people aboard the Russian military’s Tu-154 plane are believed to have died Sunday morning when it crashed two minutes after taking off from the southern Russian city of",
+        "x": 310.8,
+        "y": 649.4,
+        "w": 234.9,
+        "h": 69.7,
+        "zh": "救援人员周二找到了周末坠入黑海的那架俄罗斯飞机上的飞行记录仪，国防部说。俄罗斯军方这架图-154 上的全部 92 人，据信已于周日早晨遇难。飞机从俄罗斯南部的一座城市起飞，两分钟后坠毁。"
+      },
+      {
+        "text": "followed by two days of workshops (June 14-15).",
+        "x": 58.8,
+        "y": 649.4,
+        "w": 197.7,
+        "h": 10,
+        "zh": "接着是两天的研讨会（6 月 14–15 日）。"
+      },
+      {
+        "text": "Megatron-LM: With a broad scope, the conference addresses the challenges and opportunities in machine learning for practitioners and researchers. The conference program will feature sessions that cover different machine learning topics, from reinforcement learning to computational biology and from AI to deep learning. It is the world’s premier forum for exploring and presenting advances in machine",
+        "x": 58.5,
+        "y": 553.8,
+        "w": 235.3,
+        "h": 81.7,
+        "zh": "Megatron-LM：这次会议覆盖面很宽，面向实践者和研究者，讨论机器学习里的挑战与机会。会议日程会有涵盖不同机器学习主题的分会，从强化学习到计算生物学，从 AI 到深度学习。它是世界上探索和展示机器学习进展的首要论坛。"
+      },
+      {
+        "text": "Megatron-LM: A child holds up a portrait of a dead relative at a makeshift morgue in a building belonging to a local government in the town of Petropavlovsk-Kamchatsky. A Russian Defense Ministry Tu-154 plane with 92 people on board crashed into the Black Sea on Sunday morning shortly after taking off from the southern Russian city of Sochi. (Yuri Kochetkov/EPA)",
+        "x": 310.8,
+        "y": 541.8,
+        "w": 233.6,
+        "h": 81.7,
+        "zh": "Megatron-LM：在堪察加彼得罗巴甫洛夫斯克镇一栋属于地方政府的楼里，临时停尸处前，一个孩子举起一位去世亲属的肖像。周日早晨，一架载有 92 人的俄罗斯国防部图-154，从俄罗斯南部城市索契起飞后不久坠入黑海。（Yuri Kochetkov/EPA）"
+      },
+      {
+        "text": "ICML 2019 will offer an impressive range of sessions, which will be of interest to practitioners, researchers, and students. Some of the topics we will cover include:",
+        "x": 58.5,
+        "y": 494,
+        "w": 234.9,
+        "h": 33.9,
+        "zh": "ICML 2019 会提供一系列很可观的分会，实践者、研究者和学生都会感兴趣。我们将覆盖的主题包括："
+      },
+      {
+        "text": "According to the ministry, the plane was found at a depth of more than 1,000 feet and the recorder was damaged. ”The defense ministry has decided to hand over the recorder to the Interstate Aviation Committee, which is the main investigative body in the air crash,” the statement said.",
+        "x": 309.5,
+        "y": 470.1,
+        "w": 236.3,
+        "h": 57.8,
+        "zh": "该部称，飞机是在超过 1,000 英尺深的地方被找到的，记录仪已经损坏。“国防部已决定把记录仪交给国家间航空委员会，该委员会是这起空难的主要调查机构。”声明说。"
+      },
+      {
+        "text": "The search for the plane’s black boxes is being hampered by strong winds and rough seas. Investigators have launched a criminal probe into the crash, which officials said was likely caused by a technical fault.",
+        "x": 310.5,
+        "y": 410.3,
+        "w": 233.9,
+        "h": 45.8,
+        "zh": "搜寻飞机黑匣子的工作受到强风和恶劣海况的阻碍。调查人员已经对坠机立案做刑事调查。官员说，坠机很可能是技术故障引起的。"
+      },
+      {
+        "text": "Russian President Vladimir Putin declared Wednesday a day of mourning for the victims.",
+        "x": 310.8,
+        "y": 374.5,
+        "w": 233.3,
+        "h": 21.9,
+        "zh": "俄罗斯总统 Vladimir Putin 宣布周三为遇难者哀悼日。"
+      },
+      {
+        "text": "In this section we study the effect of number of attention heads on the scaling results. We also present strong scaling results for our 1.2 billion parameter model.",
+        "x": 307.4,
+        "y": 296.1,
+        "w": 234,
+        "h": 33.9,
+        "zh": "这一节研究注意力头的数量对扩展结果有什么影响。我们还给出 12 亿参数模型的强扩展结果。"
+      },
+      {
+        "text": "This section studies the effect of attention heads on model parallel scaling. To this end, we consider the 8.3 billion parameter configuration with 8-way model parallelism and vary the number of heads from 16 to 32. The results are presented in Table 7. As the number of attention heads increases, some of the GEMMS inside the self-attention layer become smaller and also the number of elements in the self attention softmax increases. This results in a slight decrease in scaling efficiency. Future research should be wary of this hyperparameter to design large transformer models that balance model speed and model accuracy.",
+        "x": 307.1,
+        "y": 132.7,
+        "w": 234.5,
+        "h": 129.5,
+        "zh": "这一节研究注意力头对模型并行扩展的影响。为此，我们取 83 亿参数、8 路模型并行的配置，把头的数量从 16 变到 32。结果见表 7。注意力头变多之后，自注意力层内部的一些 GEMM 会变小，自注意力 softmax 里的元素数量也会增加。扩展效率因此略有下降。以后做大 Transformer 时，应当留意这个超参数，以便在模型速度和模型准确率之间取得平衡。"
+      },
+      {
+        "text": "Since its first edition, the conference has grown and evolved. Today, it is the premier forum for showcasing state-of-theart research in machine learning. The conference is widely recognized as the preeminent venue for showcasing the latest research in machine learning, and a place where practitioners, researchers, and students can exchange ideas and",
+        "x": 58.5,
+        "y": 171.2,
+        "w": 235.3,
+        "h": 69.7,
+        "zh": "从第一届到现在，这个会议一直在长大、也在演变。今天，它是展示机器学习中最前沿研究的首要论坛。人们普遍把它看作展示机器学习最新研究的最重要场所，也是实践者、研究者和学生可以交换想法、并且"
+      },
+      {
+        "text": "The conference is a peer-reviewed venue that draws its prestige and influence from the excellence of the presentations and the quality of the invited speakers. With over 50% of all talks selected based on their content by an expert committee, it is clear that the conference’s high standards of research",
+        "x": 58.5,
+        "y": 87.5,
+        "w": 235.2,
+        "h": 57.8,
+        "zh": "这个会议经过同行评审。它的声望和影响力，来自报告本身的出色，也来自特邀讲者的水准。全部报告里有超过 50% 是由专家委员会按内容选出来的，可见这次会议对研究的要求之高。"
+      },
+      {
+        "text": "Our model parallelism is primarily designed to enable training models larger than what can fit in the memory of a",
+        "x": 307.4,
+        "y": 77,
+        "w": 235.6,
+        "h": 21.9,
+        "zh": "我们的模型并行，主要是为了能训练那些大到放不进一块"
+      }
+    ],
+    "15": [
+      {
+        "text": "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+        "x": 120.9,
+        "y": 737.9,
+        "w": 355.2,
+        "h": 9,
+        "zh": "Megatron-LM：用模型并行训练数十亿参数的语言模型"
+      },
+      {
+        "text": "works we must normalize by the original number of tokens, To, rather than the number of tokens, T, actually in the tokenized data fed as input to our model. This pre-tokenization also introduces artifacts in the text that are not present in our training data. To alleviate this distributional mismatch, we first preprocess the WikiText103 test dataset with invertible detokenizers to remove various artifacts related to punctuation and whitespace. The value of To is calculated before this preprocessing. For WikiText103’s test set To = 245566",
+        "x": 307.1,
+        "y": 617.8,
+        "w": 236,
+        "h": 107.1,
+        "zh": "工作做公平比较，我们必须按原始 token 数 To 来归一化，而不是按分词之后、实际输入模型的那份数据里的 token 数 T。这种预先分词还会在文本里留下一些痕迹，我们的训练数据中并没有这些痕迹。为了减轻这种分布上的不匹配，我们先用可逆的反分词器处理 WikiText103 测试集，去掉与标点和空白有关的各种痕迹。To 在这步预处理之前就算好。对 WikiText103 的测试集，To = 245566。"
+      },
+      {
+        "text": "Table 7. Effect of number of attention heads on scaling on 8.3 billion of parameters with 8-way model parallelism.",
+        "x": 54.9,
+        "y": 697.9,
+        "w": 234.5,
+        "h": 19.9,
+        "zh": "表 7. 83 亿参数、8 路模型并行时，注意力头数量对扩展的影响。"
+      },
+      {
+        "text": "Table 8. Speedup obtained for the 1.2 billion parameters model using model parallelism while keeping the batch size constant.",
+        "x": 54.9,
+        "y": 602.8,
+        "w": 234.5,
+        "h": 19.9,
+        "zh": "表 8. 批次大小保持不变时，对 12 亿参数模型使用模型并行所得到的加速。"
+      },
+      {
+        "text": "We must also make one further transformer-specific modification to the perplexity calculation. Unlike RNN-based language models, transformers operate on a fixed window input size. Therefore they cannot fully calculate P(t|0 : t−1) and can only calculate P(t|t − w : t − 1) where w is the size of our context: 1024 tokens. However, calculating this value for every token in our dataset is prohibitively expensive since we must compute approximately T evaluations of a w sized context. To evaluate our models efficiently we take a middle ground approach termed overlapping evaluation where we advance the sliding window by some overlap o each time and only compute the cross entropy losses corresponding to the last o tokens of the window. In our experiments we utilize an overlap o of 32, and compute losses over all sliding windows in such a fashion.",
+        "x": 307,
+        "y": 422.1,
+        "w": 236.1,
+        "h": 177.3,
+        "zh": "计算困惑度时，还要再做一处 Transformer 特有的修改。和基于 RNN 的语言模型不同，Transformer 处理的是固定窗口大小的输入。因此它们算不出完整的 P(t | 0 : t−1)，只能算 P(t | t − w : t − 1)，其中 w 是上下文长度：1024 个 token。可是，对数据集里的每个 token 都算一遍，贵到做不起，因为大小为 w 的上下文大约要评估 T 次。为了高效地评估模型，我们取一种折中，称为重叠评估：每次把滑动窗口向前推进一段重叠 o，并且只计算这个窗口最后 o 个 token 的交叉熵损失。实验里重叠 o 取 32，所有滑动窗口都按这个方式计算损失。"
+      },
+      {
+        "text": "single GPU, but it can also accelerate the training of smaller models without increasing the batch size. To measure this acceleration we train a model with a fixed 1.2 billion parameters. We use a fixed batch size of 8 samples per iteration and increase the number of GPUs using model parallelism. The results are listed in Table 8. Using two GPUs makes training 64% faster. Above that we see diminishing returns as the per-GPU computation decreases and the memory bandwidth and communication overheads begin to dominate.",
+        "x": 55.4,
+        "y": 442.6,
+        "w": 235.7,
+        "h": 105.6,
+        "zh": "GPU 显存的模型，但它也可以在不加大批次的情况下，把较小模型的训练加快。为了量出这个加速，我们训练一个固定为 12 亿参数的模型。每次迭代的批次大小固定为 8 个样本，再用模型并行去增加 GPU 的数量。结果见表 8。用两块 GPU，训练快 64%。再往上，收益就递减了：每块 GPU 上的计算变少，显存带宽和通信开销开始占上风。"
+      },
+      {
+        "text": "E. Evaluating Language Models Using WikiText103 and LAMBADA",
+        "x": 55.4,
+        "y": 400,
+        "w": 195.5,
+        "h": 25.9,
+        "zh": "E. 用 WikiText103 和 LAMBADA 评估语言模型"
+      },
+      {
+        "text": "In this section we detail our evaluation methodology for the WikiText103 dataset (Merity et al., 2016) and cloze-style prediction accuracy on the LAMBADA dataset(Paperno",
+        "x": 55,
+        "y": 356.8,
+        "w": 234.5,
+        "h": 33.9,
+        "zh": "这一节说明我们怎样评估 WikiText103 数据集（Merity et al., 2016），以及在 LAMBADA 数据集上的完形填空式预测准确率（Paperno"
+      },
+      {
+        "text": "The capability to handle long term contexts is crucial for state of the art language models and is a necessary prerequisite for problems like long-form generation and documentbased question answering. Cloze-style datasets like LAMBADA are designed to measure a model’s ability to operate in and reason about these types of long term contexts. Clozestyle reading comprehension uses a context of word tokens x = x1:t with one token xj masked; the models objective is to correctly predict the value of the missing j accurately predict the missing token, the model requires an in-depth understanding of the surrounding context and how language should be used in such a context. LAMBADA uses cloze-style reading comprehension to test generative left-to-right language models by constructing examples of 4- 5 sentences where the last word in the context xt is masked. Our models utilize subword units, so for LAMBADA evaluation we utilize the raw, unprocessed LAMBADA dataset and require that our model predict the multiple subword tokens that make up the word token. We use teacher forcing, and consider an answer correct only when all output predictions are correct. This formulation is equivalent to the original task of word token prediction.",
+        "x": 307.1,
+        "y": 127.2,
+        "w": 236.1,
+        "h": 261,
+        "zh": "能不能处理长期上下文，对当前最优的语言模型很关键，也是长文生成、基于文档的问答这类问题的前提。LAMBADA 这类完形填空式数据集，就是用来衡量模型能不能在这类长期上下文里运作、并对此进行推理。完形填空式阅读理解给出一段词 token 的上下文 x = x_{1:t}，其中有一个 token x_j 被掩掉；模型的目标是正确预测缺失的第 j 个 token。要准确预测这个缺失 token，模型就得深入理解周围的上下文，以及语言在这种上下文里该怎么用。LAMBADA 用完形填空式阅读理解来考查生成式的、从左到右的语言模型：例子由 4 到 5 个句子组成，上下文的最后一个词 x_t 被掩掉。我们的模型用的是子词单元，所以评估 LAMBADA 时用的是原始的、未加工的 LAMBADA 数据集，并要求模型把组成那个词 token 的多个子词 token 都预测出来。我们使用 teacher forcing，并且只有全部输出预测都正确，才算这个答案正确。这种做法等价于原来的词 token 预测任务。"
+      },
+      {
+        "text": "WikiText103 perplexity is an evaluation criterion that has been well studied over the past few years since the creation of the benchmark dataset. Perplexity is the exponentiation of the average cross entropy of a corpus (Mikolov et al., 2011). This makes it a natural evaluation metric for language models which represent a probability distribution over entire sentences or texts.",
+        "x": 55,
+        "y": 229.3,
+        "w": 236.1,
+        "h": 81.7,
+        "zh": "WikiText103 困惑度是一项被研究得很充分的评估标准，从这份基准数据集建立以来的几年里一直如此。困惑度是一份语料的平均交叉熵取指数（Mikolov et al., 2011）。语言模型表示的是整个句子或整段文本上的概率分布，因此困惑度对它来说是一个自然的评估指标。"
+      },
+      {
+        "text": "To calculate perplexity in (4) we tokenize the WikiText103 test corpus according to our subword vocabulary and sum the cross entropy loss from each token [0, T]. We then normalize the cross entropy loss by the number of tokens in the original tokenization scheme To. The WikiText103 test corpus already comes pre-tokenized with word level tokens that prior works have used to compute perplexity. To evaluate our models’ perplexities on a level playing field with prior",
+        "x": 55.1,
+        "y": 76.9,
+        "w": 236,
+        "h": 93.6,
+        "zh": "要按（4）计算困惑度，我们用自己的子词词表给 WikiText103 测试语料做分词，再把每个 token 在 [0, T] 上的交叉熵损失加起来。然后用原始分词方案里的 token 数 To，给这份交叉熵损失做归一化。WikiText103 测试语料本来就按词级 token 预先分好了词，先前的工作用的就是这套分词来算困惑度。为了让我们模型的困惑度和先前的"
+      }
+    ]
+  }
+}

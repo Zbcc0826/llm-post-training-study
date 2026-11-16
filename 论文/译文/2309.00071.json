@@ -1,0 +1,1351 @@
+{
+  "id": "2309.00071",
+  "title": "2309.00071",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "YARN: EFFICIENT CONTEXT WINDOW EXTENSION OF",
+        "x": 107.4,
+        "y": 698.6,
+        "w": 396.7,
+        "h": 17.2,
+        "zh": "YaRN：上下文窗口的高效扩展"
+      },
+      {
+        "text": "Rotary Position Embeddings (RoPE) have been shown to effectively encode positional information in transformer-based language models. However, these models fail to generalize past the sequence length they were trained on. We present YaRN (Yet another RoPE extensioN method), a compute-efficient method to extend the context window of such models, requiring 10x less tokens and 2.5x less training steps than previous methods. Using YaRN, we show that LLaMA models can effectively utilize and extrapolate to context lengths much longer than their original pre-training would allow, while also surpassing previous the state-of-the-art at context window extension. In addition, we demonstrate that YaRN exhibits the capability to extrapolate beyond the limited context of a fine-tuning dataset. Code is available at https://github.com/jquesnelle/yarn.",
+        "x": 143.5,
+        "y": 458.8,
+        "w": 326.2,
+        "h": 119.6,
+        "zh": "旋转位置编码（Rotary Position Embeddings，RoPE）已被证明能有效编码基于 Transformer 的语言模型中的位置信息。然而，这些模型无法泛化到训练时所见的序列长度之外。我们提出 YaRN（Yet another RoPE extensioN method），一种计算上高效的方法，用来扩展这类模型的上下文窗口，所需 token 只有以往方法的 1/10，训练步数只有以往的 1/2.5。借助 YaRN，我们表明 LLaMA 模型能够有效利用并外推到远超原始预训练所允许的上下文长度，同时在上下文窗口扩展上超过此前的最优结果。此外，我们还表明 YaRN 能够外推到微调数据集有限的上下文之外。代码见 https://github.com/jquesnelle/yarn。"
+      },
+      {
+        "text": "Transformer-based Large Language Models(Vaswani et al., 2017) (LLMs) have become the nearubiquitous choice for many natural language processing (NLP) tasks where long-range abilities such as in-context learning (ICL) has been crucial. In performing the NLP tasks, the maximal length of the sequences (the context window) determined by its training processes has been one of the major limits of a pretrained LLM. Being able to dynamically extend the context window via a small amount of fine-tuning (or without fine-tuning) has become more and more desirable. To this end, the position encodings of transformers are the center of the",
+        "x": 107.7,
+        "y": 326,
+        "w": 398,
+        "h": 81.7,
+        "zh": "基于 Transformer 的大语言模型（Vaswani et al., 2017）（LLM）几乎已经成为许多自然语言处理（NLP）任务的默认选择，而上下文学习（in-context learning，ICL）这类长程能力在其中至关重要。做这些 NLP 任务时，序列的最大长度（也就是上下文窗口）由训练过程决定，一直是预训练 LLM 的主要限制之一。只靠少量微调（或者完全不微调）就能动态拉长上下文窗口，这件事越来越被需要。为此，Transformer 的位置编码正处于"
+      },
+      {
+        "text": "The original Transformer architecture used an absolute sinusoidal position encoding, which was later improved to a learnable absolute position encoding (Gehring et al., 2017). Since then, relative positional encoding schemes (Shaw et al., 2018) have further increased the performance of Transformers. Currently, the most popular relative positional encodings are T5 Relative Bias (Roberts et al., 2019), RoPE (Su et al., 2022), XPos (Sun et al., 2022), and ALiBi (Press et al., 2022).",
+        "x": 107.7,
+        "y": 254.3,
+        "w": 398,
+        "h": 53.8,
+        "zh": "最初的 Transformer 架构使用绝对正弦位置编码，后来改进为可学习的绝对位置编码（Gehring et al., 2017）。此后，相对位置编码方案（Shaw et al., 2018）又进一步提高了 Transformer 的表现。目前最常用的相对位置编码是 T5 Relative Bias（Roberts et al., 2019）、RoPE（Su et al., 2022）、XPos（Sun et al., 2022）和 ALiBi（Press et al., 2022）。"
+      },
+      {
+        "text": "One reoccurring limitation with positional encodings is the inability to generalize past the context",
+        "x": 108,
+        "y": 237.4,
+        "w": 396,
+        "h": 10,
+        "zh": "位置编码反复出现的一个限制，是无法泛化到上下文"
+      },
+      {
+        "text": "none are able to generalize to sequences significantly longer than their pre-trained length (Kazemnejad",
+        "x": 108,
+        "y": 215.4,
+        "w": 396,
+        "h": 10,
+        "zh": "没有一种能够泛化到明显长于其预训练长度的序列（Kazemnejad"
+      },
+      {
+        "text": "Some works have been done to overcome such limitation. (Chen et al., 2023) and concurrently (kaiokendev, 2023) proposed to extend the context length by slightly modifying RoPE via Position Interpolation (PI) and fine-tuning on a small amount of data. As an alternative, (bloc97, 2023a) proposed the \"NTK-aware\" interpolation by taking the loss of high frequency into account. Since then, two improvements of the \"NTK-aware\" interpolation have been proposed, with different emphasis:",
+        "x": 108,
+        "y": 143.7,
+        "w": 397.6,
+        "h": 53.8,
+        "zh": "已经有一些工作试图克服这一限制。Chen et al.（2023）以及同时期的 kaiokendev（2023）提出，对 RoPE 稍作修改，用位置插值（Position Interpolation，PI），并在少量数据上微调，以此来延长上下文。作为替代，bloc97（2023a）提出「NTK-aware」插值，把高频信息的损失考虑进去。此后，针对「NTK-aware」插值又提出了两种改进，侧重点各不相同："
+      },
+      {
+        "text": "• the \"Dynamic NTK\" interpolation method (emozilla, 2023) for pre-trained models without",
+        "x": 135.4,
+        "y": 122.1,
+        "w": 368.6,
+        "h": 10,
+        "zh": "• 面向预训练模型、且不……的「Dynamic NTK」插值方法（emozilla, 2023）"
+      },
+      {
+        "text": "• the \"NTK-by-parts\" interpolation method (bloc97, 2023b) which performs the best when fine-tuned on a small amount of longer-context data.",
+        "x": 135.4,
+        "y": 83.8,
+        "w": 368.6,
+        "h": 20.9,
+        "zh": "• 「NTK-by-parts」插值方法（bloc97, 2023b）。在少量更长上下文的数据上微调时，它的效果最好。"
+      },
+      {
+        "text": "Correspondence: {bloc,emozilla}@nousresearch.com",
+        "x": 124.1,
+        "y": 62.1,
+        "w": 235.7,
+        "h": 9,
+        "zh": ""
+      }
+    ],
+    "2": [
+      {
+        "text": "The \"NTK-aware\" interpolation and the \"Dynamic NTK\" interpolation have already seen their presence in the open-source models such as Code Llama (Rozière et al., 2023) (using \"NTK-aware\" interpolation) and Qwen 7B (qwe) (using \"Dynamic NTK\"). In this paper, in addition to making a complete account of the previous unpublished works on the \"NTK-aware\", the \"Dynamic NTK\" and the \"NTK-by-parts\" interpolations, we present YaRN (Yet another RoPE extensioN method), an improved method to efficiently extend the context window of models trained with Rotary Position Embeddings (RoPE) including the LLaMA (Touvron et al., 2023a), the GPT-NeoX (Black et al., 2022), and the PaLM (Chowdhery et al., 2022) families of",
+        "x": 107.7,
+        "y": 617.5,
+        "w": 397.6,
+        "h": 92.7,
+        "zh": "「NTK-aware」插值和「Dynamic NTK」插值已经出现在开源模型里，例如 Code Llama（Rozière et al., 2023）使用「NTK-aware」插值，Qwen 7B（qwe）使用「Dynamic NTK」。本文除了完整记述此前尚未发表的「NTK-aware」、「Dynamic NTK」和「NTK-by-parts」插值之外，还提出 YaRN（Yet another RoPE extensioN method），一种改进方法，用来高效扩展以旋转位置编码（RoPE）训练的模型的上下文窗口，涵盖 LLaMA（Touvron et al., 2023a）、GPT-NeoX（Black et al., 2022）和 PaLM（Chowdhery et al., 2022）这些家族"
+      },
+      {
+        "text": "The relationship between different methods and how they evolve into YaRN can be summarized into the following diagram:",
+        "x": 107.7,
+        "y": 578.6,
+        "w": 396.3,
+        "h": 20.9,
+        "zh": "不同方法之间的关系，以及它们如何演变成 YaRN，可以概括成下面这张图："
+      },
+      {
+        "text": "Figure 1: An outline of the relationship between different interpolation methods.",
+        "x": 145.5,
+        "y": 433.5,
+        "w": 321.1,
+        "h": 10,
+        "zh": "图 1：不同插值方法之间关系的概要。"
+      },
+      {
+        "text": "YaRN reaches state-of-the-art performances in context window extensions after fine-tuning on less than ∼0.1% of the original pre-training data. In the meantime, by combining with the inference-time technique called Dynamic Scaling, the Dynamic-YaRN allows for more than 2x context window extension without any fine-tuning.",
+        "x": 107.4,
+        "y": 378.3,
+        "w": 396.9,
+        "h": 42.8,
+        "zh": "在不到原始预训练数据约 0.1% 的数据上微调之后，YaRN 在上下文窗口扩展上达到了当前最优。与此同时，再结合一种叫做 Dynamic Scaling 的推理时技术，Dynamic-YaRN 可以在完全不做微调的情况下，把上下文窗口扩展到 2 倍以上。"
+      },
+      {
+        "text": "The basis of our work is the Rotary Position Embedding (RoPE) introduced in (Su et al., 2022). We work on a hidden layer where the set of hidden neurons are denoted by D. Given a sequence of vectors x1, · · · , xL ∈ R",
+        "x": 107.5,
+        "y": 281.4,
+        "w": 398.2,
+        "h": 34.4,
+        "zh": "我们工作的基础是 Su et al.（2022）引入的旋转位置编码（RoPE）。我们考虑一个隐藏层，其中隐藏神经元的集合记为 D。给定一列向量 x_1, · · · , x_L ∈ R"
+      },
+      {
+        "text": ", following the notation of (Su et al., 2022), the attention layer first converts the vectors into the query vectors and the key vectors:",
+        "x": 108,
+        "y": 271.9,
+        "w": 396,
+        "h": 20.9,
+        "zh": "，沿用 Su et al.（2022）的记号，注意力层先把这些向量转换成查询向量和键向量："
+      },
+      {
+        "text": ", kn = fk(xn, n) ∈ R Next, the attention weights are calculated as",
+        "x": 108,
+        "y": 237.7,
+        "w": 287.1,
+        "h": 26.3,
+        "zh": "，k_n = f_k(x_n, n) ∈ R。接下来，注意力权重按如下方式计算"
+      },
+      {
+        "text": "where qm, kn are considered as column vectors so that qmkn is simply the Euclidean inner product. In RoPE, we first assume that |D| is even and identify the embedding space and the hidden states as complex vector spaces:",
+        "x": 107.6,
+        "y": 166.1,
+        "w": 398.1,
+        "h": 31.9,
+        "zh": "其中 q_m、k_n 视为列向量，因此 q_m k_n 就是欧氏内积。在 RoPE 中，我们先假设 |D| 为偶数，并把嵌入空间与隐藏状态等同于复向量空间："
+      },
+      {
+        "text": "where the inner product q k becomes the real part of the standard Hermitian inner product Re(q k). More specifically, the isomorphisms interleave the real part and the complex part",
+        "x": 107.6,
+        "y": 128.7,
+        "w": 398.1,
+        "h": 20.9,
+        "zh": "其中内积 q k 变成标准 Hermitian 内积的实部 Re(q k)。更具体地说，这些同构把实部和虚部交错排列"
+      },
+      {
+        "text": "(xm)1, · · · , (xm)|D| 7→ (xm)1 + i(xm)2, · · · , ((xm)|D|−1 + i(xm)|D|) , (qm)1, · · · , (qm)|D| 7→ (qm)1 + i(qm)2, · · · , ((qm)|D|−1 + i(qm)|D|) . To convert embeddings xm, xn into query and key vectors, we are first given R-linear operators",
+        "x": 107.7,
+        "y": 78.5,
+        "w": 382.3,
+        "h": 43.8,
+        "zh": "(x_m)_1, · · · , (x_m)_|D| ↦ (x_m)_1 + i(x_m)_2, · · · , ((x_m)_|D|−1 + i(x_m)_|D|)，(q_m)_1, · · · , (q_m)_|D| ↦ (q_m)_1 + i(q_m)_2, · · · , ((q_m)_|D|−1 + i(q_m)_|D|)。要把嵌入 x_m、x_n 转换成查询向量和键向量，我们首先给定若干 R-线性算子"
+      }
+    ],
+    "3": [
+      {
+        "text": "Let θ = diag(θ1, · · · , θ|D|/2). In complex coordinates, we define",
+        "x": 108,
+        "y": 698.4,
+        "w": 259.9,
+        "h": 11.8,
+        "zh": "令 θ = diag(θ_1, · · · , θ_|D|/2)。在复坐标下，我们定义"
+      },
+      {
+        "text": "for any linear operator W . The functions fq, fk in RoPE are given by",
+        "x": 108,
+        "y": 655,
+        "w": 278.1,
+        "h": 11.5,
+        "zh": "对任意线性算子 W。RoPE 中的函数 f_q、f_k 由下式给出"
+      },
+      {
+        "text": "and b = 10000. This way, RoPE associates each (complex-valued) hidden neuron with a separate frequency θd. The benefit of doing so is that the dot product between the query vector and the key vector only depends on the relative distance m − n. In later discussions, a context length interpolation usually aims to modify the equation Eq. 5. To set up a uniform convention for these discussions, note that a modification fW can take the following",
+        "x": 108,
+        "y": 560.5,
+        "w": 396,
+        "h": 62.5,
+        "zh": "且 b = 10000。这样一来，RoPE 为每个（取复值的）隐藏神经元配上各自的频率 θ_d。这样做的好处是，查询向量与键向量的点积只依赖于相对距离 m − n。后文讨论里，上下文长度插值通常旨在修改式 5。为这些讨论约定一种统一写法：一种修改 f_W 可以取下面的形式"
+      },
+      {
+        "text": "fW (xm, m, θ) = fW (xm, g(m), h(θ)), where g(m) is a map between real numbers and h(θ) acts on the entries of the diagonal matrix θ uniformly by diag(h(θ1), · · · , h(θ|D|/2)) according to a function h. g and h are method-dependent",
+        "x": 107.6,
+        "y": 498.4,
+        "w": 396.4,
+        "h": 43.3,
+        "zh": "f_W(x_m, m, θ) = f_W(x_m, g(m), h(θ))，其中 g(m) 是实数到实数的映射，h(θ) 则按某个函数 h，以 diag(h(θ_1), · · · , h(θ_|D|/2)) 的方式一致地作用在对角矩阵 θ 的各个元素上。g 和 h 取决于具体方法"
+      },
+      {
+        "text": "In the subsequent sections, when we introduce a new interpolation method of the form Eq. 7, we only specify the functions g(m) and h(θd).",
+        "x": 108,
+        "y": 459.9,
+        "w": 396.4,
+        "h": 22.4,
+        "zh": "在随后各节中，当我们介绍形如式 7 的新插值方法时，只指定函数 g(m) 和 h(θ_d)。"
+      },
+      {
+        "text": "Given the pretrained maximal context length L, our goal is to extend it to L > L either with or without finetuning. We introduce the notion of scale factor s defined by s = For the convenience of some discussions, we also introduce wavelength λd associated with the d-th hidden dimension of RoPE as follows:",
+        "x": 107.6,
+        "y": 371,
+        "w": 396.5,
+        "h": 50.7,
+        "zh": "给定预训练时的最大上下文长度 L，我们的目标是把它扩展到 L > L，可以微调，也可以不微调。我们引入缩放因子 s，其定义为 s =。为方便部分讨论，我们还按如下方式引入与 RoPE 第 d 个隐藏维度相关联的波长 λ_d："
+      },
+      {
+        "text": "The wavelength describes the length of tokens needed in order for the rotary position embedding at dimension d to perform a full rotation (2π).",
+        "x": 107.7,
+        "y": 287.6,
+        "w": 396.3,
+        "h": 20.9,
+        "zh": "波长描述的是：维度 d 上的旋转位置编码要完成一整圈（2π），需要多少个 token。"
+      },
+      {
+        "text": "Position Interpolation (PI) is one of the earlier works extending context lengths of RoPE proposed by Chen et al. (2023), and concurrently kaiokendev (2023). Under the notation of Eq. 7, it is setting",
+        "x": 108,
+        "y": 227,
+        "w": 396.3,
+        "h": 20.9,
+        "zh": "位置插值（PI）是较早扩展 RoPE 上下文长度的工作之一，由 Chen et al.（2023）提出，kaiokendev（2023）也同时提出。按式 7 的记号，它所设定的是"
+      },
+      {
+        "text": ". We include some details in Appendix A.1. ReRoPE (Su, 2023) also aims to extend the context size of existing models pre-trained with RoPE, and claims \"infinite\" context length without needing any fine-tuning. This claim is backed by a monotonically decreasing loss with increasing context length up to 16k on the Llama 2 13B model. It achieves context extension by modifying the attention mechanism and thus is not purely an embedding interpolation method. Since it is currently not compatible with Flash Attention 2 (Dao, 2023) and requires two attention passes during inference, we do not consider it for comparison. Concurrently with our work, LM-Infinite (Han et al., 2023) proposes similar ideas to YaRN, but focuses on \"on-the-fly\" length generalization for non-fine-tuned models. Since they also modify the attention mechanism of the models, it is not an embedding interpolation method and is not immediately compatible with Flash Attention 2.",
+        "x": 108,
+        "y": 62.1,
+        "w": 397.2,
+        "h": 131.5,
+        "zh": "。若干细节放在附录 A.1。ReRoPE（Su, 2023）同样希望扩展已经用 RoPE 预训练过的现有模型的上下文长度，并声称不需要任何微调就能得到「无限」上下文。支持这一声称的证据是：在 Llama 2 13B 上，损失随上下文长度单调下降，一直到 16k。它通过修改注意力机制来扩展上下文，因此并不纯粹是一种嵌入插值方法。由于它目前与 Flash Attention 2（Dao, 2023）不兼容，而且推理时需要做两遍注意力，我们不把它纳入比较。与我们同时，LM-Infinite（Han et al., 2023）提出了与 YaRN 相近的想法，但重点放在未经微调的模型上「即时」完成的长度泛化。由于他们同样修改了模型的注意力机制，它不是嵌入插值方法，也不能直接兼容 Flash Attention 2。"
+      }
+    ],
+    "4": [
+      {
+        "text": "Whereas PI stretches all RoPE dimensions equally, we find that the theoretical interpolation bound described by PI (Chen et al., 2023) is insufficient at predicting the complex dynamics between RoPE and the LLM’s internal embeddings. In the following subsections, we describe the main issues with PI we have individually identified and solved, so as to give the readers the context, origin and justifications of each method which we use in concert to obtain the full YaRN method.",
+        "x": 107.5,
+        "y": 631,
+        "w": 396.5,
+        "h": 53.8,
+        "zh": "PI 把 RoPE 的所有维度同等拉伸，但我们发现，PI（Chen et al., 2023）给出的理论插值界，并不足以预测 RoPE 与 LLM 内部嵌入之间复杂的相互作用。下面几小节分别说明我们各自发现并解决的 PI 的主要问题，以便读者了解每一种方法的背景、来源和理由；这些方法合在一起，才得到完整的 YaRN。"
+      },
+      {
+        "text": "LOSS OF HIGH FREQUENCY INFORMATION - \"NTK-AWARE\" INTERPOLATION",
+        "x": 132.2,
+        "y": 603.2,
+        "w": 325.2,
+        "h": 10,
+        "zh": "高频信息的损失——「NTK-aware」插值"
+      },
+      {
+        "text": "If we look at rotary position embeddings (RoPE) only from an information encoding perspective, it was shown in (Tancik et al., 2020), using Neural Tangent Kernel (NTK) theory, that deep neural networks have trouble learning high frequency information if the input dimension is low and the corresponding embeddings lack high frequency components. Here we can see the similarities: a token’s positional information is one-dimensional, and RoPE expands it to an n-dimensional complex vector embedding. RoPE closely resembles Fourier Features (Tancik et al., 2020) in many aspects, as it is possible to define RoPE as a special 1D case of a Fourier Feature. In the case of Positional Interpolation (PI), as we strech all dimensions equally by a factor s, it removes the high frequency components of RoPE. This degradation is worsened as the scaling factor s grows, and at some point, the network will not be able to recover. Previous fine-tunes (kaiokendev, 2023) (Chen et al., 2023) (Together.ai, 2023) (Quesnelle et al., 2023) using PI were only able to achieve a scaling factor of roughly s = 8 before the LLM’s outputs starts to degrade, even after",
+        "x": 107.8,
+        "y": 455,
+        "w": 397.5,
+        "h": 136.5,
+        "zh": "如果只从信息编码的角度看旋转位置编码（RoPE），Tancik et al.（2020）借助神经正切核（Neural Tangent Kernel，NTK）理论表明：输入维度很低、对应嵌入又缺少高频分量时，深度神经网络很难学到高频信息。这里可以看到相似之处：一个 token 的位置信息是一维的，RoPE 把它展开成一个 n 维复向量嵌入。RoPE 在很多方面都接近傅里叶特征（Fourier Features，Tancik et al., 2020），因为可以把 RoPE 定义成傅里叶特征的一种特殊一维情形。对位置插值（PI）而言，把所有维度都按因子 s 同等拉伸，就会去掉 RoPE 的高频分量。缩放因子 s 越大，这种退化越严重，到某一程度网络就无法恢复。此前使用 PI 的微调（kaiokendev, 2023）（Chen et al., 2023）（Together.ai, 2023）（Quesnelle et al., 2023）大约只能做到 s = 8，再往上 LLM 的输出就开始变差，即便在"
+      },
+      {
+        "text": "In order to alleviate this issue, the \"NTK-aware\" interpolation was developed in (bloc97, 2023a). Instead of scaling every dimension of RoPE equally by a factor s, we spread out the interpolation pressure across multiple dimensions by scaling high frequencies less and low frequencies more. One can obtain such a transformation in many ways, but the simplest would be to perform a base change on the value of θ. The details are described in the Appendix A.2 and the method has seen some",
+        "x": 108,
+        "y": 383.3,
+        "w": 397.7,
+        "h": 53.8,
+        "zh": "为缓解这一问题，bloc97（2023a）提出了「NTK-aware」插值。它不是把 RoPE 的每一个维度都按同一个因子 s 缩放，而是把插值的压力分摊到多个维度上：高频少缩放一些，低频多缩放一些。这种变换可以有很多种做法，最简单的是对 θ 的取值做一次换底。细节见附录 A.2。该方法已经见到了一些"
+      },
+      {
+        "text": "One main issue of this \"NTK-aware\" scaling is that it is very difficult to determine what optimal base should be used for an intended context extension by s times. The best base to use for \"NTK-aware\" interpolation usually has to be found empirically, which significantly increases the difficulty and cost of obtaining a successful fine-tuned model. Despite its limitations, the observations from the NTK theory is valid and the following idea is still maintained and executed in a different way in the \"NTK-by-parts\" interpolation introduced in the next section.",
+        "x": 108,
+        "y": 300.6,
+        "w": 396,
+        "h": 64.8,
+        "zh": "这种「NTK-aware」缩放的一个主要问题是：要把上下文扩展到 s 倍，很难事先确定该用哪个最优的底。「NTK-aware」插值的最佳底通常只能靠实验去找，这明显提高了得到一个成功微调模型的难度和成本。尽管有这些限制，来自 NTK 理论的观察仍然成立，下一节的「NTK-by-parts」插值会换一种方式继续保留并落实这个想法。"
+      },
+      {
+        "text": "LOSS OF RELATIVE LOCAL DISTANCES - \"NTK-BY-PARTS\" INTERPOLATION",
+        "x": 132.2,
+        "y": 272.8,
+        "w": 321.8,
+        "h": 10,
+        "zh": "相对局部距离的损失——「NTK-by-parts」插值"
+      },
+      {
+        "text": "To understand why \"NTK-aware\" interpolation works better than PI and to eliminate its disadvantages, we have to take a closer look at RoPE. In this section, we think heavily in terms of the wavelengths λd defined in Eq. 8 in the formula of RoPE. For simplicity, we omit the subscript d in λd and the reader is encouraged to think about λ as the wavelength of an arbitrary periodic function. In theory, as RoPE is a relative position embedding, it should be quite surprising that it fails to generalize to unseen longer context sizes. However, we can show that in practice, RoPE does not only encode relative position. One observation we can make is that given a context size L, there are some dimensions d where the wavelength is longer than the maximum context length seen during pretraining (λ > L), this suggests that some dimensions’ rotary embeddings might not be distributed evenly in the rotational domain (i.e. does not perform a full rotation for the entire training context size). In such cases, we presume having unique position pairs implies that the absolute positional",
+        "x": 107.6,
+        "y": 135.5,
+        "w": 397.6,
+        "h": 125.5,
+        "zh": "要理解「NTK-aware」插值为什么优于 PI，并去掉它的缺点，必须更仔细地看 RoPE。这一节我们主要按 RoPE 公式中式 8 所定义的波长 λ_d 来考虑。为简单起见，省略 λ_d 的下标 d，读者可以把 λ 理解成任意一个周期函数的波长。从理论上说，RoPE 是相对位置嵌入，它不能泛化到没见过的更长上下文，这件事本身应当相当令人意外。但我们可以说明，实践中 RoPE 编码的并不只有相对位置。可以做的一个观察是：给定上下文长度 L，有些维度 d 的波长长于预训练时见过的最大上下文（λ > L）。这表明，这些维度的旋转嵌入在旋转域中可能分布并不均匀（也就是说，在整个训练上下文长度里并没有转满一圈）。在这种情况下，我们假定，位置对若是唯一的，就意味着绝对位置"
+      },
+      {
+        "text": "*We note that shortly before the release of this article, Code Llama (Rozière et al., 2023) was released and uses \"NTK-aware\" scaling by manually scaling the base b to 1M, in which they call this method as RoPE",
+        "x": 108,
+        "y": 102.8,
+        "w": 396,
+        "h": 18.9,
+        "zh": "*我们注意到，就在本文发布前不久，Code Llama（Rozière et al., 2023）发布，并通过把底 b 手工缩放到 1M 来使用「NTK-aware」缩放，他们把这种方法称为 RoPE"
+      },
+      {
+        "text": "Since the dimension never rotates fully at least once during pre-training, if we pick the first token as the anchor, every other token during pre-training has an unique distance to it, which the neural network can use to",
+        "x": 108,
+        "y": 72.1,
+        "w": 396,
+        "h": 18.9,
+        "zh": "由于该维度在预训练期间至少从未转满一圈，如果把第一个 token 当作锚点，预训练期间其余每一个 token 到它的距离都是唯一的，神经网络可以用这个距离来"
+      }
+    ],
+    "5": [
+      {
+        "text": "information remains intact in those dimensions. On the contrary, when the wavelength is short, only relative positional information is accessible to the network. Given these observations, we can see that it is important to not touch the dimensions that only encode relative positional information, as they are crucial for the network to distinguish the relative order of nearby tokens. Meanwhile, dimensions that only encode absolute positional information should always be interpolated, as larger distances will be out of distribution. Instead of arbitrarily changing the base in \"NTK-aware\" interpolation (which basically does something similar to what is described here), we can formulate an explicit and targeted interpolation method that takes in account all of the",
+        "x": 108,
+        "y": 617.5,
+        "w": 396.3,
+        "h": 92.7,
+        "zh": "信息在这些维度上仍然保留。相反，波长较短时，网络能够用到的只有相对位置信息。有了这些观察就可以看出：只编码相对位置信息的维度不应当去改动，因为网络要靠它们区分邻近 token 的相对顺序。与此同时，只编码绝对位置信息的维度则应当始终做插值，因为更大的距离会落到分布之外。与其在「NTK-aware」插值里随意改底（那基本上是在做与这里类似的事情），我们可以明确构造一种有针对性的插值方法，把所有这些情况都考虑进去"
+      },
+      {
+        "text": "• if the wavelength λ is much smaller than the context size L, we do not interpolate; • if the wavelength λ is equal to or bigger than the context size L, we want to only interpolate and avoid any extrapolation (unlike the previous \"NTK-aware\" method); • dimensions in-between can have a bit of both, similar to the \"NTK-aware\" interpolation.",
+        "x": 135.4,
+        "y": 527,
+        "w": 368.6,
+        "h": 50.7,
+        "zh": "• 若波长 λ 远小于上下文长度 L，则不做插值；• 若波长 λ 等于或大于上下文长度 L，则只做插值，避免任何外推（这与此前的「NTK-aware」方法不同）；• 介于两者之间的维度可以两者兼有，类似于「NTK-aware」插值。"
+      },
+      {
+        "text": "As a result, it is more convenient to introduce the ratio r =",
+        "x": 107.6,
+        "y": 505.2,
+        "w": 229.5,
+        "h": 10,
+        "zh": "因此，更方便的做法是引入比值 r ="
+      },
+      {
+        "text": "between the original context size L and the wavelength λ. This ratio represents the number of rotations a certain RoPE dimension makes given a fixed pretrained context length L. In the d-th hidden state, the ratio r depends on d in the",
+        "x": 108,
+        "y": 483.3,
+        "w": 396,
+        "h": 31.9,
+        "zh": "介于原始上下文长度 L 与波长 λ 之间。这个比值表示，在固定的预训练上下文长度 L 下，某个 RoPE 维度转过的圈数。在第 d 个隐藏状态中，比值 r 对 d 的依赖体现在"
+      },
+      {
+        "text": "In order to define the boundary of the different interpolation strategies as above, we introduce two extra parameters α, β. All hidden dimensions d where r(d) < α are those where we linearly interpolate by a scale s (exactly like PI, avoiding any extrapolation), and the d where r(d) > β are those where we do not interpolate at all. Define the ramp function γ to be",
+        "x": 108,
+        "y": 395.3,
+        "w": 396.4,
+        "h": 42.8,
+        "zh": "为了按上面的方式划定不同插值策略的边界，我们再引入两个参数 α、β。所有满足 r(d) < α 的隐藏维度 d，都按尺度 s 做线性插值（与 PI 完全相同，避免任何外推）；满足 r(d) > β 的那些 d，则完全不做插值。把斜坡函数 γ 定义为"
+      },
+      {
+        "text": "With the help of the ramp function, the \"NTK-by-parts\" method can be described as follows.",
+        "x": 107.5,
+        "y": 317.1,
+        "w": 368.8,
+        "h": 10,
+        "zh": "借助这个斜坡函数，「NTK-by-parts」方法可以描述如下。"
+      },
+      {
+        "text": "Definition 1 The \"NTK-by-parts\" interpolation is a modification of RoPE using Eq. 7 with the following functions .",
+        "x": 108,
+        "y": 284.3,
+        "w": 396,
+        "h": 20.9,
+        "zh": "定义 1 「NTK-by-parts」插值是使用式 7 对 RoPE 的一种修改，所用函数如下。"
+      },
+      {
+        "text": "The values of α and β should be tuned on a case-by-case basis. For example, we have found experimentally that for the Llama family of models, good values for α and β are α = 1 and β = 32. Using the techniques described in this section, a variant of the resulting method was released under the name \"NTK-by-parts\" interpolation (bloc97, 2023b). This improved method performs better than the previous PI (Chen et al., 2023) and \"NTK-aware\" 3.1 interpolation methods, both with non-fine-tuned models and with fine-tuned models, as shown in (bloc97, 2023b) and Section 4.2.",
+        "x": 107.7,
+        "y": 157.4,
+        "w": 398.1,
+        "h": 70.7,
+        "zh": "α 和 β 的取值应视具体情况调节。例如，我们在实验中发现，对 Llama 系列模型，比较好的取值是 α = 1、β = 32。使用本节所述技术，所得方法的一个变体以「NTK-by-parts」插值之名发布（bloc97, 2023b）。这一改进优于此前的 PI（Chen et al., 2023）和第 3.1 节的「NTK-aware」插值，对未微调的模型和微调后的模型都是如此，见 bloc97（2023b）和第 4.2 节。"
+      },
+      {
+        "text": "In addition to the previous interpolation techniques, we also observe that introducing a temperature t on the logits before the attention softmax has a uniform impact on perplexity regardless of the data",
+        "x": 108,
+        "y": 100.9,
+        "w": 396,
+        "h": 20.9,
+        "zh": "除了前面这些插值技术，我们还观察到：在注意力 softmax 之前对 logits 引入温度 t，会对困惑度产生一种均匀的影响，与数据"
+      },
+      {
+        "text": "The interpolation by linear ramp on h may have alternatives, such as a harmonic mean over θd/s and θd converted from a linear interpolation on wavelengths. The choice of h here was for the simplicity of implementation, but both would work.",
+        "x": 108,
+        "y": 62.1,
+        "w": 396,
+        "h": 28.9,
+        "zh": "对 h 做线性斜坡的插值也可以有别的做法，例如在波长上做线性插值，再对 θ_d/s 与 θ_d 取调和平均。这里选择这样的 h，是为了实现简单，两种做法都可行。"
+      }
+    ],
+    "6": [
+      {
+        "text": "sample and the token position over the extended context window (See Appendix A.3). More precisely, instead of Eq. 2, we modify the computation of attention weights into",
+        "x": 108,
+        "y": 689.2,
+        "w": 397.2,
+        "h": 20.9,
+        "zh": "样本，以及扩展后上下文窗口上的 token 位置（见附录 A.3）。更具体地说，我们不按式 2，而是把注意力权重的计算改成"
+      },
+      {
+        "text": "The reparametrization of RoPE as a set of 2D matrices has a clear benefit on the implementation of this attention scaling: we can instead use a \"length scaling\" trick which scales bothp by a constant factor",
+        "x": 107.7,
+        "y": 619.9,
+        "w": 396.3,
+        "h": 33.4,
+        "zh": "把 RoPE 重参数化成一组二维矩阵，对实现这种注意力缩放有一个直接的好处：可以改用一种「长度缩放」技巧，把二者都乘上一个常数因子"
+      },
+      {
+        "text": "1/t by simply scaling the complex rotary position embeddings by the same amount. With this, YaRN can effectively alter the attention mechanism without modifying its code. Furthermore, it has zero overhead during both inference and training, as rotary position embeddings are generated in advance and are reused for all forward passes. Combining it with the \"NTK-by-parts\" interpolation, we have the YaRN method.",
+        "x": 108,
+        "y": 576.1,
+        "w": 397.7,
+        "h": 53.8,
+        "zh": "1/t，做法只是把复数形式的旋转位置编码乘上同样的量。这样，YaRN 就能在不修改注意力代码的前提下改变注意力机制。而且训练和推理都没有额外开销，因为旋转位置编码事先生成，并在所有前向传播中复用。把它与「NTK-by-parts」插值合在一起，就得到 YaRN。"
+      },
+      {
+        "text": "Definition 2 By the \"YaRN method\", we refer to a combination of the attention scaling in Eq. 14 and the \"NTK-by-parts\" interpolation introduced in Section 3.2.",
+        "x": 108,
+        "y": 545.4,
+        "w": 396,
+        "h": 20.9,
+        "zh": "定义 2 我们所说的「YaRN 方法」，是指式 14 中的注意力缩放与第 3.2 节所介绍的「NTK-by-parts」插值的组合。"
+      },
+      {
+        "text": "For LLaMA and Llama 2 models, we recommend the following values:",
+        "x": 108,
+        "y": 525.7,
+        "w": 284.6,
+        "h": 10,
+        "zh": "对 LLaMA 和 Llama 2 模型，我们推荐如下取值："
+      },
+      {
+        "text": "1/t at the lowest perplexity against the scale extension by various factors s using the \"NTK-by-parts\" method (Section 3.2) on LLaMA 7b, 13b, 33b and 65b models without fine-tuning. We note that the same values of t also apply fairly well to Llama 2 models (7b, 13b and 70b). It suggests that the property of increased entropy and the temperature constant t may have certain degree of \"universality\" and may be generalizable across some models",
+        "x": 108,
+        "y": 418.3,
+        "w": 396,
+        "h": 53.8,
+        "zh": "在不微调的前提下，用「NTK-by-parts」方法（第 3.2 节）对 LLaMA 7b、13b、33b 和 65b 按不同因子 s 做尺度扩展，1/t 取在困惑度最低的位置。我们注意到，同一组 t 对 Llama 2 模型（7b、13b 和 70b）也相当适用。这表明，熵增加这一性质以及温度常数 t 可能具有一定程度的「通用性」，并有可能推广到一部分模型"
+      },
+      {
+        "text": "The YaRN method combines all our findings and surpasses all previous methods in both fine-tuned and non-fine-tuned scenarios. Thanks to its low footprint, YaRN allows for direct compatibility with libraries that modify the attention mechanism such as Flash Attention 2 (Dao, 2023).",
+        "x": 107.7,
+        "y": 368.4,
+        "w": 396.3,
+        "h": 31.9,
+        "zh": "YaRN 把我们的全部发现合在一起，在微调与未微调两种情形下都超过了此前的所有方法。由于额外占用很小，YaRN 可以直接兼容那些会改动注意力机制的库，例如 Flash Attention 2（Dao, 2023）。"
+      },
+      {
+        "text": "DYNAMIC SCALING - \"DYNAMIC NTK\" INTERPOLATION",
+        "x": 132.2,
+        "y": 344.2,
+        "w": 239.2,
+        "h": 10,
+        "zh": "动态缩放——「Dynamic NTK」插值"
+      },
+      {
+        "text": "In a lot of use cases, multiple forward-passes are performed with varying sequence lengths from 1 to the maximal context size. A typical example is the autoregressive generation where the sequence lengths increment by 1 after each step. There are two ways of applying an interpolation method that uses a scale factor s (including PI, \"NTK-aware\", \"NTK-by-parts\" and YaRN):",
+        "x": 108,
+        "y": 290.8,
+        "w": 396,
+        "h": 42.8,
+        "zh": "在很多使用场景中，会做多次前向传播，序列长度从 1 一直变到最大上下文。典型例子是自回归生成：每一步之后序列长度加 1。对使用缩放因子 s 的插值方法（包括 PI、「NTK-aware」、「NTK-by-parts」和 YaRN），有两种用法："
+      },
+      {
+        "text": "1. Throughout the whole inference cycle, the embedding layer is fixed including the scale factor s = L /L where L is the fixed number of extended context size. 2. In each forward-pass, the position embedding updates the scale factor s = max(1, l /L) where l is the sequence length of the current sequence.",
+        "x": 131.4,
+        "y": 235.7,
+        "w": 373.8,
+        "h": 45.9,
+        "zh": "1. 在整个推理过程中，嵌入层保持固定，其中缩放因子固定为 s = L / L，L 是扩展后上下文长度这个固定的数。2. 在每一次前向传播中，位置嵌入更新缩放因子 s = max(1, l / L)，其中 l 是当前序列的长度。"
+      },
+      {
+        "text": "The problem of (1) is that the model may experience a performance discount at a length less than L and an abrupt degradation when the sequence length is longer than L . But by doing Dynamic Scaling as (2), it allows the model to gracefully degrade instead of immediately breaking when hitting the trained context limit L . We call this inference-time method the Dynamic Scaling method. When it is combined with \"NTK-aware\" interpolation, we call it \"Dynamic NTK\" interpolation. It first appeared in public as a reddit post in (emozilla, 2023). One notable fact is that the \"Dynamic NTK\" interpolation works exceptionally well on models pretrained on L without any finetuning (L = L). This is supported by the experiment in Appendix B.7. Often in the repeated forward-passes, the kv-caching (Chen, 2022) is applied so that we can reuse the previous key-value vectors and improve the overall efficiency. We point out that in some implementations when the rotary position embeddings are cached, some care has to be taken in order to modify it for Dynamic Scaling with kv-caching. The correct implementation should cache the kv-embeddings before applying rotary position embeddings, as the RoPE of every token changes",
+        "x": 107.7,
+        "y": 73.1,
+        "w": 398,
+        "h": 153.4,
+        "zh": "做法（1）的问题在于：长度小于 L 时模型可能会损失一部分性能，而序列长度超过 L 时性能又会突然变差。若按（2）做 Dynamic Scaling，模型在碰到训练上下文上限 L 时会平缓退化，而不是立刻失效。我们把这种推理时的做法称为 Dynamic Scaling 方法。当它与「NTK-aware」插值结合时，就称为「Dynamic NTK」插值。它最早以 reddit 帖子的形式出现在 emozilla（2023）。一个值得注意的事实是：「Dynamic NTK」插值在仅以 L 预训练、完全没有微调的模型上（L = L）表现格外好。这一点由附录 B.7 的实验支持。在反复的前向传播中，常常会使用 kv-cache（Chen, 2022），以便复用先前的键值向量、提高整体效率。我们指出，有些实现会缓存旋转位置编码；要在使用 kv-cache 时做 Dynamic Scaling，必须额外小心。正确的实现应当在施加旋转位置编码之前缓存 kv 嵌入，因为每个 token 的 RoPE 都会变化"
+      }
+    ],
+    "7": [
+      {
+        "text": "We broadly followed the training and evaluation procedures as outlined in Chen et al. (2023). For training the 128k context window size models, we extended the Llama 2 (Touvron et al., 2023b) 7B and 13B parameter models. No changes were made to the LLaMA model architecture other than the calculation of the embedding frequencies as described in Section 3.3 with s = 16 and s = 32.",
+        "x": 107.5,
+        "y": 614,
+        "w": 397.1,
+        "h": 48.8,
+        "zh": "我们大体沿用 Chen et al.（2023）所述的训练与评估流程。为训练上下文窗口为 128k 的模型，我们扩展了 Llama 2（Touvron et al., 2023b）的 7B 与 13B 参数模型。除按第 3.3 节所述、以 s = 16 和 s = 32 计算嵌入频率之外，LLaMA 的模型结构没有其他改动。"
+      },
+      {
+        "text": "with no weight decay and a linear warmup of 20 steps along",
+        "x": 257.9,
+        "y": 597.1,
+        "w": 246.2,
+        "h": 10,
+        "zh": "不做权重衰减，并做 20 步线性预热，同时"
+      },
+      {
+        "text": "with AdamW (Loshchilov and Hutter, 2019) β1 = 0.9 and β2 = 0.95. For the s = 16 model, we fine-tuned for 400 steps with global batch size 64 using PyTorch (Paszke et al., 2019) Fully Sharded Data Parallelism (Zhao et al., 2023) and Flash Attention 2 (Dao, 2023) on the PG19 dataset (Rae et al., 2020) chunked into 64k segments bookended with the BOS and EOS token. For s = 32 we followed the same procedure, but due to compute constraints, we started from the finished s = 16 checkpoint and trained for only an additional 200 steps. Note that the s = 32 model is also trained with 64k context data, but we show that it is able to extrapolate to a context size of 128k in Section 4.2. For the ablation studies, we used the LLaMA 7B model. It has the same architecture as the newer Llama 2 models except for a shorter pretrained context window size , which reduces compute requirements and allows for faster training and evaluations. The training procedure is similar to the 128k models, but we chunk the PG19 dataset into 32k segments instead, and train using s = 16 for 400 steps. As shown in Figure 2, YaRN converges faster compared to other interpolation techniques during training and consistently has lower loss.",
+        "x": 107.3,
+        "y": 448.6,
+        "w": 398,
+        "h": 147.4,
+        "zh": "使用 AdamW（Loshchilov and Hutter, 2019），β1 = 0.9，β2 = 0.95。对 s = 16 的模型，我们在 PG19 数据集（Rae et al., 2020）上微调 400 步，全局批大小为 64，使用 PyTorch（Paszke et al., 2019）的完全分片数据并行（Fully Sharded Data Parallelism，Zhao et al., 2023）和 Flash Attention 2（Dao, 2023）。数据切成 64k 的片段，首尾加上 BOS 和 EOS token。对 s = 32，我们沿用同一流程，但受算力限制，从已经训完的 s = 16 检查点开始，只再训练 200 步。注意 s = 32 的模型同样用 64k 上下文的数据训练，但我们在第 4.2 节表明它能够外推到 128k 的上下文。消融实验使用 LLaMA 7B。它与较新的 Llama 2 结构相同，只是预训练上下文窗口更短，因此算力需求更低，训练和评估也更快。训练流程与 128k 模型类似，但我们把 PG19 切成 32k 的片段，并用 s = 16 训练 400 步。如图 2 所示，训练过程中 YaRN 比其他插值方法收敛更快，损失也一直更低。"
+      },
+      {
+        "text": "Figure 2: Training loss curves for the LLaMA 7B model extended to 32k context size using different interpolation techniques. The graph on the right is zoomed in.",
+        "x": 108,
+        "y": 268.8,
+        "w": 396,
+        "h": 20.9,
+        "zh": "图 2：用不同插值方法把 LLaMA 7B 扩展到 32k 上下文时的训练损失曲线。右图为局部放大。"
+      },
+      {
+        "text": "To evaluate the long sequence language modeling performances, we use the GovReport (Huang et al., 2021) and Proof-pile (Azerbayev et al., 2022) datasets both of which contain many long sequence samples. For all evaluations, the test splits of both datasets were used exclusively. All perplexity evaluations were calculated using the sliding window method from Press et al. (2022) with S = 256, which takes in account the entire documents’ perplexity contribution, even if the context window of",
+        "x": 107.6,
+        "y": 169.3,
+        "w": 397.6,
+        "h": 53.8,
+        "zh": "为评估长序列上的语言建模表现，我们使用 GovReport（Huang et al., 2021）和 Proof-pile（Azerbayev et al., 2022）数据集，两者都包含许多长序列样本。所有评估都只用这两个数据集的测试划分。困惑度全部按 Press et al.（2022）的滑动窗口方法计算，S = 256，从而把整篇文档对困惑度的贡献都计算在内，即便上下文窗口"
+      },
+      {
+        "text": "First, we select 10 random samples from Proof-pile with at least 128k tokens each and evaluate the perplexity of each of these samples when truncated at 2k steps from a sequence length of 2k tokens through 128k tokens. Table 1 shows the long sequence performance of fine-tuned Llama 2 s = 16 and s = 32 models. We demonstrate that YaRN is able to generalize and extrapolate to unseen context lengths and benefit from transfer learning, since the s = 32 model was only further trained for 200 steps using the s = 16 checkpoint with 64k data and is able to extrapolate to 128k context.",
+        "x": 108,
+        "y": 86.7,
+        "w": 396.2,
+        "h": 64.8,
+        "zh": "我们首先从 Proof-pile 中随机抽取 10 个样本，每个至少有 128k 个 token，再从序列长度 2k 个 token 起、按 2k 一步截断，一直截到 128k 个 token，分别评估这些样本的困惑度。表 1 给出微调后 Llama 2 在 s = 16 和 s = 32 时的长序列表现。我们表明 YaRN 能够泛化并外推到未见过的上下文长度，并且能从迁移学习中受益：s = 32 的模型只是从 s = 16 的检查点出发，用 64k 的数据再训练 200 步，就能够外推到 128k 上下文。"
+      },
+      {
+        "text": "LLaMA models have a pretrained context size of 2k tokens, while Llama 2 models have 4k.",
+        "x": 124.1,
+        "y": 62.1,
+        "w": 329.1,
+        "h": 9,
+        "zh": "LLaMA 模型的预训练上下文长度为 2k 个 token，Llama 2 模型为 4k。"
+      }
+    ],
+    "8": [
+      {
+        "text": "Table 1: Sliding window perplexity (S = 256) of ten 128k Proof-pile documents over Llama 2 models extended via YaRN. We show successful context size extrapolation and transfer learning from 64k to 128k given only 64k",
+        "x": 107.7,
+        "y": 595.9,
+        "w": 396.5,
+        "h": 19.9,
+        "zh": "表 1：十篇 128k 的 Proof-pile 文档，在经 YaRN 扩展的 Llama 2 模型上的滑动窗口困惑度（S = 256）。我们展示了上下文长度外推是成功的，并且只给定 64k 时，存在从 64k 到 128k 的迁移学习"
+      },
+      {
+        "text": "In order to further confirm the effectiveness of YaRN, we compare all four interpolation methods in Figure 3 on the left and Table 5 from Appendix B.1 as an ablation study. YaRN consistently outperforms (has lower perplexity than) other methods in both non fine-tuned and fine-tuned scenarios when using the same number of training steps. We also demonstrate that YaRN has better training efficiency compared to PI in Appendix B.2. More comparisons against open models can be found in",
+        "x": 107.6,
+        "y": 509.5,
+        "w": 396.7,
+        "h": 53.8,
+        "zh": "为进一步确认 YaRN 的有效性，我们在图 3 左侧以及附录 B.1 的表 5 中，把四种插值方法放在一起做消融。在训练步数相同的前提下，无论是否微调，YaRN 都稳定地优于其他方法（困惑度更低）。我们还在附录 B.2 表明，YaRN 的训练效率优于 PI。与开源模型的更多比较见"
+      },
+      {
+        "text": "Figure 3: Sliding window perplexity (S = 256) of ten 128k Proof-pile documents and passkey retrieval accuracy at different prompt lengths for finetuned LLaMA 7B models fine-tuned to 32k context for 400 steps using different interpolation techniques. YaRN outperforms other interpolation",
+        "x": 108,
+        "y": 310.7,
+        "w": 396.4,
+        "h": 31.9,
+        "zh": "图 3：十篇 128k 的 Proof-pile 文档的滑动窗口困惑度（S = 256），以及不同提示长度上的 passkey 检索准确率。模型是微调到 32k 上下文、训练 400 步的 LLaMA 7B，使用不同插值方法。YaRN 优于其他插值"
+      },
+      {
+        "text": "The passkey retrieval task as defined in Mohtashami and Jaggi (2023) measures a model’s ability to retrieve a simple passkey (i.e., a five-digit number) from amongst a large amount of otherwise meaningless text. For our evaluation of the fine-tuned 32k LLaMA 7B models, we performed 50 iterations of the passkey retrieval task with the passkey placed at a random location uniformly distributed across the evaluation context window on different prompt lengths ranging from 2k to 32k. YaRN achieves higher scores compared to other interpolation methods when given similar training budget, as seen in Figure 3 on the right. More results and comparisons for Llama 2 models are shown",
+        "x": 107.4,
+        "y": 180.6,
+        "w": 398.3,
+        "h": 75.7,
+        "zh": "Mohtashami and Jaggi（2023）所定义的 passkey 检索任务，衡量模型从大量原本无意义的文本中找回一个简单 passkey（即一个五位数）的能力。对我们微调后的 32k LLaMA 7B，我们在 2k 到 32k 的不同提示长度上各做 50 次 passkey 检索，passkey 的位置在评估上下文窗口内按均匀分布随机放置。在相近的训练预算下，YaRN 的分数高于其他插值方法，见图 3 右侧。Llama 2 模型的更多结果与比较见"
+      },
+      {
+        "text": "The Hugging Face Open LLM Leaderboard (Hugging Face, 2023) compares a multitude of LLMs across a standardized set of four public benchmarks. Specifically, we use 25-shot ARCChallenge (Clark et al., 2018), 10-shot HellaSwag (Zellers et al., 2019), 5-shot MMLU (Hendrycks",
+        "x": 107.7,
+        "y": 101,
+        "w": 398,
+        "h": 31.9,
+        "zh": "Hugging Face Open LLM Leaderboard（Hugging Face, 2023）在一套标准化的四个公开基准上比较众多 LLM。具体而言，我们使用 25-shot 的 ARC-Challenge（Clark et al., 2018）、10-shot 的 HellaSwag（Zellers et al., 2019）、5-shot 的 MMLU（Hendrycks"
+      },
+      {
+        "text": "et al., 2021), and 0-shot TruthfulQA (Lin et al., 2022).",
+        "x": 108,
+        "y": 90,
+        "w": 216.3,
+        "h": 10,
+        "zh": "et al., 2021），以及 0-shot 的 TruthfulQA（Lin et al., 2022）。"
+      },
+      {
+        "text": "To test the degradation of models’ short context performance under context extension, we evaluated our Llama 2 and 32k LLaMA 7B models using this suite and compared it to established scores for",
+        "x": 107.7,
+        "y": 62.1,
+        "w": 396.5,
+        "h": 20.9,
+        "zh": "为检验模型在上下文扩展之后短上下文性能的下降，我们用这套基准评估了自己的 Llama 2 以及 32k 的 LLaMA 7B，并与已有分数比较，比较对象是"
+      }
+    ],
+    "9": [
+      {
+        "text": "the baselines. The results are summarized in Table 10 and Table 3. More results for Llama 2 models",
+        "x": 108,
+        "y": 700.2,
+        "w": 396,
+        "h": 10,
+        "zh": "各个基线。结果汇总于表 10 和表 3。Llama 2 模型的更多结果见"
+      },
+      {
+        "text": "Table 2: Performance of context window extensions methods, fine-tuned for 400 steps, on the Hugging Face Open LLM benchmark suite compared with original LLaMA 7B baselines.",
+        "x": 107.7,
+        "y": 558.9,
+        "w": 396.3,
+        "h": 19.9,
+        "zh": "表 2：上下文窗口扩展方法在微调 400 步之后，于 Hugging Face Open LLM 基准套件上的表现，并与原始 LLaMA 7B 基线比较。"
+      },
+      {
+        "text": "Table 3: Performance of YaRN on the Hugging Face Open LLM benchmark suite compared with original",
+        "x": 107.7,
+        "y": 416.4,
+        "w": 396.3,
+        "h": 10,
+        "zh": "表 3：YaRN 在 Hugging Face Open LLM 基准套件上的表现，并与原始"
+      },
+      {
+        "text": "We observe that there is minimal performance degradation between the YaRN models and their respective Llama 2 baselines. Some variance is to be expected as the PG19 dataset (Rae et al., 2020) we used for fine-tuning is very different from the original pre-training datased used for LLaMA and Llama 2 models. We also observe that there was on average a 0.49% drop in scores between the YaRN s = 16 and s = 32 models and can conclude that the the iterative extension from 64k to 128k",
+        "x": 107.4,
+        "y": 341.5,
+        "w": 397.2,
+        "h": 53.8,
+        "zh": "我们观察到，YaRN 模型与各自的 Llama 2 基线之间性能下降很小。出现一些波动是可以预料的，因为我们用于微调的 PG19 数据集（Rae et al., 2020）与 LLaMA 和 Llama 2 原来的预训练数据集差别很大。我们还观察到，YaRN 的 s = 16 与 s = 32 模型之间分数平均下降 0.49%，因此可以认为，从 64k 到 128k 的这一迭代式扩展"
+      },
+      {
+        "text": "Given that rotary position embeddings are cached during training and inference when the context window size is fixed to a preset length L, modifying the interpolation on rotary position embeddings incurs no additional computational or memory cost compared to previous context extension methods, which is the case for all four interpolation methods outlined in this work. YaRN converges the fastest during training compared to other methods, thus is the most computationally efficient, as shown in",
+        "x": 107.6,
+        "y": 240.8,
+        "w": 397.6,
+        "h": 53.8,
+        "zh": "由于上下文窗口固定为预设长度 L 时，旋转位置编码在训练和推理中都会被缓存，修改旋转位置编码上的插值，相比以往的上下文扩展方法不会带来额外的计算或显存成本。本文所述的四种插值方法都是如此。训练时 YaRN 比其他方法收敛最快，因此计算效率最高，如"
+      },
+      {
+        "text": "Table 4: Comparison of training time in A100-hours for different open and closed models using different",
+        "x": 107.7,
+        "y": 84.4,
+        "w": 396.3,
+        "h": 10,
+        "zh": "表 4：不同开源与闭源模型在不同设定下的训练时间比较，单位为 A100 小时"
+      }
+    ],
+    "10": [
+      {
+        "text": "In conclusion, we have shown that YaRN improves upon all existing RoPE interpolation methods and can act as a drop-in replacement to PI, with no downsides and minimal implementation effort. The fine-tuned models preserve their original abilities on multiple benchmarks while being able to attend to a very large context size. Furthermore, YaRN allows efficient extrapolation with finetuning on shorter datasets and can take advantage of transfer learning for faster convergence, both of which are crucial under compute-constrained scenarios. Finally, we have shown the effectiveness of extrapolation with YaRN where it is able to \"train short, and test long\".",
+        "x": 107.6,
+        "y": 610.3,
+        "w": 398.1,
+        "h": 75.7,
+        "zh": "总之，我们已经表明 YaRN 改进了现有的全部 RoPE 插值方法，并且可以作为 PI 的直接替代，没有明显缺点，实现代价也很小。微调后的模型在多项基准上保持了原有能力，同时能够关注非常大的上下文。此外，YaRN 允许在更短的数据集上微调并做高效外推，也能借助迁移学习加快收敛，这两点在算力受限时都很关键。最后，我们表明了用 YaRN 做外推是有效的：它可以做到「短训练，长测试」。"
+      },
+      {
+        "text": "To aid in reproducibility, we provide, as supplementary material, the entirety of of the code used to train the YaRN models in Table 7, as well as the evaluation code that produced Figure 7 and Tables 6, 7, 10, 8, and 9. The code also contains implementations of various extension methods referenced throughout the paper. For training YaRN, we used the publicly available PG19 dataset (Rae et al., 2020) tokenized to contiguous chunks of 64k tokens.",
+        "x": 107.7,
+        "y": 512.6,
+        "w": 397.6,
+        "h": 53.8,
+        "zh": "为便于复现，我们在补充材料中提供训练表 7 里 YaRN 模型所用的全部代码，以及生成图 7 和表 6、表 7、表 10、表 8、表 9 的评估代码。代码中还包含文中提到的各种扩展方法的实现。训练 YaRN 时，我们使用公开的 PG19 数据集（Rae et al., 2020），并切成连续的 64k token 块。"
+      },
+      {
+        "text": "Introducing Qwen-7B: Open foundation and human-aligned models (of the state-of-the-arts). URL https://github.com/QwenLM/Qwen-7B/blob/main/tech_memo.md.",
+        "x": 108,
+        "y": 453.7,
+        "w": 396.5,
+        "h": 20.9,
+        "zh": "介绍 Qwen-7B：开放的基座模型与人类对齐模型（当前最优之一）。URL https://github.com/QwenLM/Qwen-7B/blob/main/tech_memo.md。"
+      },
+      {
+        "text": "Z. Azerbayev, E. Ayers, , and B. Piotrowski. Proof-pile, 2022. URL https://github.com/ zhangir-azerbayev/proof-pile.",
+        "x": 108,
+        "y": 422.4,
+        "w": 397.2,
+        "h": 20.9,
+        "zh": "Z. Azerbayev、E. Ayers、B. Piotrowski。Proof-pile，2022。URL https://github.com/ zhangir-azerbayev/proof-pile。"
+      },
+      {
+        "text": "S. Black, S. Biderman, E. Hallahan, Q. Anthony, L. Gao, L. Golding, H. He, C. Leahy, K. McDonell, J. Phang, M. Pieler, U. S. Prashanth, S. Purohit, L. Reynolds, J. Tow, B. Wang, and S. Weinbach. GPT-NeoX-20B: An open-source autoregressive language model, 2022. arXiv: 2204.06745.",
+        "x": 108,
+        "y": 380.1,
+        "w": 397.7,
+        "h": 31.9,
+        "zh": "S. Black、S. Biderman、E. Hallahan、Q. Anthony、L. Gao、L. Golding、H. He、C. Leahy、K. McDonell、J. Phang、M. Pieler、U. S. Prashanth、S. Purohit、L. Reynolds、J. Tow、B. Wang、S. Weinbach。GPT-NeoX-20B：一个开源的自回归语言模型，2022。arXiv: 2204.06745。"
+      },
+      {
+        "text": "NTK-Aware Scaled RoPE allows LLaMA models to have extended (8k+) context size without any fine-tuning and minimal perplexity degradation., 2023a. https://www.reddit.com/r/LocalLLaMA/comments/14lz7j5/ntkaware_ scaled_rope_allows_llama_models_to_have/.",
+        "x": 118,
+        "y": 326.9,
+        "w": 387.7,
+        "h": 42.8,
+        "zh": "NTK-Aware Scaled RoPE 使 LLaMA 模型在不做任何微调、且困惑度几乎不下降的情况下获得扩展后的（8k 以上）上下文，2023a。https://www.reddit.com/r/LocalLLaMA/comments/14lz7j5/ntkaware_ scaled_rope_allows_llama_models_to_have/。"
+      },
+      {
+        "text": "bloc97. Add NTK-Aware interpolation \"by parts\" correction, 2023b. URL https://github. com/jquesnelle/scaled-rope/pull/1.",
+        "x": 108,
+        "y": 295.5,
+        "w": 400.2,
+        "h": 20.9,
+        "zh": "bloc97。为 NTK-Aware 插值加入「by parts」修正，2023b。URL https://github. com/jquesnelle/scaled-rope/pull/1。"
+      },
+      {
+        "text": "URL https://kipp.ly/blog/ transformer-inference-arithmetic/.",
+        "x": 118,
+        "y": 264.2,
+        "w": 387.2,
+        "h": 20.9,
+        "zh": ""
+      },
+      {
+        "text": "S. Chen, S. Wong, L. Chen, and Y. Tian. Extending context window of large language models via positional interpolation, 2023. arXiv: 2306.15595.",
+        "x": 108,
+        "y": 232.9,
+        "w": 396,
+        "h": 20.9,
+        "zh": "S. Chen、S. Wong、L. Chen、Y. Tian。通过位置插值扩展大语言模型的上下文窗口，2023。arXiv: 2306.15595。"
+      },
+      {
+        "text": "A. Chowdhery, S. Narang, J. Devlin, M. Bosma, G. Mishra, A. Roberts, P. Barham, H. W. Chung, C. Sutton, S. Gehrmann, P. Schuh, K. Shi, S. Tsvyashchenko, J. Maynez, A. Rao, P. Barnes, Y. Tay, N. Shazeer, V. Prabhakaran, E. Reif, N. Du, B. Hutchinson, R. Pope, J. Bradbury, J. Austin, M. Isard, G. Gur-Ari, P. Yin, T. Duke, A. Levskaya, S. Ghemawat, S. Dev, H. Michalewski, X. Garcia, V. Misra, K. Robinson, L. Fedus, D. Zhou, D. Ippolito, D. Luan, H. Lim, B. Zoph, A. Spiridonov, R. Sepassi, D. Dohan, S. Agrawal, M. Omernick, A. M. Dai, T. S. Pillai, M. Pellat, A. Lewkowycz, E. Moreira, R. Child, O. Polozov, K. Lee, Z. Zhou, X. Wang, B. Saeta, M. Diaz, O. Firat, M. Catasta, J. Wei, K. Meier-Hellstern, D. Eck, J. Dean, S. Petrov, and N. Fiedel. PaLM: Scaling language modeling with pathways, 2022. arXiv: 2204.02311.",
+        "x": 108,
+        "y": 124.8,
+        "w": 397.4,
+        "h": 97.6,
+        "zh": "A. Chowdhery、S. Narang、J. Devlin、M. Bosma、G. Mishra、A. Roberts、P. Barham、H. W. Chung、C. Sutton、S. Gehrmann、P. Schuh、K. Shi、S. Tsvyashchenko、J. Maynez、A. Rao、P. Barnes、Y. Tay、N. Shazeer、V. Prabhakaran、E. Reif、N. Du、B. Hutchinson、R. Pope、J. Bradbury、J. Austin、M. Isard、G. Gur-Ari、P. Yin、T. Duke、A. Levskaya、S. Ghemawat、S. Dev、H. Michalewski、X. Garcia、V. Misra、K. Robinson、L. Fedus、D. Zhou、D. Ippolito、D. Luan、H. Lim、B. Zoph、A. Spiridonov、R. Sepassi、D. Dohan、S. Agrawal、M. Omernick、A. M. Dai、T. S. Pillai、M. Pellat、A. Lewkowycz、E. Moreira、R. Child、O. Polozov、K. Lee、Z. Zhou、X. Wang、B. Saeta、M. Diaz、O. Firat、M. Catasta、J. Wei、K. Meier-Hellstern、D. Eck、J. Dean、S. Petrov、N. Fiedel。PaLM：用 Pathways 扩展语言建模，2022。arXiv: 2204.02311。"
+      },
+      {
+        "text": "P. Clark, I. Cowhey, O. Etzioni, T. Khot, A. Sabharwal, C. Schoenick, and O. Tafjord. Think you have solved question answering? try ARC, the AI2 Reasoning Challenge, 2018. arXiv: 1803.05457.",
+        "x": 108,
+        "y": 93.5,
+        "w": 396,
+        "h": 20.9,
+        "zh": "P. Clark、I. Cowhey、O. Etzioni、T. Khot、A. Sabharwal、C. Schoenick、O. Tafjord。你以为问答已经解决了？试试 ARC，即 AI2 推理挑战，2018。arXiv: 1803.05457。"
+      },
+      {
+        "text": "T. Computer. Redpajama: An open source recipe to reproduce llama training dataset, 2023. URL https://github.com/togethercomputer/RedPajama-Data.",
+        "x": 108,
+        "y": 62.1,
+        "w": 396.5,
+        "h": 20.9,
+        "zh": "T. Computer。RedPajama：一套用于复现 LLaMA 训练数据集的开源配方，2023。URL https://github.com/togethercomputer/RedPajama-Data。"
+      }
+    ],
+    "11": [
+      {
+        "text": "T. Dao. Flashattention-2: Faster attention with better parallelism and work partitioning, 2023. arXiv:",
+        "x": 108,
+        "y": 700.2,
+        "w": 397.4,
+        "h": 10,
+        "zh": "T. Dao。FlashAttention-2：更快的注意力，并行度更好，工作划分也更好，2023。arXiv:"
+      },
+      {
+        "text": "emozilla. Dynamically Scaled RoPE further increases performance of long context LLaMA with zero fine-tuning, 2023. URL https://www.reddit.com/r/LocalLLaMA/comments/ 14mrgpr/dynamically_scaled_rope_further_increases/. J. Gehring, M. Auli, D. Grangier, D. Yarats, and Y. N. Dauphin. Convolutional sequence to sequence learning, 2017. arXiv: 1705.03122. C. Han, Q. Wang, W. Xiong, Y. Chen, H. Ji, and S. Wang. LM-Infinite: Simple on-the-fly length generalization for large language models, 2023. arXiv: 2308.16137. D. Hendrycks, C. Burns, S. Basart, A. Zou, M. Mazeika, D. Song, and J. Steinhardt. Measuring massive multitask language understanding. Proceedings of the International Conference on Learning Representations (ICLR), 2021. L. Huang, S. Cao, N. Parulian, H. Ji, and L. Wang. Efficient attentions for long document summarization. In Proceedings of the 2021 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, pages 1419–1436. Association for Computational Linguistics, June 2021. Hugging Face. Open LLM Leaderboard, 2023. URL https://huggingface.co/spaces/ HuggingFaceH4/open_llm_leaderboard. kaiokendev. Things I’m learning while training superhot., 2023. URL https://kaiokendev. github.io/til#extending-context-to-8k. A. Kazemnejad, I. Padhi, K. N. Ramamurthy, P. Das, and S. Reddy. The impact of positional encoding on length generalization in transformers, 2023. arXiv: 2305.19466. S. Lin, J. Hilton, and O. Evans. TruthfulQA: Measuring how models mimic human falsehoods. In Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), pages 3214–3252, May 2022. I. Loshchilov and F. Hutter. Decoupled weight decay regularization. In International Conference on Learning Representations, 2019. A. Mohtashami and M. Jaggi. Landmark attention: Random-access infinite context length for transformers, 2023. arXiv: 2305.16300. A. Paszke, S. Gross, F. Massa, A. Lerer, J. Bradbury, G. Chanan, T. Killeen, Z. Lin, N. Gimelshein, L. Antiga, A. Desmaison, A. Köpf, E. Yang, Z. DeVito, M. Raison, A. Tejani, S. Chilamkurthy, B. Steiner, L. Fang, J. Bai, and S. Chintala. PyTorch: An imperative style, high-performance deep learning library. In NeurIPS, pages 8024–8035, 2019. O. Press, N. Smith, and M. Lewis. Train Short, Test Long: Attention with linear biases enables input length extrapolation. In International Conference on Learning Representations, 2022.",
+        "x": 108,
+        "y": 233.5,
+        "w": 400.2,
+        "h": 447.4,
+        "zh": "emozilla。动态缩放的 RoPE 在零微调下进一步提升长上下文 LLaMA 的表现，2023。URL https://www.reddit.com/r/LocalLLaMA/comments/ 14mrgpr/dynamically_scaled_rope_further_increases/。J. Gehring、M. Auli、D. Grangier、D. Yarats、Y. N. Dauphin。卷积序列到序列学习，2017。arXiv: 1705.03122。C. Han、Q. Wang、W. Xiong、Y. Chen、H. Ji、S. Wang。LM-Infinite：大语言模型上简单的即时长度泛化，2023。arXiv: 2308.16137。D. Hendrycks、C. Burns、S. Basart、A. Zou、M. Mazeika、D. Song、J. Steinhardt。衡量大规模多任务语言理解。Proceedings of the International Conference on Learning Representations (ICLR)，2021。L. Huang、S. Cao、N. Parulian、H. Ji、L. Wang。面向长文档摘要的高效注意力。载于 Proceedings of the 2021 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies，第 1419–1436 页。Association for Computational Linguistics，2021 年 6 月。Hugging Face。Open LLM Leaderboard，2023。URL https://huggingface.co/spaces/ HuggingFaceH4/open_llm_leaderboard。kaiokendev。训练 superhot 时我在学的事。2023。URL https://kaiokendev. github.io/til#extending-context-to-8k。A. Kazemnejad、I. Padhi、K. N. Ramamurthy、P. Das、S. Reddy。位置编码对 Transformer 长度泛化的影响，2023。arXiv: 2305.19466。S. Lin、J. Hilton、O. Evans。TruthfulQA：衡量模型如何模仿人类的错误说法。载于 Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)，第 3214–3252 页，2022 年 5 月。I. Loshchilov、F. Hutter。解耦的权重衰减正则。载于 International Conference on Learning Representations，2019。A. Mohtashami、M. Jaggi。Landmark attention：Transformer 的随机访问式无限上下文长度，2023。arXiv: 2305.16300。A. Paszke、S. Gross、F. Massa、A. Lerer、J. Bradbury、G. Chanan、T. Killeen、Z. Lin、N. Gimelshein、L. Antiga、A. Desmaison、A. Köpf、E. Yang、Z. DeVito、M. Raison、A. Tejani、S. Chilamkurthy、B. Steiner、L. Fang、J. Bai、S. Chintala。PyTorch：一种命令式、高性能的深度学习库。载于 NeurIPS，第 8024–8035 页，2019。O. Press、N. Smith、M. Lewis。短训练、长测试：带线性偏置的注意力使输入长度得以被外推。载于 International Conference on Learning Representations，2022。"
+      },
+      {
+        "text": "Scaling rotary embeddings through linear positional interpolation. https://huggingface.co/conceptofmind/ LLongMA-2-7b/, 2023. J. W. Rae, A. Potapenko, S. M. Jayakumar, C. Hillier, and T. P. Lillicrap. Compressive transformers for long-range sequence modelling. In International Conference on Learning Representations,",
+        "x": 108,
+        "y": 164.3,
+        "w": 397.2,
+        "h": 61,
+        "zh": "通过线性位置插值缩放旋转嵌入。https://huggingface.co/conceptofmind/ LLongMA-2-7b/，2023。J. W. Rae、A. Potapenko、S. M. Jayakumar、C. Hillier、T. P. Lillicrap。用于长程序列建模的压缩 Transformer。载于 International Conference on Learning Representations，"
+      },
+      {
+        "text": "A. Roberts, C. Raffel, K. Lee, M. Matena, N. Shazeer, P. J. Liu, S. Narang, W. Li, and Y. Zhou. Exploring the limits of transfer learning with a unified text-to-text transformer. Technical report,",
+        "x": 108,
+        "y": 124.2,
+        "w": 397.7,
+        "h": 20.9,
+        "zh": "A. Roberts、C. Raffel、K. Lee、M. Matena、N. Shazeer、P. J. Liu、S. Narang、W. Li、Y. Zhou。用统一的文本到文本 Transformer 探索迁移学习的极限。技术报告，"
+      },
+      {
+        "text": "B. Rozière, J. Gehring, F. Gloeckle, S. Sootla, I. Gat, X. E. Tan, Y. Adi, J. Liu, T. Remez, J. Rapin, A. Kozhevnikov, I. Evtimov, J. Bitton, M. Bhatt, C. C. Ferrer, A. Grattafiori, W. Xiong, A. Défossez, J. Copet, F. Azhar, H. Touvron, L. Martin, N. Usunier, T. Scialom, and G. Synnaeve. Code Llama: Open foundation models for code, 2023. arXiv: 2308.12950.",
+        "x": 108,
+        "y": 62.1,
+        "w": 397.4,
+        "h": 42.8,
+        "zh": "B. Rozière、J. Gehring、F. Gloeckle、S. Sootla、I. Gat、X. E. Tan、Y. Adi、J. Liu、T. Remez、J. Rapin、A. Kozhevnikov、I. Evtimov、J. Bitton、M. Bhatt、C. C. Ferrer、A. Grattafiori、W. Xiong、A. Défossez、J. Copet、F. Azhar、H. Touvron、L. Martin、N. Usunier、T. Scialom、G. Synnaeve。Code Llama：面向代码的开放基座模型，2023。arXiv: 2308.12950。"
+      }
+    ],
+    "12": [
+      {
+        "text": "P. Shaw, J. Uszkoreit, and A. Vaswani. Self-attention with relative position representations. In Proceedings of the 2018 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 2 (Short Papers), pages 464–468, New Orleans, Louisiana, June 2018. Association for Computational Linguistics.",
+        "x": 108,
+        "y": 667.3,
+        "w": 397.6,
+        "h": 42.8,
+        "zh": "P. Shaw、J. Uszkoreit、A. Vaswani。带相对位置表示的自注意力。载于 Proceedings of the 2018 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 2 (Short Papers)，第 464–468 页，路易斯安那州新奥尔良，2018 年 6 月。Association for Computational Linguistics。"
+      },
+      {
+        "text": "J. Su. Rectified rotary position embeddings. https://github.com/bojone/rerope, 2023.",
+        "x": 108,
+        "y": 648.4,
+        "w": 397.7,
+        "h": 10,
+        "zh": "J. Su。矫正后的旋转位置嵌入。https://github.com/bojone/rerope，2023。"
+      },
+      {
+        "text": "J. Su, Y. Lu, S. Pan, A. Murtadha, B. Wen, and Y. Liu. RoFormer: Enhanced transformer with rotary position embedding, 2022. arXiv: 2104.09864.",
+        "x": 108,
+        "y": 618.5,
+        "w": 396.3,
+        "h": 20.9,
+        "zh": "J. Su、Y. Lu、S. Pan、A. Murtadha、B. Wen、Y. Liu。RoFormer：带旋转位置嵌入的增强 Transformer，2022。arXiv: 2104.09864。"
+      },
+      {
+        "text": "Y. Sun, L. Dong, B. Patra, S. Ma, S. Huang, A. Benhaim, V. Chaudhary, X. Song, and F. Wei. A length-extrapolatable transformer, 2022. arXiv: 2212.10554.",
+        "x": 108,
+        "y": 588.6,
+        "w": 396.4,
+        "h": 20.9,
+        "zh": "Y. Sun、L. Dong、B. Patra、S. Ma、S. Huang、A. Benhaim、V. Chaudhary、X. Song、F. Wei。可做长度外推的 Transformer，2022。arXiv: 2212.10554。"
+      },
+      {
+        "text": "M. Tancik, P. P. Srinivasan, B. Mildenhall, S. Fridovich-Keil, N. Raghavan, U. Singhal, R. Ramamoorthi, J. T. Barron, and R. Ng. Fourier features let networks learn high frequency functions in low dimensional domains. In Proceedings of the 34th International Conference on Neural Information Processing Systems, NIPS’20, Red Hook, NY, USA, 2020. Curran Associates Inc.",
+        "x": 108,
+        "y": 536.8,
+        "w": 397.7,
+        "h": 42.8,
+        "zh": "M. Tancik、P. P. Srinivasan、B. Mildenhall、S. Fridovich-Keil、N. Raghavan、U. Singhal、R. Ramamoorthi、J. T. Barron、R. Ng。傅里叶特征让网络在低维定义域中学到高频函数。载于 Proceedings of the 34th International Conference on Neural Information Processing Systems，NIPS’20，美国纽约州 Red Hook，2020。Curran Associates Inc."
+      },
+      {
+        "text": "https://huggingface.co/ togethercomputer/LLaMA-2-7B-32K.",
+        "x": 118,
+        "y": 495.9,
+        "w": 387.2,
+        "h": 20.9,
+        "zh": ""
+      },
+      {
+        "text": "H. Touvron, T. Lavril, G. Izacard, X. Martinet, M.-A. Lachaux, T. Lacroix, B. Rozière, N. Goyal, E. Hambro, F. Azhar, A. Rodriguez, A. Joulin, E. Grave, and G. Lample. LLaMA: Open and efficient foundation language models, 2023a. arXiv: 2302.13971.",
+        "x": 108,
+        "y": 455.1,
+        "w": 397.2,
+        "h": 31.9,
+        "zh": "H. Touvron、T. Lavril、G. Izacard、X. Martinet、M.-A. Lachaux、T. Lacroix、B. Rozière、N. Goyal、E. Hambro、F. Azhar、A. Rodriguez、A. Joulin、E. Grave、G. Lample。LLaMA：开放且高效的基座语言模型，2023a。arXiv: 2302.13971。"
+      },
+      {
+        "text": "H. Touvron, L. Martin, K. Stone, P. Albert, A. Almahairi, Y. Babaei, N. Bashlykov, S. Batra, P. Bhargava, S. Bhosale, D. Bikel, L. Blecher, C. C. Ferrer, M. Chen, G. Cucurull, D. Esiobu, J. Fernandes, J. Fu, W. Fu, B. Fuller, C. Gao, V. Goswami, N. Goyal, A. Hartshorn, S. Hosseini, R. Hou, H. Inan, M. Kardas, V. Kerkez, M. Khabsa, I. Kloumann, A. Korenev, P. S. Koura, M.-A. Lachaux, T. Lavril, J. Lee, D. Liskovich, Y. Lu, Y. Mao, X. Martinet, T. Mihaylov, P. Mishra, I. Molybog, Y. Nie, A. Poulton, J. Reizenstein, R. Rungta, K. Saladi, A. Schelten, R. Silva, E. M. Smith, R. Subramanian, X. E. Tan, B. Tang, R. Taylor, A. Williams, J. X. Kuan, P. Xu, Z. Yan, I. Zarov, Y. Zhang, A. Fan, M. Kambadur, S. Narang, A. Rodriguez, R. Stojnic, S. Edunov, and T. Scialom. Llama 2: Open foundation and fine-tuned chat models, 2023b.",
+        "x": 108,
+        "y": 348.5,
+        "w": 397.7,
+        "h": 97.6,
+        "zh": "H. Touvron、L. Martin、K. Stone、P. Albert、A. Almahairi、Y. Babaei、N. Bashlykov、S. Batra、P. Bhargava、S. Bhosale、D. Bikel、L. Blecher、C. C. Ferrer、M. Chen、G. Cucurull、D. Esiobu、J. Fernandes、J. Fu、W. Fu、B. Fuller、C. Gao、V. Goswami、N. Goyal、A. Hartshorn、S. Hosseini、R. Hou、H. Inan、M. Kardas、V. Kerkez、M. Khabsa、I. Kloumann、A. Korenev、P. S. Koura、M.-A. Lachaux、T. Lavril、J. Lee、D. Liskovich、Y. Lu、Y. Mao、X. Martinet、T. Mihaylov、P. Mishra、I. Molybog、Y. Nie、A. Poulton、J. Reizenstein、R. Rungta、K. Saladi、A. Schelten、R. Silva、E. M. Smith、R. Subramanian、X. E. Tan、B. Tang、R. Taylor、A. Williams、J. X. Kuan、P. Xu、Z. Yan、I. Zarov、Y. Zhang、A. Fan、M. Kambadur、S. Narang、A. Rodriguez、R. Stojnic、S. Edunov、T. Scialom。Llama 2：开放的基座模型与经过微调的对话模型，2023b。"
+      },
+      {
+        "text": "A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, L. Kaiser, and I. Polosukhin. Attention is all you need. In Advances in Neural Information Processing Systems, volume 30. Curran Associates, Inc., 2017.",
+        "x": 108,
+        "y": 307.6,
+        "w": 397.7,
+        "h": 31.9,
+        "zh": "A. Vaswani、N. Shazeer、N. Parmar、J. Uszkoreit、L. Jones、A. N. Gomez、L. Kaiser、I. Polosukhin。注意力就是你所需要的全部。载于 Advances in Neural Information Processing Systems，第 30 卷。Curran Associates, Inc.，2017。"
+      },
+      {
+        "text": "W. Xiong, J. Liu, I. Molybog, H. Zhang, P. Bhargava, R. Hou, L. Martin, R. Rungta, K. A. Sankararaman, B. Oguz, M. Khabsa, H. Fang, Y. Mehdad, S. Narang, K. Malik, A. Fan, S. Bhosale, S. Edunov, M. Lewis, S. Wang, and H. Ma. Effective long-context scaling of foundation models,",
+        "x": 108,
+        "y": 266.8,
+        "w": 397.7,
+        "h": 31.9,
+        "zh": "W. Xiong、J. Liu、I. Molybog、H. Zhang、P. Bhargava、R. Hou、L. Martin、R. Rungta、K. A. Sankararaman、B. Oguz、M. Khabsa、H. Fang、Y. Mehdad、S. Narang、K. Malik、A. Fan、S. Bhosale、S. Edunov、M. Lewis、S. Wang、H. Ma。基座模型的有效长上下文缩放，"
+      },
+      {
+        "text": "R. Zellers, A. Holtzman, Y. Bisk, A. Farhadi, and Y. Choi. HellaSwag: Can a machine really finish your sentence? In Proceedings of the 57th Annual Meeting of the Association for Computational",
+        "x": 108,
+        "y": 226,
+        "w": 396,
+        "h": 20.9,
+        "zh": "R. Zellers、A. Holtzman、Y. Bisk、A. Farhadi、Y. Choi。HellaSwag：机器真的能把你的句子写完吗？载于 Proceedings of the 57th Annual Meeting of the Association for Computational"
+      },
+      {
+        "text": "Y. Zhao, A. Gu, R. Varma, L. Luo, C.-C. Huang, M. Xu, L. Wright, H. Shojanazeri, M. Ott, S. Shleifer, A. Desmaison, C. Balioglu, B. Nguyen, G. Chauhan, Y. Hao, and S. Li. PyTorch FSDP: Experiences on scaling fully sharded data parallel, 2023. arXiv: 2304.11277.",
+        "x": 108,
+        "y": 174.1,
+        "w": 397.4,
+        "h": 31.9,
+        "zh": "Y. Zhao、A. Gu、R. Varma、L. Luo、C.-C. Huang、M. Xu、L. Wright、H. Shojanazeri、M. Ott、S. Shleifer、A. Desmaison、C. Balioglu、B. Nguyen、G. Chauhan、Y. Hao、S. Li。PyTorch FSDP：扩展完全分片数据并行的经验，2023。arXiv: 2304.11277。"
+      }
+    ],
+    "13": [
+      {
+        "text": "ADDITIONAL DETAILS ON INTERPOLATION METHODS",
+        "x": 129.5,
+        "y": 700.2,
+        "w": 269.2,
+        "h": 12,
+        "zh": "关于插值方法的补充细节"
+      },
+      {
+        "text": "As mentioned in Section 2.2, PI is one of the earlier works extending context lengths of RoPE. We",
+        "x": 107.6,
+        "y": 656.9,
+        "w": 396.4,
+        "h": 10,
+        "zh": "如第 2.2 节所述，PI 是较早扩展 RoPE 上下文长度的工作之一。我们"
+      },
+      {
+        "text": "While a direct extrapolation does not perform well on sequences w1, · · · , wL with L larger than the pre-trained limit, they discovered that interpolating the position indicies within the pre-trained limit works well with the help of a small amount of fine-tuning. Specifically, given a pre-trained language",
+        "x": 107.5,
+        "y": 607,
+        "w": 396.5,
+        "h": 31.9,
+        "zh": "直接外推在序列 w_1, · · · , w_L 上表现不好，只要 L 大于预训练上限；他们发现，在预训练上限之内对位置下标做插值，再配合少量微调，效果就很好。具体来说，给定一个预训练的语言"
+      },
+      {
+        "text": "model with RoPE, they modify the RoPE by",
+        "x": 108,
+        "y": 596.1,
+        "w": 177,
+        "h": 10,
+        "zh": "模型，且该模型使用 RoPE，他们按如下方式修改 RoPE"
+      },
+      {
+        "text": "where L > L is a new context window beyond the pre-trained limit. With the original pre-trained model plus the modified RoPE formula, they fine-tuned the language model further on several orders of magnitude fewer tokens (a few billion in Chen et al. (2023)) and successfully acheived context",
+        "x": 107.6,
+        "y": 534.3,
+        "w": 396.4,
+        "h": 31.9,
+        "zh": "其中 L > L 是超出预训练上限的新上下文窗口。在原来的预训练模型上换上修改后的 RoPE 公式之后，他们用少了好几个数量级的 token 继续微调这个语言模型（在 Chen et al.（2023）中是几十亿个），并成功实现了上下文"
+      },
+      {
+        "text": "In Section 3.1, we introduce a change of basis from b to b in the definition of \"NTK-aware\"",
+        "x": 108,
+        "y": 478.7,
+        "w": 396,
+        "h": 10,
+        "zh": "在第 3.1 节，我们在「NTK-aware」的定义中引入了从 b 到 b 的换底"
+      },
+      {
+        "text": "Precisely, following the notations set out in Section 2.1 Eq. 7, we define the \"NTK-aware\" interpola-",
+        "x": 108,
+        "y": 450.8,
+        "w": 397.7,
+        "h": 10,
+        "zh": "准确地说，沿用第 2.1 节式 7 的记号，我们定义「NTK-aware」插值"
+      },
+      {
+        "text": "Definition 3 The \"NTK-aware\" interpolation is a modification of RoPE using Eq. 7 with the following",
+        "x": 108,
+        "y": 420.4,
+        "w": 396,
+        "h": 10,
+        "zh": "定义 3 「NTK-aware」插值是使用式 7 对 RoPE 的一种修改，其形式如下"
+      },
+      {
+        "text": "Given the results from (bloc97, 2023a), this method performs much better at extending the context size of non-fine-tuned models compared to PI (Chen et al., 2023). However, one major disadvantage of this method is that given it is not just an interpolation scheme, some dimensions are slightly extrapolated to \"out-of-bound\" values, thus fine-tuning with \"NTK-aware\" interpolation (bloc97, 2023a) yields inferior results to PI (Chen et al., 2023). Furthermore, due to the \"out-of-bound\" values, the theoretical scale factor s does not accurately describe the true context extension scale. In practice, the scale value s has to be set higher than the expected scale for a given context length extension.",
+        "x": 108,
+        "y": 239.9,
+        "w": 397.2,
+        "h": 75.7,
+        "zh": "根据 bloc97（2023a）的结果，与 PI（Chen et al., 2023）相比，这个方法在扩展未微调模型的上下文长度时好得多。不过它有一个主要缺点：它并不只是一种插值方案，有些维度会被轻微外推到「越界」的取值，因此用「NTK-aware」插值做微调（bloc97, 2023a）得到的结果不如 PI（Chen et al., 2023）。此外，由于存在这些「越界」取值，理论上的缩放因子 s 并不能准确描述真正的上下文扩展倍数。实践中，对给定的上下文长度扩展，s 必须设得比预期尺度更高。"
+      },
+      {
+        "text": "The mathematical derivation of the base change is the following:",
+        "x": 107.7,
+        "y": 223,
+        "w": 258,
+        "h": 10,
+        "zh": "换底的数学推导如下："
+      },
+      {
+        "text": "Recall that our goal is to spread out the interpolation pressure across the hidden dimensions using a base-change instead of scaling the frequencies by a fixed factor s. The property we want to guarantee is that: The lowest frequency needs to be scaled as much as linear positional scaling and the highest",
+        "x": 108,
+        "y": 184.1,
+        "w": 396,
+        "h": 31.9,
+        "zh": "回想一下，我们的目标是用换底把插值压力分摊到各个隐藏维度上，而不是用固定因子 s 去缩放频率。我们希望保证的性质是：最低频率需要被缩放的程度与线性位置缩放一样大，而最高"
+      },
+      {
+        "text": "We introduce a new base b such that the last dimension matches the wavelength of linear interpolation with a scale factor s. Since the original RoPE method skips odd dimensions in order to concatenate",
+        "x": 107.5,
+        "y": 145.3,
+        "w": 396.5,
+        "h": 20.9,
+        "zh": "我们引入一个新的底 b，使最后一个维度的波长与缩放因子为 s 的线性插值相一致。由于原始的 RoPE 会跳过奇数维，以便拼接"
+      },
+      {
+        "text": ") components into a single embedding, the last dimension d ∈ D is",
+        "x": 219.7,
+        "y": 134.3,
+        "w": 284.3,
+        "h": 10,
+        "zh": "）分量被拼进同一个嵌入，最后一个维度 d ∈ D 为"
+      }
+    ],
+    "14": [
+      {
+        "text": "THE IMPACT OF PRE-SOFTMAX SCALING OF YARN ON PERPLEXITY",
+        "x": 134.4,
+        "y": 700.2,
+        "w": 284.3,
+        "h": 10,
+        "zh": "YaRN 在 softmax 之前做缩放对困惑度的影响"
+      },
+      {
+        "text": "In Section 3.3, we mention the impact of the factor t inside the softmax computation of attention weights. Here we fix 896 16k-token documents from RedPajama (Computer, 2023)√ their perplexity scores with different scaling 1/",
+        "x": 107.6,
+        "y": 647.5,
+        "w": 396.4,
+        "h": 33,
+        "zh": "在第 3.3 节，我们提到因子 t 在注意力权重的 softmax 计算中的影响。这里我们固定来自 RedPajama（Computer, 2023）的 896 篇 16k token 文档，在不同的缩放 1/ 下计算它们的困惑度"
+      },
+      {
+        "text": "t. The result is in Figure 4. For comparison, recall that our recommended factor in this case (s = 8) is given by the following.",
+        "x": 108,
+        "y": 636.6,
+        "w": 396,
+        "h": 20.9,
+        "zh": "t。结果见图 4。作为对照，回想一下，本例（s = 8）中我们推荐的因子由下式给出。"
+      },
+      {
+        "text": "Fix s = 8, compare the LLaMA 7b perplexity on 896 16k-token documents over different scaling 1/ t. The shaded area represents 1 standard deviation (68%).",
+        "x": 107.5,
+        "y": 310.2,
+        "w": 396.5,
+        "h": 20.2,
+        "zh": "固定 s = 8，比较 LLaMA 7b 在 896 篇 16k token 文档上、不同缩放 1/t 下的困惑度。阴影区域表示 1 个标准差（68%）。"
+      },
+      {
+        "text": "t on different token positions, we cut each 16k-token document into chunks of 2048 tokens, and further plot the mean perplexity change comparing to t = 1 in",
+        "x": 108,
+        "y": 247.8,
+        "w": 396,
+        "h": 20.9,
+        "zh": "t 在不同 token 位置上的作用：我们把每篇 16k token 的文档切成 2048 个 token 的块，并进一步画出平均困惑度相对于 t = 1 的变化，比较的是"
+      },
+      {
+        "text": "of each chunk. The plot is shown in Figure 5.",
+        "x": 108,
+        "y": 131.6,
+        "w": 181,
+        "h": 10,
+        "zh": "每个块的。该图见图 5。"
+      },
+      {
+        "text": "We choose RedPajama because it is the open-source dataset closest to the training dataset of LLaMA as far",
+        "x": 123.7,
+        "y": 72.1,
+        "w": 380.4,
+        "h": 9,
+        "zh": "我们选择 RedPajama，是因为它是目前最接近 LLaMA 训练数据集的开源数据集，就"
+      }
+    ],
+    "15": [
+      {
+        "text": "segments of token positions on 896 16k-token documents over different scaling 1/ t.",
+        "x": 108,
+        "y": 489.3,
+        "w": 309.9,
+        "h": 9,
+        "zh": "在 896 篇 16k token 文档上、不同缩放 1/t 下，各段 token 位置"
+      },
+      {
+        "text": "To further demonstrate the best values of t across all samples over different token positions, we plot√ the sample counts with minimal perplexity at a given 1/",
+        "x": 107.7,
+        "y": 438.4,
+        "w": 396.3,
+        "h": 22,
+        "zh": "为进一步展示所有样本、不同 token 位置上 t 的最佳取值，我们画出在给定 1/ 处困惑度最低的样本数量"
+      },
+      {
+        "text": "t for each of the 8 position segments over the 16k-token range in Figure 6.",
+        "x": 108,
+        "y": 427.5,
+        "w": 396.2,
+        "h": 20.9,
+        "zh": "t，对应 16k token 范围内的 8 个位置分段，见图 6。"
+      },
+      {
+        "text": "Figure 6: The sample counts (out of the 896 samples) with minimal perplexity at a given 1/ t for a given segment of token positions over the 16k-token range.",
+        "x": 108,
+        "y": 194.8,
+        "w": 396,
+        "h": 19.9,
+        "zh": "图 6：在 16k token 范围内、给定的一段 token 位置上，于给定的 1/t 处取得最低困惑度的样本数量（896 个样本中的计数）。"
+      },
+      {
+        "text": "• for a suitable t, a sample may obtain better perplexity scores across the extended context",
+        "x": 135.4,
+        "y": 131.5,
+        "w": 368.6,
+        "h": 10,
+        "zh": "• 对一个合适的 t，某个样本可以在整个扩展后的上下文上得到更好的困惑度"
+      },
+      {
+        "text": "• the best value of t is mostly consistent across different samples and different positions.",
+        "x": 135.4,
+        "y": 97.9,
+        "w": 353.9,
+        "h": 10,
+        "zh": "• t 的最佳取值在不同样本、不同位置上大体一致。"
+      },
+      {
+        "text": "We remark that this finding is consistent for different values of s and the best value of t follows our recommended formula (Eq. 15) closely.",
+        "x": 107.5,
+        "y": 62.1,
+        "w": 396.6,
+        "h": 20.9,
+        "zh": "我们指出，这一发现对不同的 s 都成立，并且 t 的最佳取值与我们推荐的公式（式 15）相当接近。"
+      }
+    ],
+    "16": [
+      {
+        "text": "Table 5: Sliding window perplexity (S = 256) of ten 128k Proof-pile documents over the LLaMA 7B model",
+        "x": 107.7,
+        "y": 300.6,
+        "w": 396.3,
+        "h": 10,
+        "zh": "表 5：十篇 128k 的 Proof-pile 文档在 LLaMA 7B 模型上的滑动窗口困惑度（S = 256）"
+      }
+    ],
+    "17": [
+      {
+        "text": "Table 6 shows a side-by-side comparison of the Llama 2 7B model extended from 4096 to 8192 context length via PI (LLongMA-2 7B ) and YaRN. Note that the PI model was trained using the methodology in Chen et al. (2023), while YaRN used the same methodology but 2.5x less training steps and data, as described in Section 4. Even if YaRN was only fine-tuned for 400 steps compared",
+        "x": 107.7,
+        "y": 644.4,
+        "w": 396.6,
+        "h": 42.8,
+        "zh": "表 6 并排比较了把 Llama 2 7B 的上下文长度从 4096 扩展到 8192 的结果，分别经由 PI（LLongMA-2 7B）和 YaRN。注意 PI 模型按 Chen et al.（2023）的方法训练，而 YaRN 用的是同一套方法，但训练步数和数据都少 2.5 倍，如第 4 节所述。即便 YaRN 只微调了 400 步，对比"
+      },
+      {
+        "text": "to PI’s 1000 steps, we obtain similar results to PI.",
+        "x": 108,
+        "y": 633.4,
+        "w": 197.3,
+        "h": 10,
+        "zh": "PI 的 1000 步，我们得到的结果仍与 PI 相近。"
+      },
+      {
+        "text": "Table 6: Sliding window perplexity (S = 256) of ten 128k Proof-pile documents over the Llama-2 7b model extended via PI and YaRN with different training steps. YaRN obtains comparable results to PI using much less",
+        "x": 107.7,
+        "y": 487.8,
+        "w": 396.3,
+        "h": 19.9,
+        "zh": "表 6：十篇 128k 的 Proof-pile 文档，在经 PI 和 YaRN、以不同训练步数扩展的 Llama-2 7b 上的滑动窗口困惑度（S = 256）。YaRN 得到与 PI 相当的结果，而所用的要少得多"
+      },
+      {
+        "text": "COMPARING THE PERPLEXITY OF VARIOUS METHODS OVER A SLIDING WINDOW",
+        "x": 133.8,
+        "y": 435.8,
+        "w": 337.9,
+        "h": 10,
+        "zh": "在滑动窗口上比较各种方法的困惑度"
+      },
+      {
+        "text": "We further evaluated the Llama 2 models fine-tuned using YaRN at the scale factor s = 16, 32 and compared them against a few long-context open-source models fine-tuned from Llama-2 such as Together.ai (Together.ai, 2023) and \"NTK-aware\" Code Llama (Rozière et al., 2023). The results are summarized in Table 7 (with a more detailed plot in Figure 7).",
+        "x": 107.5,
+        "y": 380.1,
+        "w": 396.5,
+        "h": 42.8,
+        "zh": "我们进一步评估了用 YaRN、在缩放因子 s = 16 和 s = 32 下微调的 Llama 2 模型，并与若干从 Llama-2 微调而来的长上下文开源模型比较，例如 Together.ai（Together.ai, 2023）和使用「NTK-aware」的 Code Llama（Rozière et al., 2023）。结果汇总于表 7（更详细的曲线见图 7）。"
+      },
+      {
+        "text": "Table 7: Sliding window perplexity (S = 256) of ten 128k Proof-pile documents truncated to evaluation context",
+        "x": 107.7,
+        "y": 226.3,
+        "w": 396.3,
+        "h": 10,
+        "zh": "表 7：十篇 128k 的 Proof-pile 文档截断到评估上下文后的滑动窗口困惑度（S = 256）"
+      },
+      {
+        "text": "We observe that the model exhibits strong performance across the entire targeted context size, with YaRN interpolation being the first method to successfully extend the effective context size of Llama 2",
+        "x": 107.4,
+        "y": 179.3,
+        "w": 396.6,
+        "h": 20.9,
+        "zh": "我们观察到，模型在整个目标上下文长度上都表现强劲。YaRN 插值是第一个成功扩展 Llama 2 有效上下文长度的方法"
+      },
+      {
+        "text": "Furthermore, in Appendix B.4, we show the results of the average perplexity on 50 untruncated GovReport documents with at least 16k tokens per sample evaluated on the setting of 32k maximal context window without Dynamic Scaling in Table 8. Similar to the Proof-pile results, the GovReport results show that fine-tuning with YaRN achieves good performance on long sequences. Table 7 summarizes the results and a visualized and more detailed view is presented in Figure 7 here.",
+        "x": 107.7,
+        "y": 101.6,
+        "w": 398.1,
+        "h": 59.8,
+        "zh": "此外，在附录 B.4 中，我们给出 50 篇未经截断的 GovReport 文档的平均困惑度，每篇样本至少 16k 个 token，评估设定为最大上下文窗口 32k、且不使用 Dynamic Scaling，见表 8。与 Proof-pile 的结果类似，GovReport 的结果表明，用 YaRN 微调能在长序列上取得好的表现。表 7 汇总了这些结果，更直观、更详细的视图见图 7。"
+      },
+      {
+        "text": "LLongMA-2 7B (Quesnelle et al., 2023) is fine-tuned from Llama 2 7B, trained at 8k context length with PI",
+        "x": 124.1,
+        "y": 72.1,
+        "w": 379.9,
+        "h": 9,
+        "zh": "LLongMA-2 7B（Quesnelle et al., 2023）由 Llama 2 7B 微调而来，用 PI 在 8k 上下文长度上训练"
+      },
+      {
+        "text": "using the RedPajama dataset (Computer, 2023).",
+        "x": 108,
+        "y": 62.1,
+        "w": 171.5,
+        "h": 9,
+        "zh": "使用的是 RedPajama 数据集（Computer, 2023）。"
+      }
+    ],
+    "18": [
+      {
+        "text": "Figure 7: Sliding window perplexity (S = 256) of a 1.28M-token Proof-pile documents truncated to the context",
+        "x": 108,
+        "y": 481.3,
+        "w": 396,
+        "h": 10,
+        "zh": "图 7：一篇 1.28M token 的 Proof-pile 文档截断到上下文之后的滑动窗口困惑度（S = 256）"
+      },
+      {
+        "text": "In Section 4.2, we mention the evaluation on GovReport documents. The evaluation results are",
+        "x": 108,
+        "y": 384.9,
+        "w": 396,
+        "h": 10,
+        "zh": "在第 4.2 节，我们提到对 GovReport 文档的评估。评估结果"
+      },
+      {
+        "text": "Table 8: Sliding window perplexity (S = 256) of 50 long GovReport documents with a fixed context window",
+        "x": 107.7,
+        "y": 202.4,
+        "w": 396.6,
+        "h": 10,
+        "zh": "表 8：50 篇较长的 GovReport 文档在固定上下文窗口下的滑动窗口困惑度（S = 256）"
+      },
+      {
+        "text": "For our evaluation of the 64k and 128k models, we performed 10 iterations of the passkey retrieval task with the passkey placed at a random location uniformly distributed across the evaluation context window on different context window sizes ranging from 8k to 128k. Both 7b and 13b models fine-tuned using YaRN at 128k context size passes the passkey retrieval task with very high accuracy",
+        "x": 107.6,
+        "y": 73.1,
+        "w": 396.7,
+        "h": 42.8,
+        "zh": "对我们的 64k 和 128k 模型，我们在 8k 到 128k 的不同上下文窗口上各做 10 次 passkey 检索，passkey 放在评估上下文窗口内按均匀分布随机选取的位置。用 YaRN 微调到 128k 上下文的 7b 和 13b 模型，都能以很高的准确率通过 passkey 检索任务"
+      },
+      {
+        "text": "(> 99%) within the entire context window size.",
+        "x": 107.7,
+        "y": 62.1,
+        "w": 189.7,
+        "h": 10,
+        "zh": "（> 99%），并且是在整个上下文窗口之内。"
+      }
+    ],
+    "19": [
+      {
+        "text": "Table 9: Passkey retrieval performance of various models. The passkey context denotes the maximum tested context window size where the accuracy of passkey retrieval was >= 80%, and the passkey accuracy is the average accuracy of passkey retrieval on all context sizes tested that were smaller or equal than the passkey",
+        "x": 107.7,
+        "y": 553.9,
+        "w": 396.6,
+        "h": 29.9,
+        "zh": "表 9：各模型的 passkey 检索表现。passkey 上下文指测试过的最大上下文窗口，此处 passkey 检索准确率 >= 80%；passkey 准确率则是在所有小于或等于该 passkey 的测试上下文长度上，检索准确率的平均值"
+      },
+      {
+        "text": "Here we can observe that the lowest perplexity point alone does not provide a comprehensive depiction on the \"effective context size\" that an LLM can attend to. While the Code Llama 13b model exhibits increasing perplexity above 100k context lengths, it was still able to accurately retrieve the passkey at a context length of 128k. This suggest that while the output of Code Llama might start to degrade in quality above 100k context size, it is still able to maintain strong retrieval capabilities. In addition, as YaRN with s = 32 was trained for 200 more steps than YaRN with s = 16 while having a higher passkey accuracy with similar perplexity, we hypothesize that perplexity may not be a great indicator of whether an LLM is able to attend to all tokens and does not exhaustively determine long context performance. This also suggests that the YaRN models with s = 16 might be relatively",
+        "x": 108,
+        "y": 421.4,
+        "w": 396.3,
+        "h": 103.6,
+        "zh": "这里可以看到，单看困惑度最低的那个点，并不能完整刻画一个 LLM 能够关注到的「有效上下文长度」。Code Llama 13b 在上下文长度超过 100k 之后困惑度上升，但它在 128k 的上下文长度上仍然能够准确找回 passkey。这说明，虽然 Code Llama 的输出质量在上下文超过 100k 后可能开始变差，它仍然能够保持很强的检索能力。此外，s = 32 的 YaRN 比 s = 16 的 YaRN 多训练了 200 步，passkey 准确率更高，困惑度却相近。我们因此猜想：困惑度也许并不能很好地表明一个 LLM 是否能够关注到全部 token，也不能穷尽地判定长上下文表现。这也说明，s = 16 的 YaRN 模型可能相对"
+      },
+      {
+        "text": "undertrained for the passkey retrieval task.",
+        "x": 108,
+        "y": 410.4,
+        "w": 169.1,
+        "h": 10,
+        "zh": "在 passkey 检索任务上训练不足。"
+      },
+      {
+        "text": "To test the degradation of model performance under context extension, we evaluated our models using this suite and compared it to established scores for the Llama 2 baselines as well as publicly",
+        "x": 107.7,
+        "y": 353.9,
+        "w": 396.7,
+        "h": 20.9,
+        "zh": "为检验上下文扩展之下模型性能的下降，我们用这套基准评估了自己的模型，并与 Llama 2 基线已有的分数以及公开的"
+      },
+      {
+        "text": "Table 10: Performance of context window extensions methods on the Hugging Face Open LLM benchmark",
+        "x": 107.7,
+        "y": 162.3,
+        "w": 396.5,
+        "h": 10,
+        "zh": "表 10：上下文窗口扩展方法在 Hugging Face Open LLM 基准上的表现"
+      },
+      {
+        "text": "suite compared with original Llama 2 baselines",
+        "x": 108,
+        "y": 152.3,
+        "w": 169.8,
+        "h": 9,
+        "zh": "该套件，并与原始 Llama 2 基线比较"
+      }
+    ],
+    "20": [
+      {
+        "text": "DYNAMIC SCALING ON MODELS WITHOUT ANY FINE-TUNING",
+        "x": 133.8,
+        "y": 700.2,
+        "w": 258.7,
+        "h": 10,
+        "zh": "未经任何微调的模型上的动态缩放"
+      },
+      {
+        "text": "We first recall from Section 3.4 that the Dynamic Scaling technique is an inference-time technique that dynamically update the factor s in interpolation methods such as PI, \"NTK-by-parts\" and YaRN. We choose the original Llama 2, fix a sample in GovReport and calculate its perplexity on a sliding window of 256 tokens using RoPE, Dynamic-PI and Dynamic-YaRN.",
+        "x": 107.5,
+        "y": 646.8,
+        "w": 398.2,
+        "h": 42.8,
+        "zh": "我们先回顾第 3.4 节：Dynamic Scaling 是一种推理时技术，会动态更新 PI、「NTK-by-parts」和 YaRN 等插值方法中的因子 s。我们取原始的 Llama 2，在 GovReport 中固定一个样本，用 256 个 token 的滑动窗口，在 RoPE、Dynamic-PI 和 Dynamic-YaRN 下计算它的困惑度。"
+      },
+      {
+        "text": "Figure 8: The comparison between RoPE, Dynamic-PI and Dynamic-YaRN using Llama 2 on a long GovReport sample. This model has not been finetuned for long context.",
+        "x": 108,
+        "y": 390.8,
+        "w": 396,
+        "h": 20.9,
+        "zh": "图 8：在一篇很长的 GovReport 样本上，用 Llama 2 比较 RoPE、Dynamic-PI 和 Dynamic-YaRN。这个模型没有为长上下文做过微调。"
+      },
+      {
+        "text": "Since the original maximal context length of Llama 2 is 4096, we observe that Dynamic Scaling effectively extend the inference length and Dynamic-YaRN achieves better performance than Dynamic-PI. The resulting chart is in Figure 8.",
+        "x": 107.7,
+        "y": 337.9,
+        "w": 398.1,
+        "h": 31.9,
+        "zh": "由于 Llama 2 原始的最大上下文长度是 4096，我们观察到 Dynamic Scaling 有效延长了推理长度，并且 Dynamic-YaRN 的表现优于 Dynamic-PI。所得曲线见图 8。"
+      },
+      {
+        "text": "• Dynamic Scaling effectively prevents the blow-up of perplexity score beyond pretrained",
+        "x": 135.4,
+        "y": 300,
+        "w": 368.6,
+        "h": 10,
+        "zh": "• Dynamic Scaling 有效防止了困惑度在超出预训练之后飙升"
+      },
+      {
+        "text": "• Dynamic-YaRN outperforms Dynamic-PI in terms of long-range perplexity on pretrained Llama-2 without any finetuning.",
+        "x": 135.4,
+        "y": 263.1,
+        "w": 368.6,
+        "h": 20.9,
+        "zh": "• 在未经任何微调的预训练 Llama-2 上，就长程困惑度而言，Dynamic-YaRN 优于 Dynamic-PI。"
+      }
+    ]
+  }
+}

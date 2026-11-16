@@ -1,0 +1,1233 @@
+{
+  "id": "2303.10512",
+  "title": "2303.10512",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "Qingru Zhang , Minshuo Chen , Alexander Bukharin , Nikos Karampatziakis , Pengcheng He , Yu Cheng , Weizhu Chen and Tuo Zhao Georgia Institute of Technology",
+        "x": 114,
+        "y": 623.9,
+        "w": 349,
+        "h": 33.5,
+        "zh": "Qingru Zhang、Minshuo Chen、Alexander Bukharin、Nikos Karampatziakis、Pengcheng He、Yu Cheng、Weizhu Chen 与 Tuo Zhao，佐治亚理工学院"
+      },
+      {
+        "text": "Princeton University {qingru.zhang,abukharin3,tourzhao}@gatech.edu mc0750@princeton.edu {nikosk,penhe,yu.cheng,wzchen}@microsoft.com",
+        "x": 114,
+        "y": 591.1,
+        "w": 267,
+        "h": 42.8,
+        "zh": ""
+      },
+      {
+        "text": "Fine-tuning large pre-trained language models on downstream tasks has become an important paradigm in NLP. However, common practice fine-tunes all of the parameters in a pre-trained model, which becomes prohibitive when a large number of downstream tasks are present. Therefore, many fine-tuning methods are proposed to learn incremental updates of pre-trained weights in a parameter efficient way, e.g., low-rank increments. These methods often evenly distribute the budget of incremental updates across all pre-trained weight matrices, and overlook the varying importance of different weight parameters. As a consequence, the finetuning performance is suboptimal. To bridge this gap, we propose AdaLoRA, which adaptively allocates the parameter budget among weight matrices according to their importance score. In particular, AdaLoRA parameterizes the incremental updates in the form of singular value decomposition. Such a novel approach allows us to effectively prune the singular values of unimportant updates, which is essentially to reduce their parameter budget but circumvent intensive exact SVD computations. We conduct extensive experiments with several pre-trained models on natural language processing, question answering, and natural language generation to validate the effectiveness of AdaLoRA. Results demonstrate that AdaLoRA manifests notable improvement over baselines, especially in the low budget settings. Our code is publicly available at https://github.com/ QingruZhang/AdaLoRA.",
+        "x": 143.5,
+        "y": 317.2,
+        "w": 326.3,
+        "h": 218.2,
+        "zh": "在下游任务上微调大型预训练语言模型，已经成为 NLP 里的一种主要做法。不过常见做法会把预训练模型的全部参数都微调一遍，下游任务一多，这就贵得难以承受。因此出现了许多微调方法，以省参数的方式学习预训练权重的增量更新，例如低秩增量。这些方法往往把增量更新的预算均匀分给所有预训练权重矩阵，忽略了不同权重参数的重要性并不一样，微调效果因此不够好。为此我们提出 AdaLoRA，按重要性分数在各权重矩阵之间自适应分配参数预算。具体来说，AdaLoRA 把增量更新参数化成奇异值分解的形式。这样就能有效剪掉不重要更新的奇异值，实质上是减少它们的参数预算，又避开了开销很大的精确 SVD。我们在若干预训练模型上做了自然语言处理、问答和自然语言生成实验，用来验证 AdaLoRA 是否有效。结果表明 AdaLoRA 相对基线有明显提升，低预算时尤其如此。代码公开于 https://github.com/QingruZhang/AdaLoRA。"
+      },
+      {
+        "text": "Pre-trained language models (PLMs) have manifested superior performance in various natural language processing tasks (Devlin et al., 2019; Liu et al., 2019; He et al., 2021b; Radford et al.,",
+        "x": 108,
+        "y": 249.4,
+        "w": 397.2,
+        "h": 20.9,
+        "zh": "预训练语言模型（PLM）在多种自然语言处理任务上已经表现很好（Devlin 等人，2019；Liu 等人，2019；He 等人，2021b；Radford 等人，"
+      },
+      {
+        "text": "2019; Brown et al., 2020). The most common way to adapt pre-trained models to down-stream tasks is to fine-tune all the parameters (full fine-tuning, Qiu et al. (2020); Raffel et al. (2020)). However, pre-trained models typically incurs large memory footprint. For example, BERT model (Devlin et al., 2019) consists up to 300 million parameters; T5 (Raffel et al., 2020) comprises up to 11 billion parameters and GPT-3 (Brown et al., 2020) contains up to 175 billion parameters. When building a NLP system upon these pre-trained models, we usually handle multiple tasks that arrive simultaneously (Radford et al., 2019). Given a large number of down-stream tasks, full fine-tuning requires that each task maintains a separated copy of large models. The resulting memory consumption is prohibitively expensive. To address this issue, researchers have proposed two main lines of research to reduce the fine-tuning parameters, while maintaining or even improving the performance of PLMs. Specifically, one line of research focuses on adding small neural modules to PLMs and fine-tune only these modules for each task – the base model is kept frozen and shared across tasks. In this way, only a small number of task-specific parameters are introduced and updated, greatly enhancing the practicality of large models. For example, adapter tuning (Houlsby et al., 2019; Rebuffi et al., 2017; Pfeiffer et al., 2020;",
+        "x": 107.5,
+        "y": 80.5,
+        "w": 398.2,
+        "h": 167.9,
+        "zh": "2019；Brown 等人，2020）。把预训练模型适配到下游任务，最常见的做法是微调全部参数（全参微调，Qiu 等人（2020）；Raffel 等人（2020））。但预训练模型通常很占内存。例如 BERT（Devlin 等人，2019）最多约有 3 亿参数；T5（Raffel 等人，2020）最多约有 110 亿参数；GPT-3（Brown 等人，2020）最多约有 1750 亿参数。在这些预训练模型上搭建 NLP 系统时，我们通常要同时处理多个到来的任务（Radford 等人，2019）。下游任务一多，全参微调就要求每个任务各自留一份大模型，内存开销贵得难以接受。为此，研究者主要沿两条路线减少微调参数，同时维持甚至提高 PLM 的表现。其中一条是给 PLM 加上小型神经网络模块，每个任务只微调这些模块——基座模型保持冻结，并在任务之间共享。这样只引入并更新少量任务特定参数，大模型就实用得多。例如 adapter 微调（Houlsby 等人，2019；Rebuffi 等人，2017；Pfeiffer 等人，2020；"
+      },
+      {
+        "text": "Work was done during Qingru Zhang’s internship at Microsoft Azure AI.",
+        "x": 124.1,
+        "y": 62.1,
+        "w": 262.4,
+        "h": 9,
+        "zh": "这项工作完成于 Qingru Zhang 在 Microsoft Azure AI 实习期间。"
+      }
+    ],
+    "2": [
+      {
+        "text": "(a) Selected weight matrix Figure 1: Given the total trainable parameters as 0.28M, we apply LoRA only to selected weight matrices (left) or selected layers (right) of DeBERTaV3-base and compare the fine-tuning performance on MNLI-m. Figure 1a: we only fine-tune a selected type of weight matrix of every transformer layer, including query/key/value projection (Wq, Wk, Wv), output projection (Wo) in the self-attention, and two weight matrices (Wf1, Wf2) in two-layer FFNs. In Figure 1b, we apply LoRA to every weight matrix of the selected layers. He et al., 2022) inserts small neural modules called adapters between the layers of the base model. Prefix tuning (Li & Liang, 2021) and prompt tuning (Lester et al., 2021) attach additional trainable prefix tokens to the input or hidden layers of the base model. These methods have shown to achieve comparable performance to full fine-tuning, while only updating less than 1% of the original model parameters, significantly releasing the memory consumption. Another line of research proposes to model the incremental update of the pre-trained weights in a parameter-efficient way, without modifying the model architecture (Zaken et al., 2021; Guo et al., 2020; Hu et al., 2022). Given a pre-trained weight matrix W",
+        "x": 107.6,
+        "y": 471.9,
+        "w": 398.1,
+        "h": 160.6,
+        "zh": "（a）选定的权重矩阵。图 1：可训练参数总量为 0.28M 时，我们只把 LoRA 加到 DeBERTaV3-base 的部分权重矩阵（左）或部分层（右）上，并比较 MNLI-m 上的微调效果。图 1a：每一层 Transformer 只微调某一类权重矩阵，包括查询/键/值投影（Wq、Wk、Wv）、自注意力里的输出投影（Wo），以及两层 FFN 中的两个权重矩阵（Wf1、Wf2）。图 1b 则对选定层的每个权重矩阵都加 LoRA。He 等人（2022）在基座模型各层之间插入称为 adapter 的小型神经网络模块。前缀微调（Li 与 Liang，2021）和提示微调（Lester 等人，2021）把额外的可训练前缀 token 接到基座模型的输入或隐藏层上。这些方法的效果可以和全参微调相当，同时只更新不到原模型参数的 1%，内存消耗因此明显减轻。另一条路线不改模型结构，用省参数的方式建模预训练权重的增量更新（Zaken 等人，2021；Guo 等人，2020；Hu 等人，2022）。给定一个预训练权重矩阵 W"
+      },
+      {
+        "text": ", for example, diff pruning (Guo et al., 2020) models its incremental update ∆ as a sparse matrix. Diff pruning initializes ∆ as the same",
+        "x": 108,
+        "y": 460.9,
+        "w": 397.2,
+        "h": 20.9,
+        "zh": "，例如 diff pruning（Guo 等人，2020）把增量更新 ∆ 建模成稀疏矩阵。Diff pruning 把 ∆ 初始化成与"
+      },
+      {
+        "text": "and then prunes ∆ element-wise based on the magnitude of the entries. As such, diff pruning can increase the parameter efficiency substantially by adaptively retaining important updates and pruning unimportant ones. Nonetheless, diff pruning has several limitations. First, it relies on low-level implementation to speed up the computation of unstructured sparse matrices, which is not well supported by existing deep learning frameworks. Therefore, we have to store ∆ as a dense matrix during training. Second, it needs to update every entry of ∆ with their gradients and then prune them. This results in similar computational cost as full fine-tuning (Guo et al., 2020). To overcome these drawbacks, Hu et al. (2022) propose a method named LoRA, which parameterizes ∆ as a low-rank matrix by the product of two much smaller matrices:",
+        "x": 107.2,
+        "y": 356.8,
+        "w": 398.1,
+        "h": 102.1,
+        "zh": "然后按元素的幅度对 ∆ 逐项剪枝。这样，diff pruning 可以留下重要更新、剪掉不重要的更新，参数效率因此大幅提高。不过它有几处限制。第一，它要靠底层实现来加速非结构化稀疏矩阵的计算，而现有深度学习框架对此支持不好，所以训练时仍得把 ∆ 存成稠密矩阵。第二，它要先用梯度更新 ∆ 的每一个元素，然后再剪枝，计算量和全参微调差不多（Guo 等人，2020）。为克服这些缺点，Hu 等人（2022）提出 LoRA，把 ∆ 参数化为两个小得多的矩阵之积，从而得到低秩矩阵："
+      },
+      {
+        "text": "with r ≪ {d1, d2}. During fine-tuning, only A and B are updated. The rank r is chosen to be much smaller than the dimension of W (e.g., r = 8 when d1 = d2 = 1024). With less than 0.5% additional trainable parameters, the training overhead can be reduced up to 70%, compared to full fine-tuning. However, LoRA achieves comparable or even better performance than full fine-tuning (Hu et al., 2022). Meanwhile, the product of two samll matrices is more friendly to implement and deploy than unstructured sparse matrices in diff pruning. LoRA still has limitations as it prespecifies the rank r of each incremental matrix ∆ identical. This ignores the fact that the importance of weight matrices varies significantly across modules and layers when fine-tuning pre-trained models. To illustrate this point, we present an concrete example in Figure 1. We compare the performance of LoRA when fine-tuning specific modules or layers with the same number of trainable parameters. Figure 1a shows that fine-tuning feed-forward networks (FFN) achieves better performance than self-attention modules. In addition, Figure 1b demonstrates that weight matrices in top layers are more important than those in bottom layers. Adding more trainable parameters to the critical weight matrices can lead to better model performance. In contrast, adding more parameters to those less important weight matrices yields very marginal gains or even hurt model performance. Given the parameter budget, i.e., the number of total trainable parameters, we always prefer to allocate more parameters to those important modules. Distributing the budget evenly to all weight matrices/layers, like LoRA and other methods (e.g., adapter and prefix tuning), often gives suboptimal performance. To this end, a natural question is:",
+        "x": 107.6,
+        "y": 111.6,
+        "w": 398.1,
+        "h": 216.2,
+        "zh": "其中 r ≪ {d1, d2}。微调时只更新 A 和 B。秩 r 选得远小于 W 的维度（例如 d1 = d2 = 1024 时，r = 8）。额外可训练参数不到 0.5% 时，相对全参微调，训练开销最多可降低 70%。不过 LoRA 的效果可以和全参微调相当，甚至更好（Hu 等人，2022）。同时，两个小矩阵的乘积比 diff pruning 里的非结构化稀疏矩阵更好实现、也更好部署。LoRA 仍有局限：它预先把每个增量矩阵 ∆ 的秩 r 都设成同一个数。这忽略了一点，微调预训练模型时，不同模块、不同层的权重矩阵，重要性差别很大。图 1 给了一个具体例子。在可训练参数量相同的条件下，我们比较只微调特定模块或特定层时 LoRA 的效果。图 1a 表明，微调前馈网络（FFN）好于微调自注意力模块。图 1b 则表明，上层的权重矩阵比下层更重要。把更多可训练参数分给关键权重矩阵，模型会更好；分给不太重要的权重矩阵，收益很小，甚至会变差。给定参数预算，也就是可训练参数的总数，我们总愿意把更多参数分给重要模块。像 LoRA 以及其他方法（例如 adapter 和前缀微调）那样，把预算均匀分给所有权重矩阵或所有层，效果往往不够好。由此自然有一个问题："
+      },
+      {
+        "text": "How can we allocate the parameter budget adaptively according to importance of modules to improve the performance of parameter-efficient fine-tuning?",
+        "x": 145.6,
+        "y": 81.3,
+        "w": 320.9,
+        "h": 20.9,
+        "zh": "怎样按模块的重要性自适应分配参数预算，从而提高省参数微调的效果？"
+      },
+      {
+        "text": "to denote any pre-trained weight matrix.",
+        "x": 273.3,
+        "y": 62.1,
+        "w": 144.3,
+        "h": 9,
+        "zh": "用来表示任意一个预训练权重矩阵。"
+      }
+    ],
+    "3": [
+      {
+        "text": "To answer this question, we propose a new method – AdaLoRA (Adaptive Low-Rank Adaptation), which dynamically allocates the parameter budget among weight matrices during LoRA-alike finetuning. Specifically, AdaLoRA adjusts the rank of incremental matrices to control their budget. Critical incremental matrices are assigned with high rank such that they can capture more fine-grained and task-specific information. Less importance ones are pruned to have lower rank to prevent overfitting and save the computational budget. There are some methods to control the rank of matrices in the existing literature of matrix approximation (Cai et al., 2010; Koltchinskii et al., 2011; Toh & Yun, 2010). Most of them directly compute singular value decomposition (SVD) of a matrix and then truncate the smallest singular values. Such an operation can manipulate the rank explicitly and, more importantly, minimize the difference between the resulting matrix and the original matrix. However, for fine-tuning large models, it becomes prohibitively expensive to iteratively apply SVD for a large number of high-dimensional weight matrices. Therefore, instead of computing SVD exactly, we parameterize ∆ as ∆ = PΛQ to mimic SVD. The diagonal matrix Λ contains singular values while the orthogonal matrices P and Q represent left/right singular vectors of ∆. To regularize the orthogonality of P and Q, an additional penalty is added to training loss. Such a parameterization avoids the intensive computations of SVD. Besides, another advantage is that we only need to drop the unimportant singular values while the singular vectors are maintained. This preserves the possibility of future recovery and stabilizes the training. See a detailed comparison to LoRA in Section 3. Based on our SVD parameterization, AdaLoRA dynamically adjusts the rank of ∆ = PΛQ by importance scoring. Specifically, we divide the incremental matrix PΛQ into triplets, where each triplet Gi contains the i-th singular value and the corresponding singular vectors. To quantify the importance of triplets, we propose a novel importance metric, which takes account of the contribution of every entry in Gi to the model performance (Sanh et al., 2020; Liang et al., 2021; Zhang et al., 2022). Triplets with low importance scores are granted low priority and hence the singular values are zeroed out. Triplets with high importance are retained for fine-tuning. Moreover, we also propose a global budget scheduler to facilitate the training. In particular, we start from an initial parameter budget, which is slightly higher than the final budget, and then gradually reduce it until matching the target. Such a scheduler can improve the training stability and model performance. Please see Section 3 for a detailed description of our importance metric and budget scheduler. We conduct extensive experiments on a wide range of tasks and models to demonstrate the effectiveness of AdaLoRA. Specifically, we evaluate the performance using DeBERTaV3-base (He et al., 2021a) on natural language understanding (GLUE, Wang et al. (2019)) and question answering (SQuADv1, Rajpurkar et al. (2016) and SQuADv2, Rajpurkar et al. (2018)) datasets. We also apply our methods to BART-large (Lewis et al., 2019) and evaluate the performance on natural language generation (XSum, Narayan et al. (2018) and CNN/DailyMail, Hermann et al. (2015)) tasks. We show AdaLoRA consistently outperforms the baseline, especially under low budget settings. For example, with less than 0.1% trainable parameters of full fine-tuning, AdaLoRA achieves a 1.2% F1 improvement on the SQuAD2.0 dataset compared with state-of-the-art approaches.",
+        "x": 107.4,
+        "y": 285.7,
+        "w": 398.3,
+        "h": 424.4,
+        "zh": "为回答这个问题，我们提出 AdaLoRA（Adaptive Low-Rank Adaptation，自适应低秩适配）。它在类似 LoRA 的微调过程中，动态地把参数预算分给各个权重矩阵。具体来说，AdaLoRA 靠调整增量矩阵的秩来控制预算。关键的增量矩阵给到较高的秩，以便抓住更细、更贴近任务的信息；不太重要的则被剪到较低的秩，以免过拟合，并省下计算预算。矩阵近似的文献里已有一些控制秩的方法（Cai 等人，2010；Koltchinskii 等人，2011；Toh 与 Yun，2010）。它们大多直接对矩阵做奇异值分解（SVD），再截掉最小的奇异值。这样可以显式地改秩，并且让得到的矩阵尽量接近原矩阵。但对大模型微调来说，反复给大量高维权重矩阵做 SVD，开销高得难以承受。因此我们不精确计算 SVD，而是把 ∆ 参数化为 ∆ = PΛQ，用来模仿 SVD。对角矩阵 Λ 放奇异值，正交矩阵 P 和 Q 表示 ∆ 的左、右奇异向量。为约束 P 和 Q 正交，训练损失里再加一项惩罚。这种参数化避开了昂贵的 SVD。另一个好处是，只丢掉不重要的奇异值，奇异向量仍然留着，以后还有机会恢复，训练也更稳。与 LoRA 的详细比较见第 3 节。在这一 SVD 参数化之上，AdaLoRA 按重要性分数动态调整 ∆ = PΛQ 的秩。我们把增量矩阵 PΛQ 分成若干三元组，每个三元组 Gi 含第 i 个奇异值及其奇异向量。为衡量三元组有多重要，我们提出一种新指标，它考虑 Gi 中每一项对模型表现的贡献（Sanh 等人，2020；Liang 等人，2021；Zhang 等人，2022）。分数低的三元组优先级低，对应奇异值被置零；分数高的则留下来继续微调。我们还提出一个全局预算调度器。初始参数预算略高于最终预算，然后逐步降到目标。这样训练更稳，模型也更好。重要性指标和预算调度的细节见第 3 节。我们在多种任务和模型上做了实验。具体来说，用 DeBERTaV3-base（He 等人，2021a）在自然语言理解（GLUE，Wang 等人（2019））和问答（SQuADv1，Rajpurkar 等人（2016）；SQuADv2，Rajpurkar 等人（2018））上评估；又把方法用到 BART-large（Lewis 等人，2019）上，在自然语言生成（XSum，Narayan 等人（2018）；CNN/DailyMail，Hermann 等人（2015））上评估。AdaLoRA 稳定优于基线，低预算时尤其明显。例如，可训练参数不到全参微调的 0.1% 时，AdaLoRA 在 SQuAD2.0 上的 F1 比当时最好的方法高 1.2%。"
+      },
+      {
+        "text": "Transformer-based Models. A typical transformer model consists of L stacked blocks, where each block contains two submodules: a multi-head attention (MHA) and a fully connected FFN. Given the input sequence X ∈ R",
+        "x": 107.7,
+        "y": 220.7,
+        "w": 396.3,
+        "h": 31.9,
+        "zh": "基于 Transformer 的模型。典型的 Transformer 由 L 个堆叠的块组成，每个块有两个子模块：多头注意力（MHA）和全连接的 FFN。给定输入序列 X ∈ R"
+      },
+      {
+        "text": ", MHA performs the attention function in parallel h heads:",
+        "x": 214.2,
+        "y": 220.7,
+        "w": 233.2,
+        "h": 10,
+        "zh": "，MHA 在 h 个头上并行做注意力："
+      },
+      {
+        "text": "headi = Softmax XWqi(XWki) / is an output projection and Wqi, Wki, Wvi ∈ R",
+        "x": 188,
+        "y": 178.3,
+        "w": 255.6,
+        "h": 33.1,
+        "zh": ""
+      },
+      {
+        "text": "are query, key and value projections of head i. dh is typically set to d/h. The other important module is a FFN which consists of two linear transformations with a ReLU activation in between: FFN(X) = ReLU(XWf + b1)Wf2 + b2, where Wf1 ∈ R",
+        "x": 108,
+        "y": 144.1,
+        "w": 397.9,
+        "h": 46.7,
+        "zh": "是第 i 个头的查询、键和值投影。dh 通常取 d/h。另一个重要模块是 FFN，它由两个线性变换组成，中间是 ReLU：FFN(X) = ReLU(XWf + b1)Wf2 + b2，其中 Wf1 ∈ R"
+      },
+      {
+        "text": ". Finally, a residual connection is used followed by a layer normalization (Ba et al., 2016). Low Rank Adaptation. LoRA (Hu et al., 2022) models the incremental update of the pre-trained weights by the product of two small matrices. For h = W",
+        "x": 107.6,
+        "y": 108.1,
+        "w": 396.4,
+        "h": 48.4,
+        "zh": "。最后接上残差连接，再做层归一化（Ba 等人，2016）。低秩适配。LoRA（Hu 等人，2022）用两个小矩阵的乘积来建模预训练权重的增量更新。对于 h = W"
+      },
+      {
+        "text": "with r ≪ {d1, d2}. A typically adopts a random Gaussion initialization while B is initialized with zero to have ∆ = 0 at the beginning of",
+        "x": 108,
+        "y": 62.1,
+        "w": 396,
+        "h": 20.9,
+        "zh": "其中 r ≪ {d1, d2}。A 通常用随机高斯初始化，B 初始化为零，这样一开始 ∆ = 0。"
+      }
+    ],
+    "4": [
+      {
+        "text": "training. We further denote Ai∗ as the i-th row of A, B∗i as the i-th column of B, and Gi = {Ai∗, B∗i} as the i-th doublet. Hu et al. (2022) only apply LoRA to query and value projections (i.e, Wq and Wv) in the MHAs. He et al. (2022) extend it to weight matrices of FFNs (i.e, Wf1 and Wf2), leading to the performance improvement . Meanwhile, they propose a unified view of various efficient tuning methods including adapter tuning, prefix tuning and LoRA.",
+        "x": 108,
+        "y": 656.3,
+        "w": 396,
+        "h": 53.8,
+        "zh": "训练。我们把 A 的第 i 行记为 Ai∗，把 B 的第 i 列记为 B∗i，并把第 i 个双元组记为 Gi = {Ai∗, B∗i}。Hu 等人（2022）只把 LoRA 用在 MHA 的查询投影和值投影上（即 Wq 和 Wv）。He 等人（2022）把它扩到 FFN 的权重矩阵（即 Wf1 和 Wf2），效果因此更好。他们还为 adapter 微调、前缀微调和 LoRA 等多种高效微调方法给出了一个统一看法。"
+      },
+      {
+        "text": "Our method contains two important components: (i) SVD-based adaptation, which formulates the incremental matrices in the form of singular value decomposition; (ii) Importance-aware rank allocation, which prunes redundant singular values based on our newly-designed importance metric.",
+        "x": 108,
+        "y": 585.7,
+        "w": 397.6,
+        "h": 31.9,
+        "zh": "我们的方法有两个重要部分：（i）基于 SVD 的适配，把增量矩阵写成奇异值分解的形式；（ii）按重要性分配秩，根据我们新设计的重要性指标剪掉多余的奇异值。"
+      },
+      {
+        "text": "SVD-BASED ADAPTATION As mentioned in Section 1, we propose to parameterize the incremental updates of the pre-trained weight matrices in the form of singular value decomposition:",
+        "x": 107.6,
+        "y": 538.3,
+        "w": 396.4,
+        "h": 37.1,
+        "zh": "基于 SVD 的适配。如第 1 节所述，我们把预训练权重矩阵的增量更新参数化为奇异值分解："
+      },
+      {
+        "text": "represent the left/right singular vectors of ∆ and the diagonal contains the singular values {λi}1≤i≤r with r ≪ min(d1, d2). We further denote Gi = {P∗i, λi, Qi∗} as the triplet containing the i-th singular value and vectors. In practice, since Λ is diagonal, we only need to save it as a vector in R . Λ is initialized with zero while P and Q adopt a random Gaussian initialization to ensure ∆ = 0 at the beginning of training. To enforce the orthogonality of P and Q, i.e., P",
+        "x": 107.3,
+        "y": 449.1,
+        "w": 396.7,
+        "h": 64.8,
+        "zh": "表示 ∆ 的左、右奇异向量，对角线上是奇异值 {λi}1≤i≤r，且 r ≪ min(d1, d2)。我们把第 i 个奇异值及其向量组成的三元组记为 Gi = {P∗i, λi, Qi∗}。实际中 Λ 是对角阵，只需把它存成 R 中的向量。Λ 初始化为零，P 和 Q 用随机高斯初始化，以保证训练开始时 ∆ = 0。为强制 P 和 Q 正交，即 P"
+      },
+      {
+        "text": "= I, we utilize the following regularizer :",
+        "x": 292.9,
+        "y": 449.1,
+        "w": 167.6,
+        "h": 10,
+        "zh": "= I，我们使用下面的正则项："
+      },
+      {
+        "text": "In our method, Λ is iteratively pruned to adjust the rank after each gradient decent step. As mentioned in Section 1, one can directly compute SVD for every ∆ to manipulate singular values. The computational complexity, however, is O(min(d1, d2)d1d2). It becomes extremely expensive to iteratively apply SVD for a large number of high-dimensional incremental matrices. In contrast, our parameterization avoids intensive SVD computation, greatly releasing the computational overhead. We remark that one can also apply structured pruning to LoRA to control the rank (i.e., prune BA doublet-wise in (1)), whereas it has the following disadvantages. First, when a doublet is measured as unimportant, we have to prune all of its elements. It makes scarcely possible to reactivate the pruned doublets as their entries are all zeroed out and not trained. In contrast, AdaLoRA only masks out the singular values based on (3) while the singular vectors are always maintained. It preserves the potential of future recovery for the triplets dropped by mistake. Second, A and B of LoRA are not orthogonal, meaning the doublets can be dependent with each other. Discarding the doublets can incur larger variation from the original matrix than truncating the smallest singular values. Therefore, the incremental matrices are often altered dramatically after each step of rank allocation, which causes training instability and even hurts generalization. To demonstrate this point, we present an ablation study in Section 4.4, which compares AdaLoRA with structured pruning for LoRA.",
+        "x": 107.5,
+        "y": 248,
+        "w": 397.7,
+        "h": 178.8,
+        "zh": "在我们的方法里，每做一步梯度下降就迭代地剪 Λ，从而调整秩。如第 1 节所说，也可以直接对每个 ∆ 算 SVD 来改奇异值，但复杂度是 O(min(d1, d2)d1d2)。对大量高维增量矩阵反复做 SVD 会极其昂贵。我们的参数化避开了这种计算，开销小得多。也可以对 LoRA 做结构化剪枝来控制秩，也就是按 (1) 逐个双元组剪掉 BA，但这样做有两个缺点。第一，某个双元组一旦被判为不重要，它的全部分量都要剪掉。分量全部置零并且不再训练，被剪掉的双元组几乎不可能再激活。AdaLoRA 只按 (3) 掩掉奇异值，奇异向量始终保留，误丢掉的三元组以后仍有机会恢复。第二，LoRA 的 A 和 B 并不正交，双元组之间可能彼此相关。丢掉整个双元组，相对原矩阵的变动会比截掉最小奇异值更大。因此每分配一次秩，增量矩阵往往变化很剧烈，训练不稳，甚至损害泛化。第 4.4 节的消融比较了 AdaLoRA 和对 LoRA 的结构化剪枝，用来说明这一点。"
+      },
+      {
+        "text": "We apply the SVD-based adaptation (3) to every weight matrix including Wq, Wk, Wv, Wf1 and Wf2 of each transformer layer. In order to control the budget, we iteratively prune singular values in correspondence to their importance score during the training. For clear reference, we use k to index the incremental matrix, i.e., ∆k = PkΛkQk for k = 1, . . . , n, where n is the number of adapted weight matrices. We denote the i-th triplet of ∆k as Gk,i = {Pk,∗i, λk,i, Qk,i∗} and its importance score as Sk,i. We further denote the parameter sets P = {Pk}k=1, E = {Λk}k=1, Q = {Qk}k=1 and training cost as C(P, E,PQ). With the regularization (4), the training objective is given by L(P, E, Q) = C(P, E, Q) + γ",
+        "x": 107.5,
+        "y": 129.1,
+        "w": 397.7,
+        "h": 86.7,
+        "zh": "我们把基于 SVD 的适配 (3) 用到每一层 Transformer 的各个权重矩阵上，包括 Wq、Wk、Wv、Wf1 和 Wf2。为控制预算，训练中按重要性分数迭代剪掉对应的奇异值。为便于指称，用 k 给增量矩阵编号，即 ∆k = PkΛkQk，k = 1, …, n，其中 n 是被适配的权重矩阵个数。∆k 的第 i 个三元组记为 Gk,i = {Pk,∗i, λk,i, Qk,i∗}，其重要性分数记为 Sk,i。参数集合记为 P = {Pk}k=1、E = {Λk}k=1、Q = {Qk}k=1，训练代价记为 C(P, E, PQ)。加上正则 (4) 后，训练目标为 L(P, E, Q) = C(P, E, Q) + γ"
+      },
+      {
+        "text": "k=1 R(Pk, Qk), where γ > 0 is the regularization coefficient. At the t-th step, we first take a stochastic gradient step to update Pk , Λk and Qk for k = 1, . . . , n. Specifically, for Λk",
+        "x": 108,
+        "y": 97.3,
+        "w": 396.2,
+        "h": 41.8,
+        "zh": "k=1 的 R(Pk, Qk)，其中 γ > 0 是正则系数。第 t 步先做一步随机梯度，更新各个 Pk、Λk 和 Qk，k = 1, …, n。具体对 Λk 而言，"
+      },
+      {
+        "text": "We present the experiments in Appendix G to verify the effectiveness of the regularization.",
+        "x": 123.7,
+        "y": 62.1,
+        "w": 326,
+        "h": 9,
+        "zh": "我们在附录 G 里用实验检验这个正则项是否有效。"
+      }
+    ],
+    "5": [
+      {
+        "text": "where η > 0 is learning rate. Then, given importance score Sk , the singular values are pruned",
+        "x": 107.6,
+        "y": 696.7,
+        "w": 396.4,
+        "h": 13,
+        "zh": "其中 η > 0 是学习率。然后给定重要性分数 Sk，对奇异值做剪枝"
+      },
+      {
+        "text": "S(t) is in the top-b(t) of S(t), = T (Λk , Sk ), with T (Λk , Sk )ii =",
+        "x": 151.8,
+        "y": 659.2,
+        "w": 321.2,
+        "h": 20.1,
+        "zh": ""
+      },
+      {
+        "text": "= {Sk,i}1≤k≤n,1≤i≤r contains the importance score of all triplets. Here b of remaining singular values at the t-th step, which we explain more in Section 3.3. In this way, we leave more budget to the incremental matrices of higher priority by pruning the singular values of less important ones. In the sequel, we introduce several options to design the importance score. Magnitude of singular values is the most straightforward way to quantify the importance of every triplet, i.e., Sk,i = |λk,i|. In this way, only the least significant singular values are discarded. It minimizes the deviation from the original matrix and further stabilizes the training. Many existing methods use this criterion to control the rank of matrix (Cai et al., 2010; Koltchinskii et al., 2011; Toh & Yun, 2010). However, we remark that such a simple metric cannot properly quantify the contribution of parameters to model performance. Sensitivity-based importance is another option for importance scoring, which quantifies the sensitivity of parameters to the training loss (Molchanov et al., 2019; Sanh et al., 2020; Liang et al., 2021; Zhang et al., 2022). The prior work, however, leverages the sensitivity to quantify the importance of single entries and applies it for unstructured pruning that prunes weights element-wise. When it turns to our case, we have to design a new metric as the triplets are discarded group-wise. Every entry’s sensitivity ought to be considered and properly combined to quantify the overall contribution of the triplet to model performance. Therefore, we propose a newly-designed importance metric in account of both the singular value and vectors in triplet Gk,i:",
+        "x": 107.7,
+        "y": 434.3,
+        "w": 398,
+        "h": 207.9,
+        "zh": "= {Sk,i}1≤k≤n,1≤i≤r，里面是所有三元组的重要性分数。这里的 b 是第 t 步仍然保留的奇异值，第 3.3 节会再说明。这样，较不重要的奇异值被剪掉，优先级更高的增量矩阵就能分到更多预算。下面介绍几种重要性分数。奇异值的幅度最直接，即 Sk,i = |λk,i|。这样只会丢掉最不显著的奇异值，结果相对原矩阵的偏差最小，训练也更稳。许多已有方法用这一准则控制矩阵的秩（Cai 等人，2010；Koltchinskii 等人，2011；Toh 与 Yun，2010）。不过这么简单的指标，并不能好好衡量参数对模型表现的贡献。另一种选择是基于敏感度的重要性，它衡量参数对训练损失有多敏感（Molchanov 等人，2019；Sanh 等人，2020；Liang 等人，2021；Zhang 等人，2022）。先前工作用敏感度衡量单个元素，并用于逐元素的非结构化剪枝。我们这里是成组丢掉三元组，需要重新设计指标：每个元素的敏感度都要考虑，并合成这个三元组对模型表现的整体贡献。因此我们提出一种新指标，同时看三元组 Gk,i 里的奇异值和奇异向量："
+      },
+      {
+        "text": "where we calculate the mean importance of Pk,∗i and Qk,i∗ such that Sk,i does not scale with the number of parameters in Gk,i. Here s(·) is a specific importance function for single entries. We can adopt the sensitivity for s(·), which is defined as the magnitude of the gradient-weight product:",
+        "x": 107.6,
+        "y": 353.5,
+        "w": 396.4,
+        "h": 31.9,
+        "zh": "其中我们对 Pk,∗i 和 Qk,i∗ 取平均重要性，使 Sk,i 不随 Gk,i 里的参数个数变大。s(·) 是单个元素的重要性函数。它可以取敏感度，也就是梯度与权重乘积的幅度："
+      },
+      {
+        "text": "I(wij) = |wij∇wijL|, where wij is any trainable parameter. (8) essentially approximates the change in loss when a parameter is zeroed out. If the removal of a parameter has a large influence, then the model is sensitive to it and we should retain it (Molchanov et al., 2019; Liang et al., 2021; Zhang et al., 2022). However, Zhang et al. (2022) point out that the sensitivity in (8) is not yet a reliable importance indicator. Such a score is estimated on the sampled mini batch. The stochastic sampling and complicated training dynamics incur high variability and large uncertainty for estimating the sensitivity with (8). Therefore, Zhang et al. (2022) propose to resolve this issue by sensitivity smoothing and uncertainty",
+        "x": 107.6,
+        "y": 245.2,
+        "w": 398.1,
+        "h": 99.3,
+        "zh": "I(wij) = |wij∇wijL|，其中 wij 是任意可训练参数。(8) 大致近似的是：把某个参数置零时，损失会变化多少。如果去掉一个参数影响很大，说明模型对它敏感，就应该留下（Molchanov 等人，2019；Liang 等人，2021；Zhang 等人，2022）。但 Zhang 等人（2022）指出，(8) 里的敏感度还不算可靠的重要性指标。这个分数是在抽到的小批量上估计的。随机抽样和复杂的训练过程，会让 (8) 的估计波动大、不确定性高。因此 Zhang 等人（2022）提出用敏感度平滑和不确定性来处理这个问题"
+      },
+      {
+        "text": "is the smoothed sensitivity by exponential moving average and U the uncertainty term quantified by the local variation between I",
+        "x": 108,
+        "y": 151.7,
+        "w": 375.9,
+        "h": 24.7,
+        "zh": "是用指数移动平均得到的平滑敏感度，U 是不确定性项，由 I 在局部的变化来衡量"
+      },
+      {
+        "text": ". Then they define the importance as the product between I",
+        "x": 108,
+        "y": 136.9,
+        "w": 396,
+        "h": 24.7,
+        "zh": "。然后他们把重要性定义为 I 与"
+      },
+      {
+        "text": "We present a detailed ablation study in Section 4.4 to compare the performance of different importance metrics. We find the proposed metric (7) based on the sensitivity variant (11) generally performs best. We summarize the detailed algorithm in Algorithm 1.",
+        "x": 107.5,
+        "y": 72.8,
+        "w": 398.2,
+        "h": 31.9,
+        "zh": "我们在第 4.4 节做了详细消融，比较不同重要性指标。基于敏感度变体 (11) 的指标 (7) 总体最好。完整步骤见算法 1。"
+      }
+    ],
+    "6": [
+      {
+        "text": "1: Input: Dataset D; total iterations T; budget schedule {b",
+        "x": 113,
+        "y": 683.2,
+        "w": 235.6,
+        "h": 10,
+        "zh": "1：输入：数据集 D；总迭代次数 T；预算调度 {b"
+      },
+      {
+        "text": "}t=0; hyperparameters η, γ, β1, β2. 2: for t = 1, . . . , T do Sample a mini-batch from D and compute the gradient ∇L(P, E, Q); Compute the sensitivity I",
+        "x": 113,
+        "y": 649,
+        "w": 384.8,
+        "h": 44.2,
+        "zh": "}t=0；超参数 η、γ、β1、β2。2：对 t = 1, …, T：从 D 中抽一个小批量，计算梯度 ∇L(P, E, Q)；计算敏感度 I"
+      },
+      {
+        "text": "in (8) for every parameter in {P, E, Q}; as (10) for every parameter in {P, E, Q}; Compute Sk,i by (7), for k = 1, . . . , n and i = 1, . . . , r ;",
+        "x": 134.9,
+        "y": 617,
+        "w": 274.9,
+        "h": 41.9,
+        "zh": "对 {P, E, Q} 中的每个参数按 (8)；对 {P, E, Q} 中的每个参数按 (10)；按 (7) 计算 Sk,i，k = 1, …, n，i = 1, …, r；"
+      },
+      {
+        "text": "= Qk − η∇Q L(P, E, Q); = T (Λk − η∇Λ L(P, E, Q), Sk ) given the budget b",
+        "x": 195.7,
+        "y": 586.9,
+        "w": 273.3,
+        "h": 27.4,
+        "zh": ""
+      },
+      {
+        "text": "10: Output: The fine-tuned parameters {P",
+        "x": 108.5,
+        "y": 567.9,
+        "w": 175.9,
+        "h": 10,
+        "zh": "10：输出：微调得到的参数 {P"
+      },
+      {
+        "text": "As mentioned in Section 1, adjusting the rank is naturally to control the parameter budget in the context of low-rank adaptation. Hence we define the budget b",
+        "x": 107.6,
+        "y": 515.3,
+        "w": 396.4,
+        "h": 22,
+        "zh": "如第 1 节所述，在低秩适配里，调秩就是在控制参数预算。因此我们把预算 b 定义为"
+      },
+      {
+        "text": "as the total rank of all incremental matrices, i.e., the number of total singular values. Recall that the budget allocation is iteratively conducted during the fine-tuning. To facilitate the training, we propose a global budget scheduler. Specifically, we start from an initial budget b",
+        "x": 108,
+        "y": 481.4,
+        "w": 397.7,
+        "h": 43.9,
+        "zh": "所有增量矩阵的秩之和，也就是奇异值的总个数。预算分配是在微调过程中一轮轮做的。为便于训练，我们提出一个全局预算调度器。具体来说，从一个初始预算 b 出发，"
+      },
+      {
+        "text": "that is slightly higher than the target budget b ). We set the initial rank of each incremental matrix as r = b the training for ti steps, and then follow a cubic schedule to decrease the budget b . Finally, we fix the resulting budget distribution and fine-tune the model for tf steps. The exact equation for the budget schedule is presented in Appendix A. This allows AdaLoRA to explore the parameter space first and then focus on the most important weights later.",
+        "x": 108,
+        "y": 423.1,
+        "w": 396,
+        "h": 68.2,
+        "zh": "它略高于目标预算 b）。每个增量矩阵的初始秩设为 r = b，先训练 ti 步，再按三次方调度把预算 b 降下来。最后固定得到的预算分配，再把模型微调 tf 步。预算调度的具体公式见附录 A。这样 AdaLoRA 可以先探索参数空间，之后再集中到最重要的权重上。"
+      },
+      {
+        "text": "We implement AdaLoRA for fine-tuning DeBERTaV3-base (He et al., 2021a) and BART-large (Lewis et al., 2019). We evaluate the effectiveness of the proposed algorithm on natural language understanding (GLUE, Wang et al. (2019)), question answering (SQuADv1, Rajpurkar et al. (2016) and SQuADv2, Rajpurkar et al. (2018)), and natural language generation (XSum, Narayan et al. (2018) and CNN/DailyMail Hermann et al. (2015)). All the gains have passed significant tests with",
+        "x": 107.5,
+        "y": 328.5,
+        "w": 398.2,
+        "h": 53.8,
+        "zh": "我们实现了 AdaLoRA，用来微调 DeBERTaV3-base（He 等人，2021a）和 BART-large（Lewis 等人，2019）。评估任务包括自然语言理解（GLUE，Wang 等人（2019））、问答（SQuADv1，Rajpurkar 等人（2016）以及 SQuADv2，Rajpurkar 等人（2018）），以及自然语言生成（XSum，Narayan 等人（2018）和 CNN/DailyMail，Hermann 等人（2015））。所有提升都通过了显著性检验，检验所用的"
+      },
+      {
+        "text": "Implementation Details. We use PyTorch (Paszke et al., 2019) to implement all the algorithms. Our implementation is based on the publicly available Huggingface Transformers (Wolf et al., 2019) code-base. All the experiments are conducted on NVIDIA V100 GPUs. LoRA scales ∆x by α/r where α is a constant in r. As a result, the magnitude of output can be consistent given different r. It reduces the efforts of retuning learning rate when varying r. Typically α is set as 16 or 32 and never tuned (Hu et al., 2022; Yang & Hu, 2020). Following LoRA, we add the same scaling for (3) and fix α as LoRA. Besides, in Algorithm 1, we prune singular values every ∆T steps (e.g., ∆T = 100) such that the pruned triplets can still get updated within these intervals and possibly reactivated in future iterations. Baselines. We compare AdaLoRA with the following methods: • Full fine-tuning is the most common approach for adaptation. During fine-tuning, the model is initialized with pre-trained weights and biases, and all model parameters undergo gradient updates. • Bitfit (Zaken et al., 2021) is an effective parameter-efficient fine-tuning method. The method only fine-tunes bias vectors in the pre-trained model. • Adapter tuning (Houlsby et al., 2019; Pfeiffer et al., 2020) inserts two-layer adapters between transformer blocks. We compare with two types of adapter. Houlsby adapter as proposed in Houlsby et al. (2019) is inserted between the self-attention module and the FFN module followed by a subsequent residual connection. Recently, Pfeiffer et al. (2020) propose a more efficient design with adapters only applied after FFN modules and LayerNorm modules (Ba et al., 2016), which we call",
+        "x": 107.2,
+        "y": 82.5,
+        "w": 397.5,
+        "h": 229.6,
+        "zh": "实现细节。全部算法用 PyTorch（Paszke 等人，2019）实现，基于公开的 HuggingFace Transformers（Wolf 等人，2019）代码库。实验都在 NVIDIA V100 GPU 上完成。LoRA 把 ∆x 按 α/r 缩放，其中 α 对 r 而言是一个常数。这样换 r 时输出幅度仍能保持一致，不必为每个 r 重调学习率。α 通常取 16 或 32，而且不再调（Hu 等人，2022；Yang 与 Hu，2020）。我们沿用 LoRA，对 (3) 使用同样的缩放，并把 α 固定成与 LoRA 相同。另外，算法 1 每隔 ∆T 步剪一次奇异值（例如 ∆T = 100），使被剪的三元组在这些间隔里仍能更新，并有可能在后面的迭代中重新激活。基线。我们把 AdaLoRA 与下列方法比较：• 全参微调是最常见的适配方式。微调时模型用预训练的权重和偏置初始化，所有参数都接受梯度更新。• BitFit（Zaken 等人，2021）是一种有效的省参数微调，只微调预训练模型里的偏置向量。• Adapter 微调（Houlsby 等人，2019；Pfeiffer 等人，2020）在 Transformer 块之间插入两层 adapter。我们比较两种 adapter。Houlsby adapter 如 Houlsby 等人（2019）所述，插在自注意力模块和 FFN 模块之间，后面再接残差连接。Pfeiffer 等人（2020）提出一种更省的设计，只在 FFN 模块和 LayerNorm 模块（Ba 等人，2016）之后加 adapter，我们称之为"
+      },
+      {
+        "text": "https://github.com/huggingface/transformers",
+        "x": 124.1,
+        "y": 62.1,
+        "w": 231.3,
+        "h": 9,
+        "zh": ""
+      }
+    ],
+    "7": [
+      {
+        "text": "Table 1: Results with DeBERTaV3-base on GLUE development set. The best results on each dataset are shown in bold. We report the average correlation for STS-B. Full FT, HAdapter and PAdapter represent full fine-tuning, Houlsby adapter, and Pfeiffer adapter respectively. We report mean of 5 runs using different random seeds.",
+        "x": 107.7,
+        "y": 705.2,
+        "w": 397.4,
+        "h": 29.9,
+        "zh": "表 1：DeBERTaV3-base 在 GLUE 开发集上的结果。每个数据集上的最好结果用粗体标出。STS-B 报告平均相关系数。Full FT、HAdapter 和 PAdapter 分别表示全参微调、Houlsby adapter 和 Pfeiffer adapter。表中是 5 个不同随机种子的平均值。"
+      },
+      {
+        "text": "Pfeiffer adapter. The number of trainable parameters is determined by the number of layers, the hidden dimension of adapters and the dimension of their inputs. • LoRA (Hu et al., 2022) is a state-of-the-art method for parameter-efficient fine-tuning. The method parameterizes incremental updates by two small matrices and only fine-tune them. The number of trainable parameter is controlled by the rank r and the number of adapted weight matrices n. Hu et al. (2022) apply LoRA to query and value projections only. In empirical, we find that applying LoRA to all weight matrices, i.e., Wq, Wk, Wv, Wf1 and Wf2, can further improve its performance (Please see Appendix F). Hence, we compare with this generalized LoRA to maximize its performance. We use publicly available implementation",
+        "x": 107.7,
+        "y": 403.7,
+        "w": 398.1,
+        "h": 102.1,
+        "zh": "Pfeiffer adapter。可训练参数量取决于层数、adapter 的隐藏维度，以及它们的输入维度。• LoRA（Hu 等人，2022）是当时领先的省参数微调方法。它用两个小矩阵参数化增量更新，并且只微调这两个矩阵。可训练参数量由秩 r 和被适配的权重矩阵个数 n 决定。Hu 等人（2022）只把 LoRA 用在查询投影和值投影上。我们在实验里发现，把它用到全部权重矩阵，即 Wq、Wk、Wv、Wf1 和 Wf2，还能再提高效果（见附录 F）。因此我们与这种用到全部矩阵的 LoRA 比较，以便把它的效果尽量做高。我们使用公开实现"
+      },
+      {
+        "text": "to run all the baselines. Please refer to Hu et al. (2022) and",
+        "x": 268.8,
+        "y": 403.7,
+        "w": 235.2,
+        "h": 10,
+        "zh": "来跑所有基线。请参阅 Hu 等人（2022）以及"
+      },
+      {
+        "text": "NATURAL LANGUAGE UNDERSTANDING Models and Datasets. We evaluate the fine-tuning performance of DeBERTaV3-base (He et al., 2021a) using the proposed algorithm. We conduct experiments on the General Language Understanding Evaluation (GLUE, Wang et al. 2019) benchmark. The benchmark includes two single-sentence classification tasks, three similarity and paraphrase tasks and four natural language inference tasks. Dataset details are summarized in Appendix B. Implementation Details. DeBERTaV3-base consists of 183 millions parameters. We compare AdaLoRA with the baselines under different budget levels, for example, given the total trainable parameters as 0.3/0.6/1.2 million. In order to match the parameter budget, we select the hidden dimensions of adapters from {8, 16, 32, 64}, set the rank r of LoRA as {2, 4, 8}, and choose the",
+        "x": 107.6,
+        "y": 261.5,
+        "w": 398.1,
+        "h": 118.3,
+        "zh": "自然语言理解。模型与数据集。我们用所提算法评估 DeBERTaV3-base（He 等人，2021a）的微调效果，实验在通用语言理解评估基准（GLUE，Wang 等人，2019）上进行。该基准包括两个单句分类任务、三个相似度与复述任务，以及四个自然语言推理任务。数据集细节见附录 B。实现细节。DeBERTaV3-base 有 1.83 亿参数。我们在不同预算下把 AdaLoRA 与基线比较，例如可训练参数总量为 0.3/0.6/1.2 million。为对齐预算，adapter 的隐藏维度从 {8, 16, 32, 64} 中选，LoRA 的秩 r 取 {2, 4, 8}，并选取"
+      },
+      {
+        "text": "of AdaLoRA from {144, 288, 576}. Then we set b AdaLoRA and select the regularization coefficient γ from {0.1, 0.3, 0.5}. We set the exponential moving average parameters β1 and β2 as their default value 0.85. We select the learning rate from",
+        "x": 107.6,
+        "y": 225.7,
+        "w": 396.4,
+        "h": 33.4,
+        "zh": "AdaLoRA 从 {144, 288, 576} 中选取。然后设定 b AdaLoRA，正则系数 γ 从 {0.1, 0.3, 0.5} 中选择。指数移动平均的参数 β1 和 β2 取默认值 0.85。学习率从"
+      },
+      {
+        "text": "}. More details are presented in Appendix C.",
+        "x": 277.5,
+        "y": 216.3,
+        "w": 179.6,
+        "h": 10,
+        "zh": "}。更多细节见附录 C。"
+      },
+      {
+        "text": "Main results. We compare AdaLoRA with the baseline methods under different budget settings. Table 1 shows experimental results on the GLUE development set. We see that AdaLoRA achieves better or on par performance compared with existing approaches on all datasets under all budget levels. For example, when the parameter budget is 0.3M, AdaLoRA achieves 87.36% accuracy on RTE, which is 1.8% higher than the best-performing baseline. Besides, AdaLoRA with extreme low budget can often perform better than the baselines with higher budget. For example, AdaLoRA achieve 70.04% Mcc. score on CoLA with 0.3M fine-tuning parameters, which is higher than all baseline methods with lager budget (e.g., 0.6M and 1.2M).",
+        "x": 107.7,
+        "y": 124.1,
+        "w": 398.1,
+        "h": 86.7,
+        "zh": "主要结果。我们在不同预算下把 AdaLoRA 与基线比较。表 1 是 GLUE 开发集上的结果。在所有数据集、所有预算上，AdaLoRA 都优于或持平已有方法。例如预算为 0.3M 时，AdaLoRA 在 RTE 上的准确率是 87.36%，比最好的基线高 1.8%。预算极低的 AdaLoRA 也常常超过预算更高的基线。例如只用 0.3M 微调参数时，它在 CoLA 上的 Mcc. 为 70.04%，高于预算更大的全部基线（例如 0.6M 和 1.2M）。"
+      },
+      {
+        "text": "Models and Datasets. We evaluate performance of the proposed algorithm on two question answering (QA) datasets: SQuAD v1.1 (Rajpurkar et al., 2016) and SQuADv2.0 (Rajpurkar et al., 2018), where",
+        "x": 107.7,
+        "y": 79.8,
+        "w": 396.3,
+        "h": 20.9,
+        "zh": "模型与数据集。我们在两个问答（QA）数据集上评估所提算法：SQuAD v1.1（Rajpurkar 等人，2016）和 SQuADv2.0（Rajpurkar 等人，2018）。其中"
+      }
+    ],
+    "8": [
+      {
+        "text": "Table 2: Results with DeBERTaV3-base on SQuAD v1.1 and SQuADv2.0. Here # Params is the number of trainable parameters relative to that in full fine-tuning. We report EM/F1. The best results in each setting are shown in bold.",
+        "x": 107.7,
+        "y": 689.1,
+        "w": 396.3,
+        "h": 31.9,
+        "zh": "表 2：DeBERTaV3-base 在 SQuAD v1.1 和 SQuADv2.0 上的结果。# Params 是可训练参数量相对全参微调的比例。我们报告 EM/F1。每种设置下的最好结果用粗体标出。"
+      },
+      {
+        "text": "84.4/91.5 85.3/92.1 86.1/92.7 86.7/92.9 83.4/86.6 84.3/87.3 84.9/87.9 85.4/88.3 84.4/91.7 85.9/92.5 86.2/92.8 86.6/93.0 84.2/87.2 84.5/87.6 84.9/87.8 84.5/87.5 86.4/92.8 86.6/92.9 86.7/93.1 86.7/93.1 84.7/87.5 83.6/86.7 84.5/87.4 85.0/88.0 AdaLoRA 87.2/93.4 87.5/93.6 87.5/93.7 87.6/93.7 85.6/88.7 85.7/88.8 85.5/88.6 86.0/88.9",
+        "x": 111.3,
+        "y": 575,
+        "w": 389.5,
+        "h": 51.1,
+        "zh": ""
+      },
+      {
+        "text": "we use AdaLoRA to fine-tune DeBERTaV3-base. These tasks are treated as a sequence labeling problem, where we predict the probability of each token being the start and end of the answer span. Dataset details can be found in Appendix D. Implementation Details. We compare AdaLoRA with the baseline methods under different parameter budgets. That is we have the number of trainable parameters as 0.08%/0.16%/0.32%/0.65% of total pre-trained parameters. To match the budget requirements, we select the hidden dimensions of adapters from {4, 8, 16, 32, 64}, set the rank r of LoRA as {1, 2, 4, 8} and choose the final total",
+        "x": 107.6,
+        "y": 479.2,
+        "w": 398.1,
+        "h": 80.2,
+        "zh": "我们用 AdaLoRA 微调 DeBERTaV3-base。这些任务被当成序列标注：预测每个 token 是答案区间起点或终点的概率。数据集细节见附录 D。实现细节。我们在不同参数预算下把 AdaLoRA 与基线比较，即可训练参数量分别为预训练参数总量的 0.08%、0.16%、0.32% 和 0.65%。为凑齐预算，adapter 的隐藏维度从 {4, 8, 16, 32, 64} 中选，LoRA 的秩 r 取 {1, 2, 4, 8}，并选取最终的总"
+      },
+      {
+        "text": "of AdaLoRA from {72, 144, 288, 576}. We set the batch size as 16. We use AdamW (Loshchilov & Hutter, 2019) as the optimizer and we set the learning rate as 1 × 10 Please refer to Appendix D for more details. Main Results. Table 2 summarizes experimental results when we fine-tune DeBERTaV3-base under 4 different budget settings: 0.08%, 0.16%, 0.32% and 0.65% of total pre-trained parameters. From the result, we see that AdaLoRA consistently outperforms existing approaches under all the budget levels in term of two evaluation metrics: exact match (EM) and F1. Notice that the performance of Houlsby adapter and Pfeiffer adapter are notably decreased when we reduce the parameter budget. In contrast, our method shows the consistent performance under different budget levels. For example, AdaLoRA achieves 88.7% F1 on SQuADv2.0 with the smallest budget 0.08%. It is close to its performance under the high budget and it is also 1.2% higher than the best-performing baseline.",
+        "x": 107.7,
+        "y": 352.8,
+        "w": 397.6,
+        "h": 124,
+        "zh": "AdaLoRA 从 {72, 144, 288, 576} 中选取。批大小设为 16。优化器用 AdamW（Loshchilov 与 Hutter，2019），学习率设为 1 × 10。更多细节见附录 D。主要结果。表 2 汇总了四种预算下微调 DeBERTaV3-base 的结果，可训练参数分别占预训练参数总量的 0.08%、0.16%、0.32% 和 0.65%。在所有预算上，AdaLoRA 的精确匹配（EM）和 F1 都稳定优于已有方法。预算一降，Houlsby adapter 和 Pfeiffer adapter 的效果就明显变差；我们的方法在不同预算下则比较稳。例如在最小预算 0.08% 下，AdaLoRA 在 SQuADv2.0 上的 F1 为 88.7%。这接近它在高预算下的成绩，也比最好的基线高 1.2%。"
+      },
+      {
+        "text": "NATURAL LANGUAGE GENERATION Table 3: Results with BART-large on XSum and CNN/DailyMail. Here # Params is the number of trainable parameters relative to that in full fine-tuning. We report R-1/2/L. The best results are shown in bold.",
+        "x": 107.7,
+        "y": 300,
+        "w": 396.3,
+        "h": 37.6,
+        "zh": "自然语言生成。表 3：BART-large 在 XSum 和 CNN/DailyMail 上的结果。# Params 是可训练参数量相对全参微调的比例。我们报告 R-1/2/L。最好结果用粗体标出。"
+      },
+      {
+        "text": "44.16 / 21.28 / 40.90 43.95 / 20.72 / 35.68",
+        "x": 268.7,
+        "y": 247.4,
+        "w": 179.9,
+        "h": 25.9,
+        "zh": ""
+      },
+      {
+        "text": "45.03 / 21.84 / 42.15 44.72 / 21.46 / 36.46",
+        "x": 268.7,
+        "y": 236.4,
+        "w": 178.7,
+        "h": 20.9,
+        "zh": ""
+      },
+      {
+        "text": "45.00 / 21.89 / 42.16 43.40 / 20.20 / 35.20",
+        "x": 268.7,
+        "y": 220.4,
+        "w": 178.7,
+        "h": 25.9,
+        "zh": ""
+      },
+      {
+        "text": "44.72 / 21.58 / 41.84 44.35 / 21.13 / 36.13",
+        "x": 268.7,
+        "y": 209.5,
+        "w": 178.7,
+        "h": 20.9,
+        "zh": ""
+      },
+      {
+        "text": "44.96 / 21.77 / 42.09 43.18 / 19.89 / 34.92",
+        "x": 268.7,
+        "y": 193.5,
+        "w": 178.7,
+        "h": 25.9,
+        "zh": ""
+      },
+      {
+        "text": "43.95 / 20.91 / 40.98 43.55 / 20.17 / 35.20",
+        "x": 268.7,
+        "y": 182.6,
+        "w": 178.7,
+        "h": 20.9,
+        "zh": ""
+      },
+      {
+        "text": "44.39 / 21.28 / 41.50 42.81 / 19.68 / 34.73",
+        "x": 268.7,
+        "y": 166.6,
+        "w": 178.7,
+        "h": 25.9,
+        "zh": ""
+      },
+      {
+        "text": "43.68 / 20.63 / 40.71 43.29 / 19.95 / 35.04",
+        "x": 268.7,
+        "y": 155.6,
+        "w": 178.7,
+        "h": 20.9,
+        "zh": ""
+      },
+      {
+        "text": "Models and Datasets. To provide a comparison with the state-of-the-art in natural language generation (NLG) tasks, we apply AdaLoRA to fine-tune a BART-large model (Lewis et al., 2019). We evaluate model performance on two datasets: XSum (Narayan et al., 2018) and CNN/DailyMail (Hermann et al., 2015). Implementation Details. Similarly as DeBERTav3-base, we apply low-rank/SVD-based adaptation to every weight matrix of both encoder and decoder layers. We report ROUGE 1/2/L scores (R-1/2/L, Lin (2004)). We set the training epochs as 15. For XSum, we set the beam length as 8 and batch size",
+        "x": 107.7,
+        "y": 62.1,
+        "w": 398,
+        "h": 80.2,
+        "zh": "模型与数据集。为了和自然语言生成（NLG）上的已有先进方法比较，我们用 AdaLoRA 微调 BART-large（Lewis 等人，2019）。评估数据集是 XSum（Narayan 等人，2018）和 CNN/DailyMail（Hermann 等人，2015）。实现细节。与 DeBERTav3-base 类似，编码器和解码器每一层的每个权重矩阵都做低秩、也就是基于 SVD 的适配。我们报告 ROUGE 1/2/L（R-1/2/L，Lin（2004））。训练 15 个 epoch。XSum 的 beam 长度设为 8，批大小"
+      }
+    ],
+    "9": [
+      {
+        "text": "as 64. For CNN/DailyMail, we set the beam length as 4 and batch size as 32. Please see Appendix E",
+        "x": 108,
+        "y": 700.2,
+        "w": 396,
+        "h": 10,
+        "zh": "设为 64。CNN/DailyMail 的 beam 长度设为 4，批大小设为 32。详见附录 E。"
+      },
+      {
+        "text": "Main Results. Experimental results are summarized in Table 3, where we compare the fine-tuning performance under four budget levels: the number of trainable parameters is 0.13%, 0.26%, 1.10% and 2.20% of total pre-trained parameters. We see that AdaLoRA achieves better or on par performance compared with the baseline on both datasets (XSum and CNN/DailyMail) under all the budget levels. For example, AdaLoRA achieves 21.13 R-2 score when budget level is 1.10%, compared with 19.89",
+        "x": 108,
+        "y": 629.9,
+        "w": 397.7,
+        "h": 53.8,
+        "zh": "主要结果。表 3 汇总了实验结果。四种预算下，可训练参数分别占预训练参数总量的 0.13%、0.26%、1.10% 和 2.20%。在 XSum 和 CNN/DailyMail 的所有预算上，AdaLoRA 都优于或持平基线。例如预算为 1.10% 时，AdaLoRA 的 R-2 是 21.13，相比之下是 19.89"
+      },
+      {
+        "text": "Different budget levels. Figure 2 illustrates experimental results of fine-tuning DeBERTaV3-base under different budget levels. We see that on all the three datasets (MNLI-m, SQuADv2.0 and XSum), AdaLoRA achieves consistent performance improvement under all the budget levels compared with the baseline. The performance gain is more significant when increasing the budget for the XSum task, suggesting a high budget can help NLG tasks. Note that on the MNLI and SQuADv2.0 datasets, the performance of AdaLoRA under low budget levels (≤ 1%) can match the results of high budget settings. For example, AdaLoRA achieves 88.78% F1 on SQuADv2.0 when the budget is 0.16%. It is close to the performance (88.89% F1) of the highest budget (4.65%) with a more significant gain",
+        "x": 107.6,
+        "y": 501.9,
+        "w": 397.6,
+        "h": 86.7,
+        "zh": "不同预算。图 2 是在不同预算下微调 DeBERTaV3-base 的结果。在 MNLI-m、SQuADv2.0 和 XSum 这三个数据集上，AdaLoRA 在所有预算下都稳定好于基线。预算提高时，XSum 上的增益更明显，说明较高预算对 NLG 有帮助。在 MNLI 和 SQuADv2.0 上，AdaLoRA 在低预算（≤ 1%）下就能接近高预算的结果。例如预算为 0.16% 时，它在 SQuADv2.0 上的 F1 是 88.78%，接近最高预算（4.65%）下的 88.89%，而且增益更明显"
+      },
+      {
+        "text": "Figure 2: Fine-tuning performance under different budget levels. We compare AdaLoRA with the generalized LoRA that applies to every weight matrix.",
+        "x": 108,
+        "y": 357.8,
+        "w": 396,
+        "h": 20.9,
+        "zh": "图 2：不同预算下的微调效果。对比的是 AdaLoRA，以及加到每个权重矩阵上的推广版 LoRA。"
+      },
+      {
+        "text": "Comparison to low-rank parameterization. As mentioned in Section 3.1, one can alternatively prune LoRA doublet-wise to conduct the rank allocation. In this case, the doublets are zeroed out entirely, raising the barrier to reactivate them. It can cause training instability and hurt the generalization when some crucial doublets are pruned by mistake. In Table 4, we compare AdaLoRA with pruning LoRA on three datasets (SST-2, RTE, and CoLA) to illustrate this point. We apply the same importance score, budget scheduler and training setups as Section 4.1 for pruning LoRA. We can see that AdaLoRA outperforms pruning LoRA on all the datasets under all the budget levels. Table 4: We present two ablation studies in this table: (i) Comparison between AdaLoRA and structured pruning on LoRA. (ii) Comparison of different importance metrics for AdaLoRA.",
+        "x": 107.6,
+        "y": 248.2,
+        "w": 396.7,
+        "h": 101,
+        "zh": "与低秩参数化的比较。如第 3.1 节所述，也可以按双元组剪 LoRA 来分配秩。这时双元组会被整个置零，再激活就更难。若关键双元组被误剪，训练会不稳，泛化也会变差。表 4 在 SST-2、RTE 和 CoLA 上比较 AdaLoRA 与这种剪枝，用来说明这一点。剪 LoRA 时，重要性分数、预算调度和训练设置都与第 4.1 节相同。在所有数据集、所有预算上，AdaLoRA 都更好。表 4：这里有两项消融：（i）AdaLoRA 与对 LoRA 的结构化剪枝；（ii）AdaLoRA 使用不同重要性指标。"
+      },
+      {
+        "text": "Variants of the importance score. Recall that in AdaLoRA, the importance score is defined by the sensitivity and uncertainty of every entry in the triplet (7). In Table 4, we examine two variants of the importance score: (i) changing s(·) in (7) to sensitivity-only; (ii) directly defining Si as |λi|. From the results, we can see that the proposed importance score generally performs best. The other two variants can degenerate the model performance up to 0.9%. The role of two components. We remark that both two components of our method - SVD adaptation and adaptive budget allocation, play vital roles for the performance gain. To demonstrate it, we",
+        "x": 107.6,
+        "y": 62.1,
+        "w": 396.4,
+        "h": 80.2,
+        "zh": "重要性分数的几种变体。在 AdaLoRA 里，重要性分数由三元组中每个元素的敏感度和不确定性定义，见 (7)。表 4 考察两种变体：（i）把 (7) 中的 s(·) 换成只用敏感度；（ii）直接把 Si 定义为 |λi|。所提出的分数总体最好，另外两种最多会使效果下降 0.9%。两个部分各自的作用。方法里的两块——SVD 适配和自适应预算分配——对提升都要紧。为说明这一点，我们"
+      }
+    ],
+    "10": [
+      {
+        "text": "compare AdaLoRA with the following variants: (i) SVD-LoRA: fine-tuning only with the proposed SVD-based adaptation in (3) and (4); (ii) LoRAregu: LoRA with orthogonal regularization (4) on A and B; (iii) AdaLoRAγ = 0: AdaLoRA without orthogonal regularization (4). Table 5 present the results when fine-tuning DeBERTaVe-base on SST-2 and MNLI. We can see that fine-tuning only with SVD adaptation shows an improvement over LoRA but cannot match the performance of AdaLoRA. Meanwhile, without SVD orthogonal regularization, the performance of AdaLoRA can degenerate. These results validate that both components contribute to the model performance. Table 5: We present ablation studies about SVD-based adaptation, orthogonal regularization, and budget allocation in this table. For MNLI, we report the average score of m/mm acc.",
+        "x": 107.6,
+        "y": 606.3,
+        "w": 396.4,
+        "h": 103.8,
+        "zh": "把 AdaLoRA 与下列变体比较：（i）SVD-LoRA：只用 (3) 和 (4) 的基于 SVD 的适配来微调；（ii）LoRAregu：在 A 和 B 上加正交正则 (4) 的 LoRA；（iii）AdaLoRAγ = 0：不加正交正则 (4) 的 AdaLoRA。表 5 是在 SST-2 和 MNLI 上微调 DeBERTaVe-base 的结果。只用 SVD 适配，相对 LoRA 有提升，但还不到 AdaLoRA。若去掉 SVD 的正交正则，AdaLoRA 也会变差。这说明两块都贡献了效果。表 5：关于基于 SVD 的适配、正交正则和预算分配的消融。MNLI 报告的是 m/mm 准确率的平均。"
+      },
+      {
+        "text": "The resulting budget distribution. Figure 3 shows the resulting rank of each incremental matrix of DeBERTaV3-base fine-tuned with AdaLoRA. We find that AdaLoRA always prefers to allocating more budget to FFNs and top layers. Such behavior aligns with our empirical conclusions presented in Figure 1 that weight matrices of FFN moduels and top layers are more important for model performance. Hence, it validates that our proposed importance metric can guide AdaLoRA to focus on crucial modules. Meanwhile, the rank distribution generated by AdaLoRA is consistent across different budget levels, tasks and models. It means the number of remaining parameters is linearly",
+        "x": 107.7,
+        "y": 414.8,
+        "w": 396.7,
+        "h": 75.7,
+        "zh": "最终的预算分布。图 3 是用 AdaLoRA 微调 DeBERTaV3-base 之后，每个增量矩阵的秩。AdaLoRA 总是把更多预算分给 FFN 和上层。这与图 1 的经验一致：FFN 模块和上层的权重矩阵对效果更重要。因此，这个重要性指标确实会把 AdaLoRA 引向关键模块。而且，不同预算、不同任务、不同模型上，AdaLoRA 给出的秩分布是一致的。也就是说，留下来的参数个数呈线性"
+      },
+      {
+        "text": "Figure 3: The resulting rank of each incremental matrix when fine-tuning DeBERTaV3-base on MNLI with AdaLoRA. Here the x-axis is the layer index and the y-axis represents different types of",
+        "x": 108,
+        "y": 203.2,
+        "w": 396,
+        "h": 20.9,
+        "zh": "图 3：用 AdaLoRA 在 MNLI 上微调 DeBERTaV3-base 时，每个增量矩阵最终的秩。横轴是层编号，纵轴是不同类型的"
+      },
+      {
+        "text": "We propose a parameter-efficient fine-tuning method – AdaLoRA that adaptively allocates the parameter budget according to importance scoring. In AdaLoRA, we parameterize the incremental updates of weight matrices in the form of singular value decomposition. Then, we dynamically allocate the parameter budget among incremental matrices by manipulating the singular values based on a new importance metric. Such an a pproach effectively improves the model performance and parameter efficiency. We conduct extensive experiments on natural language processing, question answering and natural language generation tasks. Results show that AdaLoRA outperforms existing",
+        "x": 107.5,
+        "y": 73.1,
+        "w": 396.8,
+        "h": 75.7,
+        "zh": "我们提出一种省参数微调方法 AdaLoRA，按重要性分数自适应分配参数预算。它把权重矩阵的增量更新参数化为奇异值分解，再根据一种新的重要性指标操纵奇异值，从而在各增量矩阵之间动态分配预算。这样做提高了模型效果和参数效率。我们在自然语言处理、问答和自然语言生成任务上做了实验。结果表明 AdaLoRA 优于现有的"
+      }
+    ],
+    "11": [
+      {
+        "text": "Jimmy Lei Ba, Jamie Ryan Kiros, and Geoffrey E Hinton. Layer normalization. arXiv preprint arXiv:1607.06450, 2016.",
+        "x": 108,
+        "y": 670.7,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Jimmy Lei Ba、Jamie Ryan Kiros 与 Geoffrey E. Hinton。层归一化。arXiv 预印本 arXiv:1607.06450，2016。"
+      },
+      {
+        "text": "Tom B. Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, Sandhini Agarwal, Ariel Herbert-Voss, Gretchen Krueger, Tom Henighan, Rewon Child, Aditya Ramesh, Daniel M. Ziegler, Jeffrey Wu, Clemens Winter, Christopher Hesse, Mark Chen, Eric Sigler, Mateusz Litwin, Scott Gray, Benjamin Chess, Jack Clark, Christopher Berner, Sam McCandlish, Alec Radford, Ilya Sutskever, and Dario Amodei. Language models are few-shot learners. In Hugo Larochelle, Marc’Aurelio Ranzato, Raia Hadsell, Maria-Florina Balcan, and Hsuan-Tien Lin (eds.), Advances in Neural Information Processing Systems 33: Annual Conference on Neural Information Processing Systems 2020, NeurIPS 2020, December 6-12, 2020, virtual, 2020.",
+        "x": 108,
+        "y": 561.5,
+        "w": 397.7,
+        "h": 97.6,
+        "zh": "Tom B. Brown、Benjamin Mann、Nick Ryder、Melanie Subbiah、Jared Kaplan、Prafulla Dhariwal、Arvind Neelakantan、Pranav Shyam、Girish Sastry、Amanda Askell、Sandhini Agarwal、Ariel Herbert-Voss、Gretchen Krueger、Tom Henighan、Rewon Child、Aditya Ramesh、Daniel M. Ziegler、Jeffrey Wu、Clemens Winter、Christopher Hesse、Mark Chen、Eric Sigler、Mateusz Litwin、Scott Gray、Benjamin Chess、Jack Clark、Christopher Berner、Sam McCandlish、Alec Radford、Ilya Sutskever 与 Dario Amodei。语言模型是少样本学习者。载于 Hugo Larochelle、Marc’Aurelio Ranzato、Raia Hadsell、Maria-Florina Balcan 与 Hsuan-Tien Lin（编），Advances in Neural Information Processing Systems 33：Neural Information Processing Systems 2020 年会，NeurIPS 2020，2020 年 12 月 6–12 日，线上，2020。"
+      },
+      {
+        "text": "Jian-Feng Cai, Emmanuel J Candes, and Zuowei Shen. A singular value thresholding algorithm for` matrix completion. SIAM Journal on optimization, 20(4):1956–1982, 2010.",
+        "x": 108,
+        "y": 529.1,
+        "w": 396.2,
+        "h": 21,
+        "zh": "Jian-Feng Cai、Emmanuel J. Candes 与 Zuowei Shen。矩阵补全的奇异值阈值算法。SIAM Journal on Optimization，20(4):1956–1982，2010。"
+      },
+      {
+        "text": "Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. BERT: Pre-training of deep bidirectional transformers for language understanding. In Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long and Short Papers), pp. 4171–4186, Minneapolis, Minnesota, 2019. Association for Computational Linguistics. doi: 10.18653/v1/N19-1423.",
+        "x": 108,
+        "y": 463.7,
+        "w": 397.7,
+        "h": 53.8,
+        "zh": "Jacob Devlin、Ming-Wei Chang、Kenton Lee 与 Kristina Toutanova。BERT：面向语言理解的深度双向 Transformer 预训练。载于 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies 论文集，第 1 卷（长文与短文），第 4171–4186 页，明尼苏达州明尼阿波利斯，2019。Association for Computational Linguistics。doi: 10.18653/v1/N19-1423。"
+      },
+      {
+        "text": "Demi Guo, Alexander M Rush, and Yoon Kim. Parameter-efficient transfer learning with diff pruning. arXiv preprint arXiv:2012.07463, 2020.",
+        "x": 108,
+        "y": 431.3,
+        "w": 397.7,
+        "h": 20.9,
+        "zh": "Demi Guo、Alexander M. Rush 与 Yoon Kim。用 diff pruning 做省参数迁移学习。arXiv 预印本 arXiv:2012.07463，2020。"
+      },
+      {
+        "text": "Junxian He, Chunting Zhou, Xuezhe Ma, Taylor Berg-Kirkpatrick, and Graham Neubig. Towards a unified view of parameter-efficient transfer learning. In International Conference on Learning Representations, 2022. URL https://openreview.net/forum?id=0RDcd5Axok.",
+        "x": 108,
+        "y": 387.9,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Junxian He、Chunting Zhou、Xuezhe Ma、Taylor Berg-Kirkpatrick 与 Graham Neubig。走向省参数迁移学习的统一视角。International Conference on Learning Representations，2022。URL https://openreview.net/forum?id=0RDcd5Axok。"
+      },
+      {
+        "text": "Pengcheng He, Jianfeng Gao, and Weizhu Chen. Debertav3: Improving deberta using electra-style pre-training with gradient-disentangled embedding sharing. arXiv preprint arXiv:2111.09543,",
+        "x": 108,
+        "y": 355.4,
+        "w": 397.2,
+        "h": 20.9,
+        "zh": "Pengcheng He、Jianfeng Gao 与 Weizhu Chen。DeBERTaV3：用 ELECTRA 式预训练和梯度解耦的嵌入共享改进 DeBERTa。arXiv 预印本 arXiv:2111.09543，"
+      },
+      {
+        "text": "Pengcheng He, Xiaodong Liu, Jianfeng Gao, and Weizhu Chen. Deberta: Decoding-enhanced bert with disentangled attention. In International Conference on Learning Representations, 2021b.",
+        "x": 108,
+        "y": 312,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Pengcheng He、Xiaodong Liu、Jianfeng Gao 与 Weizhu Chen。DeBERTa：用解耦注意力增强解码的 BERT。International Conference on Learning Representations，2021b。"
+      },
+      {
+        "text": "Karl Moritz Hermann, Tomas Kocisky, Edward Grefenstette, Lasse Espeholt, Will Kay, Mustafa Suleyman, and Phil Blunsom. Teaching machines to read and comprehend. Advances in neural information processing systems, 28, 2015.",
+        "x": 108,
+        "y": 268.6,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Karl Moritz Hermann、Tomas Kocisky、Edward Grefenstette、Lasse Espeholt、Will Kay、Mustafa Suleyman 与 Phil Blunsom。教机器阅读和理解。Advances in Neural Information Processing Systems，28，2015。"
+      },
+      {
+        "text": "Neil Houlsby, Andrei Giurgiu, Stanislaw Jastrzebski, Bruna Morrone, Quentin De Laroussilhe, Andrea Gesmundo, Mona Attariyan, and Sylvain Gelly. Parameter-efficient transfer learning for nlp. In International Conference on Machine Learning, pp. 2790–2799. PMLR, 2019.",
+        "x": 108,
+        "y": 225.2,
+        "w": 397.2,
+        "h": 31.9,
+        "zh": "Neil Houlsby、Andrei Giurgiu、Stanislaw Jastrzebski、Bruna Morrone、Quentin De Laroussilhe、Andrea Gesmundo、Mona Attariyan 与 Sylvain Gelly。面向 NLP 的省参数迁移学习。International Conference on Machine Learning，第 2790–2799 页。PMLR，2019。"
+      },
+      {
+        "text": "Edward J Hu, yelong shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean Wang, Lu Wang, and Weizhu Chen. LoRA: Low-rank adaptation of large language models. In International Conference on Learning Representations, 2022. URL https://openreview.net/forum?",
+        "x": 108,
+        "y": 181.8,
+        "w": 397.2,
+        "h": 31.9,
+        "zh": "Edward J. Hu、yelong shen、Phillip Wallis、Zeyuan Allen-Zhu、Yuanzhi Li、Shean Wang、Lu Wang 与 Weizhu Chen。LoRA：大语言模型的低秩适配。International Conference on Learning Representations，2022。URL https://openreview.net/forum?"
+      },
+      {
+        "text": "Vladimir Koltchinskii, Karim Lounici, and Alexandre B Tsybakov. Nuclear-norm penalization and optimal rates for noisy low-rank matrix completion. The Annals of Statistics, 39(5):2302–2329,",
+        "x": 108,
+        "y": 138.4,
+        "w": 397.2,
+        "h": 20.9,
+        "zh": "Vladimir Koltchinskii、Karim Lounici 与 Alexandre B. Tsybakov。核范数惩罚，以及含噪低秩矩阵补全的最优速率。The Annals of Statistics，39(5):2302–2329，"
+      },
+      {
+        "text": "Brian Lester, Rami Al-Rfou, and Noah Constant. The power of scale for parameter-efficient prompt tuning. In Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing, pp. 3045–3059, Online and Punta Cana, Dominican Republic, November 2021. Association for Computational Linguistics. doi: 10.18653/v1/2021.emnlp-main.243. URL https: //aclanthology.org/2021.emnlp-main.243.",
+        "x": 108,
+        "y": 62.1,
+        "w": 399,
+        "h": 53.8,
+        "zh": "Brian Lester、Rami Al-Rfou 与 Noah Constant。规模对省参数提示微调的作用。载于 2021 Conference on Empirical Methods in Natural Language Processing 论文集，第 3045–3059 页，线上及多米尼加共和国蓬塔卡纳，2021 年 11 月。Association for Computational Linguistics。doi: 10.18653/v1/2021.emnlp-main.243。URL https://aclanthology.org/2021.emnlp-main.243。"
+      }
+    ],
+    "12": [
+      {
+        "text": "Mike Lewis, Yinhan Liu, Naman Goyal, Marjan Ghazvininejad, Abdelrahman Mohamed, Omer Levy, Ves Stoyanov, and Luke Zettlemoyer. Bart: Denoising sequence-to-sequence pre-training for natural language generation, translation, and comprehension. arXiv preprint arXiv:1910.13461,",
+        "x": 108,
+        "y": 678.3,
+        "w": 397.2,
+        "h": 31.9,
+        "zh": "Mike Lewis、Yinhan Liu、Naman Goyal、Marjan Ghazvininejad、Abdelrahman Mohamed、Omer Levy、Ves Stoyanov 与 Luke Zettlemoyer。BART：面向自然语言生成、翻译和理解的去噪序列到序列预训练。arXiv 预印本 arXiv:1910.13461，"
+      },
+      {
+        "text": "Xiang Lisa Li and Percy Liang. Prefix-tuning: Optimizing continuous prompts for generation. In Chengqing Zong, Fei Xia, Wenjie Li, and Roberto Navigli (eds.), Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics and the 11th International Joint Conference on Natural Language Processing, ACL/IJCNLP 2021, (Volume 1: Long Papers), Virtual Event, August 1-6, 2021, pp. 4582–4597. Association for Computational Linguistics, 2021. doi: 10.18653/v1/2021.acl-long.353. URL https://doi.org/10.18653/v1/2021.",
+        "x": 108,
+        "y": 594,
+        "w": 400.2,
+        "h": 64.8,
+        "zh": "Xiang Lisa Li 与 Percy Liang。前缀微调：为生成优化连续提示。载于 Chengqing Zong、Fei Xia、Wenjie Li 与 Roberto Navigli（编），第 59 届 Association for Computational Linguistics 年会暨第 11 届 International Joint Conference on Natural Language Processing 论文集，ACL/IJCNLP 2021（第 1 卷：长文），线上，2021 年 8 月 1–6 日，第 4582–4597 页。Association for Computational Linguistics，2021。doi: 10.18653/v1/2021.acl-long.353。URL https://doi.org/10.18653/v1/2021。"
+      },
+      {
+        "text": "Chen Liang, Simiao Zuo, Minshuo Chen, Haoming Jiang, Xiaodong Liu, Pengcheng He, Tuo Zhao, and Weizhu Chen. Super tickets in pre-trained language models: From model compression to improving generalization. In Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics and the 11th International Joint Conference on Natural Language Processing (Volume 1: Long Papers), pp. 6524–6538, Online, 2021. Association for Computational",
+        "x": 108,
+        "y": 520.8,
+        "w": 397.2,
+        "h": 53.8,
+        "zh": "Chen Liang、Simiao Zuo、Minshuo Chen、Haoming Jiang、Xiaodong Liu、Pengcheng He、Tuo Zhao 与 Weizhu Chen。预训练语言模型中的 super ticket：从模型压缩到改进泛化。载于第 59 届 Association for Computational Linguistics 年会暨第 11 届 International Joint Conference on Natural Language Processing 论文集（第 1 卷：长文），第 6524–6538 页，线上，2021。Association for Computational"
+      },
+      {
+        "text": "Linguistics. doi: 10.18653/v1/2021.acl-long.510.",
+        "x": 118,
+        "y": 509.8,
+        "w": 197.3,
+        "h": 10,
+        "zh": "Linguistics。doi: 10.18653/v1/2021.acl-long.510。"
+      },
+      {
+        "text": "Chin-Yew Lin. Rouge: A package for automatic evaluation of summaries. In Text summarization",
+        "x": 108,
+        "y": 491.4,
+        "w": 396,
+        "h": 10,
+        "zh": "Chin-Yew Lin。ROUGE：自动评估摘要的软件包。载于 Text summarization"
+      },
+      {
+        "text": "Yinhan Liu, Myle Ott, Naman Goyal, Jingfei Du, Mandar Joshi, Danqi Chen, Omer Levy, Mike Lewis, Luke Zettlemoyer, and Veselin Stoyanov. Roberta: A robustly optimized bert pretraining",
+        "x": 108,
+        "y": 451,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Yinhan Liu、Myle Ott、Naman Goyal、Jingfei Du、Mandar Joshi、Danqi Chen、Omer Levy、Mike Lewis、Luke Zettlemoyer 与 Veselin Stoyanov。RoBERTa：经过稳健优化的 BERT 预训练"
+      },
+      {
+        "text": "approach. arXiv preprint arXiv:1907.11692, 2019.",
+        "x": 118,
+        "y": 440,
+        "w": 202.2,
+        "h": 10,
+        "zh": "方法。arXiv 预印本 arXiv:1907.11692，2019。"
+      },
+      {
+        "text": "Ilya Loshchilov and Frank Hutter. Decoupled weight decay regularization. In 7th International Conference on Learning Representations, ICLR 2019, New Orleans, LA, USA, May 6-9, 2019.",
+        "x": 108,
+        "y": 410.6,
+        "w": 397.7,
+        "h": 20.9,
+        "zh": "Ilya Loshchilov 与 Frank Hutter。解耦的权重衰减正则。第 7 届 International Conference on Learning Representations，ICLR 2019，美国路易斯安那州新奥尔良，2019 年 5 月 6–9 日。"
+      },
+      {
+        "text": "Pavlo Molchanov, Arun Mallya, Stephen Tyree, Iuri Frosio, and Jan Kautz. Importance estimation for neural network pruning. In IEEE Conference on Computer Vision and Pattern Recognition, CVPR 2019, Long Beach, CA, USA, June 16-20, 2019, pp. 11264–11272. Computer Vision Foundation /",
+        "x": 108,
+        "y": 359.2,
+        "w": 396.6,
+        "h": 31.9,
+        "zh": "Pavlo Molchanov、Arun Mallya、Stephen Tyree、Iuri Frosio 与 Jan Kautz。神经网络剪枝的重要性估计。IEEE Conference on Computer Vision and Pattern Recognition，CVPR 2019，美国加利福尼亚州长滩，2019 年 6 月 16–20 日，第 11264–11272 页。Computer Vision Foundation /"
+      },
+      {
+        "text": "IEEE, 2019. doi: 10.1109/CVPR.2019.01152.",
+        "x": 118,
+        "y": 348.3,
+        "w": 184.6,
+        "h": 10,
+        "zh": "IEEE，2019。doi: 10.1109/CVPR.2019.01152。"
+      },
+      {
+        "text": "Shashi Narayan, Shay B Cohen, and Mirella Lapata. Don’t give me the details, just the summary! topic-aware convolutional neural networks for extreme summarization. arXiv preprint",
+        "x": 108,
+        "y": 318.9,
+        "w": 397.7,
+        "h": 20.9,
+        "zh": "Shashi Narayan、Shay B. Cohen 与 Mirella Lapata。别给我细节，只要摘要！面向极端摘要的主题感知卷积神经网络。arXiv 预印本"
+      },
+      {
+        "text": "Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, Alban Desmaison, Andreas Kopf, Edward¨ Yang, Zachary DeVito, Martin Raison, Alykhan Tejani, Sasank Chilamkurthy, Benoit Steiner, Lu Fang, Junjie Bai, and Soumith Chintala. Pytorch: An imperative style, high-performance deep learning library. In Hanna M. Wallach, Hugo Larochelle, Alina Beygelzimer, Florence d’Alche-´ Buc, Emily B. Fox, and Roman Garnett (eds.), Advances in Neural Information Processing Systems 32: Annual Conference on Neural Information Processing Systems 2019, NeurIPS 2019, December",
+        "x": 108,
+        "y": 223.7,
+        "w": 397.7,
+        "h": 75.7,
+        "zh": "Adam Paszke、Sam Gross、Francisco Massa、Adam Lerer、James Bradbury、Gregory Chanan、Trevor Killeen、Zeming Lin、Natalia Gimelshein、Luca Antiga、Alban Desmaison、Andreas Kopf、Edward Yang、Zachary DeVito、Martin Raison、Alykhan Tejani、Sasank Chilamkurthy、Benoit Steiner、Lu Fang、Junjie Bai 与 Soumith Chintala。PyTorch：命令式、高性能的深度学习库。载于 Hanna M. Wallach、Hugo Larochelle、Alina Beygelzimer、Florence d’Alché-Buc、Emily B. Fox 与 Roman Garnett（编），Advances in Neural Information Processing Systems 32：Neural Information Processing Systems 2019 年会，NeurIPS 2019，12 月"
+      },
+      {
+        "text": "8-14, 2019, Vancouver, BC, Canada, pp. 8024–8035, 2019. Jonas Pfeiffer, Aishwarya Kamath, Andreas Ruckl¨",
+        "x": 108,
+        "y": 194.3,
+        "w": 245.5,
+        "h": 28.4,
+        "zh": "8–14 日，2019，加拿大不列颠哥伦比亚省温哥华，第 8024–8035 页，2019。Jonas Pfeiffer、Aishwarya Kamath、Andreas Ruckl¨"
+      },
+      {
+        "text": "e, Kyunghyun Cho, and Iryna Gurevych. Adapter-´ fusion: Non-destructive task composition for transfer learning. arXiv preprint arXiv:2005.00247,",
+        "x": 118,
+        "y": 183.3,
+        "w": 387.7,
+        "h": 21,
+        "zh": "e、Kyunghyun Cho 与 Iryna Gurevych。AdapterFusion：面向迁移学习的非破坏性任务组合。arXiv 预印本 arXiv:2005.00247，"
+      },
+      {
+        "text": "Xipeng Qiu, Tianxiang Sun, Yige Xu, Yunfan Shao, Ning Dai, and Xuanjing Huang. Pre-trained models for natural language processing: A survey. Science China Technological Sciences, 63(10):",
+        "x": 108,
+        "y": 142.9,
+        "w": 397.4,
+        "h": 20.9,
+        "zh": "Xipeng Qiu、Tianxiang Sun、Yige Xu、Yunfan Shao、Ning Dai 与 Xuanjing Huang。自然语言处理的预训练模型：一篇综述。Science China Technological Sciences，63(10):"
+      },
+      {
+        "text": "Alec Radford, Jeffrey Wu, Rewon Child, David Luan, Dario Amodei, Ilya Sutskever, et al. Language models are unsupervised multitask learners. OpenAI blog, 1(8):9, 2019.",
+        "x": 108,
+        "y": 102.5,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Alec Radford、Jeffrey Wu、Rewon Child、David Luan、Dario Amodei、Ilya Sutskever 等人。语言模型是无监督的多任务学习者。OpenAI blog，1(8):9，2019。"
+      },
+      {
+        "text": "Colin Raffel, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael Matena, Yanqi Zhou, Wei Li, Peter J Liu, et al. Exploring the limits of transfer learning with a unified text-to-text",
+        "x": 108,
+        "y": 73.1,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Colin Raffel、Noam Shazeer、Adam Roberts、Katherine Lee、Sharan Narang、Michael Matena、Yanqi Zhou、Wei Li、Peter J. Liu 等人。用统一的文本到文本框架探索迁移学习的极限"
+      },
+      {
+        "text": "transformer. J. Mach. Learn. Res., 21(140):1–67, 2020.",
+        "x": 118,
+        "y": 62.1,
+        "w": 220.9,
+        "h": 10,
+        "zh": "Transformer。J. Mach. Learn. Res.，21(140):1–67，2020。"
+      }
+    ],
+    "13": [
+      {
+        "text": "Pranav Rajpurkar, Jian Zhang, Konstantin Lopyrev, and Percy Liang. SQuAD: 100,000+ questions for machine comprehension of text. In Proceedings of the 2016 Conference on Empirical Methods in Natural Language Processing, pp. 2383–2392, Austin, Texas, 2016. Association for Computational Linguistics. doi: 10.18653/v1/D16-1264.",
+        "x": 108,
+        "y": 667.3,
+        "w": 396.2,
+        "h": 42.8,
+        "zh": "Pranav Rajpurkar、Jian Zhang、Konstantin Lopyrev 与 Percy Liang。SQuAD：供机器阅读文本理解的 100,000 多个问题。载于 2016 Conference on Empirical Methods in Natural Language Processing 论文集，第 2383–2392 页，德克萨斯州奥斯汀，2016。Association for Computational Linguistics。doi: 10.18653/v1/D16-1264。"
+      },
+      {
+        "text": "Pranav Rajpurkar, Robin Jia, and Percy Liang. Know what you don’t know: Unanswerable questions for SQuAD. In Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 2: Short Papers), pp. 784–789, Melbourne, Australia, 2018. Association for Computational Linguistics. doi: 10.18653/v1/P18-2124.",
+        "x": 108,
+        "y": 615.5,
+        "w": 396.2,
+        "h": 42.8,
+        "zh": "Pranav Rajpurkar、Robin Jia 与 Percy Liang。知道自己不知道什么：SQuAD 中无法回答的问题。载于第 56 届 Association for Computational Linguistics 年会论文集（第 2 卷：短文），第 784–789 页，澳大利亚墨尔本，2018。Association for Computational Linguistics。doi: 10.18653/v1/P18-2124。"
+      },
+      {
+        "text": "Sylvestre-Alvise Rebuffi, Hakan Bilen, and Andrea Vedaldi. Learning multiple visual domains with residual adapters. Advances in neural information processing systems, 30, 2017.",
+        "x": 108,
+        "y": 585.6,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Sylvestre-Alvise Rebuffi、Hakan Bilen 与 Andrea Vedaldi。用残差 adapter 学习多个视觉域。Advances in Neural Information Processing Systems，30，2017。"
+      },
+      {
+        "text": "Victor Sanh, Thomas Wolf, and Alexander M. Rush. Movement pruning: Adaptive sparsity by",
+        "x": 108,
+        "y": 566.7,
+        "w": 396.4,
+        "h": 10,
+        "zh": "Victor Sanh、Thomas Wolf 与 Alexander M. Rush。Movement pruning：自适应稀疏，借助于"
+      },
+      {
+        "text": "Kim-Chuan Toh and Sangwoon Yun. An accelerated proximal gradient algorithm for nuclear norm regularized linear least squares problems. Pacific Journal of optimization, 6(615-640):15, 2010.",
+        "x": 108,
+        "y": 525.8,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Kim-Chuan Toh 与 Sangwoon Yun。核范数正则线性最小二乘问题的加速近端梯度算法。Pacific Journal of Optimization，6(615-640):15，2010。"
+      },
+      {
+        "text": "Alex Wang, Amanpreet Singh, Julian Michael, Felix Hill, Omer Levy, and Samuel R. Bowman. GLUE: A multi-task benchmark and analysis platform for natural language understanding. In 7th International Conference on Learning Representations, ICLR 2019, New Orleans, LA, USA, May 6-9, 2019. OpenReview.net, 2019.",
+        "x": 108,
+        "y": 474,
+        "w": 397.7,
+        "h": 42.8,
+        "zh": "Alex Wang、Amanpreet Singh、Julian Michael、Felix Hill、Omer Levy 与 Samuel R. Bowman。GLUE：自然语言理解的多任务基准与分析平台。第 7 届 International Conference on Learning Representations，ICLR 2019，美国路易斯安那州新奥尔良，2019 年 5 月 6–9 日。OpenReview.net，2019。"
+      },
+      {
+        "text": "Thomas Wolf, Lysandre Debut, Victor Sanh, Julien Chaumond, Clement Delangue, Anthony Moi, Pierric Cistac, Tim Rault, Remi Louf, Morgan Funtowicz, et al. Huggingface’s transformers:´ State-of-the-art natural language processing. ArXiv preprint, abs/1910.03771, 2019.",
+        "x": 108,
+        "y": 433.2,
+        "w": 397.4,
+        "h": 31.9,
+        "zh": "Thomas Wolf、Lysandre Debut、Victor Sanh、Julien Chaumond、Clement Delangue、Anthony Moi、Pierric Cistac、Tim Rault、Remi Louf、Morgan Funtowicz 等人。HuggingFace Transformers：先进的自然语言处理。ArXiv 预印本，abs/1910.03771，2019。"
+      },
+      {
+        "text": "Greg Yang and Edward J Hu. Feature learning in infinite-width neural networks. arXiv preprint arXiv:2011.14522, 2020.",
+        "x": 108,
+        "y": 403.3,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Greg Yang 与 Edward J. Hu。无限宽神经网络中的特征学习。arXiv 预印本 arXiv:2011.14522，2020。"
+      },
+      {
+        "text": "Elad Ben Zaken, Shauli Ravfogel, and Yoav Goldberg. Bitfit: Simple parameter-efficient fine-tuning for transformer-based masked language-models. arXiv preprint arXiv:2106.10199, 2021.",
+        "x": 108,
+        "y": 373.4,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Elad Ben Zaken、Shauli Ravfogel 与 Yoav Goldberg。BitFit：面向基于 Transformer 的掩码语言模型的简单省参数微调。arXiv 预印本 arXiv:2106.10199，2021。"
+      },
+      {
+        "text": "Qingru Zhang, Simiao Zuo, Chen Liang, Alexander Bukharin, Pengcheng He, Weizhu Chen, and Tuo Zhao. Platon: Pruning large transformer models with upper confidence bound of weight importance. In International Conference on Machine Learning, pp. 26809–26823. PMLR, 2022.",
+        "x": 108,
+        "y": 332.6,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Qingru Zhang、Simiao Zuo、Chen Liang、Alexander Bukharin、Pengcheng He、Weizhu Chen 与 Tuo Zhao。PLATON：用权重重要性的置信上界剪枝大型 Transformer。International Conference on Machine Learning，第 26809–26823 页。PMLR，2022。"
+      }
+    ],
+    "14": [
+      {
+        "text": "As mentioned in Section 3.3, we propose a global budget scheduler to gradually decrease the budget following a cubic schedule. The detailed equation is given as follows:",
+        "x": 107.6,
+        "y": 661.4,
+        "w": 396.4,
+        "h": 22,
+        "zh": "如第 3.3 节所述，我们提出一个全局预算调度器，按三次方调度逐步降低预算。具体公式如下："
+      },
+      {
+        "text": "We present the dataset statistics of GLUE (Wang et al., 2019) in the following table.",
+        "x": 107.5,
+        "y": 541.4,
+        "w": 334.9,
+        "h": 10,
+        "zh": "GLUE（Wang 等人，2019）的数据集统计见下表。"
+      },
+      {
+        "text": "For each budget level, we tune the final budget b",
+        "x": 108,
+        "y": 277.1,
+        "w": 192.6,
+        "h": 10,
+        "zh": "对每个预算水平，我们调节最终预算 b"
+      },
+      {
+        "text": "for AdaLoRA, the rank r for LoRA, the hidden dimension d for two adapters to match the budget requirements.",
+        "x": 108,
+        "y": 266.1,
+        "w": 396,
+        "h": 20.9,
+        "zh": "用于 AdaLoRA，用于 LoRA 的秩 r，以及两种 adapter 的隐藏维度 d，以匹配预算要求。"
+      },
+      {
+        "text": "Table 7: Detailed budget setup for GLUE benchmark.",
+        "x": 198.7,
+        "y": 246.1,
+        "w": 214.3,
+        "h": 10,
+        "zh": "表 7：GLUE 基准的详细预算设置。"
+      },
+      {
+        "text": "Alternatively, we can also set the final average rank r¯",
+        "x": 107.6,
+        "y": 159.2,
+        "w": 222.2,
+        "h": 10,
+        "zh": "也可以改成设定最终平均秩 r¯"
+      },
+      {
+        "text": "/n for AdaLoRA to control the budget, which is set as 2, 4, and 8 given the final budget as 144, 288, and 576 respectively. Then we select the initial rank r from {4, 6, 12} for the final average rank {2, 4, 8} respectively.",
+        "x": 108,
+        "y": 137.2,
+        "w": 396,
+        "h": 31.9,
+        "zh": "/n，用来控制 AdaLoRA 的预算。最终预算为 144、288 和 576 时，它分别取 2、4 和 8。然后对最终平均秩 {2, 4, 8}，初始秩 r 分别从 {4, 6, 12} 里选。"
+      },
+      {
+        "text": "} and pick the best learning rate for every method. For each dataset, the batch size is set as identical for every method.",
+        "x": 108,
+        "y": 62.1,
+        "w": 396,
+        "h": 20.9,
+        "zh": "}，并为每种方法挑出最好的学习率。每个数据集上，各种方法的批大小都设成一样。"
+      }
+    ],
+    "15": [
+      {
+        "text": "Table 8: Hyper-parameter setup of AdaLoRA for GLUE benchmark.",
+        "x": 169,
+        "y": 699.6,
+        "w": 273.8,
+        "h": 10,
+        "zh": "表 8：AdaLoRA 在 GLUE 基准上的超参数设置。"
+      },
+      {
+        "text": "Given the budget, we control the trainable parameters for each method as the following table.",
+        "x": 108,
+        "y": 515.5,
+        "w": 371.6,
+        "h": 10,
+        "zh": "给定预算后，我们按下表控制每种方法的可训练参数。"
+      },
+      {
+        "text": "Table 9: Detailed budget setup for question answering.",
+        "x": 196.8,
+        "y": 495.5,
+        "w": 218.2,
+        "h": 10,
+        "zh": "表 9：问答的详细预算设置。"
+      },
+      {
+        "text": "We set the batch size as 16. We select the learning rate from {8 × 10",
+        "x": 107.5,
+        "y": 360,
+        "w": 281.2,
+        "h": 10,
+        "zh": "批大小设为 16。学习率从 {8 × 10"
+      },
+      {
+        "text": "} and pick the best-performing learning rate for every method. The configuration of AdaLoRA is listed in the following table.",
+        "x": 108,
+        "y": 338,
+        "w": 396.4,
+        "h": 20.9,
+        "zh": "} 中选取，并为每种方法挑出效果最好的学习率。AdaLoRA 的配置见下表。"
+      },
+      {
+        "text": "Table 10: Hyper-parameter setup of AdaLoRA for question answering tasks.",
+        "x": 153.3,
+        "y": 320.9,
+        "w": 305.1,
+        "h": 10,
+        "zh": "表 10：AdaLoRA 在问答任务上的超参数设置。"
+      },
+      {
+        "text": "The statistics of question answering datasets are summarized in Table 11.",
+        "x": 107.7,
+        "y": 209.5,
+        "w": 292.2,
+        "h": 10,
+        "zh": "问答数据集的统计汇总在表 11。"
+      },
+      {
+        "text": "Table 11: Statistics of the SQuAD dataset.",
+        "x": 221.4,
+        "y": 189.5,
+        "w": 168.9,
+        "h": 10,
+        "zh": "表 11：SQuAD 数据集的统计。"
+      },
+      {
+        "text": "Given the budget, we control the trainable parameters for each method as the following table.",
+        "x": 108,
+        "y": 62.1,
+        "w": 371.6,
+        "h": 10,
+        "zh": "给定预算后，我们按下表控制每种方法的可训练参数。"
+      }
+    ],
+    "16": [
+      {
+        "text": "Table 12: Detailed budget setup for summarization tasks.",
+        "x": 192,
+        "y": 696.8,
+        "w": 227.6,
+        "h": 10,
+        "zh": "表 12：摘要任务的详细预算设置。"
+      },
+      {
+        "text": "We set the batch size as 16. We select the learning rate from {8 × 10",
+        "x": 107.5,
+        "y": 570.8,
+        "w": 281.2,
+        "h": 10,
+        "zh": "批大小设为 16。学习率从 {8 × 10"
+      },
+      {
+        "text": "} and pick the best-performing learning rate for every method. The configuration of AdaLoRA is listed in the following table.",
+        "x": 108,
+        "y": 548.8,
+        "w": 396.4,
+        "h": 20.9,
+        "zh": "} 中选取，并为每种方法挑出效果最好的学习率。AdaLoRA 的配置见下表。"
+      },
+      {
+        "text": "Table 13: Hyper-parameter setup of AdaLoRA for summarization tasks.",
+        "x": 162.3,
+        "y": 528.9,
+        "w": 287.1,
+        "h": 10,
+        "zh": "表 13：AdaLoRA 在摘要任务上的超参数设置。"
+      },
+      {
+        "text": "As mentioned in Section 4, we find that the performance of LoRA can be further improved when applying it to every weight matrix, compared to fine-tuning Wq and Wv only (Hu et al., 2022). This observation aligns with the empirical results of He et al. (2022). In Table 14, we follow the same training configuration as Section 4.1 and present an ablation study to illustrate this point.",
+        "x": 107.6,
+        "y": 386.4,
+        "w": 396.4,
+        "h": 42.8,
+        "zh": "如第 4 节所述，把 LoRA 用到每个权重矩阵上，比只微调 Wq 和 Wv 更好（Hu 等人，2022）。这与 He 等人（2022）的经验结果一致。表 14 沿用第 4.1 节的训练配置，用消融说明这一点。"
+      },
+      {
+        "text": "Table 14: We compare the fine-tuning performance when apply LoRA to every weight matrix or Wq, Wv only. The parameter budget is fixed as 0.3M. We report accuracy for QQP and MRPC, accuracy(m) for MNLI, and average correlation for STS-B.",
+        "x": 107.7,
+        "y": 344.5,
+        "w": 397.6,
+        "h": 31.9,
+        "zh": "表 14：比较把 LoRA 用到每个权重矩阵上，以及只用在 Wq、Wv 上的微调效果。参数预算固定为 0.3M。QQP 和 MRPC 报告准确率，MNLI 报告 accuracy(m)，STS-B 报告平均相关系数。"
+      },
+      {
+        "text": "To verify the effectiveness of (4), we plot ∥P",
+        "x": 107.7,
+        "y": 236.2,
+        "w": 175.5,
+        "h": 10,
+        "zh": "为检验 (4) 是否有效，我们画出 ∥P"
+      },
+      {
+        "text": "− I∥F to show whether P and Q are regularized to be orthogonal. We fine-tune a DeBERTaV3-base model on SST-2 with AdaLoRA and follow the same training configuration as Section 4.1. We set γ as 0.1 and plot the two terms along the training horizon. From Figure 4, we can see that two regularization terms can be optimized to a very small value (e.g., 0.001) at the beginning of training. Therefore, both P and Q can be enforced to be orthogonal quickly during the initial warm-up of AdaLoRA. It ensures that the triplets are not dependent with each other.",
+        "x": 108,
+        "y": 170.5,
+        "w": 396.4,
+        "h": 75.7,
+        "zh": "− I∥F，用来看 P 和 Q 是否被正则成正交。我们用 AdaLoRA 在 SST-2 上微调 DeBERTaV3-base，训练配置与第 4.1 节相同。γ 设为 0.1，并沿训练过程画出这两项。从图 4 可以看到，训练一开始，两个正则项就能被优化到很小的值（例如 0.001）。因此在 AdaLoRA 最初的热身阶段，P 和 Q 都能很快被约束成正交，各三元组也就不会彼此依赖。"
+      },
+      {
+        "text": "We compare the training cost between AdaLoRA and LoRA in the following table. We use two methods to fine-tune DeBERTaV3-base on a single NVIDIA V100 GPU. We do training only and set hyperparameters, e.g., batch size and training epochs, the same as in Section 4. Table 15 shows that AdaLoRA incurs 11% additional training time on MNLI and 16% on SQuADv2 under different budgets. The memory footprint of two methods are quite close. Such results demonstrate that AdaLoRA does not incur significant training overheads. The reason behind is that",
+        "x": 107.5,
+        "y": 62.1,
+        "w": 396.5,
+        "h": 69.2,
+        "zh": "下表比较 AdaLoRA 与 LoRA 的训练开销。两种方法都在单块 NVIDIA V100 GPU 上微调 DeBERTaV3-base。只做训练，批大小、训练轮数等超参数与第 4 节相同。表 15 显示，在不同预算下，AdaLoRA 在 MNLI 上多花 11% 的训练时间，在 SQuADv2 上多花 16%。两种方法的显存占用很接近。这说明 AdaLoRA 没有带来明显的额外训练开销。原因在于"
+      }
+    ],
+    "17": [
+      {
+        "text": "− I∥F when fine-tuning DeBERTaV3-base on SST-2.",
+        "x": 295.5,
+        "y": 418.8,
+        "w": 208.5,
+        "h": 12.8,
+        "zh": "在 SST-2 上微调 DeBERTaV3-base 时的 − I∥F。"
+      },
+      {
+        "text": "Table 15: Comparison of practical training cost between AdaLoRA and LoRA.",
+        "x": 148.4,
+        "y": 394.9,
+        "w": 315,
+        "h": 10,
+        "zh": "表 15：AdaLoRA 与 LoRA 的实际训练开销比较。"
+      },
+      {
+        "text": "we only evaluate the importance score for small incremental matrices PΛQ. Their total number of parameters is usually less than 1% of pre-trained weights. Therefore, it does not lead to significant computational cost to update the importance scores of these well-structured small matrices, compared to forward-backward pass of full model.",
+        "x": 107.6,
+        "y": 171.5,
+        "w": 396.4,
+        "h": 42.8,
+        "zh": "我们只给较小的增量矩阵 PΛQ 算重要性分数。它们的参数总量通常不到预训练权重的 1%。因此，相对整个模型的前向和反向传播，更新这些结构规整的小矩阵的重要性分数，不会带来明显的计算开销。"
+      }
+    ]
+  }
+}

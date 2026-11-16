@@ -1,0 +1,735 @@
+{
+  "id": "1707.06347",
+  "title": "1707.06347",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, Oleg Klimov",
+        "x": 106.9,
+        "y": 654.2,
+        "w": 381.5,
+        "h": 11.6,
+        "zh": "John Schulman、Filip Wolski、Prafulla Dhariwal、Alec Radford、Oleg Klimov"
+      },
+      {
+        "text": "{joschu, filip, prafulla, alec, oleg}@openai.com",
+        "x": 152.2,
+        "y": 627.6,
+        "w": 287,
+        "h": 11.6,
+        "zh": ""
+      },
+      {
+        "text": "We propose a new family of policy gradient methods for reinforcement learning, which alternate between sampling data through interaction with the environment, and optimizing a “surrogate” objective function using stochastic gradient ascent. Whereas standard policy gradient methods perform one gradient update per data sample, we propose a novel objective function that enables multiple epochs of minibatch updates. The new methods, which we call proximal policy optimization (PPO), have some of the benefits of trust region policy optimization (TRPO), but they are much simpler to implement, more general, and have better sample complexity (empirically). Our experiments test PPO on a collection of benchmark tasks, including simulated robotic locomotion and Atari game playing, and we show that PPO outperforms other online policy gradient methods, and overall strikes a favorable balance between sample complexity, simplicity, and wall-time.",
+        "x": 96.5,
+        "y": 456.9,
+        "w": 402.3,
+        "h": 123.7,
+        "zh": "我们提出一族新的强化学习策略梯度方法。它们交替做两件事：通过与环境交互来采样数据，以及用随机梯度上升优化一个“替代”目标函数。标准策略梯度方法对每份数据样本只做一次梯度更新；我们提出的新目标函数，则可以在同一批数据上做多轮小批量更新。这套新方法称为近端策略优化（proximal policy optimization，PPO）。它带有信赖域策略优化（trust region policy optimization，TRPO）的一部分好处，但实现起来简单得多，更通用，样本复杂度也更好（从实验上看）。我们在一组基准任务上测试了 PPO，包括仿真机器人运动和 Atari 游戏。结果表明，PPO 优于其他在线策略梯度方法，并在样本复杂度、简洁程度和墙钟时间之间取得了比较有利的平衡。"
+      },
+      {
+        "text": "In recent years, several different approaches have been proposed for reinforcement learning with neural network function approximators.",
+        "x": 69.9,
+        "y": 387.4,
+        "w": 455.4,
+        "h": 23.5,
+        "zh": "近年来，针对使用神经网络函数逼近器的强化学习，已经提出了好几种不同的做法。"
+      },
+      {
+        "text": "The leading contenders are deep Q-learning [Mni+15], “vanilla” policy gradient methods [Mni+16], and trust region / natural policy gradient methods [Sch+15b]. However, there is room for improvement in developing a method that is scalable (to large models and parallel implementations), data efficient, and robust (i.e., successful on a variety of problems without hyperparameter tuning). Q-learning (with function approximation) fails on many simple problems",
+        "x": 69.9,
+        "y": 322.8,
+        "w": 455.4,
+        "h": 75.2,
+        "zh": "目前最主要的几类是深度 Q 学习 [Mni+15]、“vanilla”策略梯度方法 [Mni+16]，以及信赖域 / 自然策略梯度方法 [Sch+15b]。不过，要把一种方法做到可扩展（能扩展到大模型和并行实现）、数据高效，并且稳健，仍有改进空间；这里的稳健，是指不用调超参数就能在各种问题上成功。带函数逼近的 Q 学习在许多简单问题上会失败"
+      },
+      {
+        "text": "and is poorly understood, vanilla policy gradient methods have poor data effiency and robustness; and trust region policy optimization (TRPO) is relatively complicated, and is not compatible with architectures that include noise (such as dropout) or parameter sharing (between the policy and value function, or with auxiliary tasks).",
+        "x": 69.9,
+        "y": 284.1,
+        "w": 455.4,
+        "h": 49.4,
+        "zh": "而且人们对它理解得很差；普通策略梯度方法的数据效率和稳健性都不好；信赖域策略优化（TRPO）又比较复杂，并且与带噪声的架构（例如 dropout）不兼容，也与参数共享不兼容（在策略和价值函数之间共享，或者与辅助任务共享）。"
+      },
+      {
+        "text": "the data efficiency and reliable performance of TRPO, while using only first-order optimization. We propose a novel objective with clipped probability ratios, which forms a pessimistic estimate (i.e., lower bound) of the performance of the policy. To optimize policies, we alternate between sampling data from the policy and performing several epochs of optimization on the sampled data. Our experiments compare the performance of various different versions of the surrogate objective, and find that the version with the clipped probability ratios performs best. We also compare PPO to several previous algorithms from the literature. On continuous control tasks, it performs better than the algorithms we compare against. On Atari, it performs significantly better (in terms of sample complexity) than A2C and similarly to ACER though it is much simpler.",
+        "x": 69.9,
+        "y": 154.9,
+        "w": 455.4,
+        "h": 114,
+        "zh": "TRPO 的数据效率与可靠表现，同时只使用一阶优化。我们提出一种带裁剪概率比的新目标，它对策略表现给出悲观估计（即下界）。为优化策略，我们交替进行两步：从策略中采样数据，以及在采到的数据上做若干轮优化。实验比较了替代目标的多种不同版本，发现带裁剪概率比的版本表现最好。我们还将 PPO 与文献中的若干已有算法作了比较。在连续控制任务上，它好于我们所比较的那些算法。在 Atari 上，就样本复杂度而言，它明显好于 A2C，与 ACER 相近，但简单得多。"
+      },
+      {
+        "text": "While DQN works well on game environments like the Arcade Learning Environment [Bel+15] with discrete action spaces, it has not been demonstrated to perform well on continuous control benchmarks such as those in OpenAI Gym [Bro+16] and described by Duan et al. [Dua+16].",
+        "x": 69.9,
+        "y": 114.1,
+        "w": 455.4,
+        "h": 29.6,
+        "zh": "DQN 在 Arcade Learning Environment [Bel+15] 这类离散动作空间的游戏环境上表现不错，但还没有结果表明它在连续控制基准上同样表现好，例如 OpenAI Gym [Bro+16] 里的任务，以及 Duan 等人 [Dua+16] 所描述的任务。"
+      }
+    ],
+    "2": [
+      {
+        "text": "Policy gradient methods work by computing an estimator of the policy gradient and plugging it into a stochastic gradient ascent algorithm. The most commonly used gradient estimator has the",
+        "x": 69.9,
+        "y": 669.1,
+        "w": 455.4,
+        "h": 23.5,
+        "zh": "策略梯度方法的做法是：先计算策略梯度的一个估计，再把它代入随机梯度上升算法。最常用的梯度估计具有"
+      },
+      {
+        "text": "where πθ is a stochastic policy and Aˆt is an estimator of the advantage function at timestep t. Here, the expectation Eˆt[. . .] indicates the empirical average over a finite batch of samples, in an algorithm that alternates between sampling and optimization. Implementations that use automatic differentiation software work by constructing an objective function whose gradient is the policy gradient estimator; the estimator ˆg is obtained by differentiating the objective",
+        "x": 69.9,
+        "y": 552.3,
+        "w": 455.4,
+        "h": 65,
+        "zh": "其中 π_θ 是随机策略，Â_t 是时刻 t 的优势函数估计。这里，期望 Ê_t […] 表示经验平均，是在有限的一批样本上取的；算法在采样与优化之间交替。使用自动微分软件的实现，会构造一个目标函数，使其梯度就是策略梯度估计；估计量 ĝ 通过对该目标求导得到"
+      },
+      {
+        "text": "While it is appealing to perform multiple steps of optimization on this loss L trajectory, doing so is not well-justified, and empirically it often leads to destructively large policy updates (see Section 6.1; results are not shown but were similar or worse than the “no clipping or",
+        "x": 69.9,
+        "y": 472.8,
+        "w": 455.4,
+        "h": 36.5,
+        "zh": "在这个损失 L 的轨迹上做多步优化看起来很诱人，但这样做缺乏充分依据，而且从实验上看，常常导致破坏性的过大策略更新（见第 6.1 节；结果没有展示，但与“不加裁剪或”相近，或者更差）"
+      },
+      {
+        "text": "In TRPO [Sch+15b], an objective function (the “surrogate” objective) is maximized subject to a",
+        "x": 69.9,
+        "y": 412,
+        "w": 455.4,
+        "h": 10.6,
+        "zh": "在 TRPO [Sch+15b] 中，一个目标函数（称为“替代”目标）在一项约束之下被最大化，这项约束是"
+      },
+      {
+        "text": "constraint on the size of the policy update. Specifically,",
+        "x": 69.9,
+        "y": 399.1,
+        "w": 258.5,
+        "h": 10.6,
+        "zh": "对策略更新幅度的约束。具体来说，"
+      },
+      {
+        "text": "Here, θold is the vector of policy parameters before the update. This problem can efficiently be approximately solved using the conjugate gradient algorithm, after making a linear approximation",
+        "x": 69.9,
+        "y": 309.1,
+        "w": 455.4,
+        "h": 23.5,
+        "zh": "这里，θ_old 是更新前的策略参数向量。在作出线性近似之后，这个问题可以用共轭梯度算法高效地近似求解"
+      },
+      {
+        "text": "to the objective and a quadratic approximation to the constraint.",
+        "x": 69.9,
+        "y": 296.2,
+        "w": 304.8,
+        "h": 10.6,
+        "zh": "针对目标，并对约束作二次近似。"
+      },
+      {
+        "text": "The theory justifying TRPO actually suggests using a penalty instead of a constraint, i.e.,",
+        "x": 86.4,
+        "y": 283.3,
+        "w": 438.9,
+        "h": 10.6,
+        "zh": "为 TRPO 提供依据的理论实际上建议用惩罚来代替约束，也就是"
+      },
+      {
+        "text": "solving the unconstrained optimization problem",
+        "x": 69.9,
+        "y": 270.3,
+        "w": 222.2,
+        "h": 10.6,
+        "zh": "去求解这个无约束优化问题"
+      },
+      {
+        "text": "for some coefficient β. This follows from the fact that a certain surrogate objective (which computes the max KL over states instead of the mean) forms a lower bound (i.e., a pessimistic bound) on the performance of the policy π. TRPO uses a hard constraint rather than a penalty because it is hard to choose a single value of β that performs well across different problems—or even within a single problem, where the the characteristics change over the course of learning. Hence, to achieve our goal of a first-order algorithm that emulates the monotonic improvement of TRPO, experiments show that it is not sufficient to simply choose a fixed penalty coefficient β and optimize the penalized objective Equation (5) with SGD; additional modifications are required.",
+        "x": 69.9,
+        "y": 120.8,
+        "w": 455.4,
+        "h": 101.1,
+        "zh": "对某个系数 β。这是因为，有一个替代目标（它对各状态取 KL 的最大值，而不是平均值）构成策略 π 表现的下界（即悲观界）。TRPO 采用硬约束而不是惩罚，是因为很难选定一个 β，让它在不同问题上都表现好——甚至在同一个问题里，学习过程中的特性也会变化。因此，为了达到我们的目标，即一个能模仿 TRPO 那种单调改进的一阶算法，实验表明：只选定一个固定的惩罚系数 β，再用 SGD 去优化带惩罚的目标、也就是式 (5)，是不够的，还需要额外的修改。"
+      }
+    ],
+    "3": [
+      {
+        "text": "Let rt(θ) denote the probability ratio rt(θ) = “surrogate” objective",
+        "x": 69.9,
+        "y": 684.8,
+        "w": 219.9,
+        "h": 26.2,
+        "zh": ""
+      },
+      {
+        "text": "The superscript CP I refers to conservative policy iteration [KL02], where this objective was pro-",
+        "x": 69.9,
+        "y": 625.7,
+        "w": 455.4,
+        "h": 10.6,
+        "zh": "上标 CPI 指的是保守策略迭代（conservative policy iteration）[KL02]，这个目标就是在那项工作里提出的。"
+      },
+      {
+        "text": "would lead to an excessively large policy update; hence, we now consider how to modify the objective, to penalize changes to the policy that move rt(θ) away from 1. The main objective we propose is the following:",
+        "x": 69.9,
+        "y": 574,
+        "w": 455.4,
+        "h": 49.4,
+        "zh": "会导致过大的策略更新；因此，我们现在考虑如何修改目标，以便惩罚那些让 r_t(θ) 远离 1 的策略变化。我们提出的主要目标如下："
+      },
+      {
+        "text": "LCLIP (θ) = Eˆt min(rt(θ) Aˆt, clip(rt(θ), 1 − \u000f, 1 + \u000f) Aˆt)",
+        "x": 170.1,
+        "y": 546.5,
+        "w": 250,
+        "h": 15,
+        "zh": "L^{CLIP}(θ) 等于 Ê_t 对下面两项取最小：r_t(θ) Â_t，以及 clip(r_t(θ), 1−ε, 1+ε) Â_t"
+      },
+      {
+        "text": "where epsilon is a hyperparameter, say, \u000f = 0.2. The motivation for this objective is as follows. The first term inside the min is LCP I. The second term, clip(rt(θ), 1−\u000f, 1 +\u000f) Aˆt, modifies the surrogate objective by clipping the probability ratio, which removes the incentive for moving rt outside of the interval [1 − \u000f, 1 + \u000f]. Finally, we take the minimum of the clipped and unclipped objective, so the final objective is a lower bound (i.e., a pessimistic bound) on the unclipped objective. With this scheme, we only ignore the change in probability ratio when it would make the objective improve, and we include it when it makes the objective worse. Note that L around θold (i.e., where r = 1), however, they become different as θ moves away from θold. Figure 1 plots a single term (i.e., a single t) in L",
+        "x": 69.9,
+        "y": 418.9,
+        "w": 455.4,
+        "h": 114,
+        "zh": "其中 ε 是超参数，例如 ε = 0.2。这个目标的动机如下。min 里面的第一项是 L^{CPI}。第二项 clip(r_t(θ), 1−ε, 1+ε) Â_t 通过裁剪概率比来修改替代目标，从而去掉把 r_t 移出区间 [1−ε, 1+ε] 的动机。最后取裁剪后的目标与未裁剪目标的较小者，因此最终目标是未裁剪目标的一个下界（即悲观界）。按这个方案，只有当概率比的变化会让目标变好时，我们才忽略它；当它让目标变差时，我们把它算进去。注意 L 在 θ_old 附近（即 r = 1）时的情形；然而一旦 θ 离开 θ_old，它们就变得不同。图 1 画出了 L 中的一项（即单个 t）"
+      },
+      {
+        "text": "; note that the probability ratio r is clipped at 1 − \u000f or 1 + \u000f depending on whether the advantage is positive or negative.",
+        "x": 69.9,
+        "y": 405.9,
+        "w": 455.4,
+        "h": 23.5,
+        "zh": "；注意，概率比 r 会被裁到 1−ε 或 1+ε，具体取决于优势是正还是负。"
+      },
+      {
+        "text": "Figure 1: Plots showing one term (i.e., a single timestep) of the surrogate function L the probability ratio r, for positive advantages (left) and negative advantages (right). The red circle on each plot shows the starting point for the optimization, i.e., r = 1. Note that L",
+        "x": 69.9,
+        "y": 206.7,
+        "w": 455.4,
+        "h": 32.5,
+        "zh": "图 1：替代函数 L 的一项（即单个时间步）随概率比 r 变化的情况，左图为正优势，右图为负优势。每张图上的红圈表示优化的起点，即 r = 1。注意 L"
+      },
+      {
+        "text": "Figure 2 provides another source of intuition about the surrogate objective L several objectives vary as we interpolate along the policy update direction, obtained by proximal policy optimization (the algorithm we will introduce shortly) on a continuous control problem. We",
+        "x": 69.9,
+        "y": 155,
+        "w": 455.4,
+        "h": 36.5,
+        "zh": "图 2 为替代目标 L 提供了另一种直观理解。沿着策略更新方向做插值时，有若干目标会随之变化；这个方向来自近端策略优化（我们很快要介绍的算法）在一个连续控制问题上的结果。我们"
+      },
+      {
+        "text": ", with a penalty for having too large of a policy",
+        "x": 292.8,
+        "y": 142.1,
+        "w": 232.6,
+        "h": 10.6,
+        "zh": "，并对过大的策略加以惩罚"
+      }
+    ],
+    "4": [
+      {
+        "text": "Figure 2: Surrogate objectives, as we interpolate between the initial policy parameter θold, and the updated policy parameter, which we compute after one iteration of PPO. The updated policy has a KL divergence of about 0.02 from the initial policy, and this is the point at which L to the first policy update on the Hopper-v1 problem, using hyperparameters provided in Section 6.1.",
+        "x": 69.9,
+        "y": 549.1,
+        "w": 455.4,
+        "h": 43.9,
+        "zh": "图 2：在初始策略参数 θ_old 与更新后的策略参数之间插值时的替代目标。更新后的参数是 PPO 做完一次迭代后算出来的。更新后的策略相对初始策略的 KL 散度约为 0.02，而这个点就是 L 接到 Hopper-v1 问题第一次策略更新的位置，所用超参数见第 6.1 节。"
+      },
+      {
+        "text": "Another approach, which can be used as an alternative to the clipped surrogate objective, or in addition to it, is to use a penalty on KL divergence, and to adapt the penalty coefficient so that we achieve some target value of the KL divergence dtarg each policy update. In our experiments, we found that the KL penalty performed worse than the clipped surrogate objective, however, we’ve",
+        "x": 69.9,
+        "y": 455,
+        "w": 455.4,
+        "h": 49.4,
+        "zh": "另一种做法，既可以用来代替裁剪替代目标，也可以和它一起用：对 KL 散度加惩罚，并调整惩罚系数，使得每次策略更新的 KL 散度达到某个目标值 d_targ。在我们的实验里，KL 惩罚的表现不如裁剪替代目标，不过我们"
+      },
+      {
+        "text": "included it here because it’s an important baseline.",
+        "x": 69.9,
+        "y": 442.1,
+        "w": 237.6,
+        "h": 10.6,
+        "zh": "还是把它写在这里，因为它是一条重要的基线。"
+      },
+      {
+        "text": "In the simplest instantiation of this algorithm, we perform the following steps in each policy",
+        "x": 86.4,
+        "y": 429.1,
+        "w": 438.9,
+        "h": 10.6,
+        "zh": "在这个算法最简单的形式里，我们在每一次策略中执行下面这些步骤"
+      },
+      {
+        "text": "• Using several epochs of minibatch SGD, optimize the KL-penalized objective",
+        "x": 85.9,
+        "y": 396.5,
+        "w": 368.9,
+        "h": 10.6,
+        "zh": "• 用若干轮小批量 SGD，优化带 KL 惩罚的目标"
+      },
+      {
+        "text": "(· | st), πθ(· | st)]] – If d < dtarg/1.5, β ← β/2 – If d > dtarg × 1.5, β ← β × 2",
+        "x": 108.4,
+        "y": 297.4,
+        "w": 181.3,
+        "h": 49.1,
+        "zh": "式中出现 (· | s_t) 与 π_θ(· | s_t)。若 d < d_targ/1.5，则 β ← β/2；若 d > d_targ × 1.5，则 β ← β × 2"
+      },
+      {
+        "text": "The updated β is used for the next policy update. With this scheme, we occasionally see policy updates where the KL divergence is significantly different from dtarg, however, these are rare, and β quickly adjusts. The parameters 1.5 and 2 above are chosen heuristically, but the algorithm is not very sensitive to them. The initial value of β is a another hyperparameter but is not important",
+        "x": 69.9,
+        "y": 239.4,
+        "w": 455.4,
+        "h": 49.4,
+        "zh": "更新后的 β 用于下一次策略更新。按这个方案，我们偶尔会看到 KL 散度与 d_targ 相差很大的策略更新，不过这种情况很少，而且 β 会很快调整过来。上面的 1.5 和 2 是按经验选定的，算法对它们并不很敏感。β 的初始值是另一个超参数，但并不重要"
+      },
+      {
+        "text": "in practice because the algorithm quickly adjusts it.",
+        "x": 69.9,
+        "y": 226.4,
+        "w": 241.5,
+        "h": 10.6,
+        "zh": "在实践中会这样，因为算法会很快把它调整过来。"
+      },
+      {
+        "text": "The surrogate losses from the previous sections can be computed and differentiated with a minor change to a typical policy gradient implementation. For implementations that use automatic dif-",
+        "x": 69.9,
+        "y": 157.3,
+        "w": 455.4,
+        "h": 23.5,
+        "zh": "前面几节的替代损失，只要对典型的策略梯度实现做很小的改动，就可以计算并求导。对于使用自动微分的实现"
+      },
+      {
+        "text": "ferentation, one simply constructs the loss L",
+        "x": 69.9,
+        "y": 144.4,
+        "w": 210.1,
+        "h": 10.6,
+        "zh": "，只需构造损失 L"
+      },
+      {
+        "text": "multiple steps of stochastic gradient ascent on this objective. Most techniques for computing variance-reduced advantage-function estimators make use a learned state-value function V (s); for example, generalized advantage estimation [Sch+15a], or the",
+        "x": 69.9,
+        "y": 105.7,
+        "w": 455.4,
+        "h": 36.5,
+        "zh": "在这个目标上做多步随机梯度上升。计算降方差的优势函数估计时，大多数技术都会用到一个学出来的状态价值函数 V(s)；例如广义优势估计 [Sch+15a]，或者"
+      }
+    ],
+    "5": [
+      {
+        "text": "finite-horizon estimators in [Mni+16]. If using a neural network architecture that shares parameters between the policy and value function, we must use a loss function that combines the policy surrogate and a value function error term. This objective can further be augmented by adding an entropy bonus to ensure sufficient exploration, as suggested in past work [Wil92; Mni+16]. Combining these terms, we obtain the following objective, which is (approximately) maximized",
+        "x": 69.9,
+        "y": 673.9,
+        "w": 455.4,
+        "h": 62.3,
+        "zh": "[Mni+16] 里的有限时域估计。如果神经网络架构让策略和价值函数共享参数，就必须使用一个损失函数，把策略替代项和价值函数误差项合在一起。还可以再加一项熵奖励，以保证探索足够充分，这是以往工作里建议的做法 [Wil92; Mni+16]。把这些项合起来，就得到下面这个目标，它被（近似地）最大化"
+      },
+      {
+        "text": "+V F+S(θ) = Eˆt LCLIPt where c1, c2 are coefficients, and S denotes an entropy bonus, and Lt",
+        "x": 69.9,
+        "y": 616,
+        "w": 334.6,
+        "h": 37.7,
+        "zh": "+VF+S(θ) = Ê_t [L^{CLIP}_t]，其中 c_1、c_2 是系数，S 表示熵奖励，以及 L_t"
+      },
+      {
+        "text": "One style of policy gradient implementation, popularized in [Mni+16] and well-suited for use with recurrent neural networks, runs the policy for T timesteps (where T is much less than the episode length), and uses the collected samples for an update. This style requires an advantage estimator that does not look beyond timestep T. The estimator used by [Mni+16] is",
+        "x": 69.9,
+        "y": 554.1,
+        "w": 455.4,
+        "h": 49.4,
+        "zh": "有一种策略梯度的实现方式因 [Mni+16] 而流行，也很适合循环神经网络：让策略跑 T 个时间步（T 远小于回合长度），再用收集到的样本做一次更新。这种做法所需要的优势估计，不能看到时间步 T 之后的内容。[Mni+16] 使用的估计是"
+      },
+      {
+        "text": "Aˆt = −V (st) + rt + γrt+1 + · · · + γT−t+1rT−1 + γT−tV (sT ) where t specifies the time index in [0, T], within a given length-T trajectory segment. Generalizing this choice, we can use a truncated version of generalized advantage estimation, which reduces to Equation (10) when λ = 1:",
+        "x": 69.9,
+        "y": 487,
+        "w": 455.4,
+        "h": 59.8,
+        "zh": "Â_t = −V(s_t) + r_t + γ r_{t+1} + ⋯ + γ^{T−t+1} r_{T−1} + γ^{T−t} V(s_T)，其中 t 是一段长度为 T 的轨迹内部、落在 [0, T] 中的时间下标。把这一选择加以推广，可以用截断版的广义优势估计；当 λ = 1 时，它就退化为式 (10)："
+      },
+      {
+        "text": "Aˆt = δt + (γλ)δt+1 + · · · + · · · + (γλ)T−t+1δT−1,",
+        "x": 187.1,
+        "y": 464.7,
+        "w": 221.2,
+        "h": 14.9,
+        "zh": "也就是 Â_t = δ_t + (γλ) δ_{t+1} + ⋯ + ⋯ + (γλ)^{T−t+1} δ_{T−1}，"
+      },
+      {
+        "text": "δt = rt + γV (st+1) − V (st) A proximal policy optimization (PPO) algorithm that uses fixed-length trajectory segments is shown below. Each iteration, each of N (parallel) actors collect T timesteps of data. Then we construct the surrogate loss on these N T timesteps of data, and optimize it with minibatch SGD (or usually for better performance, Adam [KB14]), for K epochs.",
+        "x": 69.9,
+        "y": 391.2,
+        "w": 455.4,
+        "h": 70,
+        "zh": "δ_t = r_t + γ V(s_{t+1}) − V(s_t)。下面给出一种使用固定长度轨迹片段的近端策略优化（PPO）算法。每一轮迭代，N 个（并行的）actor 各自收集 T 个时间步的数据。然后我们在这 NT 个时间步的数据上构造替代损失，并用小批量 SGD 优化 K 轮（为了更好的表现，通常用 Adam [KB14]）。"
+      },
+      {
+        "text": "Algorithm 1 PPO, Actor-Critic Style for iteration=1, 2, . . . do for actor=1, 2, . . . , N do",
+        "x": 69.9,
+        "y": 338.1,
+        "w": 181.3,
+        "h": 39.4,
+        "zh": "算法 1：PPO，Actor-Critic 风格。对 iteration = 1, 2, … 执行；对 actor = 1, 2, …, N 执行"
+      },
+      {
+        "text": "in environment for T timesteps Compute advantage estimates Aˆ1, . . . , AˆT",
+        "x": 112.4,
+        "y": 309.4,
+        "w": 223,
+        "h": 26.4,
+        "zh": "在环境中进行 T 个时间步。计算优势估计 Â_1, …, Â_T"
+      },
+      {
+        "text": "Optimize surrogate L wrt θ, with K epochs and minibatch size M ≤ N T",
+        "x": 96.5,
+        "y": 285.2,
+        "w": 338.9,
+        "h": 10.6,
+        "zh": "对 θ 优化替代目标 L，共 K 轮，小批量大小 M ≤ N T"
+      },
+      {
+        "text": "First, we compare several different surrogate objectives under different hyperparameters. Here, we compare the surrogate objective L",
+        "x": 69.9,
+        "y": 165.8,
+        "w": 455.4,
+        "h": 23.5,
+        "zh": "首先，我们在不同超参数下比较几种不同的替代目标。这里，我们比较的是替代目标 L"
+      },
+      {
+        "text": "to several natural variations and ablated versions.",
+        "x": 256.4,
+        "y": 165.8,
+        "w": 231.8,
+        "h": 10.6,
+        "zh": "与若干自然的变体和消融版本。"
+      },
+      {
+        "text": "Lt(θ) = min(rt(θ) Aˆt, clip(rt(θ)), 1 − \u000f, 1 + \u000f) Aˆt Lt(θ) = rt(θ) Aˆt − β KL[πθ KL penalty (fixed or adaptive)",
+        "x": 108.1,
+        "y": 107.8,
+        "w": 378.5,
+        "h": 32.8,
+        "zh": "L_t(θ) = min(r_t(θ) Â_t, clip(r_t(θ)), 1−ε, 1+ε) Â_t；另一式为 L_t(θ) = r_t(θ) Â_t − β KL[π_θ。KL 惩罚（固定或自适应）"
+      }
+    ],
+    "6": [
+      {
+        "text": "For the KL penalty, one can either use a fixed penalty coefficient β or an adaptive coefficient as described in Section 4 using target KL value dtarg. Note that we also tried clipping in log space,",
+        "x": 69.9,
+        "y": 711.1,
+        "w": 455.4,
+        "h": 25.1,
+        "zh": "对于 KL 惩罚，既可以使用固定的惩罚系数 β，也可以使用第 4 节所述的自适应系数，目标 KL 取 d_targ。另外，我们也试过在对数空间里做裁剪，"
+      },
+      {
+        "text": "but found the performance to be no better.",
+        "x": 69.9,
+        "y": 699.7,
+        "w": 201.5,
+        "h": 10.6,
+        "zh": "但发现表现并没有更好。"
+      },
+      {
+        "text": "Because we are searching over hyperparameters for each algorithm variant, we chose a computationally cheap benchmark to test the algorithms on. Namely, we used 7 simulated robotics tasks implemented in OpenAI Gym [Bro+16], which use the MuJoCo [TET12] physics engine. We do one million timesteps of training on each one. Besides the hyperparameters used for clipping (\u000f) and the KL penalty (β, dtarg), which we search over, the other hyperparameters are provided in in",
+        "x": 69.9,
+        "y": 633.5,
+        "w": 455.4,
+        "h": 63.9,
+        "zh": "因为我们要为每种算法变体搜索超参数，所以选了一个计算上便宜的基准来测试这些算法。具体来说，用的是 OpenAI Gym [Bro+16] 里的 7 个仿真机器人任务，物理引擎是 MuJoCo [TET12]。每个任务训练一百万个时间步。除了我们所搜索的裁剪超参数（ε）和 KL 惩罚（β、d_targ）之外，其余超参数在文中给出"
+      },
+      {
+        "text": "To represent the policy, we used a fully-connected MLP with two hidden layers of 64 units, and tanh nonlinearities, outputting the mean of a Gaussian distribution, with variable standard deviations, following [Sch+15b; Dua+16]. We don’t share parameters between the policy and value function (so coefficient c1 is irrelevant), and we don’t use an entropy bonus. Each algorithm was run on all 7 environments, with 3 random seeds on each. We scored each run of the algorithm by computing the average total reward of the last 100 episodes. We shifted and scaled the scores for each environment so that the random policy gave a score of 0 and the best result was set to 1, and averaged over 21 runs to produce a single scalar for each algorithm setting. The results are shown in Table 1. Note that the score is negative for the setting without clipping or penalties, because for one environment (half cheetah) it leads to a very negative score, which is",
+        "x": 69.9,
+        "y": 493,
+        "w": 455.4,
+        "h": 126.9,
+        "zh": "表示策略时，我们使用全连接 MLP，两个隐藏层各有 64 个单元，非线性为 tanh，输出高斯分布的均值，标准差可变，做法遵循 [Sch+15b; Dua+16]。我们不在策略和价值函数之间共享参数（因此系数 c_1 不起作用），也不使用熵奖励。每种算法都在全部 7 个环境上运行，每个环境使用 3 个随机种子。一次运行的分数，取最后 100 个回合的平均总奖励。我们对每个环境的分数做平移和缩放，使随机策略的分数为 0、最好的结果为 1，再对 21 次运行取平均，为每一个算法设置产生一个标量。结果见表 1。注意，不加裁剪也不加惩罚的设置分数为负，因为在其中一个环境（half cheetah）上它会得到非常负的分数，而这"
+      },
+      {
+        "text": "Adaptive KL dtarg = 0.01 Adaptive KL dtarg = 0.03",
+        "x": 179.7,
+        "y": 356.1,
+        "w": 117.9,
+        "h": 25.1,
+        "zh": "自适应 KL，d_targ = 0.01；自适应 KL，d_targ = 0.03"
+      },
+      {
+        "text": "Table 1: Results from continuous control benchmark. algorithm, on 7 environments) for each algorithm / hyperparameter setting . β was initialized at 1.",
+        "x": 69.9,
+        "y": 270.4,
+        "w": 421.9,
+        "h": 21.1,
+        "zh": "表 1：连续控制基准上的结果。针对每种算法 / 超参数设置（算法，在 7 个环境上）。β 初始化为 1。"
+      },
+      {
+        "text": "Average normalized scores (over 21 runs of the",
+        "x": 315.8,
+        "y": 281.8,
+        "w": 209.6,
+        "h": 9.7,
+        "zh": "平均归一化分数（在 21 次运行上，对该"
+      },
+      {
+        "text": "Comparison to Other Algorithms in the Continuous Domain",
+        "x": 99.7,
+        "y": 217.6,
+        "w": 347,
+        "h": 11.6,
+        "zh": "与连续域中的其他算法比较"
+      },
+      {
+        "text": "Next, we compare PPO (with the “clipped” surrogate objective from Section 3) to several other methods from the literature, which are considered to be effective for continuous problems. We compared against tuned implementations of the following algorithms: trust region policy optimization [Sch+15b], cross-entropy method (CEM) [SL06], vanilla policy gradient with adaptive stepsize ,",
+        "x": 69.9,
+        "y": 159.1,
+        "w": 455.4,
+        "h": 49.4,
+        "zh": "接下来，我们把 PPO（使用第 3 节的“裁剪”替代目标）与文献中的另外几种方法作比较，这些方法被认为对连续问题是有效的。我们比较的是下列算法经过调参的实现：信赖域策略优化 [Sch+15b]、交叉熵方法（CEM）[SL06]、带自适应步长的普通策略梯度，"
+      },
+      {
+        "text": "HalfCheetah, Hopper, InvertedDoublePendulum, InvertedPendulum, Reacher, Swimmer, and Walker2d, all “-v1” After each batch of data, the Adam stepsize is adjusted based on the KL divergence of the original and updated policy, using a rule similar to the one shown in Section 4. An implementation is available at https://github.com/",
+        "x": 69.9,
+        "y": 118.7,
+        "w": 455.4,
+        "h": 28.4,
+        "zh": "HalfCheetah、Hopper、InvertedDoublePendulum、InvertedPendulum、Reacher、Swimmer 和 Walker2d，全部为“-v1”。每批数据之后，根据原策略与更新后策略的 KL 散度来调整 Adam 的步长，规则与第 4 节所示类似。一份实现见 https://github.com/"
+      }
+    ],
+    "7": [
+      {
+        "text": "A2C [Mni+16], A2C with trust region [Wan+16]. A2C stands for advantage actor critic, and is a synchronous version of A3C, which we found to have the same or better performance than the",
+        "x": 69.9,
+        "y": 712.7,
+        "w": 455.4,
+        "h": 23.5,
+        "zh": "A2C [Mni+16]，以及带信赖域的 A2C [Wan+16]。A2C 是 advantage actor critic 的缩写，是 A3C 的同步版本；我们发现它的表现与那个相同，或者比那个更好"
+      },
+      {
+        "text": "For PPO, we used the hyperparameters from the previous section, with \u000f = 0.2. We see that PPO outperforms the previous methods on almost all the continuous control",
+        "x": 69.9,
+        "y": 686.8,
+        "w": 455.4,
+        "h": 23.5,
+        "zh": "对于 PPO，我们使用上一节的超参数，取 ε = 0.2。可以看到，在几乎所有连续控制上，PPO 都优于先前的方法"
+      },
+      {
+        "text": "Figure 3: Comparison of several algorithms on several MuJoCo environments, training for one million",
+        "x": 69.9,
+        "y": 458.1,
+        "w": 455.4,
+        "h": 9.7,
+        "zh": "图 3：几种算法在若干 MuJoCo 环境上的比较，训练长度为一百万"
+      },
+      {
+        "text": "Showcase in the Continuous Domain: Humanoid Running and Steering",
+        "x": 99.7,
+        "y": 403.5,
+        "w": 408.4,
+        "h": 11.6,
+        "zh": "连续域中的展示：人形机器人的奔跑与转向"
+      },
+      {
+        "text": "To showcase the performance of PPO on high-dimensional continuous control problems, we train on a set of problems involving a 3D humanoid, where the robot must run, steer, and get up off the ground, possibly while being pelted by cubes. boschoolHumanoid: forward locomotion only, (2) RoboschoolHumanoidFlagrun: position of target is randomly varied every 200 timesteps or whenever the goal is reached, (3) RoboschoolHumanoidFlagrunHarder, where the robot is pelted by cubes and needs to get up off the ground. See Figure 5 for still frames of a learned policy, and Figure 4 for learning curves on the three tasks. Hyperparameters are provided in Table 4. In concurrent work, Heess et al. [Hee+17] used the adaptive KL variant of PPO (Section 4) to learn locomotion policies for 3D robots.",
+        "x": 69.9,
+        "y": 280.3,
+        "w": 455.4,
+        "h": 114,
+        "zh": "为了展示 PPO 在高维连续控制问题上的表现，我们在一组涉及 3D 人形机器人的问题上训练：机器人必须奔跑、转向，并从地上爬起来，其间还可能被立方体砸中。boschoolHumanoid：只做向前的运动；(2) RoboschoolHumanoidFlagrun：目标位置每 200 个时间步随机变化一次，或者一旦到达目标就变化；(3) RoboschoolHumanoidFlagrunHarder：机器人被立方体砸中，并且需要从地上爬起来。学到的策略的静帧见图 5，三个任务的学习曲线见图 4。超参数见表 4。在同期工作中，Heess 等人 [Hee+17] 使用 PPO 的自适应 KL 变体（第 4 节）来学习 3D 机器人的运动策略。"
+      },
+      {
+        "text": "Figure 4: Learning curves from PPO on 3D humanoid control tasks, using Roboschool.",
+        "x": 112.7,
+        "y": 141.9,
+        "w": 369.9,
+        "h": 9.7,
+        "zh": "图 4：PPO 在 3D 人形控制任务上的学习曲线，使用的是 Roboschool。"
+      }
+    ],
+    "8": [
+      {
+        "text": "Figure 5: Still frames of the policy learned from RoboschoolHumanoidFlagrun. In the first six frames, the robot runs towards a target. Then the position is randomly changed, and the robot turns and runs toward",
+        "x": 69.9,
+        "y": 609,
+        "w": 455.4,
+        "h": 21.1,
+        "zh": "图 5：从 RoboschoolHumanoidFlagrun 学到的策略的静帧。前六帧里，机器人跑向一个目标。随后位置被随机改变，机器人转身并跑向"
+      },
+      {
+        "text": "Comparison to Other Algorithms on the Atari Domain",
+        "x": 99.7,
+        "y": 564.2,
+        "w": 315.1,
+        "h": 11.6,
+        "zh": "与 Atari 域中的其他算法比较"
+      },
+      {
+        "text": "We also ran PPO on the Arcade Learning Environment [Bel+15] benchmark and compared against well-tuned implementations of A2C [Mni+16] and ACER [Wan+16]. For all three algorithms, we used the same policy network architechture as used in [Mni+16]. The hyperparameters for PPO are provided in Table 5. For the other two algorithms, we used hyperparameters that were tuned",
+        "x": 69.9,
+        "y": 505.6,
+        "w": 455.4,
+        "h": 49.4,
+        "zh": "我们也在 Arcade Learning Environment [Bel+15] 基准上跑了 PPO，并与仔细调过的 A2C [Mni+16] 和 ACER [Wan+16] 实现作了比较。三种算法使用与 [Mni+16] 相同的策略网络架构。PPO 的超参数见表 5。另外两种算法所用的超参数是调过的，以便"
+      },
+      {
+        "text": "to maximize performance on this benchmark.",
+        "x": 69.9,
+        "y": 492.7,
+        "w": 210.7,
+        "h": 10.6,
+        "zh": "在这个基准上把表现尽量提高。"
+      },
+      {
+        "text": "A table of results and learning curves for all 49 games is provided in Appendix B. We consider the following two scoring metrics: (1) average reward per episode over entire training period (which favors fast learning), and (2) average reward per episode over last 100 episodes of training (which favors final performance). Table 2 shows the number of games “won” by each algorithm, where we compute the victor by averaging the scoring metric across three trials.",
+        "x": 69.9,
+        "y": 428.1,
+        "w": 455.4,
+        "h": 62.3,
+        "zh": "全部 49 个游戏的结果表和学习曲线见附录 B。我们考虑下面两种计分方式：(1) 整个训练期间每回合的平均奖励（偏向学得快），以及 (2) 训练最后 100 个回合的每回合平均奖励（偏向最终表现）。表 2 给出每种算法“赢”下的游戏数量；胜者是把该计分指标在三次试验上取平均之后比较得出的。"
+      },
+      {
+        "text": "(1) avg. episode reward over all of training (2) avg. episode reward over last 100 episodes",
+        "x": 122.8,
+        "y": 370.4,
+        "w": 213.8,
+        "h": 23.5,
+        "zh": "(1) 整个训练过程的平均每回合奖励　(2) 最后 100 个回合的平均每回合奖励"
+      },
+      {
+        "text": "Table 2: Number of games “won” by each algorithm, where the scoring metric is averaged across three trials.",
+        "x": 69.9,
+        "y": 346.1,
+        "w": 455.4,
+        "h": 9.7,
+        "zh": "表 2：每种算法“赢”下的游戏数量，计分指标在三次试验上取平均。"
+      },
+      {
+        "text": "We have introduced proximal policy optimization, a family of policy optimization methods that use multiple epochs of stochastic gradient ascent to perform each policy update. These methods have the stability and reliability of trust-region methods but are much simpler to implement, requiring only few lines of code change to a vanilla policy gradient implementation, applicable in more general settings (for example, when using a joint architecture for the policy and value function), and have",
+        "x": 69.9,
+        "y": 224.9,
+        "w": 455.4,
+        "h": 62.3,
+        "zh": "我们介绍了近端策略优化（proximal policy optimization），这是一族策略优化方法，每次策略更新都用多轮随机梯度上升来完成。这些方法具有信赖域方法的稳定性与可靠性，但实现起来简单得多：相对普通策略梯度的实现，只需要改很少几行代码；也能用在更一般的设定中（例如策略和价值函数使用联合架构），并且具有"
+      },
+      {
+        "text": "Thanks to Rocky Duan, Peter Chen, and others at OpenAI for insightful comments.",
+        "x": 69.9,
+        "y": 155.5,
+        "w": 392.4,
+        "h": 10.6,
+        "zh": "感谢 OpenAI 的 Rocky Duan、Peter Chen 以及其他人的有见地的意见。"
+      }
+    ],
+    "9": [
+      {
+        "text": "M. Bellemare, Y. Naddaf, J. Veness, and M. Bowling. “The arcade learning environment: An evaluation platform for general agents”. In: Twenty-Fourth International Joint Conference on Artificial Intelligence. 2015. G. Brockman, V. Cheung, L. Pettersson, J. Schneider, J. Schulman, J. Tang, and W. Zaremba. “OpenAI Gym”. In: arXiv preprint arXiv:1606.01540 (2016). Y. Duan, X. Chen, R. Houthooft, J. Schulman, and P. Abbeel. “Benchmarking Deep Reinforcement Learning for Continuous Control”. In: arXiv preprint arXiv:1604.06778",
+        "x": 127.4,
+        "y": 615.9,
+        "w": 397.9,
+        "h": 96.9,
+        "zh": "M. Bellemare、Y. Naddaf、J. Veness、M. Bowling。街机学习环境：通用智能体的评估平台。第 24 届国际人工智能联合会议（Twenty-Fourth International Joint Conference on Artificial Intelligence），2015。G. Brockman、V. Cheung、L. Pettersson、J. Schneider、J. Schulman、J. Tang、W. Zaremba。OpenAI Gym。arXiv preprint arXiv:1606.01540（2016）。Y. Duan、X. Chen、R. Houthooft、J. Schulman、P. Abbeel。连续控制的深度强化学习基准评测。arXiv preprint arXiv:1604.06778"
+      },
+      {
+        "text": "N. Heess, S. Sriram, J. Lemmon, J. Merel, G. Wayne, Y. Tassa, T. Erez, Z. Wang, A. Eslami, M. Riedmiller, et al. “Emergence of Locomotion Behaviours in Rich Environments”. In: arXiv preprint arXiv:1707.02286 (2017). S. Kakade and J. Langford. “Approximately optimal approximate reinforcement learning”. In: ICML. Vol. 2. 2002, pp. 267–274. D. Kingma and J. Ba. “Adam: A method for stochastic optimization”. In: arXiv",
+        "x": 127.4,
+        "y": 512.4,
+        "w": 397.9,
+        "h": 83.9,
+        "zh": "N. Heess、S. Sriram、J. Lemmon、J. Merel、G. Wayne、Y. Tassa、T. Erez、Z. Wang、A. Eslami、M. Riedmiller 等。丰富环境中运动行为的涌现。arXiv preprint arXiv:1707.02286（2017）。S. Kakade、J. Langford。近似最优的近似强化学习。ICML，第 2 卷，2002，第 267–274 页。D. Kingma、J. Ba。Adam：一种随机优化方法。arXiv"
+      },
+      {
+        "text": "V. Mnih, K. Kavukcuoglu, D. Silver, A. A. Rusu, J. Veness, M. G. Bellemare, A. Graves, M. Riedmiller, A. K. Fidjeland, G. Ostrovski, et al. “Human-level control through deep reinforcement learning”. In: Nature 518.7540 (2015), pp. 529–533. V. Mnih, A. P. Badia, M. Mirza, A. Graves, T. P. Lillicrap, T. Harley, D. Silver, and K. Kavukcuoglu. “Asynchronous methods for deep reinforcement learning”. In: arXiv",
+        "x": 127.4,
+        "y": 426.1,
+        "w": 397.9,
+        "h": 66.7,
+        "zh": "V. Mnih、K. Kavukcuoglu、D. Silver、A. A. Rusu、J. Veness、M. G. Bellemare、A. Graves、M. Riedmiller、A. K. Fidjeland、G. Ostrovski 等。通过深度强化学习达到人类水平的控制。Nature，518.7540（2015），第 529–533 页。V. Mnih、A. P. Badia、M. Mirza、A. Graves、T. P. Lillicrap、T. Harley、D. Silver、K. Kavukcuoglu。深度强化学习的异步方法。arXiv"
+      },
+      {
+        "text": "J. Schulman, P. Moritz, S. Levine, M. Jordan, and P. Abbeel. “High-dimensional continuous control using generalized advantage estimation”. In: arXiv preprint arXiv:1506.02438",
+        "x": 127.4,
+        "y": 383,
+        "w": 411.1,
+        "h": 23.5,
+        "zh": "J. Schulman、P. Moritz、S. Levine、M. Jordan、P. Abbeel。用广义优势估计做高维连续控制。arXiv preprint arXiv:1506.02438"
+      },
+      {
+        "text": "J. Schulman, S. Levine, P. Moritz, M. I. Jordan, and P. Abbeel. “Trust region policy optimization”. In: CoRR, abs/1502.05477 (2015). I. Szita and A. L¨orincz. “Learning Tetris using the noisy cross-entropy method”. In: Neural computation 18.12 (2006), pp. 2936–2941. E. Todorov, T. Erez, and Y. Tassa. “MuJoCo: A physics engine for model-based control”. In: Intelligent Robots and Systems (IROS), 2012 IEEE/RSJ International Conference on. IEEE. 2012, pp. 5026–5033. Z. Wang, V. Bapst, N. Heess, V. Mnih, R. Munos, K. Kavukcuoglu, and N. de Freitas. “Sample Efficient Actor-Critic with Experience Replay”. In: arXiv preprint arXiv:1611.01224",
+        "x": 127.4,
+        "y": 236.3,
+        "w": 424,
+        "h": 127.1,
+        "zh": "J. Schulman、S. Levine、P. Moritz、M. I. Jordan、P. Abbeel。信赖域策略优化。CoRR，abs/1502.05477（2015）。I. Szita、A. Lörincz。用带噪声的交叉熵方法学习 Tetris。Neural computation，18.12（2006），第 2936–2941 页。E. Todorov、T. Erez、Y. Tassa。MuJoCo：面向基于模型的控制的物理引擎。Intelligent Robots and Systems (IROS)，2012 IEEE/RSJ International Conference on，IEEE，2012，第 5026–5033 页。Z. Wang、V. Bapst、N. Heess、V. Mnih、R. Munos、K. Kavukcuoglu、N. de Freitas。带经验回放的样本高效 Actor-Critic。arXiv preprint arXiv:1611.01224"
+      },
+      {
+        "text": "R. J. Williams. “Simple statistical gradient-following algorithms for connectionist reinforcement learning”. In: Machine learning 8.3-4 (1992), pp. 229–256.",
+        "x": 127.4,
+        "y": 193.2,
+        "w": 397.9,
+        "h": 23.5,
+        "zh": "R. J. Williams。用于联结主义强化学习的简单统计梯度跟随算法。Machine learning，8.3-4（1992），第 229–256 页。"
+      }
+    ],
+    "10": [
+      {
+        "text": "Table 3: PPO hyperparameters used for the Mujoco 1 million timestep benchmark.",
+        "x": 120.6,
+        "y": 580.2,
+        "w": 354.2,
+        "h": 9.7,
+        "zh": "表 3：Mujoco 一百万时间步基准所用的 PPO 超参数。"
+      },
+      {
+        "text": "32 (locomotion), 128 (flagrun) LinearAnneal(−0.7, −1.6)",
+        "x": 309,
+        "y": 440.9,
+        "w": 140.1,
+        "h": 23.5,
+        "zh": "32（locomotion），128（flagrun）；LinearAnneal(−0.7, −1.6)"
+      },
+      {
+        "text": "Table 4: PPO hyperparameters used for the Roboschool experiments. Adam stepsize was adjusted based on",
+        "x": 69.9,
+        "y": 407.7,
+        "w": 455.4,
+        "h": 9.7,
+        "zh": "表 4：Roboschool 实验所用的 PPO 超参数。Adam 步长的调整依据是"
+      },
+      {
+        "text": "Table 5: PPO hyperparameters used in Atari experiments. α is linearly annealed from 1 to 0 over the course",
+        "x": 69.9,
+        "y": 197.9,
+        "w": 455.4,
+        "h": 9.7,
+        "zh": "表 5：Atari 实验所用的 PPO 超参数。α 在整个过程中从 1 线性退火到 0"
+      },
+      {
+        "text": "Here we include a comparison of PPO against A2C on a larger collection of 49 Atari games. Figure 6 shows the learning curves of each of three random seeds, while Table 6 shows the mean performance.",
+        "x": 69.9,
+        "y": 118.6,
+        "w": 455.4,
+        "h": 23.5,
+        "zh": "这里我们给出 PPO 与 A2C 在更大的一组、共 49 个 Atari 游戏上的比较。图 6 显示三个随机种子各自的学习曲线，表 6 给出平均表现。"
+      }
+    ],
+    "11": [
+      {
+        "text": "Figure 6: Comparison of PPO and A2C on all 49 ATARI games included in OpenAI Gym at the time of",
+        "x": 69.9,
+        "y": 175.4,
+        "w": 455.4,
+        "h": 9.7,
+        "zh": "图 6：PPO 与 A2C 在 OpenAI Gym 当时所收录的全部 49 个 ATARI 游戏上的比较，其时间是"
+      }
+    ],
+    "12": [
+      {
+        "text": "Table 6: Mean final scores (last 100 episodes) of PPO and A2C on Atari games after 40M game frames (10M",
+        "x": 69.9,
+        "y": 128.6,
+        "w": 455.4,
+        "h": 9.7,
+        "zh": "表 6：在 40M 游戏帧（10M 之后，PPO 与 A2C 在 Atari 游戏上的平均最终分数（最后 100 个回合）"
+      }
+    ]
+  }
+}

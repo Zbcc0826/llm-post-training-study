@@ -1,0 +1,1759 @@
+{
+  "id": "2501.03262",
+  "title": "2501.03262",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "REINFORCE++: Stabilizing Critic-Free Policy Optimization with Global Normalization",
+        "x": 133.1,
+        "y": 736.3,
+        "w": 329,
+        "h": 30.3,
+        "zh": "REINFORCE++：用全局归一化稳定无 Critic 的策略优化"
+      },
+      {
+        "text": "Despite the emergence of non-RL alternatives",
+        "x": 306.1,
+        "y": 611,
+        "w": 218.3,
+        "h": 10.9,
+        "zh": "尽管已经出现了非强化学习的替代方案"
+      },
+      {
+        "text": "(Rafailov et al., 2023), state-ofReinforcement Learning from Human Feed-",
+        "x": 87.9,
+        "y": 591.1,
+        "w": 438.4,
+        "h": 17.3,
+        "zh": ""
+      },
+      {
+        "text": "the-art applications such as ChatGPT/GPT-4 back (RLHF) plays a crucial role in aligning",
+        "x": 87.9,
+        "y": 579.1,
+        "w": 436.9,
+        "h": 15.7,
+        "zh": ""
+      },
+      {
+        "text": "(Vemprala et al., 2023; OpenAI, 2023), Claude Large Language Models (LLMs). The dom-",
+        "x": 87.9,
+        "y": 567.2,
+        "w": 436.5,
+        "h": 14.1,
+        "zh": ""
+      },
+      {
+        "text": "(Anthropic, 2023), and Gemini (Team et al., inant algorithm, Proximal Policy Optimiza-",
+        "x": 87.9,
+        "y": 555.2,
+        "w": 438,
+        "h": 12.5,
+        "zh": ""
+      },
+      {
+        "text": "2023) continue to rely on RL algorithms. tion (PPO), employs a critic network to estimate advantages, which introduces signif-",
+        "x": 87.9,
+        "y": 531.3,
+        "w": 412.1,
+        "h": 22.9,
+        "zh": ""
+      },
+      {
+        "text": "The dominant RL algorithm in this space is icant computational and memory overhead.",
+        "x": 87.9,
+        "y": 519.4,
+        "w": 436.5,
+        "h": 21.3,
+        "zh": ""
+      },
+      {
+        "text": "Proximal Policy Optimization (PPO) (SchulTo address this, a family of critic-free algo-",
+        "x": 87.5,
+        "y": 507.4,
+        "w": 438.7,
+        "h": 19.7,
+        "zh": ""
+      },
+      {
+        "text": "man et al., 2017). PPO employs an \"Actorrithms (e.g., GRPO, RLOO) has emerged.",
+        "x": 87.9,
+        "y": 495.5,
+        "w": 438.3,
+        "h": 18.1,
+        "zh": ""
+      },
+      {
+        "text": "Critic\" architecture, where a dedicated critic However, these methods typically rely on",
+        "x": 87.9,
+        "y": 483.5,
+        "w": 436.5,
+        "h": 16.5,
+        "zh": ""
+      },
+      {
+        "text": "network is trained to estimate the advantage prompt-level (local) advantage normaliza-",
+        "x": 87.9,
+        "y": 471.5,
+        "w": 436.5,
+        "h": 14.9,
+        "zh": ""
+      },
+      {
+        "text": "function (i.e., the extent to which an action tion, which suffers from inaccurate advan-",
+        "x": 87.9,
+        "y": 459.6,
+        "w": 436.5,
+        "h": 13.3,
+        "zh": ""
+      },
+      {
+        "text": "yields a higher expected return than the mean). tage estimation, a tendency to overfit, and,",
+        "x": 87.9,
+        "y": 447.6,
+        "w": 438.7,
+        "h": 11.7,
+        "zh": ""
+      },
+      {
+        "text": "However, this critic network introduces subas we show, is a theoretically biased estimator. To solve these challenges, we introduce",
+        "x": 87.9,
+        "y": 423.7,
+        "w": 438.3,
+        "h": 22.1,
+        "zh": ""
+      },
+      {
+        "text": "stantial computational overhead and memory REINFORCE++ , a critic-free frame-",
+        "x": 87.9,
+        "y": 411.8,
+        "w": 436.9,
+        "h": 20.5,
+        "zh": ""
+      },
+      {
+        "text": "demands, making training very expensive and work centered on Global Advantage Nor-",
+        "x": 87.5,
+        "y": 399.8,
+        "w": 436.9,
+        "h": 18.9,
+        "zh": ""
+      },
+      {
+        "text": "limiting large model alignment in small-scale malization. By normalizing advantages",
+        "x": 87.9,
+        "y": 387.9,
+        "w": 436.5,
+        "h": 17.3,
+        "zh": ""
+      },
+      {
+        "text": "clusters (Shao et al., 2024). across the entire global batch rather than",
+        "x": 87.9,
+        "y": 375.9,
+        "w": 348,
+        "h": 15.7,
+        "zh": ""
+      },
+      {
+        "text": "To address PPO’s efficiency issues, a family small, prompt-specific groups, our method",
+        "x": 87.9,
+        "y": 363.9,
+        "w": 436.9,
+        "h": 14.1,
+        "zh": ""
+      },
+      {
+        "text": "of REINFORCE-based methods has emerged provides a more stable and theoretically",
+        "x": 87.9,
+        "y": 352,
+        "w": 436.5,
+        "h": 12.5,
+        "zh": ""
+      },
+      {
+        "text": "without the critic model, including ReMax (Li sound, effectively unbiased estimate (whose bias vanishes as batch size increases). We in-",
+        "x": 87.9,
+        "y": 328.1,
+        "w": 436.5,
+        "h": 22.9,
+        "zh": ""
+      },
+      {
+        "text": "et al., 2023), RLOO (Ahmadian et al., 2024), troduce two variants: REINFORCE++ ,",
+        "x": 87.9,
+        "y": 316.1,
+        "w": 438,
+        "h": 21.3,
+        "zh": ""
+      },
+      {
+        "text": "and GRPO (Shao et al., 2024). a highly efficient and general algorithm",
+        "x": 87.9,
+        "y": 304.2,
+        "w": 373.8,
+        "h": 19.7,
+        "zh": ""
+      },
+      {
+        "text": "rithms remove the critic network and instead (k ≥ 1) for general-domain RLHF, and",
+        "x": 86.7,
+        "y": 292.2,
+        "w": 437.7,
+        "h": 18.1,
+        "zh": ""
+      },
+      {
+        "text": "estimate the advantage using statistics from REINFORCE++w/ Baseline , a robust",
+        "x": 87.9,
+        "y": 278.5,
+        "w": 436.5,
+        "h": 18.3,
+        "zh": ""
+      },
+      {
+        "text": "multiple responses to the same prompt. group-sampling variant (k > 1) for com-",
+        "x": 87.9,
+        "y": 268.3,
+        "w": 405.9,
+        "h": 14.9,
+        "zh": ""
+      },
+      {
+        "text": "However, this critic-free approach introduces plex reasoning tasks. Our empirical evalua-",
+        "x": 87.9,
+        "y": 256.3,
+        "w": 436.5,
+        "h": 13.3,
+        "zh": ""
+      },
+      {
+        "text": "a new, critical challenge: advantage estimation.",
+        "x": 306.1,
+        "y": 245.2,
+        "w": 220.4,
+        "h": 10.9,
+        "zh": "一个新的关键难题：优势估计。"
+      },
+      {
+        "text": "Methods like GRPO and RLOO use promptsuperior stability and performance in its respective domain, outperforming existing",
+        "x": 87.9,
+        "y": 220.5,
+        "w": 438.6,
+        "h": 22.1,
+        "zh": ""
+      },
+      {
+        "text": "level (local) normalization, calculating the methods and even PPO in complex agentic",
+        "x": 87.9,
+        "y": 208.5,
+        "w": 436.5,
+        "h": 20.5,
+        "zh": ""
+      },
+      {
+        "text": "baseline and standard deviation only from the small group of responses generated for a single",
+        "x": 306.1,
+        "y": 191,
+        "w": 218.3,
+        "h": 24.5,
+        "zh": "基线和标准差，只从为单个……生成的那一小群回答中计算"
+      },
+      {
+        "text": "This approach suffers from several critical flaws. First, as demonstrated in ApReinforcement Learning from Human Feedback",
+        "x": 70.9,
+        "y": 154.4,
+        "w": 455.4,
+        "h": 34,
+        "zh": ""
+      },
+      {
+        "text": "pendix Section A, the prompt-level advantage (RLHF) is a key technique for aligning Large",
+        "x": 69.6,
+        "y": 140.8,
+        "w": 454.8,
+        "h": 20.4,
+        "zh": ""
+      },
+      {
+        "text": "estimator is mathematically biased, as the nuLanguage Models (LLMs) with human values",
+        "x": 70.9,
+        "y": 127.3,
+        "w": 455.4,
+        "h": 20.4,
+        "zh": ""
+      },
+      {
+        "text": "merator (centered reward) and the denominator and preferences (Vemprala et al., 2023; Achiam",
+        "x": 70.9,
+        "y": 113.8,
+        "w": 453.8,
+        "h": 20.4,
+        "zh": ""
+      },
+      {
+        "text": "(local standard deviation) are not independent. et al., 2023; Ouyang et al., 2022; Shen and",
+        "x": 70.9,
+        "y": 100.2,
+        "w": 455.7,
+        "h": 20.4,
+        "zh": ""
+      },
+      {
+        "text": "Second, the advantage estimate is sensitive to Zhang, 2024; Shen et al., 2025; Hu et al., 2024).",
+        "x": 70.9,
+        "y": 86.7,
+        "w": 453.5,
+        "h": 20.4,
+        "zh": ""
+      },
+      {
+        "text": "the small number of samples in the local group (e.g., k = 4 or k = 8), where the high variance Corresponding author",
+        "x": 87.5,
+        "y": 69.1,
+        "w": 437,
+        "h": 24.5,
+        "zh": ""
+      }
+    ],
+    "2": [
+      {
+        "text": "leads to instability.. If all samples receive similar rewards, the local std(·) approaches zero, causing the advantage to explode and destabilizing training. Finally, the method encourages overfitting to specific prompts, as the policy is optimized to \"win\" within its local group rather than achieving a globally high reward, which harms generalization. We introduce two distinct variants of this framework, each tailored to a specific use case. REINFORCE++ is an efficient algorithm with",
+        "x": 70.5,
+        "y": 621.9,
+        "w": 220.8,
+        "h": 149.1,
+        "zh": "会导致不稳定。如果所有样本拿到的奖励差不多，局部标准差 std(·) 就会接近 0，优势随之爆炸，训练也被带崩。最后，这种方法会鼓励对特定提示过拟合：策略被优化成在自己的局部组里「赢」，而不是去拿全局更高的奖励，泛化因此变差。我们为这个框架提出两种不同变体，各自对应一种用途。REINFORCE++ 是一种高效算法，它"
+      },
+      {
+        "text": "PPO and Critic-Free RLHF PPO optimizes LLMs by maximizing the following surrogate objective:",
+        "x": 306.1,
+        "y": 708.4,
+        "w": 220.1,
+        "h": 41.9,
+        "zh": "PPO 与无 Critic 的 RLHF。PPO 通过最大化下面的代理目标来优化 LLM："
+      },
+      {
+        "text": "In its k = 1 configuration (detailed in Algorithm 1), it maximizes prompt diversity for general-domain RLHF. It can also",
+        "x": 70.9,
+        "y": 581.3,
+        "w": 220.1,
+        "h": 38,
+        "zh": "在 k = 1 的配置下（详见算法 1），它为通用领域的 RLHF 尽量提高提示的多样性。它也可以"
+      },
+      {
+        "text": "ity ratio. The advantage At is typically calculated using Generalized Advantage Estimation (GAE) (Schulman et al., 2018):",
+        "x": 306.1,
+        "y": 553.6,
+        "w": 220.1,
+        "h": 38,
+        "zh": "概率比。优势 At 通常用广义优势估计（GAE）（Schulman et al., 2018）来计算："
+      },
+      {
+        "text": "1 (Section 4.2), using the same global normalization principle. REINFORCE++w/ Baseline is a specialized variant for complex tasks (k > 1) that benefits from group sampling. It fixes the flaws of GRPO by first subtracting the group mean (for reward reshaping) and then normalizing by the global standard deviation (for stability). It also employs a more stable k2 for the KL estimator, as detailed in Appendix Section B.1. In summary, our contributions are as follows:",
+        "x": 70,
+        "y": 432.2,
+        "w": 221.2,
+        "h": 146.4,
+        "zh": "1（第 4.2 节），并沿用同一套全局归一化原则。REINFORCE++w/ Baseline 是面向复杂任务（k > 1）的专用变体，能从分组采样中受益。它先减去组内均值（用来重塑奖励），再按全局标准差归一化（用来稳住训练），从而补上 GRPO 的缺陷。KL 估计也改用更稳的 k2，详见附录 B.1 节。总之，我们的贡献如下："
+      },
+      {
+        "text": "where δq,ot = rt + γV (ot+1) − V (ot) is the temporal difference error, and V (·) is the critic",
+        "x": 305.8,
+        "y": 472.3,
+        "w": 220.5,
+        "h": 24.5,
+        "zh": "其中 δq,ot = rt + γV(ot+1) − V(ot) 是时序差分误差，V(·) 是 Critic"
+      },
+      {
+        "text": "Critic-free methods in Figure 1 remove the critic V (·) and compute the advantage At directly from rewards.",
+        "x": 306.1,
+        "y": 418,
+        "w": 220.1,
+        "h": 38,
+        "zh": "图 1 中的无 Critic 方法去掉 Critic V(·)，直接由奖励计算优势 At。"
+      },
+      {
+        "text": "• We provide a theoretical proof that the prompt-level (local) advantage normalization used in methods like GRPO is a biased estimator (Appendix Section A).",
+        "x": 82.3,
+        "y": 358.4,
+        "w": 208.7,
+        "h": 51.6,
+        "zh": "• 我们给出理论证明：GRPO 这类方法使用的提示级（局部）优势归一化是有偏估计（附录 A 节）。"
+      },
+      {
+        "text": "• ReMax (Li et al., 2023) uses a greedy decoding response oˆ as the baseline: Aq,o",
+        "x": 306.1,
+        "y": 380.1,
+        "w": 220.1,
+        "h": 26.1,
+        "zh": "• ReMax（Li et al., 2023）用一条贪心解码的回答 ô 作为基线：Aq,o"
+      },
+      {
+        "text": "• RLOO (Ahmadian et al., 2024) samples k responses and uses the mean of others as the",
+        "x": 306.1,
+        "y": 331.8,
+        "w": 218.3,
+        "h": 24.5,
+        "zh": "• RLOO（Ahmadian et al., 2024）采样 k 条回答，并用其余回答的均值作为"
+      },
+      {
+        "text": "• We propose REINFORCE++ , a critic-free framework centered on Global Advantage Normalization, as a stable, efficient, and theoretically sound alternative.",
+        "x": 82.3,
+        "y": 284.5,
+        "w": 206.9,
+        "h": 51.6,
+        "zh": "• 我们提出 REINFORCE++，一种以全局优势归一化（Global Advantage Normalization）为核心的无 Critic 框架，作为稳定、高效、理论上可靠的替代方案。"
+      },
+      {
+        "text": "• GRPO (Shao et al., 2024) also samples k responses but normalizes the advantage using the mean and standard deviation of the local",
+        "x": 306.1,
+        "y": 265.5,
+        "w": 218.3,
+        "h": 38,
+        "zh": "• GRPO（Shao et al., 2024）同样采样 k 条回答，但用局部的均值和标准差来归一化优势"
+      },
+      {
+        "text": "• We present two specialized algorithms: REINFORCE++ (k ≥ 1) for efficient general-purpose RLHF and reasoning, and",
+        "x": 82.3,
+        "y": 224.2,
+        "w": 208.4,
+        "h": 38,
+        "zh": "• 我们给出两种专用算法：REINFORCE++（k ≥ 1）用于高效的通用 RLHF 和推理，以及"
+      },
+      {
+        "text": "The core issue with methods like GRPO lies in Eq. (3). The usage of prompt-level (local) normalization is problematic for three",
+        "x": 305.8,
+        "y": 132.5,
+        "w": 220.7,
+        "h": 38,
+        "zh": "GRPO 这类方法的核心问题出在式 (3)。使用提示级（局部）归一化，会在三个方面出问题"
+      },
+      {
+        "text": "efficiency and Out-Of-Distribution (OOD) generalization in its domain. At the same time, REINFORCE++w/ Baseline prevents overfitting and outperforms both GRPO and PPO in complex agentic reasoning",
+        "x": 92.7,
+        "y": 82.6,
+        "w": 197.7,
+        "h": 65.1,
+        "zh": "效率，以及该领域中的分布外（Out-Of-Distribution，OOD）泛化。与此同时，REINFORCE++w/ Baseline 能防止过拟合，并在复杂的智能体推理上同时超过 GRPO 和 PPO"
+      },
+      {
+        "text": "1. Theoretical Bias: As formally proven in Appendix Section A, the estimator is biased. Therefore, the numerator (centered",
+        "x": 314.5,
+        "y": 69.1,
+        "w": 211.7,
+        "h": 38,
+        "zh": "1. 理论上的偏差：如附录 A 节所正式证明的，该估计量是有偏的。因此，分子（中心化之后的"
+      }
+    ],
+    "3": [
+      {
+        "text": "The comparison of PPO, ReMax, GRPO, RLOO, and REINFORCE++ . FORCE++ , as shown in the figure, removes the critic model and uses global batch normalization. REINFORCE++w/ Baseline uses group sampling, similar to GRPO/RLOO, but replaces the local group baseline with a group-mean subtraction followed by global batch normalization.",
+        "x": 70.9,
+        "y": 582,
+        "w": 455.5,
+        "h": 45.8,
+        "zh": "PPO、ReMax、GRPO、RLOO 与 REINFORCE++ 的对比。如图所示，REINFORCE++ 去掉 Critic 模型，并使用全局批次归一化。REINFORCE++w/ Baseline 使用分组采样，与 GRPO/RLOO 类似，但把局部组基线换成先减组内均值、再做全局批次归一化。"
+      },
+      {
+        "text": "reward) and the denominator (local stan-",
+        "x": 92.7,
+        "y": 547.5,
+        "w": 198.3,
+        "h": 10.9,
+        "zh": "奖励）与分母（局部标准差"
+      },
+      {
+        "text": "standard PPO reward formulation, which incordard deviation std(·)) are not independent.",
+        "x": 92.7,
+        "y": 533.9,
+        "w": 433.5,
+        "h": 24.5,
+        "zh": ""
+      },
+      {
+        "text": "porates the k1-style KL penalty directly into The denominator’s value is correlated with the rewards in the small group, introducing a systematic error in the advantage",
+        "x": 92.3,
+        "y": 493.3,
+        "w": 432.1,
+        "h": 51.6,
+        "zh": ""
+      },
+      {
+        "text": "Aq,ot = r(o1:T , q) − β · estimate (Mai et al., 2025).",
+        "x": 92.7,
+        "y": 479.7,
+        "w": 351.3,
+        "h": 18.1,
+        "zh": ""
+      },
+      {
+        "text": "2. Practical Instability: In practice, the group size k is small (e.g., 4 or 8). If all",
+        "x": 79.3,
+        "y": 441.4,
+        "w": 209.9,
+        "h": 24.5,
+        "zh": "2. 实践中的不稳定：实践里组大小 k 很小（例如 4 或 8）。如果所有"
+      },
+      {
+        "text": "The key innovation is our normalization stratsampled responses for a prompt happen",
+        "x": 92.7,
+        "y": 427.8,
+        "w": 433.5,
+        "h": 13.7,
+        "zh": ""
+      },
+      {
+        "text": "egy. Instead of a non-existent (for k = 1) or to get similar rewards, the local std(·) ap-",
+        "x": 92.7,
+        "y": 414.3,
+        "w": 431.9,
+        "h": 13.7,
+        "zh": ""
+      },
+      {
+        "text": "biased local norm, we use Global Advantage proaches zero, causing the advantage to",
+        "x": 92.7,
+        "y": 400.7,
+        "w": 431.7,
+        "h": 13.7,
+        "zh": ""
+      },
+      {
+        "text": "Normalization (Andrychowicz et al., 2020): explode. It results in high variance and",
+        "x": 92.7,
+        "y": 387.2,
+        "w": 418.1,
+        "h": 13.7,
+        "zh": ""
+      },
+      {
+        "text": "Aq,ot − mean (A|A ∈ Dbatch) std (A|A ∈ Dbatch) + ϵ 3. Task Overfitting: The policy is rewarded for being \"better than other samples from",
+        "x": 79.3,
+        "y": 335.3,
+        "w": 418.4,
+        "h": 41.4,
+        "zh": ""
+      },
+      {
+        "text": "This global normalization is the core of REINthe same prompt,\" not for being \"globally",
+        "x": 92.7,
+        "y": 321.8,
+        "w": 433.5,
+        "h": 16.6,
+        "zh": ""
+      },
+      {
+        "text": "FORCE++ . As the global batch size Dbatch is good.\" It can lead to overfitting on sim-",
+        "x": 92.7,
+        "y": 308.2,
+        "w": 431.7,
+        "h": 16.6,
+        "zh": ""
+      },
+      {
+        "text": "typically large (e.g., 1024 or more), the mean(·) ple prompts where it’s easy to generate",
+        "x": 92.7,
+        "y": 294.7,
+        "w": 433,
+        "h": 16.6,
+        "zh": ""
+      },
+      {
+        "text": "and std(·) converge to stable constants. diverse rewards, while failing to improve",
+        "x": 92.7,
+        "y": 281.1,
+        "w": 413.2,
+        "h": 16.6,
+        "zh": ""
+      },
+      {
+        "text": "makes the gradient estimator effectively less biased (as N → ∞) and robust to outliers, drastically improving training stability (see Appendix Section A.2).",
+        "x": 305.3,
+        "y": 232.6,
+        "w": 220.9,
+        "h": 51.6,
+        "zh": "使梯度估计实际上偏差更小（当 N → ∞ 时），并且对异常值更稳健，训练稳定性因此大幅提高（见附录 A.2 节）。"
+      },
+      {
+        "text": "The algorithm for the Our method addresses the instability of critic-",
+        "x": 70.9,
+        "y": 220.3,
+        "w": 453.5,
+        "h": 23.2,
+        "zh": ""
+      },
+      {
+        "text": "efficient k = 1 case is detailed in Algorithm free RLHF by replacing biased local normalization with stable global normalization. We propose two variants for different use cases.",
+        "x": 70.9,
+        "y": 179.7,
+        "w": 453.5,
+        "h": 50.3,
+        "zh": ""
+      },
+      {
+        "text": "For more complex tasks, such as multi-step reaGlobal Normalization",
+        "x": 99.3,
+        "y": 155.8,
+        "w": 427,
+        "h": 19,
+        "zh": ""
+      },
+      {
+        "text": "soning, sampling multiple responses per prompt The primary REINFORCE++ algorithm is de-",
+        "x": 70.5,
+        "y": 137.4,
+        "w": 454.2,
+        "h": 23.9,
+        "zh": ""
+      },
+      {
+        "text": "(k > 1) can be beneficial (Yue et al., 2025). For signed for general-purpose RLHF. In its k = 1",
+        "x": 70.9,
+        "y": 123.8,
+        "w": 453.8,
+        "h": 23.9,
+        "zh": ""
+      },
+      {
+        "text": "this, we introduce REINFORCE++w/ Baseline . configuration, it is designed for maximum effi-",
+        "x": 70.9,
+        "y": 110.3,
+        "w": 455.7,
+        "h": 23.9,
+        "zh": ""
+      },
+      {
+        "text": "This variant combines the benefits of groupciency and prompt diversity.",
+        "x": 70.9,
+        "y": 96.7,
+        "w": 455.4,
+        "h": 23.9,
+        "zh": ""
+      },
+      {
+        "text": "sampling with the stability of global normalizaIt optimizes the PPO objective in Eq. (1)",
+        "x": 81.8,
+        "y": 82.6,
+        "w": 444.4,
+        "h": 24.5,
+        "zh": ""
+      },
+      {
+        "text": "tion. The advantage calculation is a two-step but redefines the advantage Aq,ot. We use the",
+        "x": 70.9,
+        "y": 66.4,
+        "w": 453.5,
+        "h": 27.1,
+        "zh": ""
+      }
+    ],
+    "4": [
+      {
+        "text": "Algorithm 1 REINFORCE++ when k = 1 Require: Initial policy model πref, reward models R, task prompts D 1: policy model πθ ← πref 2: for step = 1, . . . , M do Sample a batch Dbatch from D Update the old policy model πold ← πθ Sample output (k = 1) o ∼ πold(· | q) for each question q ∈ Dbatch Compute rewards ri for each sampled",
+        "x": 70.4,
+        "y": 634.4,
+        "w": 220,
+        "h": 137.1,
+        "zh": "算法 1：k = 1 时的 REINFORCE++。需要：初始策略模型 πref、奖励模型 R、任务提示集 D。1：策略模型 πθ ← πref。2：对 step = 1, …, M 执行：从 D 中采样一个批次 Dbatch；把旧策略更新为 πold ← πθ；对每个问题 q ∈ Dbatch，采样输出（k = 1）o ∼ πold(· | q)；为每条采样计算奖励 ri"
+      },
+      {
+        "text": "Relationship with PPO REINFORCE++w/ Baseline can be viewed as a simplified and more stable variant of PPO. It is formally equivalent to a PPO agent where: (1) The critic network is removed; (2) The GAE parameters are set to λ = 1 and γ = 1; and (3) A two-step global batch normalization is used as the baseline instead of a learned value",
+        "x": 304.9,
+        "y": 661.3,
+        "w": 220.8,
+        "h": 109.6,
+        "zh": "与 PPO 的关系。REINFORCE++w/ Baseline 可以看成 PPO 的一种更简单、也更稳定的变体。它在形式上等价于这样的 PPO 智能体：(1) 去掉 Critic 网络；(2) GAE 参数设为 λ = 1、γ = 1；(3) 用两步的全局批次归一化充当基线，而不是学习得到的价值"
+      },
+      {
+        "text": "Compute advantage Aq,ot via Eq. (4) Normalize advantages globally across",
+        "x": 105.6,
+        "y": 595.4,
+        "w": 183.6,
+        "h": 24.5,
+        "zh": "按式 (4) 计算优势 Aq,ot。在全局范围内对优势做归一化"
+      },
+      {
+        "text": "To address these challenges, we propose REINFORCE++ , a method centered on a simple yet powerful idea without the critic model: Global Advantage Normalization. Instead of normalizing within a prompt’s local group, REINFORCE++ normalizes the advantage function across the entire global training batch.",
+        "x": 305.7,
+        "y": 526.8,
+        "w": 220.6,
+        "h": 92.2,
+        "zh": "为应对这些挑战，我们提出 REINFORCE++。它不使用 Critic 模型，核心是一个简单但有力的想法：全局优势归一化。REINFORCE++ 不在某个提示的局部组内做归一化，而是在整个全局训练批次上归一化优势函数。"
+      },
+      {
+        "text": "for iteration = 1, . . . , k do Update πθ by maximizing the objective in Eq. (1) using Aq,o",
+        "x": 89.3,
+        "y": 538.5,
+        "w": 201.6,
+        "h": 40.7,
+        "zh": "对 iteration = 1, …, k 执行：用 Aq,o 最大化式 (1) 中的目标，从而更新 πθ"
+      },
+      {
+        "text": "• Theoretical Stability: batch size grows (e.g., N = 1024), the batch mean and standard deviation converge to constants, resulting in an effectively unbiased (bias vanishes as N → ∞) and low-variance advantage estimator (see Appendix Section A.2).",
+        "x": 317.6,
+        "y": 409.2,
+        "w": 208.7,
+        "h": 92.2,
+        "zh": "• 理论上的稳定性：批次规模增大时（例如 N = 1024），批次均值和标准差收敛到常数，从而得到实际上无偏（偏差随 N → ∞ 消失）、方差也低的优势估计（见附录 A.2 节）。"
+      },
+      {
+        "text": "• Group Mean Subtraction for Reshaping: We first subtract the group mean reward. It serves as a local baseline, reshaping rewards to be robust to different reward scales (e.g., 0/1 vs. −1/1).",
+        "x": 82.3,
+        "y": 408.4,
+        "w": 208.9,
+        "h": 65.1,
+        "zh": "• 减去组内均值以重塑奖励：我们先减去组内平均奖励。它充当局部基线，把奖励重塑成对不同奖励尺度都更稳健的形式（例如 0/1 与 −1/1）。"
+      },
+      {
+        "text": "• Training Efficiency: It retains the criticfree architecture, significantly reducing computational and memory overhead com-",
+        "x": 317.6,
+        "y": 359.3,
+        "w": 208.7,
+        "h": 38,
+        "zh": "• 训练效率：它保留无 Critic 的架构，计算量和内存开销都明显下降"
+      },
+      {
+        "text": "• Global Batch Normalization for Stability: We then normalize this initial advantage using the global batch statistics, not the unstable local group statistics.",
+        "x": 82.3,
+        "y": 311.4,
+        "w": 208.9,
+        "h": 51.6,
+        "zh": "• 用全局批次归一化来求稳：接着用全局批次的统计量来归一化这个初始优势，而不是用不稳定的局部组统计量。"
+      },
+      {
+        "text": "• Strong Generalization: Using a global baseline prevents overfitting to specific prompts and encourages a more robust",
+        "x": 317.6,
+        "y": 295.8,
+        "w": 207.1,
+        "h": 38,
+        "zh": "• 更强的泛化：使用全局基线可以避免对特定提示过拟合，并鼓励更稳健的"
+      },
+      {
+        "text": "This combination avoids the bias and instability of local standard deviation in GRPO. Furthermore, this variant employs a separate KL loss term for regularization. We adopt the k2 estimator. As shown in Appendix Section B.1, the k2 estimator provides a stable, unbiased gradient for the Reverse KL divergence, unlike the k3 estimator (used in GRPO), which is an unstable approximation (Liu et al., 2025a). The final objective is:",
+        "x": 70.5,
+        "y": 121.1,
+        "w": 220.5,
+        "h": 133.2,
+        "zh": "这种组合避开了 GRPO 里局部标准差的偏差和不稳定。此外，该变体另加一项 KL 损失做正则。我们采用 k2 估计量。如附录 B.1 节所示，k2 估计量为反向 KL 散度提供稳定、无偏的梯度；GRPO 使用的 k3 估计量则是不稳定的近似（Liu et al., 2025a）。最终目标是："
+      },
+      {
+        "text": "FORCE++ and REINFORCE++w/ Baseline , in their respective target domains using the OpenRLHF framework (Hu et al., 2024).",
+        "x": 306.1,
+        "y": 197.3,
+        "w": 220.1,
+        "h": 38,
+        "zh": "REINFORCE++ 和 REINFORCE++w/ Baseline，在各自的目标领域中使用 OpenRLHF 框架（Hu et al., 2024）。"
+      },
+      {
+        "text": "First, we evaluate the REINFORCE++ in its 1 configuration, focusing on generaldomain RLHF, where efficiency and prompt",
+        "x": 306.1,
+        "y": 130.5,
+        "w": 220.1,
+        "h": 38,
+        "zh": "首先，我们评估 REINFORCE++ 的 1 这一配置，重点是通用领域 RLHF，此时效率与提示"
+      },
+      {
+        "text": "We use an instructionfollowing policy model (Llama-3-8B-SFT) and refine it using a Bradley-Terry reward model",
+        "x": 306.1,
+        "y": 69.1,
+        "w": 220.1,
+        "h": 38,
+        "zh": "我们使用一个遵循指令的策略模型（Llama-3-8B-SFT），并用 Bradley-Terry 奖励模型来精炼它"
+      }
+    ],
+    "5": [
+      {
+        "text": "(Bai et al., 2022) trained on ∼700K human",
+        "x": 69.6,
+        "y": 760.1,
+        "w": 219.5,
+        "h": 10.9,
+        "zh": "（Bai et al., 2022），在约 700K 条人类"
+      },
+      {
+        "text": "The policy is trained on 20,000 diverse prompts. We compare REINFORCE++ (k = 1) with other critic-free methods: GRPO (k = 4), RLOO (k = 4), and",
+        "x": 70.6,
+        "y": 705.9,
+        "w": 220.4,
+        "h": 51.6,
+        "zh": "策略在 20,000 条多样化提示上训练。我们把 REINFORCE++（k = 1）与其他无 Critic 方法比较：GRPO（k = 4）、RLOO（k = 4），以及"
+      },
+      {
+        "text": "Analysis on Small-Scale Datasets for overfitting, we trained on only 30 questions from AIME-24 and evaluated on AIME-25. As shown in Table 2, GRPO (local norm) achieves a near-perfect 95.0% on the training set but completely fails on the test set (0.0 Pass@1), demonstrating catastrophic overfitting. In contrast, REINFORCE++ with global norm, while scoring lower on the training set (71.0), shows significantly better generalization (2.5 Pass@1,",
+        "x": 306.1,
+        "y": 617.5,
+        "w": 220.1,
+        "h": 132.9,
+        "zh": "小规模数据集上的分析。为检验过拟合，我们只在 AIME-24 的 30 道题上训练，并在 AIME-25 上评估。如表 2 所示，GRPO（局部归一化）在训练集上接近满分，达到 95.0%，但在测试集上完全失败（Pass@1 为 0.0），属于灾难性过拟合。相比之下，带全局归一化的 REINFORCE++ 训练集分数更低（71.0），但泛化明显更好（Pass@1 为 2.5，"
+      },
+      {
+        "text": "As shown in Table 1, the single-sample REINFORCE++ (k = 1) achieves a score of 46.7, statistically tied with the group-sampling GRPO (46.8). However, it produces shorter responses (832 tokens vs. 860), resulting in a higher and more efficient per-token score (0.0561). This result highlights that for general tasks, group sampling (k > 1) is not necessary and may even be suboptimal.",
+        "x": 70.9,
+        "y": 563.5,
+        "w": 220.4,
+        "h": 119.3,
+        "zh": "如表 1 所示，单样本 REINFORCE++（k = 1）得分为 46.7，与分组采样的 GRPO（46.8）在统计上打平。不过它的回答更短（832 个 token，对比 860），因此每 token 得分更高，也更省（0.0561）。这说明对通用任务而言，分组采样（k > 1）并非必要，甚至可能更差。"
+      },
+      {
+        "text": "Figure 3 confirms this. GRPO (left) immediately overfits, mastering the training questions in just a few steps. REINFORCE++ (right) learns more gradually, enabled by the stable global normalization signal.",
+        "x": 306.1,
+        "y": 536.2,
+        "w": 220.1,
+        "h": 65.1,
+        "zh": "图 3 证实了这一点。GRPO（左）立刻过拟合，几步之内就把训练题掌握了。REINFORCE++（右）学得更平缓，靠的是稳定的全局归一化信号。"
+      },
+      {
+        "text": "Figure 2 shows the training dynamics. GRPO’s reward rises quickly, but its KL divergence also increases rapidly, suggesting it is \"hacking\" the reward model. In contrast, REINFORCE++ shows a more stable reward increase with a much smaller KL divergence. It highlights the stability of global normalization and its higher \"KL-to-reward\" conversion efficiency, avoiding the reward hacking seen in local normalization methods, which is often linked to length exploitation (Dubois",
+        "x": 70.9,
+        "y": 407.6,
+        "w": 220.1,
+        "h": 146.4,
+        "zh": "图 2 给出了训练动态。GRPO 的奖励升得很快，但 KL 散度也迅速变大，说明它在钻奖励模型的空子。相比之下，REINFORCE++ 的奖励上升更稳，KL 散度小得多。这体现出全局归一化的稳定性，以及更高的「KL 换奖励」转化效率，避开了局部归一化方法里常见的奖励投机；后者往往和利用长度有关（Dubois"
+      },
+      {
+        "text": "Logical Reasoning (K&K Puzzles) also tested on the Knights and Knaves (K&K) puzzles (Xie et al., 2025, 2024), where difficulty increases with the number of \"people.\" Figure 4 shows that while GRPO is competitive on easy tasks (2-3 people), its performance collapses on harder, OOD tasks (8 people). REINFORCE++ is more robust, outperforming GRPO on all tasks with four or more people and achieving a much higher average score (62.1",
+        "x": 306.1,
+        "y": 393.6,
+        "w": 220.1,
+        "h": 132.9,
+        "zh": "逻辑推理（K&K 谜题）。我们也在骑士与无赖（Knights and Knaves，K&K）谜题上做了测试（Xie et al., 2025, 2024），难度随「人数」上升。图 4 显示，GRPO 在简单任务（2–3 人）上还有竞争力，但在更难的分布外任务（8 人）上成绩崩掉。REINFORCE++ 更稳健，在四个人及以上的所有任务上都超过 GRPO，平均分也高得多（62.1"
+      },
+      {
+        "text": "Finally, we trained a Qwen2.5-Math-Base model from zero on MATH dataset splits (Guo et al., 2025). shows that REINFORCE++ again achieves better OOD generalization on the more challenging AIME-24 and AMC-23 datasets, while remaining competitive on the in-distribution MATH-",
+        "x": 305.7,
+        "y": 278.1,
+        "w": 220.5,
+        "h": 92.2,
+        "zh": "最后，我们在 MATH 数据集的划分上从零训练了 Qwen2.5-Math-Base 模型（Guo et al., 2025）。显示，REINFORCE++ 在更难的 AIME-24 和 AMC-23 上再次取得更好的分布外泛化，同时在分布内的 MATH 上仍有竞争力"
+      },
+      {
+        "text": "Figure 2: Comparison of smoothed Training Reward and KL Divergence. REINFORCE++ (k = 1) achieves strong rewards with significantly more stable (lower) KL divergence, avoiding GRPO’s reward-hacking behavior.",
+        "x": 70.5,
+        "y": 224.7,
+        "w": 220.3,
+        "h": 57.8,
+        "zh": "图 2：平滑后的训练奖励与 KL 散度对比。REINFORCE++（k = 1）能拿到很高的奖励，同时 KL 散度明显更稳（更低），避开了 GRPO 的奖励投机。"
+      },
+      {
+        "text": "Multi-step Reinforcement Learning Finally, to test performance in a complex, multistep environment, we utilize the zero-shot agent setup from (Mai et al., 2025), where a Qwen 2.5 Base 7B model must learn to use Python tools to solve mathematical problems. a challenging scenario where group sampling (k > 1) and reward reshaping are crucial (see Appendix Section 5).",
+        "x": 304.9,
+        "y": 130.3,
+        "w": 221.3,
+        "h": 123.1,
+        "zh": "多步强化学习。最后，为了在复杂的多步环境里测试性能，我们采用 Mai et al., 2025 的零样本智能体设定：Qwen 2.5 Base 7B 模型必须学会使用 Python 工具来解数学题。一个困难场景：分组采样（k > 1）和奖励重塑都至关重要（见附录第 5 节）。"
+      },
+      {
+        "text": "Reasoning Experiments Next, we evaluate REINFORCE++ (groupsample, k > 1) in its target domain: complex reasoning, where group sampling is standard and reward signals are often sparse (e.g., 0/1). We compare it directly with GRPO (k > 1).",
+        "x": 70.3,
+        "y": 118.9,
+        "w": 220.9,
+        "h": 82.4,
+        "zh": "推理实验。接下来，我们在它的目标领域评估 REINFORCE++（分组采样，k > 1）：复杂推理。这里分组采样是常规做法，奖励信号往往很稀疏（例如 0/1）。我们直接把它和 GRPO（k > 1）比较。"
+      },
+      {
+        "text": "training and evaluation protocols of the ZeroTIR environment (Mai et al., 2025). backbone model is Qwen 2.5 Base 7B, trained",
+        "x": 306.1,
+        "y": 69.1,
+        "w": 220.1,
+        "h": 38,
+        "zh": "ZeroTIR 环境（Mai et al., 2025）的训练与评估协议。骨干模型是 Qwen 2.5 Base 7B，训练"
+      },
+      {
+        "text": "We use rule-based rewards (RLVR) in mathematical reasoning settings (Guo et al., 2025;",
+        "x": 70.3,
+        "y": 69.1,
+        "w": 220.6,
+        "h": 24.5,
+        "zh": "我们在数学推理设定中使用基于规则的奖励（RLVR）（Guo et al., 2025；"
+      }
+    ],
+    "6": [
+      {
+        "text": "Table 1: Comparison on Chat-Arena-Hard (Li et al., 2024). The single-sample REINFORCE++ (k = 1) achieves a top-tier score while being more token-efficient than the group-sampling GRPO.",
+        "x": 70.5,
+        "y": 660.9,
+        "w": 455.1,
+        "h": 21.9,
+        "zh": "表 1：在 Chat-Arena-Hard（Li et al., 2024）上的对比。单样本 REINFORCE++（k = 1）拿到第一档的分数，同时比分组采样的 GRPO 更省 token。"
+      },
+      {
+        "text": "Table 2: Comparison on a small training dataset. GRPO (local norm) overfits completely, while REINFORCE++ (global norm) generalizes.",
+        "x": 70.5,
+        "y": 548.7,
+        "w": 455.6,
+        "h": 21.9,
+        "zh": "表 2：在很小的训练集上的对比。GRPO（局部归一化）完全过拟合，而 REINFORCE++（全局归一化）能够泛化。"
+      },
+      {
+        "text": "Figure 3: Training curves on a small prompt dataset. Left: GRPO (local norm) immediately overfits. Right: REINFORCE++ (global norm) learns more stably.",
+        "x": 70.9,
+        "y": 381.9,
+        "w": 455.5,
+        "h": 21.9,
+        "zh": "图 3：小提示数据集上的训练曲线。左：GRPO（局部归一化）立刻过拟合。右：REINFORCE++（全局归一化）学得更稳。"
+      },
+      {
+        "text": "Table 3: Comparison on RL from Zero. REINFORCE++ shows superior OOD performance.",
+        "x": 95.8,
+        "y": 296.1,
+        "w": 403.3,
+        "h": 10,
+        "zh": "表 3：从零开始做强化学习的对比。REINFORCE++ 的分布外表现更好。"
+      },
+      {
+        "text": "using OpenRLHF (Hu et al., 2025a) with datasets from ORZ (Hu et al., 2025b) and DAPO (Yu et al., 2025). formance on benchmarks including AIME 2024 (Jia, 2024), AIME-2025 (math ai, 2025), HMMT FEB-2024/2025, and CMIMC, using the average@32 metric.",
+        "x": 305.9,
+        "y": 180.3,
+        "w": 220,
+        "h": 92.2,
+        "zh": "使用 OpenRLHF（Hu et al., 2025a），数据来自 ORZ（Hu et al., 2025b）和 DAPO（Yu et al., 2025）。在 AIME 2024（Jia, 2024）、AIME-2025（math ai, 2025）、HMMT FEB-2024/2025 和 CMIMC 等基准上的表现，指标为 average@32。"
+      },
+      {
+        "text": "As shown in Table 4, REINFORCE++w/ Baseline achieves the highest Figure 4: Comparison on logic benchmarks. REIN-",
+        "x": 70.9,
+        "y": 134.6,
+        "w": 455.1,
+        "h": 26.7,
+        "zh": ""
+      },
+      {
+        "text": "average accuracy (24.10) across all benchmarks. FORCE++ ’s global normalization provides better robustness to increasing task difficulty and OOD",
+        "x": 70.9,
+        "y": 112,
+        "w": 455.7,
+        "h": 22.1,
+        "zh": ""
+      },
+      {
+        "text": "It significantly outperforms both GRPO (22.58) challenges (8 people).",
+        "x": 70.9,
+        "y": 100.1,
+        "w": 454.8,
+        "h": 20.5,
+        "zh": ""
+      },
+      {
+        "text": "and the full-critic PPO (21.85). strates that our stable, critic-free approach is highly effective for complex agentic tasks, sur-",
+        "x": 306.1,
+        "y": 69.1,
+        "w": 220.1,
+        "h": 38,
+        "zh": "以及带完整 Critic 的 PPO（21.85）。表明，我们这种稳定的无 Critic 做法对复杂的智能体任务非常有效，并超"
+      }
+    ],
+    "7": [
+      {
+        "text": "passing even the heavyweight PPO algorithm. The combination of group-mean reshaping, stable global normalization, and the correct ‘k2‘ KL loss proves to be a superior strategy.",
+        "x": 70.5,
+        "y": 719.4,
+        "w": 220.8,
+        "h": 51.6,
+        "zh": "甚至超过更重的 PPO 算法。组内均值重塑、稳定的全局归一化，再加上正确的 k2 KL 损失，这一组合被证明是更好的策略。"
+      },
+      {
+        "text": "that the global standard deviation is superior to the local standard deviation used in GRPO. Their results show more stable training and better generalization, aligning perfectly with",
+        "x": 305.8,
+        "y": 719.4,
+        "w": 220.8,
+        "h": 51.6,
+        "zh": "全局标准差优于 GRPO 所用的局部标准差。他们的结果显示训练更稳、泛化更好，并且与"
+      },
+      {
+        "text": "(Khatri et al., 2025) performed a detailed ablation study on advantage estimation methods in large-scale (16,000 GPU-hour) experiments. They directly compared batchlevel normalization in REINFORCE++ with prompt-level normalization in GRPO. Their findings concluded that batch-level normalization was \"slightly superior in both compute efficiency and final performance,\" confirming the advantages of global normalization at scale.",
+        "x": 306.1,
+        "y": 560.4,
+        "w": 220.4,
+        "h": 132.9,
+        "zh": "（Khatri et al., 2025）在大规模实验（16,000 GPU 时）中，对优势估计方法做了细致消融。他们直接比较了 REINFORCE++ 的批次级归一化与 GRPO 的提示级归一化。结论是：批次级归一化「在计算效率和最终性能上都略好」，从而在大规模上确认了全局归一化的优势。"
+      },
+      {
+        "text": "This paper introduces two algorithms: REINFORCE++ and REINFORCE++w/ Baseline [n], with a key focus on selecting the appropriate algorithm based on task conditions.",
+        "x": 70.5,
+        "y": 617.2,
+        "w": 220.5,
+        "h": 51.6,
+        "zh": "本文介绍两种算法：REINFORCE++ 和 REINFORCE++w/ Baseline [n]，重点是按任务条件选择合适的算法。"
+      },
+      {
+        "text": "REINFORCE++w/ Baseline [n] larly effective for sample filtering or more complex scenarios. For instance, in the multiturn tool-calling setting, a high proportion of void (i.e., non-informative or incorrect) samples can destabilize the training process. In such cases, incorporating a baseline by",
+        "x": 70.9,
+        "y": 495.2,
+        "w": 220.4,
+        "h": 92.2,
+        "zh": "REINFORCE++w/ Baseline [n] 在样本过滤或更复杂的场景里特别有效。例如，在多轮工具调用设定中，大量空洞样本（也就是没有信息或不正确的样本）会让训练不稳定。在这种情况下，通过引入基线"
+      },
+      {
+        "text": "(Liu et al., 2025b) found that when using truncation to control the output length of an LLM, batch-wise (global) normalization remains stable while group-wise (local) normalization shows declining accuracy. The study provides further evidence that global normalization is more robust to variations in training conditions and reward landscapes.",
+        "x": 306.1,
+        "y": 442,
+        "w": 220.1,
+        "h": 105.8,
+        "zh": "（Liu et al., 2025b）发现，用截断来控制 LLM 的输出长度时，按批次（全局）归一化仍然稳定，而按组（局部）归一化的准确率会下降。这项研究进一步说明，全局归一化对训练条件和奖励形态的变化更稳健。"
+      },
+      {
+        "text": "significantly improves training stability by effectively filtering out void samples. Moreover, this automatic reward reshaping reduces the need for designing complex reward structures.",
+        "x": 70.9,
+        "y": 427.5,
+        "w": 220.4,
+        "h": 51.6,
+        "zh": "能有效滤掉空洞样本，从而显著提高训练稳定性。而且，这种自动的奖励重塑，减少了再去设计复杂奖励结构的必要。"
+      },
+      {
+        "text": "REINFORCE++w/ Baseline [n] supports both 0/1 and -1/1 reward schemes, while REINFORCE++ performs best with symmetric rewards, such as -1/1 in RLVR",
+        "x": 70.5,
+        "y": 373.3,
+        "w": 220.2,
+        "h": 51.6,
+        "zh": "REINFORCE++w/ Baseline [n] 同时支持 0/1 和 -1/1 两种奖励方案，而 REINFORCE++ 在对称奖励上表现最好，例如 RLVR 中的 -1/1"
+      },
+      {
+        "text": "In this paper, we present REINFORCE++ , a critic-free RLHF framework designed to enhance training stability by addressing fundamental flaws in existing methods. We identified that prior critic-free algorithms, such as GRPO, rely on prompt-level (local) advantage normalization, which we prove to be theoretically biased (Appendix Section A) and demonstrate to be practically unstable. Our solution, Global Advantage Normalization, normalizes advantages across the entire batch, providing a stable and effectively unbiased estimator (whose bias vanishes as batch size increases). We proposed two variants tailored for different needs:",
+        "x": 305.3,
+        "y": 202.4,
+        "w": 221.2,
+        "h": 201.5,
+        "zh": "本文提出 REINFORCE++，一种无 Critic 的 RLHF 框架，用来补上现有方法的根本缺陷，从而提高训练稳定性。我们发现，先前的无 Critic 算法（例如 GRPO）依赖提示级（局部）优势归一化；我们证明它在理论上有偏（附录 A 节），并表明它在实践中不稳定。我们的办法是全局优势归一化：在整个批次上归一化优势，从而得到稳定、且实际上无偏的估计（偏差随批次增大而消失）。我们按不同需求提出了两种变体："
+      },
+      {
+        "text": "In contrast, for general-domain tasks where prompt diversity and efficiency are paramount, or for tasks where obtaining multiple reward signals for distinct responses is challenging—such as training with Process-Supervised",
+        "x": 70.5,
+        "y": 291.9,
+        "w": 220.5,
+        "h": 65.1,
+        "zh": "相反，对那些最看重提示多样性和效率的通用领域任务，或者很难为不同回答拿到多份奖励信号的任务——例如用过程监督（Process-Supervised）来训练"
+      },
+      {
+        "text": "time sampling—we recommend using REINFORCE++ (k = 1). Our experiments (Section 4.1) show that it provides superior OOD generalization in these settings.",
+        "x": 70.9,
+        "y": 224.2,
+        "w": 220.3,
+        "h": 51.6,
+        "zh": "实时采样——我们建议使用 REINFORCE++（k = 1）。我们的实验（第 4.1 节）表明，它在这些设定下的分布外泛化更好。"
+      },
+      {
+        "text": "Third-Party Validation The core principle of REINFORCE++ , global advantage normalization, has been independently validated and adopted in several subsequent large-scale reasoning systems, confirming its stability and effectiveness.",
+        "x": 70.5,
+        "y": 130.4,
+        "w": 220.7,
+        "h": 82.5,
+        "zh": "第三方验证。REINFORCE++ 的核心原则，也就是全局优势归一化，已经在随后的多个大规模推理系统里被独立验证并采用，证实了它的稳定性和有效性。"
+      },
+      {
+        "text": "RLHF, we show the single-sample (k = 1) approach is highly efficient and achieves superior OOD generalization. We also show that its k > 1 application is robust for reasoning tasks (Section 4.2).",
+        "x": 328,
+        "y": 108.6,
+        "w": 198.3,
+        "h": 65.1,
+        "zh": "在 RLHF 上，我们表明单样本（k = 1）做法效率很高，并且分布外泛化更好。我们也表明，把它用到 k > 1 时，对推理任务同样稳健（第 4.2 节）。"
+      },
+      {
+        "text": "REINFORCE++w/ Baseline with a token-level loss, conducted experiments demonstrating",
+        "x": 70.9,
+        "y": 69.1,
+        "w": 218.3,
+        "h": 24.5,
+        "zh": "把 REINFORCE++w/ Baseline 与 token 级损失结合起来，做了实验，表明"
+      },
+      {
+        "text": "2. REINFORCE++w/ Baseline : For complex reasoning and agent tasks, this variant",
+        "x": 314.5,
+        "y": 69.1,
+        "w": 210.2,
+        "h": 24.5,
+        "zh": "2. REINFORCE++w/ Baseline：面向复杂推理和智能体任务，这一变体"
+      }
+    ],
+    "8": [
+      {
+        "text": "REINFORCE++w/ Baseline outperforms both GRPO (local norm) and PPO (critic-based) mod-",
+        "x": 70.9,
+        "y": 687,
+        "w": 455.2,
+        "h": 11.8,
+        "zh": "REINFORCE++w/ Baseline 同时超过 GRPO（局部归一化）和基于 Critic 的 PPO 模型"
+      },
+      {
+        "text": "combines group-mean reshaping with stable global normalization and a theoretically sound k2 estimator for KL.",
+        "x": 92.7,
+        "y": 613.6,
+        "w": 198.3,
+        "h": 39.6,
+        "zh": "把组内均值重塑、稳定的全局归一化，以及理论上可靠的 k2 KL 估计量结合在一起。"
+      },
+      {
+        "text": "party systems, confirmed this specialized approach. REINFORCE++ demonstrated stateof-the-art generalization in general RLHF. REINFORCE++w/ Baseline showed improvements in stability, preventing overfitting in low-data regimes and outperforming both GRPO and full-critic PPO in complex, long-horizon tool-use tasks. This work demonstrates that a theoretically sound and stable approach without the critic model can be more efficient and effective than traditional PPO.",
+        "x": 70.9,
+        "y": 430.1,
+        "w": 220.4,
+        "h": 146.4,
+        "zh": "第三方系统证实了这种专门的做法。REINFORCE++ 在通用 RLHF 上展现出最先进的泛化。REINFORCE++w/ Baseline 在稳定性上有所提升，能在数据很少时防止过拟合，并在复杂、长程的工具使用任务上同时超过 GRPO 和带完整 Critic 的 PPO。这项工作表明，一种理论上可靠、训练又稳定的无 Critic 方法，可以比传统 PPO 更高效，也更有效。"
+      }
+    ],
+    "9": [
+      {
+        "text": "https://huggingface.co/datasets/ Maxwell-Jia/AIME_2024. Version 2024-03.",
+        "x": 317.1,
+        "y": 738.1,
+        "w": 208.4,
+        "h": 20.9,
+        "zh": "https://huggingface.co/datasets/Maxwell-Jia/AIME_2024。版本 2024-03。"
+      },
+      {
+        "text": "Josh Achiam, Steven Adler, Sandhini Agarwal, Lama Ahmad, Ilge Akkaya, Florencia Leoni Aleman, Diogo Almeida, Janko Altenschmidt, Sam Altman, Shyamal Anadkat, and 1 others. 2023. Gpt-4 technical report. arXiv preprint",
+        "x": 70.9,
+        "y": 698.1,
+        "w": 220.2,
+        "h": 53.8,
+        "zh": "Josh Achiam、Steven Adler、Sandhini Agarwal、Lama Ahmad、Ilge Akkaya、Florencia Leoni Aleman、Diogo Almeida、Janko Altenschmidt、Sam Altman、Shyamal Anadkat 以及其他 1 人。2023。GPT-4 技术报告。arXiv 预印本"
+      },
+      {
+        "text": "Devvrit Khatri, Lovish Madaan, Rishabh Tiwari, Rachit Bansal, Sai Surya Duvvuri, Manzil Zaheer, Inderjit S Dhillon, David Brandfonbrener, and Rishabh Agarwal. 2025. The art of scaling reinforcement learning compute for llms. arXiv preprint arXiv:2510.13786.",
+        "x": 306.1,
+        "y": 662.4,
+        "w": 219.9,
+        "h": 64.8,
+        "zh": "Devvrit Khatri、Lovish Madaan、Rishabh Tiwari、Rachit Bansal、Sai Surya Duvvuri、Manzil Zaheer、Inderjit S Dhillon、David Brandfonbrener、Rishabh Agarwal。2025。扩展 LLM 强化学习算力的艺术。arXiv 预印本 arXiv:2510.13786。"
+      },
+      {
+        "text": "Arash Ahmadian, Chris Cremer, Matthias Gallé, Marzieh Fadaee, Julia Kreutzer, Olivier Pietquin, Ahmet stün, and Sara Hooker. 2024. Back to basics: Revisiting reinforce style optimization for learning from human feedback in llms. arXiv",
+        "x": 70.9,
+        "y": 622.1,
+        "w": 219.7,
+        "h": 53.8,
+        "zh": "Arash Ahmadian、Chris Cremer、Matthias Gallé、Marzieh Fadaee、Julia Kreutzer、Olivier Pietquin、Ahmet stün、Sara Hooker。2024。回到基础：重新审视用 REINFORCE 式优化，从 LLM 的人类反馈中学习。arXiv"
+      },
+      {
+        "text": "Tianle Li, Wei-Lin Chiang, Evan Frick, Lisa Dunlap, Tianhao Wu, Banghua Zhu, Joseph E Gonzalez, and Ion Stoica. 2024. From crowdsourced data to high-quality benchmarks: Arenahard and benchbuilder pipeline. arXiv preprint",
+        "x": 306.1,
+        "y": 597.6,
+        "w": 219.9,
+        "h": 53.8,
+        "zh": "Tianle Li、Wei-Lin Chiang、Evan Frick、Lisa Dunlap、Tianhao Wu、Banghua Zhu、Joseph E Gonzalez、Ion Stoica。2024。从众包数据到高质量基准：Arena-Hard 与 BenchBuilder 流程。arXiv 预印本"
+      },
+      {
+        "text": "Marcin Andrychowicz, Stańczyk, Manu Orsini, Sertan Girgin, Raphael Marinier, Léonard Hussenot, Matthieu Geist, Olivier Pietquin, Marcin Michalski, and 1 others. 2020. What matters in on-policy reinforcement learning? a large-scale empirical study. arXiv preprint arXiv:2006.05990.",
+        "x": 70.9,
+        "y": 524.2,
+        "w": 220.2,
+        "h": 75.7,
+        "zh": "Marcin Andrychowicz、Stańczyk、Manu Orsini、Sertan Girgin、Raphael Marinier、Léonard Hussenot、Matthieu Geist、Olivier Pietquin、Marcin Michalski 以及其他 1 人。2020。同策略强化学习里，什么最重要？一项大规模实证研究。arXiv 预印本 arXiv:2006.05990。"
+      },
+      {
+        "text": "Ziniu Li, Tian Xu, Yushun Zhang, Yang Yu, Ruoyu Sun, and Zhi-Quan Luo. 2023. Remax: A simple, effective, and efficient method for aligning large language models. arXiv preprint",
+        "x": 306.1,
+        "y": 532.8,
+        "w": 219.7,
+        "h": 42.8,
+        "zh": "Ziniu Li、Tian Xu、Yushun Zhang、Yang Yu、Ruoyu Sun、Zhi-Quan Luo。2023。ReMax：一种简单、有效且高效的大语言模型对齐方法。arXiv 预印本"
+      },
+      {
+        "text": "Kezhao Liu, Jason Klein Liu, Mingtao Chen, and",
+        "x": 306.1,
+        "y": 500.8,
+        "w": 218.3,
+        "h": 10,
+        "zh": "Kezhao Liu、Jason Klein Liu、Mingtao Chen，以及"
+      },
+      {
+        "text": "Rethinking kl regularization in rlhf: From value estimation to gradient optimization. arXiv preprint arXiv:2510.01555.",
+        "x": 317.1,
+        "y": 467.9,
+        "w": 209,
+        "h": 31.9,
+        "zh": "重新思考 RLHF 中的 KL 正则：从价值估计到梯度优化。arXiv 预印本 arXiv:2510.01555。"
+      },
+      {
+        "text": "Yuntao Bai, Andy Jones, Kamal Ndousse, Amanda Askell, Anna Chen, Nova DasSarma, Dawn Drain, Stanislav Fort, Deep Ganguli, Tom Henighan, and 1 others. 2022. Training a helpful and harmless assistant with reinforcement learning from human feedback. arXiv preprint",
+        "x": 70.9,
+        "y": 427.1,
+        "w": 219.9,
+        "h": 64.8,
+        "zh": "Yuntao Bai、Andy Jones、Kamal Ndousse、Amanda Askell、Anna Chen、Nova DasSarma、Dawn Drain、Stanislav Fort、Deep Ganguli、Tom Henighan 以及其他 1 人。2022。用人类反馈强化学习，训练一个有用且无害的助手。arXiv 预印本"
+      },
+      {
+        "text": "Shih-Yang Liu, Xin Dong, Ximing Lu, Shizhe Diao, Mingjie Liu, Min-Hung Chen, Hongxu Yin, YuChiang Frank Wang, Kwang-Ting Cheng, Yejin Choi, and 1 others. 2025b. Dler: Doing length penalty right-incentivizing more intelligence per token via reinforcement learning. arXiv preprint",
+        "x": 306.1,
+        "y": 392.2,
+        "w": 219.9,
+        "h": 64.8,
+        "zh": "Shih-Yang Liu、Xin Dong、Ximing Lu、Shizhe Diao、Mingjie Liu、Min-Hung Chen、Hongxu Yin、YuChiang Frank Wang、Kwang-Ting Cheng、Yejin Choi 以及其他 1 人。2025b。DLER：把长度惩罚做对——用强化学习激励每个 token 上更多的智能。arXiv 预印本"
+      },
+      {
+        "text": "Yann Dubois, Balázs Galambosi, Percy Liang, and Tatsunori B. Hashimoto. 2024. Length-controlled alpacaeval: A simple way to debias automatic evaluators. arXiv preprint.",
+        "x": 70.9,
+        "y": 362,
+        "w": 218.3,
+        "h": 42.8,
+        "zh": "Yann Dubois、Balázs Galambosi、Percy Liang、Tatsunori B. Hashimoto。2024。长度受控的 AlpacaEval：一种消除自动评估器偏差的简单办法。arXiv 预印本。"
+      },
+      {
+        "text": "Zihe Liu, Jiashun Liu, Yancheng He, Weixun Wang, Jiaheng Liu, Ling Pan, Xinyu Hu, Shaopan Xiong, Ju Huang, Jian Hu, and 1 others. 2025c. Part i: Tricks or traps? a deep dive into rl for llm reasoning. arXiv preprint arXiv:2508.08221.",
+        "x": 306.1,
+        "y": 316.4,
+        "w": 220.2,
+        "h": 53.8,
+        "zh": "Zihe Liu、Jiashun Liu、Yancheng He、Weixun Wang、Jiaheng Liu、Ling Pan、Xinyu Hu、Shaopan Xiong、Ju Huang、Jian Hu 以及其他 1 人。2025c。第一部分：技巧还是陷阱？深入 LLM 推理中的强化学习。arXiv 预印本 arXiv:2508.08221。"
+      },
+      {
+        "text": "Daya Guo, Dejian Yang, Haowei Zhang, Junxiao Song, Ruoyu Zhang, Runxin Xu, Qihao Zhu, Shirong Ma, Peiyi Wang, Xiao Bi, and 1 others. 2025. Deepseek-r1: Incentivizing reasoning capability in llms via reinforcement learning. arXiv preprint arXiv:2501.12948.",
+        "x": 70.9,
+        "y": 286,
+        "w": 220.2,
+        "h": 64.8,
+        "zh": "Daya Guo、Dejian Yang、Haowei Zhang、Junxiao Song、Ruoyu Zhang、Runxin Xu、Qihao Zhu、Shirong Ma、Peiyi Wang、Xiao Bi 以及其他 1 人。2025。DeepSeek-R1：用强化学习激励 LLM 的推理能力。arXiv 预印本 arXiv:2501.12948。"
+      },
+      {
+        "text": "Xinji Mai, Haotian Xu, Xing W, Weinong Wang, Jian Hu, Yingying Zhang, and Wenqiang Zhang. 2025. Agent rl scaling law: Agent rl with spontaneous code execution for mathematical problem solving. Preprint, arXiv:2505.07773.",
+        "x": 306.1,
+        "y": 251.6,
+        "w": 220.2,
+        "h": 53.8,
+        "zh": "Xinji Mai、Haotian Xu、Xing W、Weinong Wang、Jian Hu、Yingying Zhang、Wenqiang Zhang。2025。智能体强化学习的缩放定律：用自发执行代码来解数学题的智能体强化学习。预印本，arXiv:2505.07773。"
+      },
+      {
+        "text": "Jian Hu, Xibin Wu, Wei Shen, Jason Klein Liu, Zilin Zhu, Weixun Wang, Songlin Jiang, Haoran Wang, Hao Chen, Bin Chen, Weikai Fang, Xianyu, Yu Cao, Haotian Xu, and Yiming Liu. 2025a. Openrlhf: An easy-to-use, scalable and high-performance rlhf framework. Preprint,",
+        "x": 70.9,
+        "y": 210.1,
+        "w": 219.9,
+        "h": 64.8,
+        "zh": "Jian Hu、Xibin Wu、Wei Shen、Jason Klein Liu、Zilin Zhu、Weixun Wang、Songlin Jiang、Haoran Wang、Hao Chen、Bin Chen、Weikai Fang、Xianyu、Yu Cao、Haotian Xu、Yiming Liu。2025a。OpenRLHF：易用、可扩展的高性能 RLHF 框架。预印本，"
+      },
+      {
+        "text": "math ai. 2025. Aime 2025 dataset card. https: //huggingface.co/datasets/math-ai/aime25.",
+        "x": 306.1,
+        "y": 219.7,
+        "w": 220.8,
+        "h": 20.9,
+        "zh": "math ai。2025。AIME 2025 数据集说明。https://huggingface.co/datasets/math-ai/aime25。"
+      },
+      {
+        "text": "Gpt-4 technical report. preprint arXiv:2303.08774.",
+        "x": 317.1,
+        "y": 176.8,
+        "w": 172.1,
+        "h": 20.9,
+        "zh": "GPT-4 技术报告。预印本 arXiv:2303.08774。"
+      },
+      {
+        "text": "Jian Hu, Xibin Wu, Zilin Zhu, Weixun Wang, Dehao Zhang, Yu Cao, and 1 others. 2024. Openrlhf: An easy-to-use, scalable and highperformance rlhf framework.",
+        "x": 70.9,
+        "y": 145,
+        "w": 220.2,
+        "h": 42.8,
+        "zh": "Jian Hu、Xibin Wu、Zilin Zhu、Weixun Wang、Dehao Zhang、Yu Cao 以及其他 1 人。2024。OpenRLHF：易用、可扩展的高性能 RLHF 框架。"
+      },
+      {
+        "text": "Almeida, Carroll Wainwright, Pamela Mishkin, Chong Zhang, Sandhini Agarwal, Katarina Slama, Alex Ray, and 1 others. 2022. Training language models to follow instructions with human feedback. arXiv preprint arXiv:2203.02155.",
+        "x": 316.7,
+        "y": 101,
+        "w": 209.6,
+        "h": 53.8,
+        "zh": "Almeida、Carroll Wainwright、Pamela Mishkin、Chong Zhang、Sandhini Agarwal、Katarina Slama、Alex Ray 以及其他 1 人。2022。用人类反馈训练语言模型遵循指令。arXiv 预印本 arXiv:2203.02155。"
+      },
+      {
+        "text": "Jingcheng Hu, Yinmin Zhang, Qi Han, Daxin Jiang, Xiangyu Zhang, and Heung-Yeung Shum. 2025b. Open-reasoner-zero: An open source approach to scaling up reinforcement learning on the base model. Preprint, arXiv:2503.24290.",
+        "x": 70.9,
+        "y": 69.1,
+        "w": 220.2,
+        "h": 53.8,
+        "zh": "Jingcheng Hu、Yinmin Zhang、Qi Han、Daxin Jiang、Xiangyu Zhang、Heung-Yeung Shum。2025b。Open-Reasoner-Zero：在基座模型上扩展强化学习的开源途径。预印本，arXiv:2503.24290。"
+      },
+      {
+        "text": "Rafael Rafailov, Archit Sharma, Eric Mitchell, Christopher D Manning, Stefano Ermon, and",
+        "x": 306.1,
+        "y": 69.1,
+        "w": 219.7,
+        "h": 20.9,
+        "zh": "Rafael Rafailov、Archit Sharma、Eric Mitchell、Christopher D Manning、Stefano Ermon，以及"
+      }
+    ],
+    "10": [
+      {
+        "text": "Chelsea Finn. 2023. Direct preference optimization: Your language model is secretly a reward model. In Thirty-seventh Conference on Neural Information Processing Systems.",
+        "x": 81.2,
+        "y": 727.2,
+        "w": 209.6,
+        "h": 42.8,
+        "zh": "Chelsea Finn。2023。直接偏好优化：你的语言模型其实是一个奖励模型。载于第 37 届神经信息处理系统会议（Neural Information Processing Systems）。"
+      },
+      {
+        "text": "Lin, Zhiqi Lin, Bole Ma, Guangming Sheng, Yuxuan Tong, Chi Zhang, Mofan Zhang, Wang Zhang, and 16 others. 2025. Dapo: An opensource llm reinforcement learning system at scale. Preprint, arXiv:2503.14476.",
+        "x": 316.5,
+        "y": 716.2,
+        "w": 209.8,
+        "h": 53.8,
+        "zh": "Lin、Zhiqi Lin、Bole Ma、Guangming Sheng、Yuxuan Tong、Chi Zhang、Mofan Zhang、Wang Zhang 以及其他 16 人。2025。DAPO：大规模的开源 LLM 强化学习系统。预印本，arXiv:2503.14476。"
+      },
+      {
+        "text": "John Schulman, Philipp Moritz, Sergey Levine,",
+        "x": 70.9,
+        "y": 707.2,
+        "w": 219.6,
+        "h": 10,
+        "zh": "John Schulman、Philipp Moritz、Sergey Levine，"
+      },
+      {
+        "text": "Yu Yue, Yufeng Yuan, Qiying Yu, Xiaochen Zuo, Ruofei Zhu, Wenyuan Xu, Jiaze Chen, Chengyi Wang, TianTian Fan, Zhengyin Du, and 1 others. 2025. Vapo: Efficient and reliable reinforcement learning for advanced reasoning tasks. preprint arXiv:2504.05118.",
+        "x": 306.1,
+        "y": 641.5,
+        "w": 220.2,
+        "h": 64.8,
+        "zh": "Yu Yue、Yufeng Yuan、Qiying Yu、Xiaochen Zuo、Ruofei Zhu、Wenyuan Xu、Jiaze Chen、Chengyi Wang、TianTian Fan、Zhengyin Du 以及其他 1 人。2025。VAPO：面向高级推理任务的高效、可靠强化学习。预印本 arXiv:2504.05118。"
+      },
+      {
+        "text": "High-dimensional continuous control using gen-",
+        "x": 81.8,
+        "y": 685.3,
+        "w": 209,
+        "h": 10,
+        "zh": "高维连续控制，使用广义"
+      },
+      {
+        "text": "John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov. 2017. Proximal policy optimization algorithms. arXiv preprint",
+        "x": 70.9,
+        "y": 621.5,
+        "w": 219.6,
+        "h": 31.9,
+        "zh": "John Schulman、Filip Wolski、Prafulla Dhariwal、Alec Radford、Oleg Klimov。2017。近端策略优化算法。arXiv 预印本"
+      },
+      {
+        "text": "ByteDance Seed, Jiaze Chen, Tiantian Fan, Xin Liu, Lingjun Liu, Zhiqi Lin, Mingxuan Wang, Chengyi Wang, Xiangpeng Wei, Wenyuan Xu, and 1 others. 2025. Seed1. 5-thinking: Advancing superb reasoning models with reinforcement learning. arXiv preprint arXiv:2504.13914.",
+        "x": 70.9,
+        "y": 535.7,
+        "w": 219.9,
+        "h": 64.8,
+        "zh": "ByteDance Seed、Jiaze Chen、Tiantian Fan、Xin Liu、Lingjun Liu、Zhiqi Lin、Mingxuan Wang、Chengyi Wang、Xiangpeng Wei、Wenyuan Xu 以及其他 1 人。2025。Seed1.5-thinking：用强化学习推进强大的推理模型。arXiv 预印本 arXiv:2504.13914。"
+      },
+      {
+        "text": "Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Mingchuan Zhang, YK Li, Yu Wu, and Daya Guo. 2024. Deepseekmath: Pushing the limits of mathematical reasoning in open language models. arXiv preprint arXiv:2402.03300.",
+        "x": 70.9,
+        "y": 471.9,
+        "w": 220.2,
+        "h": 53.8,
+        "zh": "Zhihong Shao、Peiyi Wang、Qihao Zhu、Runxin Xu、Junxiao Song、Mingchuan Zhang、YK Li、Yu Wu、Daya Guo。2024。DeepSeekMath：把开放语言模型的数学推理推到极限。arXiv 预印本 arXiv:2402.03300。"
+      },
+      {
+        "text": "Wei Shen, Guanlin Liu, Zheng Wu, Ruofei Zhu, Qingping Yang, Chao Xin, Yu Yue, and Lin Yan. 2025. Exploring data scaling trends and effects in reinforcement learning from human feedback. arXiv preprint arXiv:2503.22230.",
+        "x": 70.9,
+        "y": 408.1,
+        "w": 220.2,
+        "h": 53.8,
+        "zh": "Wei Shen、Guanlin Liu、Zheng Wu、Ruofei Zhu、Qingping Yang、Chao Xin、Yu Yue、Lin Yan。2025。探索人类反馈强化学习中的数据缩放趋势与效应。arXiv 预印本 arXiv:2503.22230。"
+      },
+      {
+        "text": "Wei Shen and Chuheng Zhang. 2024. Policy filtration in rlhf to fine-tune llm for code generation. arXiv preprint arXiv:2409.06957.",
+        "x": 70.9,
+        "y": 366.2,
+        "w": 220.2,
+        "h": 31.9,
+        "zh": "Wei Shen、Chuheng Zhang。2024。RLHF 中的策略过滤，用来为代码生成微调 LLM。arXiv 预印本 arXiv:2409.06957。"
+      },
+      {
+        "text": "Gemini Team, Rohan Anil, Sebastian Borgeaud, Yonghui Wu, Jean-Baptiste Alayrac, Jiahui Yu, Radu Soricut, Johan Schalkwyk, Andrew M Dai, Anja Hauth, and 1 others. 2023. Gemini: a family of highly capable multimodal models. arXiv preprint arXiv:2312.11805.",
+        "x": 70.9,
+        "y": 291.4,
+        "w": 219.9,
+        "h": 64.8,
+        "zh": "Gemini Team、Rohan Anil、Sebastian Borgeaud、Yonghui Wu、Jean-Baptiste Alayrac、Jiahui Yu、Radu Soricut、Johan Schalkwyk、Andrew M Dai、Anja Hauth 以及其他 1 人。2023。Gemini：一系列能力很强的多模态模型。arXiv 预印本 arXiv:2312.11805。"
+      },
+      {
+        "text": "Sai Vemprala, Rogerio Bonatti, Arthur Bucker, and Ashish Kapoor. 2023. Chatgpt for robotics: Design principles and model abilities. Microsoft Auton. Syst. Robot. Res, 2:20.",
+        "x": 70.9,
+        "y": 238.6,
+        "w": 219.9,
+        "h": 42.8,
+        "zh": "Sai Vemprala、Rogerio Bonatti、Arthur Bucker、Ashish Kapoor。2023。用于机器人的 ChatGPT：设计原则与模型能力。Microsoft Auton. Syst. Robot. Res, 2:20。"
+      },
+      {
+        "text": "Chulin Xie, Yangsibo Huang, Chiyuan Zhang, Da Yu, Xinyun Chen, Bill Yuchen Lin, Bo Li, Badih Ghazi, and Ravi Kumar. 2024. On memorization of large language models in logical reasoning. arXiv preprint arXiv:2410.23123.",
+        "x": 70.9,
+        "y": 174.8,
+        "w": 219.9,
+        "h": 53.8,
+        "zh": "Chulin Xie、Yangsibo Huang、Chiyuan Zhang、Da Yu、Xinyun Chen、Bill Yuchen Lin、Bo Li、Badih Ghazi、Ravi Kumar。2024。论大语言模型在逻辑推理中的记忆。arXiv 预印本 arXiv:2410.23123。"
+      },
+      {
+        "text": "Tian Xie, Zitian Gao, Qingnan Ren, Haoming Luo, Yuqian Hong, Bryan Dai, Joey Zhou, Kai Qiu, Zhirong Wu, and Chong Luo. 2025. Logic-rl: Unleashing llm reasoning with rule-based reinforcement learning. arXiv preprint arXiv:2502.14768.",
+        "x": 70.9,
+        "y": 111,
+        "w": 220.2,
+        "h": 53.8,
+        "zh": "Tian Xie、Zitian Gao、Qingnan Ren、Haoming Luo、Yuqian Hong、Bryan Dai、Joey Zhou、Kai Qiu、Zhirong Wu、Chong Luo。2025。Logic-RL：用基于规则的强化学习释放 LLM 的推理。arXiv 预印本 arXiv:2502.14768。"
+      },
+      {
+        "text": "Qiying Yu, Zheng Zhang, Ruofei Zhu, Yufeng Yuan, Xiaochen Zuo, Yu Yue, Weinan Dai, Tiantian Fan, Gaohong Liu, Lingjun Liu, Xin Liu, Haibin",
+        "x": 70.9,
+        "y": 69.1,
+        "w": 219.7,
+        "h": 31.9,
+        "zh": "Qiying Yu、Zheng Zhang、Ruofei Zhu、Yufeng Yuan、Xiaochen Zuo、Yu Yue、Weinan Dai、Tiantian Fan、Gaohong Liu、Lingjun Liu、Xin Liu、Haibin"
+      }
+    ],
+    "11": [
+      {
+        "text": "Proof: The GRPO Advantage Estimator is Biased Assumptions and Settings We observe N rewards ri for a prompt, and assume the true baseline is θ, such that",
+        "x": 70.3,
+        "y": 698.3,
+        "w": 398.7,
+        "h": 50.9,
+        "zh": "证明：GRPO 的优势估计量是有偏的。假设与设定。对一个提示，我们观察到 N 个奖励 ri，并假设真实基线为 θ，使得"
+      },
+      {
+        "text": "with all advantage value ϵi independent. Define",
+        "x": 70.5,
+        "y": 656.4,
+        "w": 226.1,
+        "h": 12.5,
+        "zh": "且所有优势值 ϵi 相互独立。定义"
+      },
+      {
+        "text": "We will prove the following: Theorem 1. For any finite N ≥ 2, the advantage estimator Ai is biased:",
+        "x": 70.3,
+        "y": 573.9,
+        "w": 349.1,
+        "h": 28.9,
+        "zh": "我们将证明如下结论。定理 1。对任意有限的 N ≥ 2，优势估计量 Ai 是有偏的："
+      },
+      {
+        "text": "Proof. We can prove our findings with the following steps: Step 1: Numerator Bias We rewrite the numerator:",
+        "x": 70.9,
+        "y": 520.1,
+        "w": 276.3,
+        "h": 24.5,
+        "zh": "证明。可以按下面几步来证。步骤 1：分子的偏差。把分子改写成："
+      },
+      {
+        "text": "Since the ϵj for j ̸= i are zero-mean and independent of ϵi,",
+        "x": 70.9,
+        "y": 460.2,
+        "w": 278.7,
+        "h": 12.5,
+        "zh": "由于 j ≠ i 的 ϵj 均值为零，并且与 ϵi 独立，"
+      },
+      {
+        "text": "and conditioning on ϵi keeps the ϵj, j ̸= i, i.i.d. N(0, σ ), we obtain:",
+        "x": 70.9,
+        "y": 274.9,
+        "w": 324,
+        "h": 12.5,
+        "zh": "而且在给定 ϵi 的条件下，j ≠ i 的 ϵj 仍是独立同分布的 N(0, σ)，于是得到："
+      }
+    ],
+    "12": [
+      {
+        "text": "(b) g(ϵi) is Not Constant: Let g(ϵi) = E [1/D | ϵi] and μ(ϵi) = E[D Using Taylor expansion of f(x) = 1/",
+        "x": 81.8,
+        "y": 640,
+        "w": 317.1,
+        "h": 24.7,
+        "zh": "（b）g(ϵi) 不是常数：令 g(ϵi) = E[1/D | ϵi]，且 μ(ϵi) = E[D。对 f(x) = 1/ 做泰勒展开"
+      },
+      {
+        "text": "≈ f(μ(ϵi)) + f (μ(ϵi)) · E[D − μ(ϵi) | ϵi] +",
+        "x": 134.1,
+        "y": 511.4,
+        "w": 202.7,
+        "h": 12.5,
+        "zh": ""
+      },
+      {
+        "text": "Since μ(ϵi) = α + βϵi with β > 0, the first term alone shows that g(ϵi) depends on ϵi and hence is not constant. Step 3: Putting It Together Decomposing Ai,",
+        "x": 70.9,
+        "y": 385.2,
+        "w": 453.5,
+        "h": 39.9,
+        "zh": "由于 μ(ϵi) = α + βϵi，且 β > 0，仅第一项就表明 g(ϵi) 依赖于 ϵi，因此不是常数。步骤 3：合到一起。把 Ai 分解开，"
+      },
+      {
+        "text": "For fixed ϵi, the conditional distribution of",
+        "x": 70.9,
+        "y": 310.1,
+        "w": 199.1,
+        "h": 12.5,
+        "zh": "在 ϵi 固定时，条件分布为"
+      },
+      {
+        "text": "j̸=i ϵj is symmetric about zero, while 1/D is always",
+        "x": 285.1,
+        "y": 308.5,
+        "w": 239.3,
+        "h": 14.1,
+        "zh": "j ≠ i 的 ϵj 关于零对称，而 1/D 始终"
+      },
+      {
+        "text": "Step 4: Concluding the Bias If Ai were unbiased, we would have:",
+        "x": 81.8,
+        "y": 193.2,
+        "w": 329.1,
+        "h": 12.5,
+        "zh": "步骤 4：得出偏差。假如 Ai 是无偏的，就应当有："
+      },
+      {
+        "text": "which contradicts Step 2. Therefore, for any finite N ≥ 2,",
+        "x": 70.5,
+        "y": 133.5,
+        "w": 274.7,
+        "h": 10.9,
+        "zh": "这与步骤 2 矛盾。因此，对任意有限的 N ≥ 2，"
+      }
+    ],
+    "13": [
+      {
+        "text": "Why Use Global Batch Normalization? We observe that as N → ∞, the denominator of the estimator converges to the constant σ, and the bias in the numerator vanishes. This insight underlies our decision to adopt global batch normalization in both REINFORCE++ and REINFORCE++-Baseline, as the global batch size (Nglobal) is typically much larger (e.g., 1024) than the group batch size (Ngroup, e.g., 4 or 8) in practice. As Nglobal → ∞, the sample statistics μb and σb converge to true constants, making the estimator effectively unbiased.",
+        "x": 70.3,
+        "y": 675,
+        "w": 455.4,
+        "h": 96,
+        "zh": "为什么要使用全局批次归一化？我们观察到，当 N → ∞ 时，估计量的分母收敛到常数 σ，分子里的偏差也会消失。这一观察正是我们决定在 REINFORCE++ 和 REINFORCE++-Baseline 中都采用全局批次归一化的原因：实践里全局批次大小（Nglobal，例如 1024）通常比组批次大小（Ngroup，例如 4 或 8）大得多。当 Nglobal → ∞ 时，样本统计量 μb 和 σb 收敛到真正的常数，估计量因此实际上无偏。"
+      }
+    ],
+    "14": [
+      {
+        "text": "In non-critic algorithms like REINFORCE++-Baseline, a KL divergence term is often added as a separate loss to constrain the policy πθ from deviating too far from a reference policy πref. In practice, this expectation is estimated using samples, and three common estimators are used. Given the importance ratio δ(y) = πref(y|·)/πθ(y|·) (where πθ is the sampling policy and πref",
+        "x": 70.9,
+        "y": 678.5,
+        "w": 453.5,
+        "h": 53.6,
+        "zh": "在 REINFORCE++-Baseline 这类无 Critic 算法里，常常另加一项 KL 散度作为单独的损失，用来约束策略 πθ 不要离参考策略 πref 太远。实践中，这个期望靠样本来估计，常用的估计量有三种。给定重要性比率 δ(y) = πref(y|·)/πθ(y|·)（其中 πθ 是采样策略，而 πref"
+      },
+      {
+        "text": "We analyze which of these (k1, k2, or k3) is the correct choice when used as a separate loss",
+        "x": 81.8,
+        "y": 560.2,
+        "w": 442.6,
+        "h": 10.9,
+        "zh": "我们分析，把它们当作单独的损失来用时，k1、k2、k3 里哪一个才是正确选择"
+      },
+      {
+        "text": "We are training with samples from πθ, so we are approximating the **Reverse KL (RKL)**, DKL(πθ||πref). The practical policy gradient for RKL is (more details are in (Liu et al., 2025a)):",
+        "x": 69.6,
+        "y": 498.1,
+        "w": 456.6,
+        "h": 38,
+        "zh": "训练用的是来自 πθ 的样本，所以近似的是反向 KL（Reverse KL，RKL），即 DKL(πθ||πref)。RKL 的实用策略梯度是（更多细节见 Liu et al., 2025a）："
+      },
+      {
+        "text": "We can **exclude k1** as a loss term. Its gradient does not depend on πref and thus provides no constraining effect. The loss Jk1 = Ey∼πθ[log πθ − log πref] differentiates to ∇θJk1 = Ey∼πθ[∇θ log πθ], as the πref term vanishes. (Note: k1 *is* used inside the reward for REINFORCE++, but not as a separate loss term).",
+        "x": 70.9,
+        "y": 394.4,
+        "w": 453.8,
+        "h": 51.6,
+        "zh": "可以把 k1 排除在损失项之外。它的梯度不依赖 πref，因此起不到约束作用。损失 Jk1 = Ey∼πθ[log πθ − log πref] 求导后得到 ∇θJk1 = Ey∼πθ[∇θ log πθ]，因为 πref 那一项消掉了。（注：k1 会用在 REINFORCE++ 的奖励里面，但不会作为单独的损失项。）"
+      },
+      {
+        "text": "The k2 estimator provides a gradient that is **equivalent to the theoretical Reverse",
+        "x": 142.3,
+        "y": 373,
+        "w": 382.1,
+        "h": 10.9,
+        "zh": "k2 估计量给出的梯度，等价于理论上的反向"
+      },
+      {
+        "text": "Differentiating the term inside the expectation gives:",
+        "x": 70.9,
+        "y": 273.8,
+        "w": 250.7,
+        "h": 10.9,
+        "zh": "对期望里面的那一项求导，得到："
+      },
+      {
+        "text": "When we take the expectation over y ∼ πθ, the gradient of the k2 loss becomes:",
+        "x": 70.3,
+        "y": 143.1,
+        "w": 379.4,
+        "h": 12.7,
+        "zh": "当对 y ∼ πθ 取期望时，k2 损失的梯度变为："
+      },
+      {
+        "text": "This **perfectly matches** the practical RKL gradient. Therefore, k2 is the theoretically correct",
+        "x": 70.5,
+        "y": 82.6,
+        "w": 454.2,
+        "h": 10.9,
+        "zh": "这与实用的 RKL 梯度完全吻合。因此，k2 在理论上是正确的"
+      }
+    ],
+    "15": [
+      {
+        "text": "The k3 gradient is problematic. It is theoretically an estimator for the **Forward KL** (KL(πref||πθ)), not the Reverse KL. This is a mismatch, as we are sampling from πθ, but the Forward KL gradient requires sampling from πref. This method, used in GRPO, suffers from two major issues:",
+        "x": 70.9,
+        "y": 719.4,
+        "w": 453.8,
+        "h": 51.6,
+        "zh": "k3 的梯度有问题。从理论上说，它估计的是前向 KL（KL(πref||πθ)），而不是反向 KL。这是一种错配：我们从 πθ 采样，但前向 KL 的梯度需要从 πref 采样。GRPO 使用的这种方法有两个主要问题："
+      },
+      {
+        "text": "• Extremely High Variance: When πθ(y) becomes tiny for a sample y where πref(y) is moderate, the importance weight",
+        "x": 82.3,
+        "y": 680.7,
+        "w": 442.1,
+        "h": 27.2,
+        "zh": "• 方差极高：当某个样本 y 的 πθ(y) 变得极小，而 πref(y) 仍处于中等大小时，重要性权重"
+      },
+      {
+        "text": "in the gradient estimator explodes, leading to \"infinite variance\".",
+        "x": 91.1,
+        "y": 667.1,
+        "w": 433.3,
+        "h": 24.5,
+        "zh": "会在梯度估计里爆炸，导致「无穷方差」。"
+      },
+      {
+        "text": "• Numerical Instability: It requires computing p/q via exp(log p − log q), which is prone to",
+        "x": 82.3,
+        "y": 644.6,
+        "w": 442.1,
+        "h": 10.9,
+        "zh": "• 数值不稳定：它要通过 exp(log p − log q) 来计算 p/q，因此容易"
+      },
+      {
+        "text": "This explains why methods using k3 require frequent resetting of πref to prevent the policies from diverging and the k3 estimator from becoming unstable.",
+        "x": 70.5,
+        "y": 595,
+        "w": 453.9,
+        "h": 24.5,
+        "zh": "这就解释了，为什么使用 k3 的方法必须频繁重置 πref，以免两条策略拉开，也免得 k3 估计量变得不稳定。"
+      },
+      {
+        "text": "Based on this analysis, the **k2 estimator is the optimal choice** for a KL loss term as it correctly and stably estimates the Reverse KL gradient. We therefore use the k2 estimator in our REINFORCE++-Baseline algorithm.",
+        "x": 70.9,
+        "y": 547.3,
+        "w": 453.5,
+        "h": 38,
+        "zh": "基于上述分析，k2 估计量是 KL 损失项的最优选择，因为它正确且稳定地估计反向 KL 的梯度。因此，我们在 REINFORCE++-Baseline 算法中使用 k2 估计量。"
+      },
+      {
+        "text": "Implementation Tricks Token-level Advantage",
+        "x": 70.9,
+        "y": 508,
+        "w": 154.2,
+        "h": 28.2,
+        "zh": "实现上的技巧。token 级优势"
+      },
+      {
+        "text": "is computed at the token level. For t < T (where T is the sequence length), the advantage is set to 0. For the final token t = T, the advantage is the normalized reward Aq,o",
+        "x": 69.6,
+        "y": 478.2,
+        "w": 454.8,
+        "h": 40.7,
+        "zh": "是在 token 这一层计算的。当 t < T（T 为序列长度）时，优势设为 0。对最后一个 token t = T，优势就是归一化之后的奖励 Aq,o"
+      },
+      {
+        "text": ". This is standard practice in RLHF for LLMs.",
+        "x": 272.4,
+        "y": 480.9,
+        "w": 223.4,
+        "h": 10.9,
+        "zh": "。这是 LLM 做 RLHF 时的标准做法。"
+      },
+      {
+        "text": "For REINFORCE++ (k = 1), a global batch of size N consists of N different prompts. For REINFORCE++-Baseline (k = 4), a global batch of size N = 1024 might consist of 1024/4 = 256 unique prompts. The global mean/std are computed over all N samples.",
+        "x": 70.9,
+        "y": 433.2,
+        "w": 455.5,
+        "h": 38,
+        "zh": "对 REINFORCE++（k = 1），大小为 N 的全局批次由 N 个不同提示组成。对 REINFORCE++-Baseline（k = 4），大小为 N = 1024 的全局批次可能由 1024/4 = 256 个不同提示组成。全局均值和标准差在全部 N 个样本上计算。"
+      },
+      {
+        "text": "To enhance training efficiency, we implement mini-batch updates with the following characteristics:",
+        "x": 70.9,
+        "y": 399,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "为提高训练效率，我们按下面这些特点来做小批次更新："
+      },
+      {
+        "text": "• Batch Processing: Data is processed in smaller, manageable chunks rather than full-batch",
+        "x": 70.9,
+        "y": 376.5,
+        "w": 453.5,
+        "h": 10.9,
+        "zh": "• 分批处理：数据被切成更小、更好处理的块，而不是整批"
+      },
+      {
+        "text": "• Multiple Updates: Each mini-batch allows for multiple parameter updates, improving",
+        "x": 70.9,
+        "y": 340.5,
+        "w": 453.5,
+        "h": 10.9,
+        "zh": "• 多次更新：每个小批次可以做多次参数更新，从而改进"
+      },
+      {
+        "text": "• Stochastic Optimization: Introduces beneficial randomness for better generalization.",
+        "x": 70.9,
+        "y": 304.4,
+        "w": 427.6,
+        "h": 10.9,
+        "zh": "• 随机优化：引入有益的随机性，以便更好地泛化。"
+      },
+      {
+        "text": "We implement comprehensive reward processing to",
+        "x": 280.9,
+        "y": 281.9,
+        "w": 243.5,
+        "h": 10.9,
+        "zh": "我们实现了一整套奖励处理，以便"
+      },
+      {
+        "text": "• Normalization: Standardizes rewards using z-score normalization (our global normalization) to mitigate outliers.",
+        "x": 70.9,
+        "y": 232.3,
+        "w": 454.8,
+        "h": 24.5,
+        "zh": "• 归一化：用 z-score 归一化（也就是我们的全局归一化）来标准化奖励，从而减轻异常值。"
+      },
+      {
+        "text": "• Clipping: Constrains reward values within predefined bounds to avoid instability.",
+        "x": 70.9,
+        "y": 209.8,
+        "w": 403.2,
+        "h": 10.9,
+        "zh": "• 裁剪：把奖励限制在预先定好的范围内，避免训练不稳。"
+      },
+      {
+        "text": "• Scaling: Applies appropriate scaling factors for numerical stability during updates.",
+        "x": 70.9,
+        "y": 187.2,
+        "w": 408.7,
+        "h": 10.9,
+        "zh": "• 缩放：更新时使用合适的缩放系数，以保证数值稳定。"
+      }
+    ],
+    "16": [
+      {
+        "text": "and contributed to the theoretical proof of the",
+        "x": 274.6,
+        "y": 725.9,
+        "w": 249.8,
+        "h": 10.9,
+        "zh": "并参与了这一理论证明"
+      },
+      {
+        "text": "• Jason Klein Liu: Implemented the experimental framework, fine-tuned hyperparameters, wrote the manuscript, and provided GPU resources.",
+        "x": 70.9,
+        "y": 676.3,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "• Jason Klein Liu：实现了实验框架，微调了超参数，撰写了文稿，并提供了 GPU 资源。"
+      },
+      {
+        "text": "• Haotian Xu: Conducted comparative experiments between REINFORCE++w/ Baseline and complex tool-calling as well as agent-based scenarios.",
+        "x": 70.9,
+        "y": 640.2,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "• Haotian Xu：针对 REINFORCE++w/ Baseline，在复杂工具调用以及基于智能体的场景中做了对比实验。"
+      },
+      {
+        "text": "• Wei Shen: Supervised the overall project, designed the main experiments, and led the paper",
+        "x": 70.9,
+        "y": 617.7,
+        "w": 453.8,
+        "h": 10.9,
+        "zh": "• Wei Shen：总体负责该项目，设计了主要实验，并主导了论文"
+      }
+    ]
+  }
+}

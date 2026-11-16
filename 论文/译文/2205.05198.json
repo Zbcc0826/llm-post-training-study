@@ -1,0 +1,1097 @@
+{
+  "id": "2205.05198",
+  "title": "2205.05198",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "Reducing Activation Recomputation in Large Transformer Models",
+        "x": 180,
+        "y": 661.6,
+        "w": 252,
+        "h": 39.1,
+        "zh": "降低大型 Transformer 模型中的激活重计算"
+      },
+      {
+        "text": "Vijay Korthikanti, Jared Casper, Sangkug Lym, Lawrence McAfee, Michael Andersch,",
+        "x": 85.1,
+        "y": 632.7,
+        "w": 441.8,
+        "h": 12,
+        "zh": "Vijay Korthikanti、Jared Casper、Sangkug Lym、Lawrence McAfee、Michael Andersch、"
+      },
+      {
+        "text": "Training large transformer models is one of the most important computational challenges of modern AI. In this paper, we show how to significantly accelerate training of large transformer models by reducing activation recomputation. Activation recomputation is commonly used to work around memory capacity constraints. Rather than storing activations for backpropagation, they are traditionally recomputed, which saves memory but adds redundant compute. In this work, we show most of this redundant compute is unnecessary because we can reduce memory consumption sufficiently without it. We present two novel yet very simple techniques: sequence parallelism and selective activation recomputation. In conjunction with tensor parallelism, these techniques almost eliminate the need to recompute activations. We evaluate our approach on language models up to one trillion parameters in scale and show that our method reduces activation memory by 5×, while reducing execution time overhead from activation recomputation by over 90%. For example, when training a 530B parameter GPT-3 style model [20] on 2240 NVIDIA A100 GPUs, we achieve a Model Flops Utilization of 54.2%, which is 29% faster than the 42.1% we achieve using recomputation. Our implementation will be available in both Megatron-LM and NeMo-",
+        "x": 109.9,
+        "y": 390.9,
+        "w": 392.1,
+        "h": 151.4,
+        "zh": "训练大型 Transformer 模型，是当代人工智能里最重要的计算挑战之一。本文说明，怎样通过减少激活重计算来显著加快大型 Transformer 模型的训练。激活重计算常被用来绕开显存容量限制。传统做法不是把激活存下来供反向传播使用，而是到时候再重算；这样省显存，却增加了冗余计算。本文表明，这些冗余计算大部分并不必要，因为即使不重算，我们也能把显存占用降到足够低。我们提出两种新、但非常简单的技术：序列并行（sequence parallelism）和选择性激活重计算（selective activation recomputation）。它们与张量并行一起使用，几乎可以不再重算激活。我们在规模最大到一万亿参数的语言模型上做了评估，结果表明该方法把激活显存放小到原来的 1/5，同时把激活重计算带来的执行时间开销降低 90% 以上。例如，在 2240 块 NVIDIA A100 GPU 上训练一个 530B 参数的 GPT-3 风格模型 [20] 时，模型浮点利用率（Model Flops Utilization）达到 54.2%，比使用重计算时的 42.1% 快 29%。我们的实现将同时放在 Megatron-LM 和 NeMo-"
+      },
+      {
+        "text": "As transformer models scale towards trillions of parameters, model parallelism is required to distribute model parameters, activations, and optimizer state across devices for them to fit into device memory and be trainable in a realistic amount of time. Although model parallelism linearly reduces the number of parameters per device, e.g., number of parameters per device is halved when model parallel size is doubled, there are limits to scale model parallelism. Tensor-level model parallelism increases communication requirements and introduces smaller and less performant matrix multiplications, making it inefficient to split a model across a large number of devices. As a result, tensor-level model parallelism",
+        "x": 85,
+        "y": 253.5,
+        "w": 441.9,
+        "h": 81.7,
+        "zh": "随着 Transformer 模型规模走向万亿参数，必须使用模型并行，把模型参数、激活和优化器状态分到各设备上，才能放进设备显存，并在现实的时间内训练完。模型并行会让每台设备上的参数量线性下降，例如模型并行度加倍时，每台设备的参数量减半，但模型并行能扩到多大是有限度的。张量级模型并行会增加通信需求，并引入更小、效率更差的矩阵乘法，因此把一个模型切到很多设备上并不划算。因此，张量级模型并行"
+      },
+      {
+        "text": "is typically limited to a relatively small group of GPUs that are connected with high speed bandwidth,",
+        "x": 85,
+        "y": 241.5,
+        "w": 441.9,
+        "h": 10,
+        "zh": "通常只限于用高速带宽连在一起的、相对较小的一组 GPU，"
+      },
+      {
+        "text": "activations of several microbatches to reduce the pipeline bubble [13]. As a result, pipeline parallelism can only help with the memory needed to store model parameters and optimizer state and cannot reduce the memory needed for activations while maintaining high device utilization. Thus the storage of activations quickly becomes a critical problem to scaling large transformer models. To quantify this, Figure 1 shows the memory required for four model configurations ranging from 22 billion parameters to 1 trillion parameters (details of the model configurations are provided in Table 3). It can be seen that for all these cases, the required memory for the baseline cases is above the 80GB memory provided by an NVIDIA A100 GPU. The standard approach to alleviate this memory pressure is to simply not store most of the activations and recompute them as necessary to calculate gradients during the backward pass [5]. Unfortunately this method, usually called “gradient checkpointing” or",
+        "x": 85,
+        "y": 110,
+        "w": 441.9,
+        "h": 117.6,
+        "zh": "若干微批次的激活，用来缩小流水线气泡 [13]。因此，流水线并行只能帮上存储模型参数和优化器状态所需的那部分显存，无法在保持设备高利用率的同时减少激活占用的显存。于是，激活怎么存放，很快就成为把大型 Transformer 模型做大时的关键问题。为了量化这一点，图 1 给出四种模型配置所需的显存，参数量从 220 亿到 1 万亿（配置细节见表 3）。可以看到，这些情形的基线所需显存都高于一块 NVIDIA A100 GPU 的 80GB。缓解这种显存压力的标准做法，是干脆不存大部分激活，等反向传播要算梯度时再按需重算 [5]。可惜这种方法通常被叫做「梯度检查点」（gradient checkpointing），或者"
+      },
+      {
+        "text": "https://github.com/NVIDIA/Megatron-LM Megatron-LM is an ongoing research project pushing the limits of scale for transformer models. https://developer.nvidia.com/nvidia-nemo. NeMo-Megatron is NVIDIA’s officially supported product for training large language models.",
+        "x": 85,
+        "y": 63.4,
+        "w": 441.9,
+        "h": 36.4,
+        "zh": "https://github.com/NVIDIA/Megatron-LM Megatron-LM 是一个仍在推进 Transformer 模型规模上限的研究项目。https://developer.nvidia.com/nvidia-nemo。NeMo-Megatron 是 NVIDIA 官方支持的大语言模型训练产品。"
+      }
+    ],
+    "2": [
+      {
+        "text": "Figure 1: Parameters, optimizer state, and activations memory. The dashed red line represents the memory capacity of an NVIDIA A100 GPU. Present work reduces the activation memory required to fit the model. Details of the model configurations are provided in Table 3.",
+        "x": 85,
+        "y": 498.7,
+        "w": 441.9,
+        "h": 33.9,
+        "zh": "图 1：参数、优化器状态和激活所占的显存。红色虚线是一块 NVIDIA A100 GPU 的显存容量。本文的方法降低了把模型装进显存所需的激活显存。模型配置细节见表 3。"
+      },
+      {
+        "text": "“activation recomputation”, incurs a steep penalty of reducing training efficiency. For transformer architectures, majority of prior work has checkpointed, or stored, the activations at transformer layer boundaries and recomputed the rest of the necessary activations in the backward pass. In this paper we refer to this method as “full activation recomputation”. In our training runs, we observe 30 − 40% execution time overhead when full activation recomputation is used. In this paper we present novel techniques that help alleviate the memory pressure of storing activations and thus reduce the need to recompute activations. These techniques are specific to the transformer architecture and are both simple to implement and have no, or very low, impact on compute efficiency. As we detail in Section 2, there are several other techniques to reduce the memory requirements of training large models, such as partitioning various data across the data parallel ranks or offloading data to CPU memory [14, 17]. These techniques are complementary to the techniques presented here and could be additionally employed for even greater memory savings; however, in general these other techniques have both higher implementation cost and a larger impact on compute efficiency than the techniques presented in this paper. An analysis comparing these techniques to ours is outside the scope of this paper and left for future work. We begin with a brief review of the transformer architecture and then build up an approximate formula for the memory required to store activations of a transformer model. Using this formula we can then study how different forms of model parallelism impact the activation memory requirements. We introduce sequence parallelism alongside tensor parallelism to prevent redundant storage of activations in regions that are not conducive to standard tensor parallelism. We then show that by being selective in what activations are saved and what are recomputed we can eliminate much of the cost of recomputation while using only a fraction of the memory when no recomputation is used. Finally, we present several experiments that measure the improvements these techniques make to both individual components of training as well as the full training throughput.",
+        "x": 85,
+        "y": 180.3,
+        "w": 441.9,
+        "h": 284.9,
+        "zh": "「激活重计算」。它的代价很高，会明显拉低训练效率。对 Transformer 架构来说，以往工作大多在 Transformer 层的边界做检查点，也就是把那里的激活存下来，再在反向传播时重算其余必要的激活。本文把这种方法称为「全量激活重计算」（full activation recomputation）。在我们的训练里，一旦使用全量激活重计算，执行时间会多出 30–40%。本文提出的新技术用来减轻存放激活的显存压力，从而少做激活重计算。这些技术是针对 Transformer 架构的，实现起来很简单，对计算效率没有影响，或者影响非常小。如第 2 节所说，还有别的办法能降低训练大模型的显存需求，比如把各类数据划到各个数据并行 rank 上，或者把数据卸载到 CPU 内存 [14, 17]。这些办法和本文的技术是互补的，可以再叠加上去，换来更大的显存节省；不过总的来说，它们的实现成本更高，对计算效率的影响也比本文的技术更大。把它们和我们的方法做对比不在本文范围内，留给以后的工作。我们先简要回顾 Transformer 架构，再建立一个近似公式，用来估计存放一个 Transformer 模型的激活要多少显存。有了这个公式，就可以看不同形式的模型并行会怎样改变激活显存。我们在张量并行之外加上序列并行，避免在不适合标准张量并行的区域里把激活重复存一份。接着我们说明，只要挑着决定哪些激活留下、哪些重算，就能去掉重计算的大部分代价，而所用显存只是完全不重算时的一小部分。最后给出若干实验，测量这些技术对训练中各个部分以及整体训练吞吐的改进。"
+      },
+      {
+        "text": "Model parallelism enables training very large models across multiple GPUs. Model parameters along with the associated optimizer states of these models require a huge amount of memory and do not fit on a single GPU. Even if we are able to fit the model in a single GPU (e.g., by swapping parameters between host and device memory [17]), the high number of compute operations required can result in unrealistically long training times.",
+        "x": 85,
+        "y": 77.7,
+        "w": 441.9,
+        "h": 57.8,
+        "zh": "模型并行让超大模型可以跨多块 GPU 训练。这些模型的参数以及配套的优化器状态要占用巨量显存，单块 GPU 放不下。即便能把模型放进单块 GPU（例如在主机内存和设备显存之间来回换参数 [17]），所需的计算量仍然会让训练时间长到不现实。"
+      },
+      {
+        "text": "Two forms of model parallelism are commonly used to distribute the model parameters across GPUs: 1) tensor parallelism where",
+        "x": 85,
+        "y": 65.7,
+        "w": 441.9,
+        "h": 21.9,
+        "zh": "把模型参数分到多块 GPU 上，常用两种模型并行：1）张量并行，其中"
+      }
+    ],
+    "3": [
+      {
+        "text": "hidden dimension size number of transformer layers",
+        "x": 193.4,
+        "y": 691.1,
+        "w": 126.4,
+        "h": 21.9,
+        "zh": ""
+      },
+      {
+        "text": "parameters of each layer are distributed across many devices [18, 19, 21], and 2) pipeline parallelism where the model is split along the layer dimension of the network [7, 10, 11]. Some recent approaches combine both types of model parallelism to enable training large models up to 1T parameters [13]. An alternative to model parallelism is to combine a number of training techniques along with data parallelism to enable large scale model training [14, 17, 15, 16]. This approach is based on sharding the optimizer states, gradients, and parameters across data-parallel ranks. Also, a recent extension [15] uses CPU off-loading techniques to enable multi-trillion parameter model training on a small number of GPUs. Compared to model parallelism, these techniques, which are based on data parallelism, are less efficient and do not scale well to a large numbers of GPUs [13] and are thus a better fit for finetuning models in resource-constrained environments. This paper focuses only on model parallelism optimizations. An analysis comparing these techniques to ours is outside the scope of this paper. In addition, tensor parallelism as introduced in Megatron-LM [19] helps to reduce the activation memory to some extent. In this approach, there are parts of the transformer where activations are not split across tensor parallel ranks, adding to activation memory overhead. Sequence parallelism as suggested in [9] where activations are partitioned along sequence dimensions throughout the network can alleviate this problem. However, their approach, similar to data parallelism, requires the parameters and optimizer state to be replicated on all of the devices which makes it not suitable for large model training. Sagemaker [8] and GSPMD [21] propose memory efficient versions of tensor parallelism which splits the activations across the devices along the hidden dimension throughout the network. The main drawback of these approaches is that they encompass multi-device layer normalization which is very compute/communication inefficient. Along with layer-norm communication, Sagemaker [8] does four reduce-scatter communications per transformer layer in comparison to just two all-reduce communications in the Megatron-LM approach. In this paper, we present a new technique which leverages the advantages of both tensor parallelism and sequence parallelism without any of the previous approaches’ shortcomings. In other words, our technique, which mixes both tensor and sequence parallelism, reduces the activation memory significantly without any additional compute, communication, or memory",
+        "x": 85,
+        "y": 336.8,
+        "w": 441.9,
+        "h": 308.8,
+        "zh": "每一层的参数被分到许多设备上 [18, 19, 21]；以及 2）流水线并行，也就是沿着网络的层这一维把模型切开 [7, 10, 11]。一些近期工作把这两种模型并行合在一起，从而能训练大到 1T 参数的模型 [13]。模型并行之外的另一条路，是把若干训练技术和数据并行合在一起，以此来训练大模型 [14, 17, 15, 16]。这条路把优化器状态、梯度和参数切分到各个数据并行 rank 上。另外，一项近期扩展 [15] 用 CPU 卸载，让少量 GPU 也能训练多万亿参数的模型。和模型并行相比，这些基于数据并行的技术效率更低，扩展到大量 GPU 时也并不好用 [13]，因此更适合在资源有限的环境里做微调。本文只讨论模型并行上的优化。把这些技术和我们的方法做对比不在本文范围内。此外，Megatron-LM [19] 里的张量并行本身就能在一定程度上减少激活显存。不过在这个做法里，Transformer 有一部分激活并没有按张量并行 rank 切开，这部分会额外占激活显存。[9] 提出的序列并行沿序列维度把激活在整个网络里划分开，可以缓解这个问题。然而他们的做法和数据并行类似，要求参数和优化器状态在所有设备上各存一份，因此不适合训练大模型。SageMaker [8] 和 GSPMD [21] 提出了更省显存的张量并行：沿隐藏维度，在整个网络里把激活切到各设备上。这些做法的主要缺点是层归一化要跨多台设备，计算和通信都很不划算。除了层归一化的通信，SageMaker [8] 每个 Transformer 层要做四次 reduce-scatter，而 Megatron-LM 的做法每个 Transformer 层只要两次 all-reduce。本文提出一种新技术，同时用上张量并行和序列并行的好处，又避开以往做法的那些短处。换句话说，这种把张量并行和序列并行混在一起的技术能显著降低激活显存，而又不额外增加计算、通信或显存"
+      },
+      {
+        "text": "In this work, we consider a single stack transformer encoder or decoder with L layers as shown in Figure 2. At the start of the network, the input tokens are fed into a word embedding table with size v×h and the token embeddings are combined with learned positional embeddings with size s×h where s is the sequence length, h is the hidden dimension, and v is the vocabulary size. The output of the embedding layer, which is the input to the transformer block, is a 3-D tensor of size s × b × h where b is the microbatch size. Each transformer layer consists of a self-attention block with a attention heads followed by a multi-layer perceptron (MLP) with two layers which increase the hidden size to 4h and then reduce it back to h. Input to and output from each transformer layer have the same size s × b × h. The output from the last transformer layer is projected back into the vocabulary dimension to calculate the cross-entropy loss. We assume that word embedding and output layer weights are",
+        "x": 85,
+        "y": 162.5,
+        "w": 441.9,
+        "h": 117.6,
+        "zh": "本文考虑图 2 那种由 L 层堆起来的单个 Transformer 编码器或解码器。网络一开始，输入 token 进入大小为 v×h 的词嵌入表，token 嵌入再和大小为 s×h 的可学习位置嵌入合在一起。这里 s 是序列长度，h 是隐藏维度，v 是词表大小。嵌入层的输出，也就是 Transformer 块的输入，是大小为 s × b × h 的三维张量，b 是微批次大小。每个 Transformer 层先是一个有 a 个注意力头的自注意力块，后面接一个两层的多层感知机（MLP）：先把隐藏大小扩到 4h，再缩回 h。每个 Transformer 层的输入和输出大小相同，都是 s × b × h。最后一个 Transformer 层的输出被投影回词表维度，用来算交叉熵损失。我们假设词嵌入和输出层的权重是"
+      },
+      {
+        "text": "shared. Variable names are listed in Table 1 for reference.",
+        "x": 85,
+        "y": 150.5,
+        "w": 252.4,
+        "h": 10,
+        "zh": "共享的。变量名见表 1，方便对照。"
+      },
+      {
+        "text": "In this section, we derive an approximate formula for the memory required to store activations in the forward pass of a single stack transformer model as shown in Figure 2. Note that “activations” in this paper refers to any tensor that is created in the forward pass and is necessary for gradient computation",
+        "x": 85,
+        "y": 71.9,
+        "w": 441.9,
+        "h": 33.9,
+        "zh": "本节推导一个近似公式，用来估计图 2 那种单栈 Transformer 模型在前向传播里存放激活要多少显存。注意，本文说的「激活」，是指前向传播中产生、并且算梯度时用得上的任何张量"
+      }
+    ],
+    "4": [
+      {
+        "text": "Figure 2: Transformer Architecture. Each gray block represents a single transformer layer that is",
+        "x": 85,
+        "y": 592,
+        "w": 441.9,
+        "h": 10,
+        "zh": "图 2：Transformer 架构。每个灰色方块是一个 Transformer 层，它"
+      },
+      {
+        "text": "during back-propagation. As a result, this excludes the main parameters of the model and optimizer state, but, for example, includes the mask used by the dropout operation. In addition, we only consider the main contributors to the memory and ignore small buffers. For example, for a layer normalization block, the input to the layer as well as the input’s mean and variance are required to calculate the gradients. The input contains sbh elements whereas mean and variance have only sb elements each. Since h is large (of order of thousands), we have 2sb \u001c sbh. As a result it is a good approximation to only consider the memory required to store the input, i.e., we only include",
+        "x": 85,
+        "y": 466.6,
+        "w": 441.9,
+        "h": 81.7,
+        "zh": "在反向传播期间。因此，这里不包括模型本身的参数和优化器状态，但例如包括 dropout 用的掩码。另外，我们只算显存里的大头，小缓冲区忽略不计。例如层归一化要算梯度，需要这一层的输入，以及输入的均值和方差。输入有 sbh 个元素，均值和方差各自只有 sb 个元素。h 很大（数量级是几千），于是 2sb ≪ sbh。所以只计算存放输入要多少显存就是一个很好的近似，也就是说，我们只计入"
+      },
+      {
+        "text": "We also assume that the network and the activations are stored in a 16-bit floating point format and therefore each element requires 2 bytes for storage. The only exceptions are the dropout masks which only require a single byte per element. Note that all the reported sizes in this section are in bytes and not number of elements unless explicitly mentioned.",
+        "x": 85,
+        "y": 406.8,
+        "w": 441.9,
+        "h": 45.8,
+        "zh": "我们还假设网络和激活都用 16 位浮点存放，因此每个元素占 2 字节。唯一的例外是 dropout 掩码，每个元素只占 1 字节。注意，除非另外说明，本节给出的大小都是字节数，不是元素个数。"
+      },
+      {
+        "text": "Activations Memory Per Transformer Layer As shown in Figure 2, each transformer layer consists of an attention and an MLP block connected with two layer-norms. Below, we derive the memory required to store activations for each of these",
+        "x": 85,
+        "y": 348.9,
+        "w": 441.9,
+        "h": 42.3,
+        "zh": "每个 Transformer 层的激活显存。如图 2，每个 Transformer 层由一个注意力块和一个 MLP 块组成，中间用两个层归一化连起来。下面分别推导存放其中每一部分的激活要多少显存"
+      },
+      {
+        "text": "Attention block: which includes self attention followed by a linear projection and an attention dropout. The linear projection stores its input activations with size 2sbh and the attention dropout requires a mask with size sbh. The self attention shown in Figure 3 consists of several elements: • Query (Q), Key (K), and Value (V ) matrix multiplies: We only need to store their shared input with size 2sbh.",
+        "x": 85,
+        "y": 270.9,
+        "w": 441.9,
+        "h": 64,
+        "zh": "注意力块：包括自注意力，后面是线性投影和注意力 dropout。线性投影要存它的输入激活，大小为 2sbh；注意力 dropout 需要大小为 sbh 的掩码。图 3 里的自注意力由几部分组成：• Query（Q）、Key（K）和 Value（V）的矩阵乘法：我们只需存它们共用的输入，大小为 2sbh。"
+      },
+      {
+        "text": "matrix multiply: It requires storage of both Q and K with total size 4sbh.",
+        "x": 137.1,
+        "y": 251.8,
+        "w": 335.4,
+        "h": 10,
+        "zh": "矩阵乘法：Q 和 K 都要存，一共 4sbh。"
+      },
+      {
+        "text": "• Softmax: Softmax output with size 2as b is required for back-propagation.",
+        "x": 100,
+        "y": 232.8,
+        "w": 341.7,
+        "h": 10,
+        "zh": "• Softmax：反向传播需要大小为 2as b 的 Softmax 输出。"
+      },
+      {
+        "text": "• Softmax dropout: Only a mask with size as b is needed.",
+        "x": 100,
+        "y": 213.7,
+        "w": 267.6,
+        "h": 10,
+        "zh": "• Softmax dropout：只需要大小为 as b 的掩码。"
+      },
+      {
+        "text": "• Attention over Values (V ): We need to store the dropout output (2as b) and the Values (2sbh) and therefore need 2as b + 2sbh of storage. Summing the above values, in total, the attention block requires 11sbh + 5as b bytes of storage. MLP: The two linear layers store their inputs with size 2sbh and 8sbh. The GeLU non-linearity also needs its input with size 8sbh for back-propagation. Finally, dropout stores its mask with size sbh. In total, MLP block requires 19sbh bytes of storage. Layer norm: Each layer norm stores its input with size 2sbh and therefore in total, we will need",
+        "x": 85,
+        "y": 116.6,
+        "w": 441.9,
+        "h": 88,
+        "zh": "• 对 Value（V）做注意力：需要存 dropout 的输出（2as b）和 Value（2sbh），因此要 2as b + 2sbh 的存储。把上面各项加起来，注意力块一共要 11sbh + 5as b 字节。MLP：两个线性层分别存大小为 2sbh 和 8sbh 的输入。GeLU 非线性做反向传播时也需要它的输入，大小为 8sbh。最后，dropout 存大小为 sbh 的掩码。MLP 块一共要 19sbh 字节。层归一化：每个层归一化存大小为 2sbh 的输入，因此总共需要"
+      },
+      {
+        "text": "Summing the memory required for attention, MLP, and the layer-norms, the memory required to store the activations for a single layer of a transformer network is:",
+        "x": 85,
+        "y": 80.8,
+        "w": 441.9,
+        "h": 21.9,
+        "zh": "把注意力、MLP 和层归一化所需的显存加起来，存放 Transformer 网络一层激活所需的显存是："
+      },
+      {
+        "text": "Activations memory per layer = sbh 34 + 5",
+        "x": 198.1,
+        "y": 58.5,
+        "w": 193.2,
+        "h": 10,
+        "zh": ""
+      }
+    ],
+    "5": [
+      {
+        "text": "Figure 3: Self-attention block. The red dashed line shows the regions to which selective activation recomputation is applied (see Section 5 for more details on selective activation recomputation).",
+        "x": 85,
+        "y": 595.9,
+        "w": 441.9,
+        "h": 21.9,
+        "zh": "图 3：自注意力块。红色虚线标出做选择性激活重计算的区域（细节见第 5 节）。"
+      },
+      {
+        "text": "The above equation is for the case that no form of model parallelism is applied.",
+        "x": 85,
+        "y": 552.5,
+        "w": 347.6,
+        "h": 10,
+        "zh": "上式对应的是完全没有模型并行的情形。"
+      },
+      {
+        "text": "In this section we start by quantifying the effect of tensor parallelism on the required activation memory per layer. We then introduce a novel method called sequence parallelism that further reduces per layer memory required by activations.",
+        "x": 85,
+        "y": 482.3,
+        "w": 441.9,
+        "h": 33.9,
+        "zh": "本节先量化张量并行对每层激活显存的影响，再引入一种叫序列并行的新方法，进一步降低激活所占的每层显存。"
+      },
+      {
+        "text": "At the end of this section, we also discuss the effect of pipeline parallelism on activations memory and derive a formula for the total memory required by activations.",
+        "x": 85,
+        "y": 470.3,
+        "w": 441.9,
+        "h": 21.9,
+        "zh": "本节末尾还会讨论流水线并行对激活显存的影响，并给出激活总显存的公式。"
+      },
+      {
+        "text": "We use tensor parallelism developed by Shoeybi, et.al.[19] and parallelize the attention as well as MLP blocks as shown in Figure 4. This form of parallelism introduces two additional communication operations f and f¯. For more details, please see the paper[19].",
+        "x": 85,
+        "y": 402.1,
+        "w": 441.9,
+        "h": 33.9,
+        "zh": "我们采用 Shoeybi 等人 [19] 的张量并行，按图 4 把注意力块和 MLP 块并行化。这种并行多了两个通信操作 f 和 f̄。细节见论文 [19]。"
+      },
+      {
+        "text": "Figure 4: Transformer layer with tensor parallelism. f and f¯ are conjugate. f is no operation in the forward pass and all-reduce in the backward pass. f¯ is all-reduce in the forward pass and no operation in the backward pass.",
+        "x": 85,
+        "y": 228.9,
+        "w": 441.9,
+        "h": 36.5,
+        "zh": "图 4：带张量并行的 Transformer 层。f 和 f̄ 互为共轭。f 在前向是空操作，在反向是 all-reduce。f̄ 在前向是 all-reduce，在反向是空操作。"
+      },
+      {
+        "text": "Not only does tensor parallelism parallelize model parameters and optimizer states inside the attention and MLP blocks, but it also parallelizes the activations inside those blocks. Note that the input activations to these blocks (for example input to the Q, K, and V matrix multiplies or input to the h → 4h linear layer) are not parallelized, and only activations within each block are divided across the tensor parallel group . Assuming t-way tensor parallelism, the per-layer memory required to store the activations reduces from Equation 1 to:",
+        "x": 85,
+        "y": 134.2,
+        "w": 441.9,
+        "h": 69.7,
+        "zh": "张量并行不只把注意力块和 MLP 块里的模型参数、优化器状态并行化，也把这些块内部的激活并行化。注意，这些块的输入激活并没有被并行化，例如 Q、K、V 矩阵乘法的输入，或者 h → 4h 线性层的输入；只有每个块内部的激活才在张量并行组里切开。设张量并行度为 t，存放激活所需的每层显存就从式 1 变为："
+      }
+    ],
+    "6": [
+      {
+        "text": "Tensor parallelism, as shown in Figure 4, parallelizes the parts of the transformer layer that take the most time during training and as a result, it is computationally efficient. However, it leaves the layer-norms as well as the dropouts after attention and MLP blocks intact and as a result, they are replicated across the tensor parallel group. These elements do not require a lot of compute but demand a considerable amount of activation memory. Quantitatively, the 10sbh part of Equation 2 is due to these replicated operations and as a result they are not divided by the tensor parallel size t. We notice that in the non-tensor parallel regions of a transformer layer, the operations are independent along the sequence dimension. This characteristic allows us to partition these regions along the sequence dimension s. Partitioning along the sequence dimension reduces the memory required for the activations. This extra level of parallelism introduces new communication collectives before f and after f¯ which will act as converters between sequence and tensor parallel regions. For example, in the forward pass, we need an extra all-gather before the operator f in Figure 4. These extra",
+        "x": 85,
+        "y": 575.4,
+        "w": 441.9,
+        "h": 141.5,
+        "zh": "如图 4，张量并行切的是 Transformer 层里训练时最花时间的部分，所以计算上是划算的。但它把层归一化，以及注意力块和 MLP 块后面的 dropout 原样留着，于是这些部分在张量并行组里各存一份。它们计算不多，激活显存却占得不少。定量来看，式 2 里的 10sbh 就是这些被复制的操作，所以没有除以张量并行度 t。我们注意到，Transformer 层里那些不做张量并行的区域，沿序列维度的计算是彼此独立的。因此可以把这些区域沿序列维度 s 切开。沿序列维度划分能减少激活显存。多出来的这一层并行，会在 f 之前和 f̄ 之后各加一组新的集合通信，用来在序列并行区域和张量并行区域之间做转换。例如前向时，要在图 4 的算子 f 之前多做一次 all-gather。这些额外的"
+      },
+      {
+        "text": "communications introduce overhead and will slow down the training.",
+        "x": 85,
+        "y": 563.5,
+        "w": 300.2,
+        "h": 10,
+        "zh": "通信会带来开销，把训练拖慢。"
+      },
+      {
+        "text": "To avoid these extra communications, we combine these operations with the f and f¯ operators and introduce new operations g and ¯g as shown in Figure 5. As it can be seen, g and ¯g are the converters between sequence and tensor parallel regions. We derive these operations in the remainder of this",
+        "x": 85,
+        "y": 527.6,
+        "w": 441.9,
+        "h": 36.5,
+        "zh": "为了避免这些额外通信，我们把这些操作和算子 f、f̄ 合并，并引入图 5 里的新操作 g 和 ḡ。可以看出，g 和 ḡ 负责在序列并行区域和张量并行区域之间转换。我们在本节剩下的部分推导这些操作"
+      },
+      {
+        "text": "Figure 5: Transformer layer with tensor and sequence parallelism. g and ¯g are conjugate. g is all-gather in the forward pass and reduce-scatter in the backward pass. ¯g is reduce-scatter in forward pass and",
+        "x": 85,
+        "y": 356.8,
+        "w": 441.9,
+        "h": 21.9,
+        "zh": "图 5：同时带张量并行和序列并行的 Transformer 层。g 和 ḡ 互为共轭。g 在前向是 all-gather，在反向是 reduce-scatter。ḡ 在前向是 reduce-scatter，并且"
+      },
+      {
+        "text": "We detail g and ¯g’s derivation using the MLP block. In the non-parallel form, as shown in Figure",
+        "x": 100,
+        "y": 308.3,
+        "w": 427,
+        "h": 10,
+        "zh": "我们用 MLP 块把 g 和 ḡ 的来历写清楚。非并行形式下，如图"
+      },
+      {
+        "text": "2, the layer-norm followed by the MLP block can be formulated as:",
+        "x": 85,
+        "y": 296.3,
+        "w": 293.5,
+        "h": 10,
+        "zh": "2，层归一化后面接 MLP 块，可以写成："
+      },
+      {
+        "text": "where X is input to the layer-norm with size s × b × h and A and B are the weight matrices of the linear layers with size h×4h and 4h×h, respectively. The combined tensor and sequence parallel form of the above operations is shown in Figure 6. The subscripts represent splitting among accelerators and superscripts depict the dimension along which the splitting is done. For example, X1 is the first accelerator’s part of X that is split along the s dimension (sequence dimension) while Z2 is the second accelerator’s part of Z that is split along the h dimension (hidden dimension). The input to the layer-norm is parallelized along the sequence dimension X = [X1, X2]. As a result, the output of the layer-norm will also be parallel along the sequence dimension Y = [Y1 , Y2 ]. The linear layer with GeLU non-linearity requires the entire input Y and therefore we need to perform an all-gather. This implies that g is an all-gather operation along the sequence dimension in the forward pass. By splitting A along its columns (A1 and A2) and B along its rows (B1 and B2), we avoid communications (for more details please see [19]) and arrive at W1 and W2. These two tensors are not parallel anymore and need to be summed as W = W1 + W2 before they are fed into the dropout layer. However, dropout needs its input to be parallel in the sequence dimension s. Instead of summing and",
+        "x": 85,
+        "y": 56.7,
+        "w": 441.9,
+        "h": 165.4,
+        "zh": "其中 X 是层归一化的输入，大小为 s × b × h；A 和 B 是两个线性层的权重，大小分别为 h×4h 和 4h×h。上面这些操作在张量并行加序列并行下的形式见图 6。下标表示切到了哪块加速器上，上标表示沿哪个维度切。例如 X1 是把 X 沿 s（序列维度）切开后、第一块加速器上的那一份，Z2 是把 Z 沿 h（隐藏维度）切开后、第二块加速器上的那一份。层归一化的输入沿序列维度并行，X = [X1, X2]，因此它的输出也沿序列维度并行，Y = [Y1, Y2]。带 GeLU 的线性层需要完整的输入 Y，所以要做一次 all-gather。也就是说，前向时 g 是沿序列维度的 all-gather。把 A 按列切开（A1 和 A2），把 B 按行切开（B1 和 B2），通信就可以省掉（细节见 [19]），并得到 W1 和 W2。这两个张量不再是并行的，送进 dropout 之前要求和：W = W1 + W2。可是 dropout 要求输入沿序列维度 s 是并行的。与其先求和，再"
+      }
+    ],
+    "7": [
+      {
+        "text": "Figure 6: MLP layer with tensor and sequence parallelism. g and ¯g are conjugate. g is all-gather in forward pass and reduce-scatter in backward pass. ¯g is reduce-scatter in forward pass and all-gather",
+        "x": 85,
+        "y": 565.8,
+        "w": 441.9,
+        "h": 21.9,
+        "zh": "图 6：带张量并行和序列并行的 MLP 层。g 和 ḡ 互为共轭。g 在前向是 all-gather，在反向是 reduce-scatter。ḡ 在前向是 reduce-scatter，在反向是 all-gather"
+      },
+      {
+        "text": "then parallelizing in the sequence dimension, we combine these two operations into a reduce-scatter operation. As a result, ¯g can be a single reduce-scatter operation in the forward pass. Putting it all",
+        "x": 85,
+        "y": 498.4,
+        "w": 441.9,
+        "h": 21.9,
+        "zh": "沿序列维度把它切开，我们把这两步合成一次 reduce-scatter。因此前向时，ḡ 可以就是一次 reduce-scatter。合起来就是"
+      },
+      {
+        "text": "[Z1 , Z2 ] = [GeLU(Y A1), GeLU(Y A2)], W1 = Z1 B1 and W2 = Z2 B2, [W1 , W2 ] = ¯g(W1, W2), [V1 , V2 ] = [Dropout(W1 ), Dropout(W2 )].",
+        "x": 211.8,
+        "y": 384.9,
+        "w": 188.4,
+        "h": 58.8,
+        "zh": "[Z1, Z2] = [GeLU(Y A1), GeLU(Y A2)]，W1 = Z1 B1，W2 = Z2 B2，[W1, W2] = ḡ(W1, W2)，[V1, V2] = [Dropout(W1), Dropout(W2)]。"
+      },
+      {
+        "text": "If we follow a similar break-down for the backward pass, we find that g and ¯g are conjugate of each other. g is an all-gather in the forward pass and a reduce-scatter in the backward pass, and ¯g is a reduce-scatter in the forward pass and an all-gather in the backward pass. A similar breakdown done for the layer-norm followed by the attention part of the transformer layer arrives at Figure 5. Tensor parallelism requires four all-reduces in a single forward and backward pass whereas tensor together with sequence parallelism requires four all-gathers and four reduce-scatters in a single forward and backward pass. At the first look, it seems that tensor with sequence parallelism requires more communications compared to tensor parallelism. However, we note that a ring all-reduce is composed of two steps: a reduce-scatter followed by an all-gather. As a result, the communication bandwidth used for tensor parallelism and tensor together with sequence parallelism are the same. Therefore,",
+        "x": 85,
+        "y": 258.3,
+        "w": 441.9,
+        "h": 117.6,
+        "zh": "反向传播按同样的方式拆开之后，可以看到 g 和 ḡ 互为共轭。g 在前向是 all-gather，在反向是 reduce-scatter；ḡ 在前向是 reduce-scatter，在反向是 all-gather。层归一化后面接注意力的那一段也这样拆，就得到图 5。一次前向加一次反向里，张量并行要四次 all-reduce，而张量并行再加序列并行要四次 all-gather 和四次 reduce-scatter。乍一看，加上序列并行之后通信更多。但环形 all-reduce 本来就是两步：先 reduce-scatter，再 all-gather。所以两者用掉的通信带宽是一样的。因此，"
+      },
+      {
+        "text": "sequence parallelism does not introduce any communication overhead.",
+        "x": 85,
+        "y": 246.3,
+        "w": 305.8,
+        "h": 10,
+        "zh": "序列并行不会带来额外的通信开销。"
+      },
+      {
+        "text": "From Equation 3, sequence parallelism along with tensor parallelism divides all the activations required for the backward pass along the parallel dimension except for the tensor Y that is required for the first linear operation. To alleviate this issue, we do not store the full tensor Y for the backward pass. Instead, we store only the Yi part on the ith tensor parallel rank and perform an extra all-gather in the backward pass. To eliminate the latency introduced by this extra all-gather, we overlap this communication with the computation required to calculate gradients with respect to Y , and as a result,",
+        "x": 85,
+        "y": 174.6,
+        "w": 441.9,
+        "h": 69.7,
+        "zh": "由式 3，序列并行和张量并行合在一起，会把反向传播要用的激活都沿并行维度切开，只有第一个线性层要用的张量 Y 除外。为此，反向时我们不存完整的 Y，只在第 i 个张量并行 rank 上存 Yi 这一份，并在反向时多做一次 all-gather。为了不让这次多出来的 all-gather 增加延迟，我们把它和计算关于 Y 的梯度的计算重叠起来，于是，"
+      },
+      {
+        "text": "Using sequence parallelism along with tensor parallelism, the memory required to store the activa-",
+        "x": 100,
+        "y": 150.7,
+        "w": 427,
+        "h": 10,
+        "zh": "同时使用序列并行和张量并行之后，存放激活所需的显存"
+      },
+      {
+        "text": "tions per transformer layer reduces from Equation 2 to:",
+        "x": 85,
+        "y": 138.7,
+        "w": 242.1,
+        "h": 10,
+        "zh": "按每个 Transformer 层计，从式 2 降为："
+      },
+      {
+        "text": "The above equation is now Equation 1 divided by the tensor parallel size. This means that using tensor and sequence parallelism, we can distribute activations among the tensor parallel group and reduce",
+        "x": 85,
+        "y": 72.1,
+        "w": 441.9,
+        "h": 21.9,
+        "zh": "上式现在就是式 1 除以张量并行度。也就是说，同时用张量并行和序列并行，可以把激活分到张量并行组里，并降低"
+      },
+      {
+        "text": "the required memory by tensor parallel size t.",
+        "x": 85,
+        "y": 60.1,
+        "w": 199.2,
+        "h": 10,
+        "zh": "所需显存，使之变为张量并行度 t 分之一。"
+      }
+    ],
+    "8": [
+      {
+        "text": "Pipeline parallelism simply divides the L layers of the transformer into L/p groups of layers where p is the pipeline parallel size. However, pipeline parallelism does not uniformly divide the total memory required for activations by p. This is due to the overlapping that pipeline parallel schedules introduce",
+        "x": 85,
+        "y": 683,
+        "w": 441.9,
+        "h": 33.9,
+        "zh": "流水线并行只是把 Transformer 的 L 层分成 L/p 组，p 是流水线并行度。但它并不会把激活总显存均匀地除以 p。这是因为流水线并行的调度本身会引入重叠"
+      },
+      {
+        "text": "To quantify this, we consider the 1F1B pipeline schedule developed in PipeDream [12]. Schedules that have a minimized pipeline bubble put the most memory pressure on the first stage of the pipeline (first stage of the pipeline refers to first group of L/p layers which also includes the input embeddings). A visualization of activation memory as a function of pipeline stage is shown in Appendix B. To keep the pipeline pressurized and avoid extra idle time, the first stage must store activations for p microbatches (for more details see Figure 4-top of [13]). Each stage contains L/p layers so the first stage must store p × L/p = L layers worth of activations regardless of the pipeline parallel size p. Therefore, the total memory required to store activations in the first stage is:",
+        "x": 85,
+        "y": 575.4,
+        "w": 441.9,
+        "h": 93.6,
+        "zh": "为了量化这一点，我们看 PipeDream [12] 的 1F1B 流水线调度。把流水线气泡压到最小的调度，显存压力最大的是流水线第一级（第一级指最前面的 L/p 层，也包括输入嵌入）。激活显存随流水线级如何变化，见附录 B。为了让流水线保持充满、不额外空等，第一级必须为 p 个微批次存放激活（细节见 [13] 的图 4 上半部分）。每一级有 L/p 层，所以第一级要存 p × L/p = L 层那么多的激活，跟流水线并行度 p 无关。因此，第一级存放激活所需的总显存是："
+      },
+      {
+        "text": "For other pipeline schedules, the total memory required would be slightly different. For example, the interleaving schedule developed in Megatron-LM [13] requires storing activations for L(1 + layers where m is the number of interleaving stages. As a result, if the interleaving schedule is used,",
+        "x": 85,
+        "y": 500.3,
+        "w": 441.9,
+        "h": 33.9,
+        "zh": "换一种流水线调度，总显存会稍有不同。例如 Megatron-LM [13] 的交错调度需要存放 L(1 + 层的激活，其中 m 是交错级数。因此，如果用交错调度，"
+      },
+      {
+        "text": "then the total activation memory should be scaled by (1 +",
+        "x": 85,
+        "y": 488.3,
+        "w": 255.6,
+        "h": 10,
+        "zh": "那么总激活显存要乘上 (1 +"
+      },
+      {
+        "text": "The majority of the required activation memory is captured by Equation 5. However, this equation does not capture activation memory required for the input embeddings, the last layer-norm, and the",
+        "x": 85,
+        "y": 430.1,
+        "w": 441.9,
+        "h": 21.9,
+        "zh": "激活显存的大头已经写在式 5 里。不过这式子没有计入输入嵌入、最后的层归一化，以及"
+      },
+      {
+        "text": "Position and word embeddings do not require any considerable activations to be stored for the backward pass. However, the dropout requires storage. The dropout in the embeddings layer is also parallelized along the sequence dimension. As a result, it will require sbhp/t storage. Note that the factor p comes from the pipeline parallelism and the fact that we need to store p microbatches (see",
+        "x": 85,
+        "y": 370.3,
+        "w": 441.9,
+        "h": 45.8,
+        "zh": "位置嵌入和词嵌入在反向传播时几乎不用存什么激活。但 dropout 要存。嵌入层里的 dropout 也沿序列维度并行，因此要占 sbhp/t。这里的因子 p 来自流水线并行：我们要存 p 个微批次（见"
+      },
+      {
+        "text": "The layer-norm before the output layer also uses sequence parallelism and as a result requires 2sbh/t storage. The output layer projection into vocabulary dimension will require its input with size 2sbh/t to be stored. Finally, the cross entropy loss requires storing the logits which are calculated in 32-bit floating point and as a result will require 4sbv/t of storage. Note that since we only consider activations in the first stage of the pipeline, the above activations, i.e., 4sbh/t(1 + v/h) in total, are",
+        "x": 85,
+        "y": 298.6,
+        "w": 441.9,
+        "h": 57.8,
+        "zh": "输出层前面的层归一化也用序列并行，因此占 2sbh/t。投影到词表维度的输出层要存它的输入，大小为 2sbh/t。最后，交叉熵损失要存 logits，而这些 logits 是用 32 位浮点算的，因此占 4sbv/t。注意，我们只统计流水线第一级上的激活，所以上面这些，也就是一共 4sbh/t(1 + v/h)，"
+      },
+      {
+        "text": "only included for the case that there is no pipeline parallelism (p = 1).",
+        "x": 85,
+        "y": 286.6,
+        "w": 307.7,
+        "h": 10,
+        "zh": "只在没有流水线并行（p = 1）时才算进去。"
+      },
+      {
+        "text": "Adding the above memory, the extra memory due to the input embeddings, the last layer-norm,",
+        "x": 100,
+        "y": 274.7,
+        "w": 427,
+        "h": 10,
+        "zh": "把上面这些显存加进去，输入嵌入和最后的层归一化带来的额外显存，"
+      },
+      {
+        "text": "where δp=1 is 1 for p = 1 and 0 otherwise. We note that compared to term 34 + 5 h from Equation 5, both p/L and 4/L(1 + v/h) are negligible. For example, for a model with 22B parameters, these extra terms account for less than 0.01% of the total activation memory requirements. As a result, Equation 5 is a good approximation to the total required activations memory and we will use it in the rest of",
+        "x": 85,
+        "y": 186.1,
+        "w": 441.9,
+        "h": 45.8,
+        "zh": "其中当 p = 1 时 δp=1 为 1，否则为 0。和式 5 里的 34 + 5 h 相比，p/L 以及 4/L(1 + v/h) 都可以忽略。例如一个 22B 参数的模型，这些额外项不到总激活显存的 0.01%。因此式 5 已经是总激活显存的一个很好的近似，后文其余部分都用它"
+      },
+      {
+        "text": "The total required activation memory from Equation 5 can still be considerable for large models. Activation recomputation [5] overcomes this memory limitation by storing (or ”checkpointing”) the input activations to a group of layers and recomputing other required activations using an extra forward pass during back-propagation (this is referred to in this paper as full activation recomputation). Assuming the groups contain only a single layer, and ignoring activations outside of the transformer layers, this method reduces the total required memory for activations to 2sbhL. We note that this",
+        "x": 85,
+        "y": 59.6,
+        "w": 441.9,
+        "h": 69.7,
+        "zh": "按式 5，大模型所需的总激活显存仍然可能很大。激活重计算 [5] 的做法是把一组层的输入激活存下来（也就是做检查点），反向传播时再用额外一次前向把其他需要的激活重算出来（本文称之为全量激活重计算），以此来绕开这个显存限制。如果每一组只有一层，并且不计 Transformer 层以外的激活，激活总显存就降到 2sbhL。我们注意到，这一"
+      }
+    ],
+    "9": [
+      {
+        "text": "Activations Memory Per Transformer Layer",
+        "x": 297.2,
+        "y": 726.9,
+        "w": 191,
+        "h": 10,
+        "zh": "每个 Transformer 层的激活显存"
+      },
+      {
+        "text": "selective activation recomputation tensor parallel + sequence parallel + selective activation recomputation full activation recomputation",
+        "x": 123.9,
+        "y": 587.1,
+        "w": 161,
+        "h": 52.6,
+        "zh": "选择性激活重计算；张量并行 + 序列并行 + 选择性激活重计算；全量激活重计算"
+      },
+      {
+        "text": "Table 2: Activations memory, in bytes, per transformer layer for different techniques.",
+        "x": 120.2,
+        "y": 559.2,
+        "w": 371.5,
+        "h": 10,
+        "zh": "表 2：不同技术下，每个 Transformer 层的激活显存，单位是字节。"
+      },
+      {
+        "text": "required memory can be further reduced to 2sbhL/t if we only store a portion of activations in each tensor parallel rank.",
+        "x": 85,
+        "y": 513.7,
+        "w": 441.9,
+        "h": 21.9,
+        "zh": "所需显存还可以再降到 2sbhL/t，只要每个张量并行 rank 只存一部分激活。"
+      },
+      {
+        "text": "However, this approach requires an extra all-gather per layer and will add communication overhead and, as a result, we do not consider this approach. Compared to storing all activations (Equation 5), checkpointing all transformer layers significantly reduces the amount of memory required to train a model. This reduction does come at the cost of the recomputation (an extra forward pass) which can introduce as much as 30 − 40% computational time overhead. To balance the memory savings and computational overhead, it is ideal to only checkpoint enough activations to allow a given model-parallel configuration to train given the constraints of device memory. The memory savings provided by sequence parallelism allows many more configurations to train without recomputation than before, but the optimal model parallel configurations of large models still generally require some saving and recomputing of activations. A simple approach to choose the amount of activations that are stored vs recomputed is to only checkpoint some of the transformer layers and store all the activations of other layers. This approach does not scale very well to large models; for example, when training MT-NLG there are only three layers per device, limiting the granularity at which you can balance memory vs compute. Additionally, we note that not all activations require the same amount of operations to recompute so it is beneficial to be smarter in selecting which activations to store and which to recompute. Instead of checkpointing and recomputing full transformer layers, we propose to checkpoint and recompute only parts of each transformer layer that take up a considerable amount of memory but are not computationally expensive to recompute, or selective activation recomputation. To this end, we note that the term 5as/h in Equation 5 is due to the attention operations after the width of the network is increased by the linear layer calculating the Q, K, and V values; i.e., QK softmax, softmax dropout, and attention over V as shown in Figure 3. These operations generally have large input sizes and thus large activations, however, the number of floating-point operations (FLOPs) per input element is very low. The rest of the transformer layer accounts for the 34 term in Equation 5. Thus, for large models where 5as/h > 34, if we checkpoint and recompute this part of the transformer layer, we store less than half of the activations and only have a modest cost to recompute those that aren’t stored. To quantify this, let’s consider GPT-3 [4] and MT-NLG [20] models, some of the largest models that have been trained so far. For GPT-3, a = 96, s = 2048, and h = 12288 and as a result 5as/h = 80. For MT-NLG, a = 128, s = 2048, and h = 20480 so 5as/h = 64. Comparing these numbers to 34, which is the factor for the rest of the layer, we can see these activations account for a large portion of the total activations. Thus, by using selective activation recomputation we can save 70% and 65% of the required memory for activations for the GPT-3 and MT-NLG models, respectively. The recomputation of these activations introduces only 2.7% and 1.6% FLOPs overhead for these two models. For more details on the FLOPs calculations see Appendix A. Using this form of selective activation recomputation, the memory needed to store activation decreases from Equation 5 to:",
+        "x": 85,
+        "y": 83.4,
+        "w": 441.9,
+        "h": 440.3,
+        "zh": "不过这样做每层要多一次 all-gather，通信开销会上去，所以我们不考虑。和把激活全部存下来（式 5）相比，给所有 Transformer 层做检查点，能明显减少训练所需的显存。代价是重计算，也就是多一次前向，计算时间最多会增加 30–40%。要在省显存和计算开销之间取平衡，最好只检查点刚好够用的那些激活，让给定的模型并行配置能在设备显存里训起来。序列并行省下来的显存，让比以前多得多的配置可以完全不重算；但大模型上比较合适的模型并行配置，通常还是得存一部分、再重算一部分。简单的做法是只给一部分 Transformer 层做检查点，其他层的激活全部留下。这在大模型上不好用：例如训练 MT-NLG 时，每台设备只有三层，能用来平衡显存和计算的粒度很有限。另外，不同激活重算一次的运算量并不一样，所以值得挑一挑哪些留下、哪些重算。我们不整层做检查点和重算，只挑每一层里占显存很多、但重算并不贵的那一部分，这就是选择性激活重计算。式 5 里的 5as/h 就来自这里：算 Q、K、V 的线性层把网络宽度放大之后的那些注意力操作，也就是图 3 里的 QK softmax、softmax dropout，以及对 V 的注意力。这些操作的输入通常很大，激活也就很大，但每个输入元素对应的浮点运算（FLOPs）很少。层里其余部分对应式 5 中的 34。因此对 5as/h > 34 的大模型，如果只把这一部分做检查点并重算，存下来的激活不到一半，重算没存的那部分代价也不大。拿已经训练出来的一些最大模型来算，GPT-3 [4] 里 a = 96，s = 2048，h = 12288，于是 5as/h = 80。MT-NLG [20] 里 a = 128，s = 2048，h = 20480，于是 5as/h = 64。和层内其余部分的系数 34 一比，可以看出这部分激活占总激活的很大一块。因此选择性激活重计算可以分别为 GPT-3 和 MT-NLG 省下 70% 和 65% 的激活显存。重算这部分给两个模型分别只增加 2.7% 和 1.6% 的 FLOPs。FLOPs 怎么算见附录 A。用上这种选择性激活重计算之后，存放激活所需的显存从式 5 降为："
+      }
+    ],
+    "10": [
+      {
+        "text": "Table 3: Model configurations used during evaluation. Note that no data parallelism is used in our evaluations and as a result, the batch sizes as well as total number of GPUs are set to a value much",
+        "x": 85,
+        "y": 620.9,
+        "w": 441.9,
+        "h": 21.9,
+        "zh": "表 3：评估用的模型配置。注意，这些评估没有用数据并行，所以批次大小和 GPU 总数都设得比"
+      },
+      {
+        "text": "lower than the ones in the end-to-end training.",
+        "x": 85,
+        "y": 609,
+        "w": 204.3,
+        "h": 10,
+        "zh": "端到端训练里的取值低得多。"
+      },
+      {
+        "text": "The above equation shows that using selective activation recomputation allows the required activation memory to scale linearly with sequence length and be independent of the number of attention heads. As was discussed in Section 4.2.3, in the case of an interleaved pipeline schedule, the above",
+        "x": 85,
+        "y": 552.6,
+        "w": 441.9,
+        "h": 33.9,
+        "zh": "上式说明，用了选择性激活重计算之后，所需激活显存随序列长度线性增长，并且跟注意力头的个数无关。如第 4.2.3 节所说，如果用的是交错流水线调度，上面这个"
+      },
+      {
+        "text": "When using pipeline parallelism, as discussed in Section 4.2.3, even though a given device only has L/p layers, the first stage must still store an equivalent of L layers of activations since it must store activations for p microbatches to keep the pipeline pressurized. An additional technique that can be employed to reduce the recomputation cost in this case is to store all the activations for as many microbatches as possible given available device memory, and do full or selective recomputation",
+        "x": 85,
+        "y": 480.9,
+        "w": 441.9,
+        "h": 57.8,
+        "zh": "用流水线并行时，如第 4.2.3 节所说，一台设备上虽然只有 L/p 层，第一级仍然要存相当于 L 层的激活，因为它得为 p 个微批次存激活，流水线才不会空。这时还可以再加一个办法来降低重计算的代价：在设备显存还放得下的前提下，尽可能多的微批次把全部激活存下来，并做全量或选择性重计算"
+      },
+      {
+        "text": "In practice we find that after applying sequence parallelism and selective activation recomputation the recomputation overhead is small enough that this additional technique provides very modest improvement. This technique is described in more detail and analyzed in Appendix C.",
+        "x": 85,
+        "y": 445,
+        "w": 441.9,
+        "h": 33.9,
+        "zh": "实际做下来，序列并行和选择性激活重计算加上之后，重计算的开销已经很小，这个额外办法带来的改进非常有限。附录 C 有它的详细说明和分析。"
+      },
+      {
+        "text": "In this section, we evaluate the impact of our proposed approach on both memory usage as well as execution speed of training. Table 3 lists the model configurations used in the evaluations. We consider models up to one trillion parameters and for all these models, the tenor parallel size is set to 8. We use the interleaving schedule with three interleaving stages (m = 3) for the 175B and 530B models. For all the cases, sequence length is set to s = 2048 and vocabulary size is set to v = 51200. We also note that no data parallelism is considered in these evaluations since our approach is independent of data parallelism. As a result, the batch sizes used in our analysis are much lower than the ones used for the end-to-end training. All of our results are run with mixed precision on the Selene supercomputer [3]. Each cluster node has 8 NVIDIA 80GB A100 GPUs [1] connected to each other by NVLink and NVSwitch [2]. Each node has eight NVIDIA Mellanox 200Gbps HDR Infiniband HCAs for application",
+        "x": 85,
+        "y": 282.9,
+        "w": 441.9,
+        "h": 117.6,
+        "zh": "本节评估所提方法对训练时显存占用和执行速度的影响。表 3 是评估用的模型配置。模型规模最大到一万亿参数，这些模型的张量并行度都设为 8。175B 和 530B 使用交错调度，交错级数为 3（m = 3）。所有情形的序列长度都是 s = 2048，词表大小都是 v = 51200。这些评估不考虑数据并行，因为我们的方法跟数据并行无关，所以分析里用的批次大小比端到端训练小得多。全部结果都在 Selene 超级计算机 [3] 上用混合精度跑。每个集群节点有 8 块 NVIDIA 80GB A100 GPU [1]，彼此用 NVLink 和 NVSwitch [2] 相连。每个节点有八块 NVIDIA Mellanox 200Gbps HDR Infiniband HCA，供应用"
+      },
+      {
+        "text": "Table 2 summarizes the required memory for different technique discussed in this paper. To quantify this, Figure 7 shows the activation memory used by different techniques as a percentage of the memory needed to keep all activations split across the tensor parallel ranks, i.e., Equation 2. Individually, both techniques cut the memory requirement nearly in half, and combined provide a 5x reduction bringing the memory requirements to under 20%. This is only ∼ 2× of the full activation recomputation which is at 10% of the baseline. Without the memory savings provided by sequence parallelism and selective recompute together, none of the these models will fit into memory. Note that all of these results include",
+        "x": 85,
+        "y": 153.2,
+        "w": 441.9,
+        "h": 81.7,
+        "zh": "表 2 汇总了本文这几种技术各自要多少显存。图 7 把它们实际占用的激活显存画成百分比，分母是把全部激活按张量并行 rank 切开后所需的显存，也就是式 2。两种技术单独用，都能把显存需求砍掉将近一半；合在一起则是 5 倍的降幅，显存需求降到 20% 以下。这大约只是全量激活重计算所占显存的 2 倍，而全量重计算是基线的 10%。没有序列并行和选择性重计算一起省下的这些显存，这些模型一个也放不进显存。注意，这些结果都包括"
+      },
+      {
+        "text": "the memory optimization described in Appendiex B.",
+        "x": 85,
+        "y": 141.2,
+        "w": 229.4,
+        "h": 10,
+        "zh": "附录 B 里的那项显存优化。"
+      },
+      {
+        "text": "Table 4 shows the time to execute the forward and backward passes of one transformer layer of the 22B model for various experiments . The first two rows show that sequence parallelism provides a",
+        "x": 85,
+        "y": 83.2,
+        "w": 441.9,
+        "h": 21.9,
+        "zh": "表 4 是 22B 模型单个 Transformer 层在不同实验里走完前向和反向要多少时间。前两行说明，序列并行能"
+      }
+    ],
+    "11": [
+      {
+        "text": "Figure 7: Percentage of required memory compared to the tensor-level parallel baseline. As the model size increases, both sequence parallelism and selective activation recomputation have similar memory savings and together they reduce the memory required by ∼ 5×.",
+        "x": 85,
+        "y": 523.2,
+        "w": 441.9,
+        "h": 33.9,
+        "zh": "图 7：相对张量级并行基线所需显存的百分比。模型越大，序列并行和选择性激活重计算省下的显存越接近，两者合在一起把所需显存降到大约原来的 1/5。"
+      },
+      {
+        "text": "Baseline no recompute Sequence Parallelism Baseline with recompute",
+        "x": 100.9,
+        "y": 452.7,
+        "w": 107.3,
+        "h": 34.3,
+        "zh": "不做重计算的基线、序列并行、带重计算的基线"
+      },
+      {
+        "text": "Table 4: Time to complete the forward and backward pass of a single transformer layer of the 22B",
+        "x": 85,
+        "y": 406.5,
+        "w": 441.9,
+        "h": 10,
+        "zh": "表 4：22B 模型单个 Transformer 层走完前向和反向所需的时间"
+      },
+      {
+        "text": "modest improvement to the time it takes to complete one transformer layer, reducing the forward time from 7.7ms to 7.2ms, a 6% speedup. This improvement comes from the layer-norm and dropout layers being performed on 1/t of the data. We also found that even though the amount of data moved is the same, the execution of reduce-scatter and all-gather combined is slower than an all-reduce alone, reducing the improvement from sequence parallelism. Note that this speedup is an additional benefit to the primary advantage of using sequence parallelism, which is the memory savings that allow for",
+        "x": 85,
+        "y": 301.3,
+        "w": 441.9,
+        "h": 69.7,
+        "zh": "把一个 Transformer 层的耗时略微降下来：前向从 7.7ms 降到 7.2ms，快了 6%。快的原因是层归一化和 dropout 只在 1/t 的数据上做。我们还发现，虽然搬动的数据量一样，reduce-scatter 加 all-gather 还是比单独一次 all-reduce 慢，所以序列并行的提速被削弱了一截。需要说明，这个提速只是附带的；序列并行的主要好处是省显存，从而使得"
+      },
+      {
+        "text": "The next two rows in Table 4 show that if we are selective in what operations are recomputed, which we can be in more configurations thanks to sequence parallelism, we can significantly reduce the overhead of recomputation in the backward pass. The overhead of selective recomputation is 1.3ms, or 11% of the 11.9ms baseline, vs 7.6ms or 64% overhead for recomputing the full layer. For the combined forward and backward time, the overhead is 7% vs 39%. Note that the overhead of 39% for recomputing the full layer (as opposed to the expected 33%) is due to an optimization in the backward pass where we overlap all-reduce communication with the linear weight’s gradient computation. As we see later, this benefit increases with model size. The bottom row in Table 4 shows the combined benefit of selective recomputation and sequence parallelism. When the two techniques are used together, the",
+        "x": 85,
+        "y": 181.7,
+        "w": 441.9,
+        "h": 105.6,
+        "zh": "表 4 接下来两行说明，只要挑着决定重算哪些操作——有了序列并行，能这样挑的配置更多——反向传播里重计算的开销就能明显降下来。选择性重计算的开销是 1.3ms，相当于 11.9ms 基线的 11%；整层重算则是 7.6ms，开销 64%。前向加反向合在一起，开销是 7% 对 39%。整层重算的开销是 39%，而不是预想的 33%，是因为反向里做了一项优化：all-reduce 和线性层权重的梯度计算叠在一起了。后面会看到，模型越大，这项收益越明显。表 4 最后一行是选择性重计算和序列并行合在一起的效果。两种技术一起用时，"
+      },
+      {
+        "text": "Figure 8 shows this same break down for all of our test cases. We see that as the model size grows, the reduction in overhead also increases. For the 530B and 1T cases, the overhead is just 2%, compared",
+        "x": 85,
+        "y": 145.8,
+        "w": 441.9,
+        "h": 21.9,
+        "zh": "图 8 对所有测试情形做了同样的分解。模型越大，开销降得越多。530B 和 1T 的开销只有 2%，相比"
+      },
+      {
+        "text": "Table 5 lists full end-to-end iteration time for each of the four configurations listed in Table 3. We find that for all of the tested configurations, the techniques presented in the paper provide between 29.0% and 32.1% improvement in the throughput over performing full recomputation without sequence",
+        "x": 85,
+        "y": 63.7,
+        "w": 441.9,
+        "h": 33.9,
+        "zh": "表 5 列出表 3 里四种配置各自的完整端到端迭代时间。对所有测过的配置，本文技术带来的吞吐提升在 29.0% 到 32.1% 之间，比较对象是执行全量重计算、且不使用序列"
+      }
+    ],
+    "12": [
+      {
+        "text": "Figure 8: Per layer breakdown of forward, backward, and recompute times. Baseline is the case with no recomputation and no sequence parallelism. Present work includes both sequence parallelism and selective activation recomputation.",
+        "x": 85,
+        "y": 412.6,
+        "w": 441.9,
+        "h": 33.9,
+        "zh": "图 8：每一层的前向、反向和重计算时间。基线是既不重计算、也不做序列并行。本文方法同时包含序列并行和选择性激活重计算。"
+      },
+      {
+        "text": "Table 5: End-to-end iteration time. Our approach results in throughput increase of around 30%.",
+        "x": 95,
+        "y": 306.6,
+        "w": 422,
+        "h": 10,
+        "zh": "表 5：端到端迭代时间。我们的方法让吞吐提高大约 30%。"
+      },
+      {
+        "text": "parallelism. These savings will be directly translated into shorter training times. We define the model FLOPs utilization (MFU) and hardware FLOPs utilization (HFU) similar to Chowdhery, et al. [6]. Model FLOPs are the floating point operations required to perform a single forward and backward pass (single iteration) regardless of the implementations and hardware limitations. As a result, model FLOPs are hardware and implementation independent and only depend on the underlying model. On the other hand, the hardware FLOPs represent the floating point operations that are actually performed on the hardware per iteration. Therefore, if an implementation requires activation recomputation (for example ours), then the hardware FLOPs are going to be larger than model FLOPs. We provide a tight lower bound formula for the model and hardware FLOPs in Appendix A. For our method, the hardware to model FLOPs ratio is approximately 1 + s/6h. Subsequently, we define the model and hardware FLOPs per second as the model and hardware FLOPs divided by the iteration time, respectively. Using these definitions, the MFU and HFU are defined as model and hardware FLOPs per second divided by the accelerator theoretical peak FLOPs per second . Both the MFU and HFU are provided in Table 5 for all four configurations. As the model size increases, we achieve better GPU utilization and for the one trillion parameter model, we reach a MFU and HFU of 56.3% and 57.0%, respectively. We should note that the results in Table 5 do not use any data parallelism.",
+        "x": 85,
+        "y": 81.9,
+        "w": 441.9,
+        "h": 201.2,
+        "zh": "并行。这些节省会直接变成更短的训练时间。模型浮点利用率（MFU）和硬件浮点利用率（HFU）的定义与 Chowdhery 等人 [6] 相同。模型 FLOPs 是做一次前向加一次反向（也就是一次迭代）所需要的浮点运算，跟具体实现和硬件限制无关。因此模型 FLOPs 不随硬件和实现改变，只取决于模型本身。硬件 FLOPs 则是每次迭代在硬件上真正执行的浮点运算。所以如果某种实现要做激活重计算（例如我们的方法），硬件 FLOPs 就会大于模型 FLOPs。附录 A 给出模型 FLOPs 和硬件 FLOPs 的一个紧的下界公式。对我们的方法，硬件 FLOPs 与模型 FLOPs 之比大约是 1 + s/6h。据此，模型 FLOPs 每秒和硬件 FLOPs 每秒分别是这两类 FLOPs 除以迭代时间。MFU 和 HFU 则是这两个每秒数值，再除以加速器的理论峰值 FLOPs 每秒。四种配置的 MFU 和 HFU 都列在表 5 里。模型越大，GPU 利用率越好；一万亿参数的模型上，MFU 和 HFU 分别达到 56.3% 和 57.0%。需要说明，表 5 的结果没有使用任何数据并行。"
+      }
+    ],
+    "13": [
+      {
+        "text": "introduces some overhead due to the gradient all-reduce required between the data parallel groups. However, for large transformer models, this overhead is not large. For example, if we scale the 530B model to 8-way data parallellism (2240 GPUs) while keeping batch size per model instance constant – i.e., the batch size is also multiplied by the data parallel size – the time per iteration increases slightly from 37.83 seconds to 39.15 seconds. This results in an MFU drop from 56.0% to 54.2% which is not substantial. We note that we do not use any overlapping of gradient all-reduces with back-propagation and an efficient overlap can almost entirely eliminate this increase in the iteration time.",
+        "x": 85,
+        "y": 653.6,
+        "w": 441.9,
+        "h": 81.7,
+        "zh": "会因为数据并行组之间要做梯度 all-reduce 而多一点开销。对大型 Transformer 模型，这个开销不大。例如把 530B 模型扩到 8 路数据并行（2240 块 GPU），同时保持每个模型实例的批次大小不变——也就是批次大小也乘上数据并行度——每次迭代的时间从 37.83 秒略增到 39.15 秒。MFU 从 56.0% 降到 54.2%，降得不多。我们没有把梯度 all-reduce 和反向传播重叠起来；只要重叠做得好，迭代时间的这点增加几乎可以全部消掉。"
+      },
+      {
+        "text": "In this work, we presented two novel and straightforward techniques that reduce memory pressure from storing activations and thus reduce the need to recompute activations. We showed that using sequence parallelism with tensor parallelism can substantially reduce the required activation memory. In conjunction with selective activation recomputation, we showed that we can achieve a 5× reduction in memory and recover over 90% of the compute overhead introduced using full activation recomputation. In the future, we plan to further reduce the activation memory by resolving the issues arising from memory fragmentation for large microbatches and non-uniform memory allocation due to pipeline parallelism. Moreover, we plan to work on methods that can reduce the memory pressure on the first stage of the pipeline.",
+        "x": 85,
+        "y": 503.4,
+        "w": 441.9,
+        "h": 105.6,
+        "zh": "本文给出两种直接、也好实现的新技术，用来减轻存放激活的显存压力，从而少做激活重计算。序列并行和张量并行一起用，能把所需的激活显存大幅降下来。再加上选择性激活重计算，显存可以降到原来的 1/5，并把全量激活重计算带来的计算开销收回 90% 以上。接下来我们打算继续降激活显存，处理大微批次上的显存碎片，以及流水线并行造成的显存分配不均匀。我们也打算研究怎样减轻流水线第一级的显存压力。"
+      },
+      {
+        "text": "[1] NVIDIA A100 Tensor Core GPU. https://www.nvidia.com/en-us/data-center/a100/.",
+        "x": 90,
+        "y": 448.8,
+        "w": 411.7,
+        "h": 10,
+        "zh": "[1] NVIDIA A100 Tensor Core GPU。https://www.nvidia.com/en-us/data-center/a100/。"
+      },
+      {
+        "text": "[2] NVLink and nVSwitch. https://www.nvidia.com/en-us/data-center/nvlink/.",
+        "x": 90,
+        "y": 429.3,
+        "w": 377,
+        "h": 10,
+        "zh": "[2] NVLink 与 nVSwitch。https://www.nvidia.com/en-us/data-center/nvlink/。"
+      },
+      {
+        "text": "[3] Selene. https://www.top500.org/system/179842/.",
+        "x": 90,
+        "y": 409.7,
+        "w": 246.1,
+        "h": 10,
+        "zh": "[3] Selene。https://www.top500.org/system/179842/。"
+      },
+      {
+        "text": "[4] Tom B. Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, Sandhini Agarwal, Ariel Herbert-Voss, Gretchen Krueger, Tom Henighan, Rewon Child, Aditya Ramesh, Daniel M. Ziegler, Jeffrey Wu, Clemens Winter, Christopher Hesse, Mark Chen, Eric Sigler, Mateusz Litwin, Scott Gray, Benjamin Chess, Jack Clark, Christopher Berner, Sam McCandlish, Alec Radford, Ilya Sutskever, and Dario Amodei.",
+        "x": 90,
+        "y": 330.4,
+        "w": 436.9,
+        "h": 69.7,
+        "zh": "[4] Tom B. Brown、Benjamin Mann、Nick Ryder、Melanie Subbiah、Jared Kaplan、Prafulla Dhariwal、Arvind Neelakantan、Pranav Shyam、Girish Sastry、Amanda Askell、Sandhini Agarwal、Ariel Herbert-Voss、Gretchen Krueger、Tom Henighan、Rewon Child、Aditya Ramesh、Daniel M. Ziegler、Jeffrey Wu、Clemens Winter、Christopher Hesse、Mark Chen、Eric Sigler、Mateusz Litwin、Scott Gray、Benjamin Chess、Jack Clark、Christopher Berner、Sam McCandlish、Alec Radford、Ilya Sutskever 与 Dario Amodei。"
+      },
+      {
+        "text": "Language models are few-shot learners. Marc’Aurelio Ranzato, Raia Hadsell, Maria-Florina Balcan, and Hsuan-Tien Lin, editors, Advances in Neural Information Processing Systems 33: Annual Conference on Neural Information Processing Systems 2020, NeurIPS 2020, December 6-12, 2020, virtual, 2020.",
+        "x": 105.5,
+        "y": 294.6,
+        "w": 421.4,
+        "h": 45.8,
+        "zh": "语言模型是少样本学习者。Marc’Aurelio Ranzato、Raia Hadsell、Maria-Florina Balcan 与 Hsuan-Tien Lin 编，Advances in Neural Information Processing Systems 33: Annual Conference on Neural Information Processing Systems 2020，NeurIPS 2020，2020 年 12 月 6–12 日，线上，2020。"
+      },
+      {
+        "text": "[5] Tianqi Chen, Bing Xu, Chiyuan Zhang, and Carlos Guestrin. Training deep nets with sublinear memory cost. CoRR, abs/1604.06174, 2016.",
+        "x": 90,
+        "y": 263.1,
+        "w": 436.9,
+        "h": 21.9,
+        "zh": "[5] Tianqi Chen、Bing Xu、Chiyuan Zhang 与 Carlos Guestrin。用亚线性显存代价训练深度网络。CoRR，abs/1604.06174，2016。"
+      },
+      {
+        "text": "[6] Aakanksha Chowdhery, Sharan Narang, Jacob Devlin, Maarten Bosma, Gaurav Mishra, Adam Roberts, Paul Barham, Hyung Won Chung, Charles Sutton, Sebastian Gehrmann, Parker Schuh, Kensen Shi, Sasha Tsvyashchenko, Joshua Maynez, Abhishek Rao, Parker Barnes, Yi Tay, Noam Shazeer, Vinodkumar Prabhakaran, Emily Reif, Nan Du, Ben Hutchinson, Reiner Pope, James Bradbury, Jacob Austin, Michael Isard, Guy Gur-Ari, Pengcheng Yin, Toju Duke, Anselm Levskaya, Sanjay Ghemawat, Sunipa Dev, Henryk Michalewski, Xavier Garcia, Vedant Misra, Kevin Robinson, Liam Fedus, Denny Zhou, Daphne Ippolito, David Luan, Hyeontaek Lim, Barret Zoph, Alexander Spiridonov, Ryan Sepassi, David Dohan, Shivani Agrawal, Mark Omernick, Andrew M. Dai, Thanumalayan Sankaranarayana Pillai, Marie Pellat, Aitor Lewkowycz, Erica Moreira, Rewon Child, Oleksandr Polozov, Katherine Lee, Zongwei Zhou, Xuezhi Wang, Brennan Saeta, Mark Diaz, Orhan Firat, Michele Catasta, Jason Wei, Kathy Meier-Hellstern, Douglas Eck, Jeff Dean, Slav Petrov, and Noah Fiedel. Palm: Scaling language modeling with pathways, 2022.",
+        "x": 90,
+        "y": 112.1,
+        "w": 436.9,
+        "h": 141.5,
+        "zh": "[6] Aakanksha Chowdhery、Sharan Narang、Jacob Devlin、Maarten Bosma、Gaurav Mishra、Adam Roberts、Paul Barham、Hyung Won Chung、Charles Sutton、Sebastian Gehrmann、Parker Schuh、Kensen Shi、Sasha Tsvyashchenko、Joshua Maynez、Abhishek Rao、Parker Barnes、Yi Tay、Noam Shazeer、Vinodkumar Prabhakaran、Emily Reif、Nan Du、Ben Hutchinson、Reiner Pope、James Bradbury、Jacob Austin、Michael Isard、Guy Gur-Ari、Pengcheng Yin、Toju Duke、Anselm Levskaya、Sanjay Ghemawat、Sunipa Dev、Henryk Michalewski、Xavier Garcia、Vedant Misra、Kevin Robinson、Liam Fedus、Denny Zhou、Daphne Ippolito、David Luan、Hyeontaek Lim、Barret Zoph、Alexander Spiridonov、Ryan Sepassi、David Dohan、Shivani Agrawal、Mark Omernick、Andrew M. Dai、Thanumalayan Sankaranarayana Pillai、Marie Pellat、Aitor Lewkowycz、Erica Moreira、Rewon Child、Oleksandr Polozov、Katherine Lee、Zongwei Zhou、Xuezhi Wang、Brennan Saeta、Mark Diaz、Orhan Firat、Michele Catasta、Jason Wei、Kathy Meier-Hellstern、Douglas Eck、Jeff Dean、Slav Petrov 与 Noah Fiedel。PaLM：用 Pathways 扩展语言建模，2022。"
+      },
+      {
+        "text": "[7] Yanping Huang, Youlong Cheng, Ankur Bapna, Orhan Firat, Dehao Chen, Mia Xu Chen, HyoukJoong Lee, Jiquan Ngiam, Quoc V. Le, Yonghui Wu, and Zhifeng Chen. Gpipe: Efficient training of giant neural networks using pipeline parallelism. In Hanna M. Wallach, Hugo Larochelle, Alina Beygelzimer, Florence d’Alch´e-Buc, Emily B. Fox, and Roman Garnett, editors, Advances",
+        "x": 90,
+        "y": 56.7,
+        "w": 436.9,
+        "h": 45.8,
+        "zh": "[7] Yanping Huang、Youlong Cheng、Ankur Bapna、Orhan Firat、Dehao Chen、Mia Xu Chen、HyoukJoong Lee、Jiquan Ngiam、Quoc V. Le、Yonghui Wu 与 Zhifeng Chen。GPipe：用流水线并行高效训练巨型神经网络。见 Hanna M. Wallach、Hugo Larochelle、Alina Beygelzimer、Florence d’Alché-Buc、Emily B. Fox 与 Roman Garnett 编，Advances"
+      }
+    ],
+    "14": [
+      {
+        "text": "in Neural Information Processing Systems 32: Annual Conference on Neural Information Processing Systems 2019, NeurIPS 2019, December 8-14, 2019, Vancouver, BC, Canada, pages 103–112,",
+        "x": 105.5,
+        "y": 713.4,
+        "w": 421.4,
+        "h": 21.9,
+        "zh": "in Neural Information Processing Systems 32：Neural Information Processing Systems 2019 年会，NeurIPS 2019，2019 年 12 月 8–14 日，加拿大不列颠哥伦比亚省温哥华，第 103–112 页，"
+      },
+      {
+        "text": "[8] Can Karakus, Rahul Huilgol, Fei Wu, Anirudh Subramanian, Cade Daniel, Derya Cavdar, Teng Xu, Haohan Chen, Arash Rahnama, and Luis Quintela. Amazon sagemaker model parallelism: A general and flexible framework for large model training, 2021.",
+        "x": 90,
+        "y": 658,
+        "w": 436.9,
+        "h": 33.9,
+        "zh": "[8] Can Karakus、Rahul Huilgol、Fei Wu、Anirudh Subramanian、Cade Daniel、Derya Cavdar、Teng Xu、Haohan Chen、Arash Rahnama 与 Luis Quintela。Amazon SageMaker 模型并行：面向大模型训练的通用、灵活框架，2021。"
+      },
+      {
+        "text": "[9] Shenggui Li, Fuzhao Xue, Yongbin Li, and Yang You.",
+        "x": 90,
+        "y": 638.5,
+        "w": 262.5,
+        "h": 10,
+        "zh": "[9] Shenggui Li、Fuzhao Xue、Yongbin Li 与 Yang You。"
+      },
+      {
+        "text": "Sequence parallelism: Long sequence training from system perspective, 2021.",
+        "x": 105.5,
+        "y": 626.6,
+        "w": 421.4,
+        "h": 21.9,
+        "zh": "序列并行：从系统角度看长序列训练，2021。"
+      },
+      {
+        "text": "[10] Zhuohan Li, Siyuan Zhuang, Shiyuan Guo, Danyang Zhuo, Hao Zhang, Dawn Song, and Ion Stoica. Terapipe: Token-level pipeline parallelism for training large-scale language models. In Marina Meila and Tong Zhang, editors, Proceedings of the 38th International Conference on Machine Learning, ICML 2021, 18-24 July 2021, Virtual Event, volume 139 of Proceedings of Machine Learning Research, pages 6543–6552. PMLR, 2021.",
+        "x": 85,
+        "y": 559.3,
+        "w": 441.9,
+        "h": 57.8,
+        "zh": "[10] Zhuohan Li、Siyuan Zhuang、Shiyuan Guo、Danyang Zhuo、Hao Zhang、Dawn Song 与 Ion Stoica。TeraPipe：面向大规模语言模型训练的 token 级流水线并行。见 Marina Meila 与 Tong Zhang 编，第 38 届国际机器学习会议论文集，ICML 2021，2021 年 7 月 18–24 日，线上，Proceedings of Machine Learning Research 第 139 卷，第 6543–6552 页。PMLR，2021。"
+      },
+      {
+        "text": "[11] Deepak Narayanan, Aaron Harlap, Amar Phanishayee, Vivek Seshadri, Nikhil R. Devanur, Gregory R. Ganger, Phillip B. Gibbons, and Matei Zaharia. Pipedream: generalized pipeline parallelism for DNN training. In Tim Brecht and Carey Williamson, editors, Proceedings of the 27th ACM Symposium on Operating Systems Principles, SOSP 2019, Huntsville, ON, Canada, October 27-30, 2019, pages 1–15. ACM, 2019.",
+        "x": 85,
+        "y": 492,
+        "w": 441.9,
+        "h": 57.8,
+        "zh": "[11] Deepak Narayanan、Aaron Harlap、Amar Phanishayee、Vivek Seshadri、Nikhil R. Devanur、Gregory R. Ganger、Phillip B. Gibbons 与 Matei Zaharia。PipeDream：面向 DNN 训练的广义流水线并行。见 Tim Brecht 与 Carey Williamson 编，第 27 届 ACM 操作系统原理研讨会论文集，SOSP 2019，加拿大安大略省亨茨维尔，2019 年 10 月 27–30 日，第 1–15 页。ACM，2019。"
+      },
+      {
+        "text": "[12] Deepak Narayanan, Amar Phanishayee, Kaiyu Shi, Xie Chen, and Matei Zaharia. Efficient Pipeline-Parallel DNN Training. arXiv preprint arXiv:2006.09503, 2020.",
+        "x": 85,
+        "y": 460.5,
+        "w": 393.7,
+        "h": 21.9,
+        "zh": "[12] Deepak Narayanan、Amar Phanishayee、Kaiyu Shi、Xie Chen 与 Matei Zaharia。高效的流水线并行 DNN 训练。arXiv preprint arXiv:2006.09503，2020。"
+      },
+      {
+        "text": "[13] Deepak Narayanan, Mohammad Shoeybi, Jared Casper, Patrick LeGresley, Mostofa Patwary, Vijay Anand Korthikanti, Dmitri Vainbrand, Prethvi Kashinkunti, Julie Bernauer, Bryan Catanzaroand Amar Phanishayee, and Matei Zaharia. Efficient large-scale language model training on gpu clusters using megatron-lm. ArXiv, abs/2104.04473, 2021.",
+        "x": 85,
+        "y": 405.2,
+        "w": 441.9,
+        "h": 45.8,
+        "zh": "[13] Deepak Narayanan、Mohammad Shoeybi、Jared Casper、Patrick LeGresley、Mostofa Patwary、Vijay Anand Korthikanti、Dmitri Vainbrand、Prethvi Kashinkunti、Julie Bernauer、Bryan Catanzaro、Amar Phanishayee 与 Matei Zaharia。用 Megatron-LM 在 GPU 集群上高效训练大规模语言模型。ArXiv，abs/2104.04473，2021。"
+      },
+      {
+        "text": "[14] Samyam Rajbhandari, Jeff Rasley, Olatunji Ruwase, and Yuxiong He. mizations toward training trillion parameter models. In Christine Cuicchi, Irene Qualters, and William T. Kramer, editors, Proceedings of the International Conference for High Performance Computing, Networking, Storage and Analysis, SC 2020, Virtual Event / Atlanta, Georgia, USA, November 9-19, 2020, page 20. IEEE/ACM, 2020.",
+        "x": 85,
+        "y": 337.9,
+        "w": 441.9,
+        "h": 57.8,
+        "zh": "[14] Samyam Rajbhandari、Jeff Rasley、Olatunji Ruwase 与 Yuxiong He。mizations，迈向训练万亿参数模型。见 Christine Cuicchi、Irene Qualters 与 William T. Kramer 编，高性能计算、网络、存储与分析国际会议论文集，SC 2020，线上 / 美国佐治亚州亚特兰大，2020 年 11 月 9–19 日，第 20 页。IEEE/ACM，2020。"
+      },
+      {
+        "text": "[15] Samyam Rajbhandari, Olatunji Ruwase, Jeff Rasley, Shaden Smith, and Yuxiong He. Zero-infinity: breaking the GPU memory wall for extreme scale deep learning. In Bronis R. de Supinski, Mary W. Hall, and Todd Gamblin, editors, SC ’21: The International Conference for High Performance Computing, Networking, Storage and Analysis, St. Louis, Missouri, USA, November 14 - 19, 2021, pages 59:1–59:14. ACM, 2021.",
+        "x": 85,
+        "y": 270.6,
+        "w": 441.9,
+        "h": 57.8,
+        "zh": "[15] Samyam Rajbhandari、Olatunji Ruwase、Jeff Rasley、Shaden Smith 与 Yuxiong He。ZeRO-Infinity：打破极大规模深度学习的 GPU 显存墙。见 Bronis R. de Supinski、Mary W. Hall 与 Todd Gamblin 编，SC ’21：高性能计算、网络、存储与分析国际会议，美国密苏里州圣路易斯，2021 年 11 月 14–19 日，第 59:1–59:14 页。ACM，2021。"
+      },
+      {
+        "text": "[16] Jeff Rasley, Samyam Rajbhandari, Olatunji Ruwase, and Yuxiong He. Deepspeed: System optimizations enable training deep learning models with over 100 billion parameters. In Rajesh Gupta, Yan Liu, Jiliang Tang, and B. Aditya Prakash, editors, KDD ’20: The 26th ACM SIGKDD Conference on Knowledge Discovery and Data Mining, Virtual Event, CA, USA, August 23-27, 2020, pages 3505–3506. ACM, 2020.",
+        "x": 85,
+        "y": 203.3,
+        "w": 441.9,
+        "h": 57.8,
+        "zh": "[16] Jeff Rasley、Samyam Rajbhandari、Olatunji Ruwase 与 Yuxiong He。DeepSpeed：系统优化使超过 1000 亿参数的深度学习模型能够训练。见 Rajesh Gupta、Yan Liu、Jiliang Tang 与 B. Aditya Prakash 编，KDD ’20：第 26 届 ACM SIGKDD 知识发现与数据挖掘会议，线上，美国加利福尼亚州，2020 年 8 月 23–27 日，第 3505–3506 页。ACM，2020。"
+      },
+      {
+        "text": "[17] Jie Ren, Samyam Rajbhandari, Reza Yazdani Aminabadi, Olatunji Ruwase, Shuangyan Yang, Minjia Zhang, Dong Li, and Yuxiong He. Zero-offload: Democratizing billion-scale model training. In Irina Calciu and Geoff Kuenning, editors, 2021 USENIX Annual Technical Conference, USENIX ATC 2021, July 14-16, 2021, pages 551–564. USENIX Association, 2021.",
+        "x": 85,
+        "y": 147.9,
+        "w": 441.9,
+        "h": 45.8,
+        "zh": "[17] Jie Ren、Samyam Rajbhandari、Reza Yazdani Aminabadi、Olatunji Ruwase、Shuangyan Yang、Minjia Zhang、Dong Li 与 Yuxiong He。ZeRO-Offload：让十亿级模型训练变得可及。见 Irina Calciu 与 Geoff Kuenning 编，2021 USENIX Annual Technical Conference，USENIX ATC 2021，2021 年 7 月 14–16 日，第 551–564 页。USENIX Association，2021。"
+      },
+      {
+        "text": "[18] Noam Shazeer, Youlong Cheng, Niki Parmar, Dustin Tran, Ashish Vaswani, Penporn Koanantakool, Peter Hawkins, HyoukJoong Lee, Mingsheng Hong, Cliff Young, Ryan Sepassi, and",
+        "x": 85,
+        "y": 116.5,
+        "w": 441.9,
+        "h": 21.9,
+        "zh": "[18] Noam Shazeer、Youlong Cheng、Niki Parmar、Dustin Tran、Ashish Vaswani、Penporn Koanantakool、Peter Hawkins、HyoukJoong Lee、Mingsheng Hong、Cliff Young、Ryan Sepassi 与"
+      },
+      {
+        "text": "Mesh-tensorflow: Deep learning for supercomputers. Hanna M. Wallach, Hugo Larochelle, Kristen Grauman, Nicol`o Cesa-Bianchi, and Roman Garnett, editors, Advances in Neural Information Processing Systems 31: Annual Conference on Neural Information Processing Systems 2018, NeurIPS 2018, December 3-8, 2018, Montr´eal, Canada, pages 10435–10444, 2018.",
+        "x": 105.5,
+        "y": 56.7,
+        "w": 421.4,
+        "h": 57.8,
+        "zh": "Mesh-TensorFlow：面向超级计算机的深度学习。Hanna M. Wallach、Hugo Larochelle、Kristen Grauman、Nicolò Cesa-Bianchi 与 Roman Garnett 编，Advances in Neural Information Processing Systems 31：Neural Information Processing Systems 2018 年会，NeurIPS 2018，2018 年 12 月 3–8 日，加拿大蒙特利尔，第 10435–10444 页，2018。"
+      }
+    ],
+    "15": [
+      {
+        "text": "[19] Mohammad Shoeybi, Mostofa Patwary, Raul Puri, Patrick LeGresley, Jared Casper, and Bryan Catanzaro. Megatron-lm: Training multi-billion parameter language models using model parallelism. CoRR, abs/1909.08053, 2019.",
+        "x": 85,
+        "y": 701.4,
+        "w": 441.9,
+        "h": 33.9,
+        "zh": "[19] Mohammad Shoeybi、Mostofa Patwary、Raul Puri、Patrick LeGresley、Jared Casper 与 Bryan Catanzaro。Megatron-LM：用模型并行训练数十亿参数的语言模型。CoRR，abs/1909.08053，2019。"
+      },
+      {
+        "text": "[20] Shaden Smith, Mostofa Patwary, Brandon Norick, Patrick LeGresley, Samyam Rajbhandari, Jared Casper, Zhun Liu, Shrimai Prabhumoye, George Zerveas, Vijay Korthikanti, Elton Zhang, Rewon Child, Reza Yazdani Aminabadi, Julie Bernauer, Xia Song, Mohammad Shoeybi, Yuxiong He, Michael Houston, Saurabh Tiwary, and Bryan Catanzaro.",
+        "x": 85,
+        "y": 645.6,
+        "w": 441.9,
+        "h": 45.8,
+        "zh": "[20] Shaden Smith、Mostofa Patwary、Brandon Norick、Patrick LeGresley、Samyam Rajbhandari、Jared Casper、Zhun Liu、Shrimai Prabhumoye、George Zerveas、Vijay Korthikanti、Elton Zhang、Rewon Child、Reza Yazdani Aminabadi、Julie Bernauer、Xia Song、Mohammad Shoeybi、Yuxiong He、Michael Houston、Saurabh Tiwary 与 Bryan Catanzaro。"
+      },
+      {
+        "text": "Using deepspeed and megatron to train megatron-turing nlg 530b, a large-scale generative language model. arXiv, 2022.",
+        "x": 105.5,
+        "y": 633.7,
+        "w": 421.4,
+        "h": 21.9,
+        "zh": "用 DeepSpeed 和 Megatron 训练 Megatron-Turing NLG 530B，一个大规模生成式语言模型。arXiv，2022。"
+      },
+      {
+        "text": "[21] Yuanzhong Xu, HyoukJoong Lee, Dehao Chen, Blake A. Hechtman, Yanping Huang, Rahul Joshi, Maxim Krikun, Dmitry Lepikhin, Andy Ly, Marcello Maggioni, Ruoming Pang, Noam Shazeer, Shibo Wang, Tao Wang, Yonghui Wu, and Zhifeng Chen. GSPMD: general and scalable parallelization for ML computation graphs. CoRR, abs/2105.04663, 2021.",
+        "x": 85,
+        "y": 577.9,
+        "w": 441.9,
+        "h": 45.8,
+        "zh": "[21] Yuanzhong Xu、HyoukJoong Lee、Dehao Chen、Blake A. Hechtman、Yanping Huang、Rahul Joshi、Maxim Krikun、Dmitry Lepikhin、Andy Ly、Marcello Maggioni、Ruoming Pang、Noam Shazeer、Shibo Wang、Tao Wang、Yonghui Wu 与 Zhifeng Chen。GSPMD：面向机器学习计算图的通用、可扩展并行化。CoRR，abs/2105.04663，2021。"
+      },
+      {
+        "text": "For FLOPs calculations, we follow the derivation from Narayanan, et.al.[13] and only consider the matrix multiplications (GEMMs) which are the main contributors to the number of floating-point operations. For the attention block, the main contributors to floating-point operations are: key, query, and value transformation (6Bsh",
+        "x": 85,
+        "y": 487.3,
+        "w": 441.9,
+        "h": 45.8,
+        "zh": "计算 FLOPs 时，我们沿用 Narayanan 等人 [13] 的推导，只计矩阵乘法（GEMM），它们贡献了绝大部分浮点运算。注意力块里的主要项是：key、query 和 value 的变换（6Bsh"
+      },
+      {
+        "text": "operations), attention matrix computation (2Bs h operations), attention over values (2Bs h operations), and post-attention linear projection (2Bsh operations) where B is the microbatch size. For the feed-forward network that increases the hidden size to 4h and then reduces it back to h, we have 16Bsh floating-point operations. Summing these together, each transformer layer results in 24Bsh + 4Bs h FLOPs for the forward pass. The other main contributor to the number of floatingpoint operations is the logits layer in the language model head, which transforms features of dimension h to the vocabulary dimension v. The required FLOPs for this operation is 2Bshv. The backward pass requires double the number of FLOPs since we need to calculate the gradients with respect to both input and weight tensors. Summing all the contributions, the number of FLOPs required to do one forward and one backward pass (denoted by model FLOPs) is:",
+        "x": 85,
+        "y": 367.7,
+        "w": 441.9,
+        "h": 129.5,
+        "zh": "次运算）、注意力矩阵计算（2Bs h 次运算）、对 value 的注意力（2Bs h 次运算），以及注意力之后的线性投影（2Bsh 次运算），其中 B 是微批次大小。把隐藏大小先扩到 4h 再缩回 h 的前馈网络有 16Bsh 次浮点运算。加在一起，每个 Transformer 层的前向是 24Bsh + 4Bs h 次 FLOPs。另一大项是语言模型头里的 logits 层，它把维度为 h 的特征变到词表维度 v，需要 2Bshv 次 FLOPs。反向传播的 FLOPs 是前向的两倍，因为输入和权重都要算梯度。全部加起来，一次前向加一次反向所需的 FLOPs（称为模型 FLOPs）是："
+      },
+      {
+        "text": "Selective activation recomputation requires an additional forward pass attention matrix computation (2Bs h operations) and attention over values (2Bs h operations). Adding these required FLOPs to Equation 7, the total number of FLOPs we require per iteration (denoted by hardware FLOPs) is:",
+        "x": 85,
+        "y": 294.2,
+        "w": 441.9,
+        "h": 33.9,
+        "zh": "选择性激活重计算要额外再做一次前向里的注意力矩阵计算（2Bs h 次运算）和对 value 的注意力（2Bs h 次运算）。把这些 FLOPs 加到式 7 上，每次迭代实际需要的 FLOPs（称为硬件 FLOPs）是："
+      },
+      {
+        "text": "One can see that in our approach, model FLOPs are very close to the hardware FLOPs. Assuming 3h \u001d s and 12hL \u001d v and only considering main terms, the ratio of the hardware to model FLOPs can be approximated as:",
+        "x": 85,
+        "y": 220.7,
+        "w": 441.9,
+        "h": 33.9,
+        "zh": "可以看出，在我们的方法里，模型 FLOPs 和硬件 FLOPs 非常接近。假设 3h ≫ s、12hL ≫ v，并且只留主要项，硬件 FLOPs 与模型 FLOPs 之比可以近似成："
+      },
+      {
+        "text": "Pipeline Parallelism Memory Optimization",
+        "x": 112.7,
+        "y": 171.1,
+        "w": 303.6,
+        "h": 14.3,
+        "zh": "流水线并行的显存优化"
+      },
+      {
+        "text": "As mentioned in Section 4.2.3, efficient pipeline parallelism strategies do not uniformly divide the total memory across pipeline ranks. Figure 9 illustrates this memory pattern for the 530B model detailed in Table 3, showing the memory imbalance across pipeline ranks for both an unoptimized case, and when deallocating each microbatch’s output tensor after its forward pass. This optimization relies on the fact that, after a microbatch’s forward pass, the output tensor’s data is redundant with the input data of the following stage, thereby making it safe to deallocate. We should note that in all other results shown in this paper, this output-tensor-deallocation optimization is used.",
+        "x": 85,
+        "y": 77.6,
+        "w": 441.9,
+        "h": 81.7,
+        "zh": "如第 4.2.3 节所说，高效的流水线并行并不会把总显存在各个流水线 rank 上均分。图 9 用表 3 的 530B 模型画出这种分布：既有未做优化时各 rank 的显存不平衡，也有每个微批次前向结束之后释放其输出张量的情形。可以释放，是因为一个微批次前向结束之后，输出张量里的数据和下一级的输入数据是重复的，因此可以安全丢掉。需要说明，本文其余所有结果都用了这种释放输出张量的优化。"
+      }
+    ],
+    "16": [
+      {
+        "text": "Figure 9: Activation memory of each pipeline parallel rank, shown for both an unoptimized case (blue), and with our memory optimization that deallocates the output tensor of each pipeline rank (yellow).",
+        "x": 85,
+        "y": 532.2,
+        "w": 441.9,
+        "h": 21.9,
+        "zh": "图 9：每个流水线并行 rank 的激活显存。蓝色是未优化的情形，黄色是释放每个流水线 rank 输出张量之后的显存优化。"
+      },
+      {
+        "text": "The 530B model (see Table 3) is used for this experiment.",
+        "x": 85,
+        "y": 520.3,
+        "w": 253.6,
+        "h": 10,
+        "zh": "这个实验用的是 530B 模型（见表 3）。"
+      },
+      {
+        "text": "In this figure, we can observe the linear memory decrease along the pipeline ranks (directly observable for pipeline ranks 1 and above), along with the additional sbhp memory spike on pipeline rank 0",
+        "x": 85,
+        "y": 464.9,
+        "w": 441.9,
+        "h": 21.9,
+        "zh": "图里可以看到，激活显存沿流水线 rank 线性下降（rank 1 及以后看得很清楚），另外在流水线 rank 0 上还有一块 sbhp 的显存尖峰"
+      },
+      {
+        "text": "due to the embedding layer’s activation memory (see Section 4.3).",
+        "x": 85,
+        "y": 452.9,
+        "w": 288.3,
+        "h": 10,
+        "zh": "来自嵌入层的激活显存（见第 4.3 节）。"
+      },
+      {
+        "text": "In the case of applying the output-tensor-deallocation optimization, we save sbhr memory per pipeline rank, where r is the number of microbatches in flight on each rank, peaking at r = p on the first pipeline stage. Using the hyperparameters for the 530B model (see Table 3), and this setup’s 2 bytes per data element, the theoretical savings for this optimization on the first pipeline stage is sbhp = 2.73 GB, which closely matches the difference between the lines shown in the figure for rank 0.",
+        "x": 85,
+        "y": 393.1,
+        "w": 441.9,
+        "h": 57.8,
+        "zh": "做了输出张量释放之后，每个流水线 rank 省下 sbhr 的显存。r 是该 rank 上同时在途的微批次数，第一级达到最大，r = p。按 530B 模型的超参数（见表 3），以及这里每个元素 2 字节，第一级上这项优化的理论节省是 sbhp = 2.73 GB，和图里 rank 0 两条线的差距对得上。"
+      },
+      {
+        "text": "Microbatch Level Activation Recomputation",
+        "x": 112.8,
+        "y": 360.2,
+        "w": 314.9,
+        "h": 14.3,
+        "zh": "微批次级别的激活重计算"
+      },
+      {
+        "text": "GPUs used in pipeline parallel model training store the input activations of layers until they are consumed at the gradient computation during back-propagation. As discussed in Section 4.2.3, the first pipeline stage stores the most activations, an equivalent of storing activations for all of the transformer",
+        "x": 85,
+        "y": 314.5,
+        "w": 441.9,
+        "h": 33.9,
+        "zh": "流水线并行训练时，GPU 会把各层的输入激活存到反向传播算梯度时才用掉。如第 4.2.3 节所说，第一级流水线存的激活最多，相当于把整个 Transformer 的"
+      },
+      {
+        "text": "The computation and memory usage patterns of the first pipeline stage are illustrated in Figure 10. Yellow, red, and blue boxes indicate the execution of forward, recomputation, and back-propagation of one microbatch, respectively. This example uses the pipeline-parallel size of four and nine microbatches per iteration for training. Here the recomputation can be either full or selective. Figure 10.a depicts the execution flow of the baseline approach. Although there is some GPU memory left unused, if it is not large enough to store all of the activations and thus not require any recomputation, the activations of every microbatch is checkpointed and recomputed during back-propagation. Microbatch level activation recomputation uses all the available device memory to store activations of some outstanding microbatches, and checkpoint the rest until the backpropagation frees enough memory to store another full layer of activations. We skip checkpointing microbatches (i.e. store all their activation) until all device memory is used. In Figure 10.b, the activations of the first microbatch are stored out of four microbatches. Once the activations of the first microbatch are consumed by the its back-propagation, enough memory is now free to store all activations of the fifth microbatch. This can be seen as a moving window of microbatches in which a certain number of them can have all",
+        "x": 85,
+        "y": 135.1,
+        "w": 441.9,
+        "h": 165.4,
+        "zh": "第一级流水线的计算和显存占用见图 10。黄、红、蓝框分别是一个微批次的前向、重计算和反向传播。这个例子的流水线并行度是 4，每次迭代 9 个微批次。这里的重计算可以是全量的，也可以是选择性的。图 10.a 是基线的执行过程。尽管还有一些 GPU 显存空着，只要这些空闲还不够存下全部激活、从而还不能完全不做重计算，每个微批次的激活就仍然会被做检查点，并在反向时重算。微批次级别的激活重计算则把可用显存尽量用来存放若干尚未完成微批次的激活，其余微批次继续做检查点，直到反向传播腾出的显存够再存一整层激活。在显存用尽之前，我们不对微批次做检查点（也就是把它们的激活全部留下）。图 10.b 里，四个微批次中，第一个的激活被存了下来。等第一个微批次的激活被它自己的反向传播用掉，空出来的显存就够存第五个微批次的全部激活。这可以看成一个滑动窗口：窗口里有若干个微批次可以保留全部"
+      },
+      {
+        "text": "Later pipeline stages have fewer outstanding backpropagation steps thus we can save all activations for the same number of microbatches within a smaller microbatch window. The size of outstanding microbatch backpropagation steps at each pipeline stage is calculated as max(0, p − S), where S is the stage number. Based on our observations, many of later pipeline stages do not need any activation",
+        "x": 85,
+        "y": 75.4,
+        "w": 441.9,
+        "h": 45.8,
+        "zh": "越靠后的流水线级，还没做完的反向传播越少，因此同样个数的微批次，可以在更小的窗口里把激活全部留下。每一级上尚未完成的微批次反向步数是 max(0, p − S)，S 是级号。照我们的观察，很多靠后的流水线级根本不需要任何激活"
+      }
+    ],
+    "17": [
+      {
+        "text": "Figure 10: Computation and memory usage patterns of the baseline activation recomputation and microbatch level activation recomputation. Yellow boxes are a forward pass with activations checkpointed (i.e. only some activations are saved), red boxes are activation recomputation, blue boxes are backpropagation, and white boxes are a foward pass with all activations saved.",
+        "x": 85,
+        "y": 406,
+        "w": 441.9,
+        "h": 45.8,
+        "zh": "图 10：基线激活重计算和微批次级别激活重计算的计算、显存占用。黄框是做了激活检查点的前向（只存一部分激活），红框是激活重计算，蓝框是反向传播，白框是激活全部留下的前向。"
+      },
+      {
+        "text": "Microbatch level activation recomputation increases the model FLOPs utilization of the 175B and 530B parameter models to 52.3% (+0.7%) and 56.4% (+0.4%), respectively, compared to the baseline with both sequence parallelism and selective activation recomputation.",
+        "x": 85,
+        "y": 338.6,
+        "w": 441.9,
+        "h": 33.9,
+        "zh": "微批次级别的激活重计算把 175B 和 530B 参数模型的模型浮点利用率分别提高到 52.3%（+0.7%）和 56.4%（+0.4%）。这里的基线已经同时用了序列并行和选择性激活重计算。"
+      },
+      {
+        "text": "The gain is small because the selective recomputation overhead is as small as ∼2%. However, one can imagine model parallel configurations where there is nearly enough memory for no recomputation, in which case microbatch level activation recomputation could provide more improvement to training speed.",
+        "x": 85,
+        "y": 302.8,
+        "w": 441.9,
+        "h": 45.8,
+        "zh": "增益不大，是因为选择性重计算的开销只有大约 2%。不过可以想象有些模型并行配置，显存只差一点点就能完全不重算；那种情况下，微批次级别的激活重计算对训练速度的帮助会更大。"
+      }
+    ]
+  }
+}

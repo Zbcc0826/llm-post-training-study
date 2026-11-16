@@ -1,0 +1,1265 @@
+{
+  "id": "2104.04473",
+  "title": "2104.04473",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "Efficient Large-Scale Language Model Training on GPU Clusters",
+        "x": 55.4,
+        "y": 696.4,
+        "w": 501.3,
+        "h": 17.2,
+        "zh": "在 GPU 集群上高效训练大规模语言模型"
+      },
+      {
+        "text": ", Mohammad Shoeybi , Jared Casper , Patrick LeGresley , Mostofa Patwary , Vijay Korthikanti , Dmitri Vainbrand , Prethvi Kashinkunti , Julie Bernauer , Bryan Catanzaro , Amar Phanishayee , Matei Zaharia",
+        "x": 112.6,
+        "y": 622,
+        "w": 389.2,
+        "h": 39.9,
+        "zh": "Mohammad Shoeybi、Jared Casper、Patrick LeGresley、Mostofa Patwary、Vijay Korthikanti、Dmitri Vainbrand、Prethvi Kashinkunti、Julie Bernauer、Bryan Catanzaro、Amar Phanishayee、Matei Zaharia"
+      },
+      {
+        "text": "Large language models have led to state-of-the-art accuracies across several tasks. However, training these models efficiently is challenging because: a) GPU memory capacity is limited, making it impossible to fit large models on even a multi-GPU server, and b) the number of compute operations required can result in unrealistically long training times. Consequently, new methods of",
+        "x": 53.8,
+        "y": 519.1,
+        "w": 241.8,
+        "h": 63.8,
+        "zh": "大语言模型已经在多项任务上取得了当前最优的准确率。然而，要高效地训练这些模型并不容易，原因有二：a）GPU 显存容量有限，即便在多 GPU 服务器上也放不下大模型；b）所需计算量会让训练时间长到不现实。因此，需要新的"
+      },
+      {
+        "text": "Number of parameters10 model parallelism such as tensor and pipeline parallelism have been proposed. Unfortunately, naive usage of these methods leads",
+        "x": 53.8,
+        "y": 497.2,
+        "w": 356.4,
+        "h": 29.5,
+        "zh": "「参数数量」10。诸如张量并行和流水线并行之类的模型并行方法已经被提出。可惜，若只是朴素地使用这些方法，就会导致"
+      },
+      {
+        "text": "Figure 1: Trend of sizes of state-of-the-art Natural Language Proto scaling issues at thousands of GPUs. In this paper, we show how",
+        "x": 53.8,
+        "y": 486.2,
+        "w": 505.8,
+        "h": 9.9,
+        "zh": "图 1：当前最优自然语言处理的规模趋势。扩展到数千块 GPU 时会遇到问题。本文说明如何"
+      },
+      {
+        "text": "cessing (NLP) models with time. The number of floating-point optensor, pipeline, and data parallelism can be composed to scale",
+        "x": 53.8,
+        "y": 475.2,
+        "w": 505.8,
+        "h": 10.9,
+        "zh": "处理（NLP）模型随时间的变化。浮点运算的数量。可以把张量并行、流水线并行和数据并行组合起来，从而扩展"
+      },
+      {
+        "text": "erations to train these models is increasing at an exponential rate. to thousands of GPUs. We propose a novel interleaved pipelining schedule that can improve throughput by 10+% with memory foot-",
+        "x": 53.8,
+        "y": 453.3,
+        "w": 502,
+        "h": 22.9,
+        "zh": "训练这些模型的运算量正以指数速度增长。到数千块 GPU。我们提出一种新的交错流水线调度，能把吞吐量提高 10% 以上，同时显存占用"
+      },
+      {
+        "text": "Various model parallelism techniques have been proposed to print comparable to existing approaches. Our approach allows us",
+        "x": 53.8,
+        "y": 442.4,
+        "w": 504.4,
+        "h": 12.9,
+        "zh": "已经提出了多种模型并行技术，用来。与现有方法相当。我们的方法使我们能够"
+      },
+      {
+        "text": "address these two challenges. For example, recent work [39, 40] has to perform training iterations on a model with 1 trillion parameters",
+        "x": 53.8,
+        "y": 431.4,
+        "w": 504.4,
+        "h": 12.9,
+        "zh": "应对这两项挑战。例如，近期工作 [39, 40] 已经。在一个 1 万亿参数的模型上执行训练迭代"
+      },
+      {
+        "text": "shown how tensor (intra-layer) model parallelism, where matrix at 502 petaFLOP/s on 3072 GPUs (per-GPU throughput of 52% of",
+        "x": 53.8,
+        "y": 420.4,
+        "w": 504.6,
+        "h": 12.9,
+        "zh": "展示了张量（层内）模型并行：其中的矩阵。在 3072 块 GPU 上达到 502 petaFLOP/s（每块 GPU 的吞吐量为峰值的 52%，"
+      },
+      {
+        "text": "multiplications within each transformer layer are split over multiple GPUs, can be used to overcome these limitations. Although this approach works well for models of sizes up to 20 billion parameters on NVIDIA DGX A100 servers (with 8 80GB-A100 GPUs), it breaks Transformer-based language models [13, 27, 33–35, 42, 46] in Nat-",
+        "x": 53.5,
+        "y": 370.7,
+        "w": 504.7,
+        "h": 51.7,
+        "zh": "每个 transformer 层内部的矩阵乘法被切分到多块 GPU 上，因而可以克服这些限制。尽管这一方法在 NVIDIA DGX A100 服务器（配备 8 块 80GB A100 GPU）上，对规模不超过 200 亿参数的模型效果很好，但到这里就会失效。基于 Transformer 的语言模型 [13, 27, 33–35, 42, 46] 在自然"
+      },
+      {
+        "text": "down for larger models. Larger models need to be split across ural Language Processing (NLP) have driven rapid progress in re-",
+        "x": 53.8,
+        "y": 359.8,
+        "w": 504.4,
+        "h": 18.8,
+        "zh": "对更大的模型则不行。更大的模型需要被切分到。自然语言处理（NLP）近年来推动了快速进展，在"
+      },
+      {
+        "text": "multiple multi-GPU servers, which leads to two problems: (a) the cent years as computation at scale has become more available and",
+        "x": 53.8,
+        "y": 348.8,
+        "w": 504.4,
+        "h": 18.8,
+        "zh": "多台多 GPU 服务器上，这会带来两个问题：(a)。近年来，随着大规模计算越来越容易获得，并且"
+      },
+      {
+        "text": "all-reduce communication required for tensor parallelism needs datasets have become larger. Recent work [11, 40] has shown large",
+        "x": 53.8,
+        "y": 337.9,
+        "w": 504.4,
+        "h": 18.8,
+        "zh": "张量并行所需的 all-reduce 通信必须。数据集也变得更大。近期工作 [11, 40] 表明，大"
+      },
+      {
+        "text": "to go through inter-server links, which are slower than the highlanguage models to be effective zero- or few-shot learners, with high",
+        "x": 53.8,
+        "y": 326.9,
+        "w": 505.9,
+        "h": 18.8,
+        "zh": "走服务器之间的链路，而这些链路慢于高速。语言模型能够成为有效的零样本或少样本学习器，并具有很高的"
+      },
+      {
+        "text": "bandwidth NVLink [9] available within a multi-GPU server, and accuracy on many NLP tasks and datasets. These large language",
+        "x": 53.8,
+        "y": 315.9,
+        "w": 504.4,
+        "h": 18.8,
+        "zh": "带宽 NVLink [9]（多 GPU 服务器内部可用），并且。在许多 NLP 任务和数据集上的准确率。这些大语言"
+      },
+      {
+        "text": "(b) a high degree of model parallelism can create small matrix models have a number of exciting downstream applications such",
+        "x": 53.8,
+        "y": 305,
+        "w": 504.6,
+        "h": 18.8,
+        "zh": "(b) 过高的模型并行度会产生很小的矩阵。模型有不少令人期待的下游应用，例如"
+      },
+      {
+        "text": "multiplications (GEMMs), potentially decreasing GPU utilization. as client feedback summarization, automatic dialogue generation,",
+        "x": 53.8,
+        "y": 294,
+        "w": 502.7,
+        "h": 18.8,
+        "zh": "乘法（GEMM），从而可能降低 GPU 利用率。例如客户反馈摘要、自动对话生成，"
+      },
+      {
+        "text": "Pipeline model parallelism [14, 20, 23, 29, 30, 45] is another techsemantic search, and code autocompletion [1, 4, 5]. As a result, the",
+        "x": 53.8,
+        "y": 283.1,
+        "w": 505.9,
+        "h": 18.8,
+        "zh": "流水线模型并行 [14, 20, 23, 29, 30, 45] 是另一种技术。语义搜索，以及代码自动补全 [1, 4, 5]。因此，"
+      },
+      {
+        "text": "nique to support the training of large models, where layers of a number of parameters in state-of-the-art NLP models have grown",
+        "x": 53.8,
+        "y": 272.1,
+        "w": 504.4,
+        "h": 18.8,
+        "zh": "可以用来支持大模型的训练：模型的各层。当前最优 NLP 模型中的参数数量已经"
+      },
+      {
+        "text": "model are striped over multiple GPUs. A batch is split into smaller at an exponential rate (Figure 1). Training such models, however,",
+        "x": 53.8,
+        "y": 261.1,
+        "w": 504.6,
+        "h": 18.8,
+        "zh": "被按条带划分到多块 GPU 上。一个 batch 被切成更小的。以指数速度增长（图 1）。然而，训练这类模型"
+      },
+      {
+        "text": "microbatches, and execution is pipelined across these microbatches. is challenging for two reasons: (a) it is no longer possible to fit the",
+        "x": 53.8,
+        "y": 250.2,
+        "w": 505.8,
+        "h": 18.8,
+        "zh": "微批次，执行则在这些微批次上流水化。之所以困难，有两个原因：(a) 已经无法把……放进"
+      },
+      {
+        "text": "Layers can be assigned to workers in various ways, and various",
+        "x": 318,
+        "y": 249,
+        "w": 240.2,
+        "h": 9,
+        "zh": "层可以用多种方式分配给各个 worker，而且各种"
+      },
+      {
+        "text": "parameters of these models in the main memory of even the largest",
+        "x": 53.8,
+        "y": 239.2,
+        "w": 240.2,
+        "h": 9,
+        "zh": "这些模型的参数，放进哪怕是最大的"
+      },
+      {
+        "text": "schedules for the forward and backward passes of inputs can be",
+        "x": 318,
+        "y": 238.1,
+        "w": 240.2,
+        "h": 9,
+        "zh": "输入的前向与反向传播也可以采用多种调度"
+      },
+      {
+        "text": "used. The layer assignment and scheduling strategy results in dif-",
+        "x": 318,
+        "y": 227.1,
+        "w": 241.8,
+        "h": 9,
+        "zh": "来完成。层的分配方式和调度策略会带来不同的"
+      },
+      {
+        "text": "we are able to fit the model in a single GPU (e.g., by swapping pa-",
+        "x": 53.5,
+        "y": 217.3,
+        "w": 242.1,
+        "h": 9,
+        "zh": "我们能够把模型放进单块 GPU（例如通过换出参数"
+      },
+      {
+        "text": "ferent performance tradeoffs. Regardless of schedule, to preserve rameters between host and device memory [38]), the high number",
+        "x": 53.8,
+        "y": 206.4,
+        "w": 504.4,
+        "h": 18.8,
+        "zh": "不同的性能取舍。无论采用哪种调度，为了保持。在主机内存与设备内存之间交换参数 [38]），很高的"
+      },
+      {
+        "text": "strict optimizer semantics, optimizer steps need to be synchronized of compute operations required can result in unrealistically long",
+        "x": 53.8,
+        "y": 195.4,
+        "w": 504.4,
+        "h": 18.8,
+        "zh": "严格的优化器语义，优化器步进必须在各设备之间同步。所需的计算量可能导致长到不现实的"
+      },
+      {
+        "text": "across devices, leading to a pipeline flush at the end of every batch, training times (e.g., training GPT-3 with 175 billion parameters [11]",
+        "x": 53.8,
+        "y": 184.4,
+        "w": 505.4,
+        "h": 18.8,
+        "zh": "从而在每个 batch 结束时出现一次流水线排空，训练时间（例如，训练具有 1750 亿参数的 GPT-3 [11]"
+      },
+      {
+        "text": "where microbatches are allowed to complete execution (and no would require approximately 288 years with a single V100 NVIDIA",
+        "x": 53.5,
+        "y": 173.5,
+        "w": 504.7,
+        "h": 18.8,
+        "zh": "此时让微批次把执行跑完（并且不再。大约需要 288 年，而且只用一块 NVIDIA V100"
+      },
+      {
+        "text": "new microbatches are injected). As much as 50% of time can be GPU). This calls for parallelism. Data-parallel scale-out usually",
+        "x": 53.8,
+        "y": 162.5,
+        "w": 504.4,
+        "h": 18.8,
+        "zh": "注入新的微批次）。时间里最多会有 50% 花在。GPU）。因此需要并行。数据并行的横向扩展通常"
+      },
+      {
+        "text": "spent flushing the pipeline depending on the number of microworks well, but suffers from two limitations: a) beyond a point, the",
+        "x": 53.5,
+        "y": 151.6,
+        "w": 506.2,
+        "h": 18.8,
+        "zh": "花在排空流水线上，具体取决于微。效果不错，但有两个局限：a）超过某一点之后，"
+      },
+      {
+        "text": "batches injected into the pipeline. The larger the ratio of number per-GPU batch size becomes too small, reducing GPU utilization",
+        "x": 53.8,
+        "y": 140.6,
+        "w": 504.6,
+        "h": 18.8,
+        "zh": "被注入流水线的批次数量。微批次数量与。每块 GPU 上的 batch 变得太小，从而降低 GPU 利用率"
+      },
+      {
+        "text": "of microbatches to the pipeline size, the smaller the time spent in and increasing communication cost, and b) the maximum number",
+        "x": 53.8,
+        "y": 129.6,
+        "w": 504.4,
+        "h": 18.8,
+        "zh": "流水线规模之比越大，花在。上的时间就越短，同时通信开销增加，并且 b）能够使用的最大"
+      },
+      {
+        "text": "the pipeline flush. Therefore, to achieve high efficiency, a larger of devices that can be used is the batch size, limiting the number of",
+        "x": 53.8,
+        "y": 118.7,
+        "w": 504.6,
+        "h": 18.8,
+        "zh": "流水线排空中的时间就越短。因此，要达到高效率，往往需要更大的。设备数量就是 batch 大小，这就限制了能够用于"
+      },
+      {
+        "text": "batch size is often necessary. In this work, we also introduce a new accelerators that can be used for training.",
+        "x": 53.8,
+        "y": 107.7,
+        "w": 504.7,
+        "h": 18.8,
+        "zh": "batch。在这项工作中，我们还引入了一种新的。加速器来进行训练。"
+      },
+      {
+        "text": "pipeline schedule that improves efficiency at small batch sizes. Users can thus train their large models using various techniques, each with different tradeoffs. Moreover, these techniques can be Work done as an intern at NVIDIA.",
+        "x": 59,
+        "y": 84.7,
+        "w": 500.2,
+        "h": 30.9,
+        "zh": "流水线调度，用来在较小的 batch 下提高效率。于是，用户可以用各种技术来训练大模型，每种技术的取舍并不相同。而且，这些技术可以。本工作完成于在 NVIDIA 实习期间。"
+      }
+    ],
+    "2": [
+      {
+        "text": "combined. However, combining these techniques leads to non-trivial interactions, which need to be reasoned through carefully for good performance. In this paper, we address the following question: How should parallelism techniques be combined to maximize the training throughput of large models given a batch size while retaining strict optimizer semantics? In particular, we show how to combine pipeline, tensor, and data parallelism, a technique we call PTD-P, to train large language models with good computational performance (52% of peak device throughput) on 1000s of GPUs. Our method leverages the combination of pipeline parallelism across multi-GPU servers, tensor parallelism within a multi-GPU server, and data parallelism, to practically train models with a trillion parameters with graceful scaling in an optimized cluster environment with high-bandwidth links between GPUs on the same server and across servers. We can use similar ideas to train larger models as well, given more training resources. In our experiments, we demonstrate close to linear scaling to 3072 A100 GPUs, with an achieved end-to-end training throughput of 163 teraFLOP/s per GPU (including communication, data processing, and optimization), and an aggregate throughput of 502 petaFLOP/s, on a GPT model [11] with a trillion parameters using mixed precision. This throughput facilitates practical training times: we estimate end-to-end training of this model to take ∼ 3 months. We believe this is the fastest training throughput achieved for this size of model: past systems [29, 40] cannot train such large models since they do not combine pipeline and tensor parallelism. We also compared to ZeRO [36], and found that our approach outperforms ZeRO-3 by 70% for models with 175 and 530 billion parameters due to less cross-node communication. These models are too large to fit on a multi-GPU server. Achieving this throughput at scale required innovation and careful engineering along multiple axes: efficient kernel implementations that allowed most of the computation to be compute-bound as opposed to memory-bound, smart partitioning of computation graphs over the devices to reduce the number of bytes sent over network links while also limiting device idle periods, domain-specific communication optimization, and fast hardware (state-of-the-art GPUs and high-bandwidth links between GPUs on the same and different servers). We are hopeful that our open-sourced software (available at https://github.com/nvidia/megatron-lm) will enable other groups to train large NLP models efficiently at scale. In addition, we studied the interaction between the various components affecting throughput, both empirically and analytically when possible. Based on these studies, we offer the following guiding principles on how to configure distributed training: • Different forms of parallelism interact in non-trivial ways: the parallelization strategy has an impact on the amount of communication, the compute efficiency with which kernels are executed, as well as the idle time workers spend waiting for computation due to pipeline flushes (pipeline bubbles). For example, in our experiments, we found that sub-optimal combinations of tensor and pipeline model parallelism can lead to up to 2× lower throughput, even with high-bandwidth network links between servers; tensor model parallelism is effective within a multi-GPU server, but pipeline model parallelism must be used for larger models.",
+        "x": 53.5,
+        "y": 84.7,
+        "w": 242.1,
+        "h": 622.7,
+        "zh": "组合起来。不过，把这些技术合在一起会带来并不平凡的相互作用，必须仔细推敲才能得到好的性能。本文处理的问题是：在给定 batch 大小、并且保持严格优化器语义的前提下，各种并行技术应当如何组合，才能把大模型的训练吞吐量做到最大？具体而言，我们说明如何把流水线并行、张量并行和数据并行组合起来。这一做法简称为 PTD-P，可以在数千块 GPU 上、以不错的计算性能（达到设备峰值吞吐的 52%）训练大语言模型。我们的方法把跨多 GPU 服务器的流水线并行、一台多 GPU 服务器内部的张量并行，以及数据并行合在一起，从而在经过优化的集群里实际训练万亿参数模型，并且扩展得很平滑；同一台服务器上的 GPU 之间，以及不同服务器上的 GPU 之间，都有高带宽链路。只要再有更多训练资源，同样的想法也可以用来训练更大的模型。实验表明，扩展到 3072 块 A100 GPU 时接近线性，端到端训练吞吐达到每块 GPU 163 teraFLOP/s（含通信、数据处理和优化），聚合吞吐为 502 petaFLOP/s。模型是混合精度下、具有一万亿参数的 GPT 模型 [11]。这样的吞吐使训练时间变得现实：我们估计该模型的端到端训练大约需要 3 个月。我们认为，这是这一规模的模型上已经达到的最快训练吞吐：以往的系统 [29, 40] 训不了这么大的模型，因为它们没有把流水线并行和张量并行结合起来。我们也与 ZeRO [36] 做了比较，发现对 1750 亿和 5300 亿参数的模型，我们的方法比 ZeRO-3 高出 70%，原因是跨节点通信更少。这些模型大到放不进一台多 GPU 服务器。要在大规模上达到这一吞吐，需要沿多个方向做创新和仔细的工程：高效的 kernel 实现，使大部分计算成为计算受限而不是访存受限；把计算图合理地划分到各设备上，既减少经网络发出的字节数，也限制设备空闲的时间；针对该领域的通信优化；以及很快的硬件（当前最强的 GPU，以及同一服务器内、不同服务器之间 GPU 的高带宽链路）。我们希望开源软件（见 https://github.com/nvidia/megatron-lm）能让其他团队也能高效地大规模训练大型 NLP 模型。此外，我们从实验上、并在可能时从分析上，研究了影响吞吐的各个因素如何相互作用。基于这些研究，我们给出配置分布式训练的下列指导原则：• 不同形式的并行会以并不平凡的方式相互作用：并行策略会影响通信量、kernel 被执行时的计算效率，以及 worker 因为流水线排空（流水线气泡）而空等计算的时间。例如，在我们的实验里，张量模型并行和流水线模型并行如果组合得不好，即使服务器之间有高带宽网络，吞吐也可能最多降到原来的一半；张量模型并行在一台多 GPU 服务器内部是有效的，但更大的模型必须使用流水线模型并行。"
+      },
+      {
+        "text": "• The schedule used for pipeline parallelism has an impact on the amount of communication, the pipeline bubble size, and memory used to store activations. We propose a novel interleaved schedule that can improve throughput by as much as 10% compared to previously-proposed schedules [20, 30] with comparable memory footprint. • Values of hyperparameters such as microbatch size have an impact on the memory footprint, the arithmetic efficiency of kernels executed on the worker, and the pipeline bubble size. In our experiments, the optimal value of the microbatch size is problem-dependent and can increase throughput by 15%. • At scale, distributed training is communication-intensive. When training a trillion-parameter model on 3072 GPUs, our implementation used an effective bisection bandwidth of 892 GB/s for pipeline-parallel communication, and 13 TB/s for data-parallel communication. Using slower inter-node interconnects or more communication-intensive partitionings would hinder scaling performance. We should note that we do not automatically explore the search space of parallelism strategies (such as FlexFlow [22], PipeDream [29], Tarnawski et al. [41], and DAPPLE [14]), but instead suggest heuristics (in §3) that we found work well in practice.",
+        "x": 317.5,
+        "y": 465.6,
+        "w": 246.5,
+        "h": 241.8,
+        "zh": "• 流水线并行所用的调度会影响通信量、流水线气泡的大小，以及存放激活所用的显存。我们提出一种新的交错调度，在显存占用与先前提出的调度 [20, 30] 相当的前提下，吞吐最多可以提高 10%。• 微批次大小这类超参数会影响显存占用、worker 上所执行 kernel 的算术效率，以及流水线气泡的大小。在我们的实验里，最优的微批次大小取决于具体问题，最多可以把吞吐提高 15%。• 到了大规模，分布式训练是通信密集型的。在 3072 块 GPU 上训练万亿参数模型时，我们的实现中，流水线并行通信的有效对分带宽为 892 GB/s，数据并行通信为 13 TB/s。如果使用更慢的节点间互联，或者通信更重的划分方式，扩展性能就会受阻。需要说明的是，我们并没有自动搜索并行策略的空间（例如 FlexFlow [22]、PipeDream [29]、Tarnawski 等人 [41] 和 DAPPLE [14]），而是给出了我们发现在实践中效果较好的启发式（见 §3）。"
+      },
+      {
+        "text": "MODES OF PARALLELISM In this section, we discuss the parallelism techniques that facilitate the efficient training of large models that do not fit in the memory of a single GPU. In this work, we combine pipeline model parallelism and tensor model parallelism (combination shown in Figure 2) with data parallelism. We call this PTD-P for short.",
+        "x": 318,
+        "y": 386.1,
+        "w": 240.2,
+        "h": 68.4,
+        "zh": "并行方式。本节讨论那些让单块 GPU 显存放不下的大模型仍能被高效训练的并行技术。本文把流水线模型并行和张量模型并行（组合方式见图 2）与数据并行一起使用，简称为 PTD-P。"
+      },
+      {
+        "text": "With data parallelism [25, 43], each worker has a copy of the full model, the input dataset is sharded, and workers aggregate their gradients periodically to ensure that all workers see a consistent version of the weights. For large models which do not fit on a single worker, data parallelism can be used on smaller model shards.",
+        "x": 317.5,
+        "y": 306.6,
+        "w": 240.8,
+        "h": 52.8,
+        "zh": "使用数据并行 [25, 43] 时，每个 worker 都有完整模型的一份副本，输入数据集被切分，worker 周期性地聚合梯度，以保证所有 worker 看到一致的权重。对于单块 worker 放不下的大模型，数据并行可以用在更小的模型分片上。"
+      },
+      {
+        "text": "Pipeline Model Parallelism With pipeline parallelism, the layers of a model are sharded across multiple devices. When used on models with the same transformer block repeated, each device can be assigned an equal number of transformer layers. We do not consider more asymmetric model architectures, where assignment of layers to pipeline stages is harder; we defer to related work [22, 29, 41] to solve this problem. A batch is split into smaller microbatches; execution is then pipelined across microbatches. Pipelining schemes need to ensure that inputs see consistent weight versions across forward and backward passes for well-defined synchronous weight update semantics. Specifically, naive pipelining can lead to an input seeing weight updates in the backward pass not seen in the forward pass. To retain strict optimizer semantics exactly, we introduce periodic pipeline flushes so that optimizer steps are synchronized across devices. At the start and end of every batch, devices are idle. We call this idle time the pipeline bubble, and want to make it as small as possible. Asynchronous and bounded-staleness approaches such as PipeMare, PipeDream, and PipeDream-2BW [23, 29, 30, 45] do",
+        "x": 317.5,
+        "y": 84.7,
+        "w": 242.2,
+        "h": 210.9,
+        "zh": "流水线模型并行。使用流水线并行时，模型的各层被切分到多台设备上。若用在由相同 transformer 块重复构成的模型上，每台设备可以被分到相同数量的 transformer 层。我们不考虑更不对称的模型结构，那种情况下把层分到流水线阶段更困难；这个问题留给相关工作 [22, 29, 41]。一个 batch 被切成更小的微批次，执行再在这些微批次之间流水化。流水线方案必须保证输入在前向和反向看到一致的权重版本，这样同步的权重更新语义才是明确的。具体来说，朴素的流水线可能让某次输入在反向时看到前向没见过的权重更新。为了不折不扣地保持严格的优化器语义，我们引入周期性的流水线排空，使各设备上的优化器步进保持同步。每个 batch 的开头和结尾，设备都是空闲的。这段空闲我们称为流水线气泡，并希望它尽可能小。PipeMare、PipeDream 和 PipeDream-2BW [23, 29, 30, 45] 这类异步且陈旧度有界的方法会"
+      }
+    ],
+    "3": [
+      {
+        "text": "Figure 3: GPipe pipeline schedule with forward passes (blue) for all microbatches (represented by numbers) followed by backward passes (green). The gray area represents the pipeline bubble. For simplicity, we assume that the backward pass takes twice as long as the forward pass. The efficiency of the pipeline schedule does not depend on this factor. Each batch in this example consists of 8 microbatches, and the numbers in each blue or green box are unique identifiers given to the corresponding microbatch (in particular, the first batch consists of microbatches 1 − 8, the second batch consists of microbatches 9 − 16, and so on). The optimizer is stepped and weight parameters updated at the pipeline flush to ensure strict optimizer semantics, leading to idle devices and a pipeline bubble.",
+        "x": 53.6,
+        "y": 420.8,
+        "w": 504.7,
+        "h": 57.8,
+        "zh": "图 3：GPipe 的流水线调度。所有微批次先做前向（蓝色，框中数字表示微批次），再做反向（绿色）。灰色区域表示流水线气泡。为简单起见，我们假设反向耗时是前向的两倍。流水线调度的效率并不依赖于这个倍数。本例中每个 batch 含 8 个微批次，每个蓝色或绿色框中的数字是对应微批次的唯一编号（具体而言，第一个 batch 由微批次 1–8 组成，第二个 batch 由微批次 9–16 组成，依此类推）。为了保证严格的优化器语义，优化器在流水线排空时步进并更新权重，这会使设备空闲，并形成流水线气泡。"
+      },
+      {
+        "text": "Figure 4: Default and interleaved 1F1B pipeline schedules. The top figure shows the default non-interleaved 1F1B schedule. The bottom figure shows the interleaved 1F1B schedule, where each device is assigned multiple chunks (in this case, 2). Dark colors show the first chunk and light colors show the second chunk. The size of the pipeline bubble is smaller (the pipeline flush happens sooner in the interleaved timeline).",
+        "x": 53.8,
+        "y": 202.8,
+        "w": 504.4,
+        "h": 27.9,
+        "zh": "图 4：默认的 1F1B 流水线调度与交错的 1F1B 调度。上图是默认的、非交错的 1F1B 调度。下图是交错的 1F1B 调度，每台设备被分配多个 chunk（此处为 2 个）。深色表示第一个 chunk，浅色表示第二个 chunk。流水线气泡更小（在交错的时间线上，流水线排空来得更早）。"
+      },
+      {
+        "text": "followed by backward passes for all microbatches (shown in FigWe defer consideration of such schemes to future work.",
+        "x": 53.4,
+        "y": 163.9,
+        "w": 506.3,
+        "h": 19.9,
+        "zh": "随后对所有微批次做反向（见图）。我们把这类方案留到今后的工作再考虑。"
+      },
+      {
+        "text": "away with flushes completely, but relax weight update semantics.",
+        "x": 53.8,
+        "y": 174.9,
+        "w": 241.6,
+        "h": 9,
+        "zh": "把排空完全去掉，但会放宽权重更新的语义。"
+      },
+      {
+        "text": "ure 3). We can quantify the size of GPipe’s pipeline bubble (𝑡𝑝𝑏). There are several possible ways of scheduling forward and back-",
+        "x": 63.8,
+        "y": 153,
+        "w": 495.8,
+        "h": 19.9,
+        "zh": "3）。我们可以量化 GPipe 流水线气泡的大小（t_pb）。前向和反向有多种可能的调度方式"
+      },
+      {
+        "text": "We denote the number of microbatches in a batch as𝑚, the number ward microbatches across devices; each approach offers different",
+        "x": 53.5,
+        "y": 142,
+        "w": 504.9,
+        "h": 19.9,
+        "zh": "我们把一个 batch 中的微批次数量记为 m，以及……的数量。反向微批次在各设备之间调度；每种做法给出的取舍并不相同"
+      },
+      {
+        "text": "of pipeline stages (number of devices used for pipeline parallelism) tradeoffs between pipeline bubble size, communication, and mem-",
+        "x": 53.8,
+        "y": 131,
+        "w": 504.9,
+        "h": 19.9,
+        "zh": "流水线阶段数（也就是用于流水线并行的设备数）。在流水线气泡大小、通信量与显存之间做取舍"
+      },
+      {
+        "text": "as 𝑝, the ideal time per iteration as 𝑡𝑖𝑑 (assuming perfect or ideal ory footprint. We discuss two such approaches in this section.",
+        "x": 53.8,
+        "y": 120.1,
+        "w": 504.4,
+        "h": 19.9,
+        "zh": "记为 p，把一次迭代的理想时间记为 t_id（假设完美或理想的。占用。本节讨论其中两种做法。"
+      },
+      {
+        "text": "scaling), and the time to execute a single microbatch’s forward and backward pass as 𝑡𝑓 and 𝑡𝑏. In this schedule, the pipeline bubble consists of 𝑝 − 1 forward passes at the start of a batch, and 𝑝 − 1 Default Schedule. GPipe [20] proposes a schedule where the",
+        "x": 78.3,
+        "y": 95.6,
+        "w": 480.1,
+        "h": 33.4,
+        "zh": "扩展），并把单个微批次前向和反向的执行时间记为 t_f 和 t_b。在这一调度中，流水线气泡包括 batch 开始时的 p − 1 次前向，以及 p − 1 次。默认调度。GPipe [20] 提出一种调度，其中"
+      },
+      {
+        "text": "backward passes at the end. The total amount of time spent in the forward passes for all microbatches in a batch are first executed,",
+        "x": 53.8,
+        "y": 84.7,
+        "w": 504.4,
+        "h": 11.5,
+        "zh": "结束时的反向传播。花在其中的总时间。一个 batch 中所有微批次的前向会先被执行，"
+      }
+    ],
+    "4": [
+      {
+        "text": "pipeline bubble is then 𝑡𝑝𝑏 = (𝑝 −1) · (𝑡𝑓 +𝑡𝑏). The ideal processing time for the batch is 𝑡𝑖𝑑 = 𝑚 · (𝑡𝑓 + 𝑡𝑏). Therefore, the fraction of ideal computation time spent in the pipeline bubble is:",
+        "x": 53.8,
+        "y": 676.4,
+        "w": 240.2,
+        "h": 30.9,
+        "zh": "于是流水线气泡时间为 t_pb = (p − 1) · (t_f + t_b)。该 batch 的理想处理时间为 t_id = m · (t_f + t_b)。因此，理想计算时间中花在流水线气泡上的比例为："
+      },
+      {
+        "text": "This means that the new schedule reduces the bubble time by 𝑣. This reduced pipeline bubble size, however, does not come for free: this schedule requires extra communication. Quantitatively, the amount of communication also increases by 𝑣. In the next section, we discuss how we can utilize the 8 InfiniBand networking cards in a multi-GPU server (e.g., a DGX A100 node) to reduce the impact of this extra communication.",
+        "x": 317.6,
+        "y": 632.6,
+        "w": 242,
+        "h": 74.7,
+        "zh": "这意味着新调度把气泡时间缩小为原来的 1/v。不过，气泡变小并不是没有代价的：这种调度需要额外的通信。定量地说，通信量也会增加到原来的 v 倍。下一节我们讨论如何利用多 GPU 服务器（例如一个 DGX A100 节点）上的 8 块 InfiniBand 网卡，来减轻这份额外通信的影响。"
+      },
+      {
+        "text": "Bubble time fraction (pipeline bubble size) =",
+        "x": 67.9,
+        "y": 653.8,
+        "w": 162.3,
+        "h": 9,
+        "zh": "气泡时间占比（流水线气泡大小）="
+      },
+      {
+        "text": "For the bubble time fraction to be small, we thus need 𝑚 ≫ 𝑝. However, for such large 𝑚, this approach has a high memory footprint as it requires stashed intermediate activations (or just input activations for each pipeline stage when using activation recomputation) to be kept in memory for all 𝑚 microbatches through the lifetime of a training iteration. Instead, we use the PipeDream-Flush schedule [30]. In this schedule, we first enter a warm-up phase where workers perform differing numbers of forward passes as shown in Figure 4 (top). This schedule limits the number of in-flight microbatches (the number of microbatches for which the backward pass is outstanding and activations need to be maintained) to the depth of the pipeline, instead of the number of microbatches in a batch. After the warm-up phase, each worker then enters a steady state, where workers perform one forward pass followed by one backward pass (1F1B for short). Finally, at the end of a batch, we complete backward passes for all remaining in-flight microbatches. The time spent in the bubble is the same for this new schedule, but the number of outstanding forward passes is at most the number of pipeline stages for the PipeDream-Flush schedule. As a result, this schedule requires activations to be stashed for 𝑝 or fewer microbatches (compared to 𝑚 microbatches for the GPipe schedule). Consequently, when 𝑚 ≫ 𝑝, PipeDream-Flush is much more memory-efficient than GPipe.",
+        "x": 53.6,
+        "y": 390.7,
+        "w": 242,
+        "h": 250.1,
+        "zh": "因此，要让气泡时间占比变小，就需要 m ≫ p。然而，m 大到这个程度时，这种做法的显存占用会很高，因为在一次训练迭代的整个过程中，全部 m 个微批次的中间激活都必须留在显存里（若使用激活重计算，则只保留每个流水线阶段的输入激活）。我们改用 PipeDream-Flush 调度 [30]。在这种调度中，首先进入预热阶段，各个 worker 执行的前向次数并不相同，如图 4（上）所示。该调度把在途微批次的数量（反向尚未完成、因而激活仍需保留的微批次数）限制为流水线的深度，而不是一个 batch 中的微批次总数。预热之后，每个 worker 进入稳态，先做一次前向，再做一次反向（简称 1F1B）。最后，在一个 batch 结束时，把所有仍在途的微批次的反向做完。新调度花在气泡上的时间与原来相同，但对 PipeDream-Flush 而言，尚未完成的前向数量最多等于流水线阶段数。因此，这种调度只需要为 p 个或更少的微批次保存激活（GPipe 调度则要为 m 个微批次保存）。所以当 m ≫ p 时，PipeDream-Flush 比 GPipe 省显存得多。"
+      },
+      {
+        "text": "Tensor Model Parallelism With tensor model parallelism, individual layers of the model are partitioned over multiple devices. In this paper, we use the particular partitioning strategy used by Megatron [40] for transformer layers, the bedrock of language models. We can apply similar ideas to other types of models, like CNNs, as well. We briefly outline this strategy, illustrated in Figure 5, below. A transformer layer consists of a self-attention block followed by a two-layer multi-layer perceptron (MLP). Further details of the transformer layer can be found in Vaswani et al [42]. The MLP block consists of two GEMMs and a GeLU non-linearity:",
+        "x": 317.5,
+        "y": 498.8,
+        "w": 241.7,
+        "h": 123.2,
+        "zh": "张量模型并行。使用张量模型并行时，模型的单个层被划分到多台设备上。本文采用 Megatron [40] 为 transformer 层使用的那种划分方式，transformer 层是语言模型的基石。类似的想法也可以用到 CNN 等其他类型的模型上。下面按图 5 简要说明这一策略。一个 transformer 层由一个自注意力块，以及紧随其后的两层多层感知机（MLP）组成。transformer 层的进一步细节见 Vaswani 等人 [42]。MLP 块由两个 GEMM 和一个 GeLU 非线性组成："
+      },
+      {
+        "text": "𝑌 = GeLU(𝑋𝐴). 𝑍 = Dropout(𝑌 𝐵). We can split 𝐴 along its columns 𝐴 = [𝐴1, 𝐴2]. This partitioning allows the GeLU non-linearity to be independently applied to the output of each partitioned GEMM:",
+        "x": 317.5,
+        "y": 446,
+        "w": 240.7,
+        "h": 46.3,
+        "zh": "Y = GeLU(XA)。Z = Dropout(YB)。我们可以沿列把 A 拆开，写成 A = [A_1, A_2]。这样划分之后，GeLU 非线性可以分别独立地作用在每个被拆开的 GEMM 的输出上："
+      },
+      {
+        "text": "[𝑌1, 𝑌2] = [GeLU(𝑋𝐴1), GeLU(𝑋𝐴2)]. This is advantageous as it removes the need for synchronization (needed if 𝐴 is split along its rows since GeLU is non-linear). The rows of the second weight matrix 𝐵 can then be split along its rows to remove the need for any communication between the GEMMs (shown in Figure 5a), as shown below:",
+        "x": 317.7,
+        "y": 371.2,
+        "w": 240.5,
+        "h": 68.2,
+        "zh": "[Y_1, Y_2] = [GeLU(XA_1), GeLU(XA_2)]。这样做的好处是不再需要同步（如果沿行拆分 A，由于 GeLU 是非线性的，就需要同步）。随后可以把第二个权重矩阵 B 沿行拆开，从而在这些 GEMM 之间不再需要任何通信（见图 5a），如下所示："
+      },
+      {
+        "text": "Schedule with Interleaved Stages. To reduce the size of the pipeline bubble, each device can perform computation for multiple subsets of layers (called a model chunk), instead of a single contiguous set of layers. For example, if each device had 4 layers before (i.e., device 1 had layers 1 − 4, device 2 had layers 5 − 8, and so on), we could have each device perform computation for two model chunks (each with 2 layers), i.e., device 1 has layers 1, 2, 9, 10; device 2 has layers 3, 4, 11, 12; and so on. With this scheme, each device in the pipeline is assigned multiple pipeline stages (each pipeline stage has less computation compared to before). As before, we can use an “all-forward, all-backward” version of this schedule, but this has a high memory footprint (proportional to 𝑚). Instead, we developed an interleaved schedule that adapts the memory-efficient 1F1B schedule from before. This new schedule is shown in Figure 4, and requires the number of microbatches in a batch to be an integer multiple of the degree of pipeline parallelism (number of devices in the pipeline). For example, with 4 devices, the number of microbatches in a batch must be a multiple of 4. As shown in Figure 4, the pipeline flush for the same batch size happens sooner in the new schedule. If each device has 𝑣 stages (or model chunks), then the forward and backward time for a microbatch for each stage or chunk will now be 𝑡𝑓 /𝑣 and 𝑡𝑏/𝑣. The pipeline bubble time thus reduces to 𝑡 the bubble time fraction is then:",
+        "x": 53.2,
+        "y": 114.4,
+        "w": 242.3,
+        "h": 267.3,
+        "zh": "交错阶段的调度。为了缩小流水线气泡，每台设备可以为多层的多个子集做计算（称为一个模型 chunk），而不是只负责连续的一整段层。例如，若原先每台设备有 4 层（即设备 1 有第 1–4 层，设备 2 有第 5–8 层，依此类推），可以让每台设备计算两个模型 chunk（每个 chunk 含 2 层），也就是设备 1 拥有第 1、2、9、10 层，设备 2 拥有第 3、4、11、12 层，依此类推。在这个方案里，流水线中的每台设备被分配多个流水线阶段（每个阶段的计算量比原来少）。和前面一样，也可以使用「先全部前向、再全部反向」的版本，但显存占用很高（与 m 成正比）。我们改为设计了一种交错调度，它改编自前面那种更省显存的 1F1B 调度。新调度如图 4 所示，并要求一个 batch 中的微批次数是流水线并行度（流水线中的设备数）的整数倍。例如有 4 台设备时，一个 batch 中的微批次数必须是 4 的倍数。如图 4 所示，在同样的 batch 大小下，新调度里的流水线排空来得更早。若每台设备有 v 个阶段（或模型 chunk），则一个微批次在每个阶段或 chunk 上的前向时间和反向时间分别变为 t_f/v 和 t_b/v。流水线气泡时间因此缩短为 t，气泡时间占比则为："
+      },
+      {
+        "text": "The output of the second GEMM is then reduced across the GPUs before the dropout layer. We exploit the inherent parallelism in the multi-head attention operation to partition the self-attention block (shown in Figure 5b). The key (𝐾), query (𝑄), and value (𝑉) matrices can be partitioned in a column-parallel fashion. The output linear layer can then directly operate on the partitioned output of the attention operation (weight matrix partitioned across rows). This approach splits GEMMs in the MLP and self-attention blocks across GPUs while requiring only two all-reduce operations in the forward pass (𝑔 operator) and two all-reduces in the backward pass (𝑓 operator). We implemented 𝑓 and 𝑔 in a few lines of code.",
+        "x": 317.7,
+        "y": 209.5,
+        "w": 241.9,
+        "h": 129.5,
+        "zh": "第二个 GEMM 的输出会先在各 GPU 之间做规约，再进入 dropout 层。我们利用多头注意力运算本身的并行性来划分自注意力块（见图 5b）。key（K）、query（Q）和 value（V）矩阵可以按列并行地划分。输出线性层随后可以直接作用在注意力运算被划分后的输出上（权重矩阵按行划分）。这一做法把 MLP 和自注意力块中的 GEMM 拆到各 GPU 上，前向只需要两次 all-reduce（算子 g），反向也只需要两次 all-reduce（算子 f）。我们用很少的几行代码实现了 f 和 g。"
+      },
+      {
+        "text": "PARALLELIZATION CONFIGURATIONS In this section, we consider the performance implications of combining pipeline and tensor model parallelism with data parallelism. Given a fixed budget of GPUs and batch size, one can use different degrees of the parallelism types in PTD-P to train models; each dimension exposes tradeoffs between memory footprint, device utilization, and amount of communication. We discuss these tradeoffs in the rest of this section, and then show empirical results in §5.4. We present analytical models where",
+        "x": 318,
+        "y": 84.7,
+        "w": 241.8,
+        "h": 101.3,
+        "zh": "并行配置。本节考虑把流水线模型并行、张量模型并行与数据并行组合起来时的性能影响。在 GPU 数量和 batch 大小给定时，可以用 PTD-P 中不同程度的各类并行来训练模型；每一个维度都会在显存占用、设备利用率和通信量之间形成取舍。本节其余部分讨论这些取舍，经验结果见 §5.4。我们给出分析模型，其关注的是"
+      },
+      {
+        "text": "Bubble time fraction (pipeline bubble size) =",
+        "x": 60.2,
+        "y": 88.8,
+        "w": 162.3,
+        "h": 9,
+        "zh": "气泡时间占比（流水线气泡大小）="
+      }
+    ],
+    "5": [
+      {
+        "text": "Figure 6: Fraction of time spent idling due to pipeline flush (pipeline bubble size) versus data-parallel size (𝑑), for different numbers of GPUs (𝑛) and ratio of batch size to microbatch size (𝑏 = 𝐵/𝑏).",
+        "x": 318,
+        "y": 553.1,
+        "w": 240.2,
+        "h": 27.9,
+        "zh": "图 6：因流水线排空而空闲的时间占比（流水线气泡大小）随数据并行规模 d 的变化，对应不同的 GPU 数量 n，以及 batch 大小与微批次大小之比（b = B/b）。"
+      },
+      {
+        "text": "The amount of communication performed between different GPUs is also affected by the values of 𝑝 and 𝑡. Pipeline model parallelism features cheaper point-to-point communication. Tensor model parallelism, on the other hand, uses all-reduce communication (two all-reduce operations each in the forward and backward pass, see §2.3). With pipeline parallelism, the total amount of communication that needs to be performed between every pair of consecutive devices (for either the forward or backward pass) for each microbatch is 𝑏𝑠ℎ, where 𝑠 is the sequence length and ℎ is the hidden size. With tensor model parallelism, tensors of total size 𝑏𝑠ℎ need to be all-reduced among 𝑡 model replicas twice each in the forward and backward pass for each layer, leading to a total\u0010 communication of 8𝑏𝑠ℎ",
+        "x": 317.6,
+        "y": 385.8,
+        "w": 242.1,
+        "h": 143,
+        "zh": "不同 GPU 之间的通信量也受 p 和 t 取值的影响。流水线模型并行使用更便宜的点对点通信。张量模型并行则使用 all-reduce 通信（前向和反向各有两次 all-reduce，见 §2.3）。使用流水线并行时，每一对相邻设备之间，每个微批次在前向或反向需要传递的总量为 bsh，其中 s 是序列长度，h 是隐藏维度。使用张量模型并行时，总大小为 bsh 的张量需要在 t 个模型副本之间做 all-reduce，每一层的前向和反向各做两次，因此总通信量为 8bsh"
+      },
+      {
+        "text": "Figure 5: Blocks of transformer model partitioned with tensor model parallelism (figures borrowed from Megatron [40]). 𝑓 and 𝑔 are conjugate. 𝑓 is the identity operator in the forward pass and allreduce in the backward pass, while 𝑔 is the reverse. relevant for the pipeline bubble size. We qualitatively describe how communication time behaves and present cost models for amount of communication; however, we do not present direct cost models for communication time, which is harder to model for a hierarchical network topology where interconnects between GPUs on the same server have higher bandwidth than interconnects between servers. To the best of our knowledge, this is the first work to analyze the performance interactions of these parallelization dimensions.",
+        "x": 53.5,
+        "y": 329.1,
+        "w": 241.9,
+        "h": 130.7,
+        "zh": "图 5：用张量模型并行划分后的 transformer 模块（图引自 Megatron [40]）。f 与 g 互为共轭。f 在前向是恒等算子、在反向是 all-reduce，g 则相反。与流水线气泡的大小有关。我们定性地描述通信时间如何表现，并给出通信量的代价模型；不过我们并不直接给出通信时间的代价模型，因为分层的网络拓扑更难建模：同一台服务器上 GPU 之间的互联带宽，高于服务器之间的互联。据我们所知，这是第一项分析这些并行维度之间性能相互作用的工作。"
+      },
+      {
+        "text": "per layer per device for each microbatch. Each device typically has multiple layers; the total amount of tensor-parallel-communication per device for each microbatch\u0010 is then 𝑙stage · 8𝑏𝑠ℎ 𝑡−1",
+        "x": 318,
+        "y": 348.4,
+        "w": 241.8,
+        "h": 46.4,
+        "zh": "这是每个微批次、每一层、每台设备上的量。每台设备通常有多层；于是每个微批次在每台设备上的张量并行通信总量为 l_stage · 8bsh，再乘上 t − 1 那一项"
+      },
+      {
+        "text": ", where 𝑙stage is the number of layers in",
+        "x": 416.9,
+        "y": 348.4,
+        "w": 141.3,
+        "h": 10.5,
+        "zh": "，其中 l_stage 是该阶段中的层数"
+      },
+      {
+        "text": "Consequently, we see that tensor model parallelism increases the amount of communication between devices. Thus, when 𝑡 is larger than the number of GPUs in a single node, the overhead of performing tensor model parallelism across slower inter-node links can be impractical. We see these results empirically in §5.4.",
+        "x": 318,
+        "y": 280.6,
+        "w": 240.2,
+        "h": 52.8,
+        "zh": "因此可以看到，张量模型并行增加了设备之间的通信量。于是，当 t 大于单台节点中的 GPU 数量时，跨较慢的节点间链路去做张量模型并行，开销会大到不实用。我们在 §5.4 中从实验上看到了这些结果。"
+      },
+      {
+        "text": "We use the following notation in this section: • (𝑝, 𝑡, 𝑑): Parallelization dimensions. 𝑝 for the pipeline-modelparallel size, 𝑡 for the tensor-model-parallel size, and 𝑑 for the data-parallel size. • 𝑛: Number of GPUs. We require 𝑝 · 𝑡 · 𝑑 = 𝑛. • 𝐵: Global batch size (provided as input). • 𝑏: Microbatch size.",
+        "x": 53.4,
+        "y": 225.2,
+        "w": 242.2,
+        "h": 77.3,
+        "zh": "本节使用下列记号：• (p, t, d)：并行维度。p 是流水线模型并行度，t 是张量模型并行度，d 是数据并行度。• n：GPU 数量。我们要求 p · t · d = n。• B：全局 batch 大小（作为输入给出）。• b：微批次大小。"
+      },
+      {
+        "text": "Takeaway #1: When considering different forms of model parallelism, tensor model parallelism should generally be used up to degree 𝑔 when using 𝑔-GPU servers, and then pipeline model parallelism can be used to scale up to larger models across servers.",
+        "x": 321,
+        "y": 227.6,
+        "w": 237.3,
+        "h": 41.8,
+        "zh": "要点 1：在考虑不同形式的模型并行时，若使用有 g 块 GPU 的服务器，张量模型并行一般只用到度数 g；此后再用流水线模型并行，把更大的模型扩展到多台服务器上。"
+      },
+      {
+        "text": ": Number of microbatches in a batch per pipeline.",
+        "x": 115,
+        "y": 214.3,
+        "w": 178.6,
+        "h": 9,
+        "zh": "：每条流水线里，一个 batch 所包含的微批次数量。"
+      },
+      {
+        "text": "Data and Model Parallelism We also want to consider the interaction between data parallelism and the two types of model parallelism. In this section, we consider these interactions independently for simplicity.",
+        "x": 317.5,
+        "y": 166.4,
+        "w": 240.8,
+        "h": 46.5,
+        "zh": "数据并行与模型并行。我们还希望考虑数据并行与两种模型并行之间的相互作用。为简单起见，本节分别考察这些相互作用。"
+      },
+      {
+        "text": "Tensor and Pipeline Model Parallelism Tensor and pipeline model parallelism can both be used to partition a model’s parameters over multiple GPUs. As stated earlier, using pipeline parallelism with periodic flushes results in a pipeline bubble of size (𝑝 − 1)/𝑚. Let us assume that 𝑑 = 1 (data-parallel size); consequently, 𝑡 · 𝑝 = 𝑛. The pipeline bubble size in terms of 𝑡 is:",
+        "x": 53.5,
+        "y": 134.9,
+        "w": 241.1,
+        "h": 68.4,
+        "zh": "张量并行与流水线模型并行。两者都可以把模型参数划分到多块 GPU 上。如前所述，带有周期性排空的流水线并行会产生大小为 (p − 1)/m 的流水线气泡。设 d = 1（数据并行度），于是 t · p = n。用 t 来表示的流水线气泡大小为："
+      },
+      {
+        "text": "Pipeline Model Parallelism. Let 𝑡 = 1 (tensor-model-parallel size). The number of microbatches per pipeline is 𝑚 = 𝐵/(𝑑 · 𝑏) = 𝑏′/𝑑, where 𝑏′ := 𝐵/𝑏. With total number of GPUs 𝑛, the number of pipeline stages is 𝑝 = 𝑛/(𝑡 ·𝑑) = 𝑛/𝑑. The pipeline bubble size is:",
+        "x": 317.5,
+        "y": 114,
+        "w": 241.8,
+        "h": 41.8,
+        "zh": "流水线模型并行。设 t = 1（张量模型并行度）。每条流水线中的微批次数为 m = B/(d · b) = b′/d，其中 b′ := B/b。GPU 总数为 n 时，流水线阶段数为 p = n/(t · d) = n/d。流水线气泡的大小为："
+      },
+      {
+        "text": "As 𝑡 increases, the pipeline bubble thus decreases for fixed 𝐵, 𝑏, and 𝑑 (𝑚 = 𝐵/(𝑏 · 𝑑) is fixed as well).",
+        "x": 53.4,
+        "y": 84.7,
+        "w": 240.7,
+        "h": 19.9,
+        "zh": "因此，在 B、b 和 d 固定时（m = B/(b · d) 也同样固定），t 增大，流水线气泡就会变小。"
+      }
+    ],
+    "6": [
+      {
+        "text": "Figure 7: Per-GPU throughput versus microbatch size for a GPT model with a billion parameters (128 attention heads, hidden size of 4096, 4 transformer layers).",
+        "x": 53.8,
+        "y": 578.2,
+        "w": 240.5,
+        "h": 27.9,
+        "zh": "图 7：十亿参数 GPT 模型的单 GPU 吞吐随微批次大小的变化（128 个注意力头，隐藏维度 4096，4 个 transformer 层）。"
+      },
+      {
+        "text": "Figure 8: Behavior of normalized estimated throughput (time com-\u0000 puted as 𝑡 = (𝑏 /𝑏 + 𝑝 − 1) · 𝑡𝑓 (𝑏) +𝑡𝑏 (𝑏) ) with respect to the microbatch size 𝑏 for the same GPT model from Figure 7.",
+        "x": 318,
+        "y": 571.4,
+        "w": 241.7,
+        "h": 27.9,
+        "zh": "图 8：归一化估计吞吐随微批次大小 b 的变化（时间按 t = (b/b + p − 1) · t_f(b) + t_b(b) 计算），模型与图 7 中的 GPT 相同。"
+      },
+      {
+        "text": "As 𝑑 becomes larger, 𝑛 − 𝑑 becomes smaller, and thus the pipeline bubble becomes smaller. Figure 6 shows the behavior of the pipeline bubble size for various values of 𝑑, 𝑛, and 𝑏′. It might not be possible to increase 𝑑 all the way to 𝑛 for all models, since a model’s full training memory footprint might be larger than the memory capacity of a single accelerator. Overall throughput will thus increase if the all-reduce communication needed for data parallelism does not drastically increase with higher 𝑑, which should hold since the communication time for a ring-based implementation scales with 𝑑−1 = 1 − 1 . We can also analyze the impact of increasing the batch size 𝐵. For a given parallel configuration, as the batch size 𝐵 increases, 𝑏′ = 𝐵/𝑏 increases, (𝑛 − 𝑑)/𝑏′ decreases, consequently increasing throughput. All-reduce communication required by data parallelism also becomes more infrequent, further increasing throughput.",
+        "x": 53.3,
+        "y": 399.3,
+        "w": 242.2,
+        "h": 163.2,
+        "zh": "d 变大时，n − d 变小，流水线气泡也随之变小。图 6 展示了在不同的 d、n 和 b′ 下，流水线气泡大小的行为。对所有模型而言，并不总能把 d 一直增加到 n，因为模型完整的训练显存占用可能超过单块加速器的容量。只要数据并行所需的 all-reduce 通信不会随 d 升高而急剧增加，整体吞吐就会上升；对基于环的实现，通信时间按 (d − 1)/d = 1 − 1/d 伸缩，因此这一点应当成立。我们也可以分析增大 batch 大小 B 的影响。对给定的并行配置，B 增大时 b′ = B/b 增大，(n − d)/b′ 减小，吞吐因而提高。数据并行所需要的 all-reduce 也会更不频繁，吞吐进一步提高。"
+      },
+      {
+        "text": "The microbatch size thus affects both the arithmetic intensity of operations as well as the pipeline bubble size (by affecting 𝑚). Figure 8 shows estimated throughput (equation (1) used to estimate processing time) for a GPT model with a billion parameters and (𝑝, 𝑡) = (8, 8). The optimal 𝑏 for both batch sizes is 4.",
+        "x": 317.7,
+        "y": 488.3,
+        "w": 242,
+        "h": 52.8,
+        "zh": "因此，微批次大小既影响运算的算术强度，也影响流水线气泡的大小（因为它会影响 m）。图 8 给出一个十亿参数 GPT 模型在 (p, t) = (8, 8) 时的估计吞吐（用式 (1) 估计处理时间）。两种 batch 大小下，最优的 b 都是 4。"
+      },
+      {
+        "text": "Takeaway #3: The optimal microbatch size 𝑏 depends on the throughput and memory footprint characteristics of the model, as well as the pipeline depth 𝑝, data-parallel size 𝑑, and batch size 𝐵.",
+        "x": 321,
+        "y": 446.3,
+        "w": 237.2,
+        "h": 30.9,
+        "zh": "要点 3：最优微批次大小 b 取决于模型的吞吐与显存占用特性，也取决于流水线深度 p、数据并行度 d 以及 batch 大小 B。"
+      },
+      {
+        "text": "Activation Recomputation Activation recomputation [12, 18, 20, 21] is an optional technique that trades off an increase in the number of compute operations performed for additional memory footprint, by running the forward pass a second time just before the backward pass (and stashing only the input activations for a given pipeline stage, as opposed to the entire set of intermediate activations, which is much larger). Activation recomputation is required to train reasonably large models with pipeline parallelism to keep memory footprint acceptably low. Previous work like PipeDream-2BW [30] has looked at the performance ramifications of activation recomputation. The number of activation checkpoints does not impact throughput, but impacts memory footprint. Let 𝐴input be the size of the input activations of a layer, and 𝐴intermediate be the size of intermediate activations per layer. If a model stage has 𝑙 layers, and if 𝑐 is the number of checkpoints, the total memory footprint is going to be 𝑐 ·𝐴input +𝑙/𝑐 ·𝐴intermediate. The minimum value of this function",
+        "x": 317.6,
+        "y": 240.6,
+        "w": 242.1,
+        "h": 190,
+        "zh": "激活重计算。激活重计算 [12, 18, 20, 21] 是一种可选技术：在反向开始之前把前向再跑一遍，并且只保存某个流水线阶段的输入激活，而不是保存全部中间激活（后者要大得多）。它用更多的计算换取额外的显存空间。要用流水线并行训练相当大的模型，并把显存占用保持在可接受的水平，就需要激活重计算。PipeDream-2BW [30] 等先前工作考察过激活重计算对性能的影响。激活检查点的数量不影响吞吐，但影响显存占用。设 A_input 为一层输入激活的大小，A_intermediate 为每层中间激活的大小。若一个模型阶段有 l 层，检查点数量为 c，则总显存占用为 c · A_input + (l/c) · A_intermediate。这个函数的最小值"
+      },
+      {
+        "text": "Data and Tensor Model Parallelism. With tensor model parallelism, all-reduce communication needs to be performed for every microbatch. This can be expensive across multi-GPU servers. On the other hand, data parallelism only needs to perform expensive all-reduce communication once per batch. Moreover, with tensor model parallelism, each model-parallel rank performs a subset of the computation in each model layer, and thus for insufficientlylarge layers, modern GPUs might not perform these sub-matrix computations with peak efficiency.",
+        "x": 53.8,
+        "y": 294.2,
+        "w": 241.8,
+        "h": 96.6,
+        "zh": "数据并行与张量模型并行。使用张量模型并行时，每个微批次都要做 all-reduce。跨多 GPU 服务器时，这会很贵。相对而言，数据并行每个 batch 只需要做一次昂贵的 all-reduce。而且在张量模型并行下，每个模型并行 rank 只承担每一层中的一部分计算，因此当层不够大时，现代 GPU 可能无法以峰值效率完成这些子矩阵运算。"
+      },
+      {
+        "text": "Takeaway #2: When using data and model parallelism, a total model-parallel size of 𝑀 = 𝑡 ·𝑝 should be used so that the model’s parameters and intermediate metadata fit in GPU memory; data parallelism can be used to scale up training to more GPUs.",
+        "x": 56.9,
+        "y": 241.2,
+        "w": 235.7,
+        "h": 41.8,
+        "zh": "要点 2：同时使用数据并行和模型并行时，总的模型并行规模应取 M = t · p，使模型参数和中间元数据能够放进 GPU 显存；再用数据并行把训练扩展到更多 GPU。"
+      },
+      {
+        "text": "𝑙 · 𝐴intermediate/𝐴input . In practice, we is obtained when 𝑐 =",
+        "x": 318,
+        "y": 226.2,
+        "w": 240.2,
+        "h": 10,
+        "zh": ""
+      },
+      {
+        "text": "empirically. For most cases, checkpointing every 1 or 2 transformer layers is optimal. Other techniques such as activation partitioning [36] can also be used in conjunction with tensor model parallelsim to reduce the memory footprint due to activations further.",
+        "x": 318,
+        "y": 168,
+        "w": 240.2,
+        "h": 52.8,
+        "zh": "用实验来测定。对大多数情况，每 1 层或每 2 个 transformer 层设一个检查点是最优的。激活划分 [36] 等其他技术也可以与张量模型并行一起使用，进一步降低激活所带来的显存占用。"
+      },
+      {
+        "text": "The choice of the microbatch size 𝑏 also affects model-training throughput. For example, we see in Figure 7 that per-GPU throughput increases by up to 1.3× with a larger microbatch size on a single GPU. We now want to determine the optimal microbatch size 𝑏 given a parallel configuration (𝑝, 𝑡, 𝑑) and batch size 𝐵. The amount of data-parallel communication will be the same regardless of the microbatch size. Given functions 𝑡𝑓 (𝑏) and 𝑡𝑏(𝑏) that map the microbatch size to the forward and backward computation times for a single microbatch, the total time spent computing a batch, ignoring communication cost, is (as before, define 𝑏′ as 𝐵/𝑑):",
+        "x": 53.5,
+        "y": 105.4,
+        "w": 242,
+        "h": 107.6,
+        "zh": "微批次大小 b 的选择也会影响模型训练的吞吐。例如在图 7 中，在单块 GPU 上使用更大的微批次，单 GPU 吞吐最多可以提高到 1.3 倍。现在要在给定并行配置 (p, t, d) 和 batch 大小 B 的条件下，确定最优的微批次大小 b。无论微批次大小如何，数据并行的通信量都相同。给定把微批次大小映射为单个微批次前向与反向计算时间的函数 t_f(b) 和 t_b(b)，忽略通信开销时，计算一个 batch 所花的总时间为（与前面一样，把 b′ 定义为 B/d）："
+      },
+      {
+        "text": "We implemented PTD-P as an extension to the Megatron-LM codebase. Our implementation is built using PyTorch [32]. We use NCCL [7] for communication between devices. To obtain good performance, we implemented optimizations targeting both communication and computation, which we outline below.",
+        "x": 317.5,
+        "y": 84.7,
+        "w": 242.2,
+        "h": 52.8,
+        "zh": "我们把 PTD-P 实现为 Megatron-LM 代码库的扩展。实现基于 PyTorch [32]，设备之间的通信使用 NCCL [7]。为了取得好的性能，我们针对通信和计算都做了优化，下面分别说明。"
+      },
+      {
+        "text": "𝑏 /𝑏 + 𝑝 − 1 · 𝑡𝑓 (𝑏) + 𝑡𝑏(𝑏) .",
+        "x": 119.7,
+        "y": 84.5,
+        "w": 112.9,
+        "h": 10.9,
+        "zh": ""
+      }
+    ],
+    "7": [
+      {
+        "text": "[𝑠, 𝑏, 𝑎, ℎ], where 𝑏, 𝑠, 𝑎, and ℎ are batch, sequence, attention-head, and hidden-size dimensions, respectively. Second, we generated fused kernels for a sequence of element-wise operations (bias + GeLU and bias + dropout + add) using PyTorch JIT [10]. Third, we created two custom kernels to enable the fusion of scale, mask, and softmax (reduction) operations: one to support general masking (used in models such as BERT) and another to support implicit causal masking (used in auto-regressive models such as GPT). We quantify the effect of these optimizations in the next section.",
+        "x": 317.7,
+        "y": 610.7,
+        "w": 241.7,
+        "h": 96.6,
+        "zh": "[s, b, a, h]。其中 b、s、a、h 分别是 batch、序列、注意力头和隐藏维度。第二，我们用 PyTorch JIT [10] 为一系列逐元素操作生成了融合 kernel（bias + GeLU，以及 bias + dropout + add）。第三，我们编写了两个自定义 kernel，用来融合 scale、mask 和 softmax（规约）这几步：一个支持通用 mask（用于 BERT 这类模型），另一个支持隐式的因果 mask（用于 GPT 这类自回归模型）。这些优化的效果在下一节给出。"
+      },
+      {
+        "text": "(a) W/o scatter/gather optimization. (b) With scatter/gather optimization. Figure 9: Scatter/gather communication optimization. Light blue blocks are layers in the first pipeline stage, and dark blue blocks are layers in the second pipeline stage. Without the scatter/gather optimization, the same tensor is sent redundantly over inter-node InfiniBand links. Instead, at the sender, we can scatter the tensor into smaller chunks, reducing the sizes of tensors sent over InfiniBand links. The final tensor can then be rematerialized at the receiver using a gather operation.",
+        "x": 53.8,
+        "y": 560.4,
+        "w": 241.7,
+        "h": 90.8,
+        "zh": "(a) 没有 scatter/gather 优化。(b) 有 scatter/gather 优化。图 9：scatter/gather 通信优化。浅蓝色块是第一个流水线阶段中的层，深蓝色块是第二个流水线阶段中的层。若不做 scatter/gather 优化，同一个张量会在节点之间的 InfiniBand 链路上被重复发送。发送端可以先把张量 scatter 成更小的块，从而减小经 InfiniBand 发出的张量。接收端再用一次 gather，把最终的张量重新物化出来。"
+      },
+      {
+        "text": "In this section, we seek to answer the following questions: • How well does PTD-P perform? Does it result in realistic end-to-end training times? • How well does pipeline parallelism scale for a given model and batch size? How much impact does the interleaved schedule have on performance? • How do different parallelization dimensions interact with each other? What is the impact of hyperparameters such as",
+        "x": 318,
+        "y": 489.7,
+        "w": 241.8,
+        "h": 91.3,
+        "zh": "本节希望回答下列问题：• PTD-P 的表现如何？它能否带来现实的端到端训练时间？• 对给定的模型和 batch 大小，流水线并行的扩展性如何？交错调度对性能有多大影响？• 不同的并行维度如何相互作用？诸如……这样的超参数有什么影响"
+      },
+      {
+        "text": "Communication Optimizations When using pipeline parallelism, we want to send and receive tensors in the forward and backward direction in parallel. Each DGX A100 is equipped with 8 InfiniBand (IB) networking cards. Unfortunately, sends and receives are point-to-point, and only happen between a pair of GPUs on two servers, making it hard to leverage all 8 cards for a single communication call within the pipeline. However, we can leverage the fact that we use both tensor model parallelism and pipeline model parallelism to reduce the overhead of cross-node communication. In particular, we note that the output of each transformer layer is replicated (after 𝑔 in MLP block, see Figure 5a) across the tensor-parallel ranks. As a result, ranks in two consecutive pipeline stages that are performing tensor model parallelism send and receive the exact same set of tensors (Figure 9a). For large enough models, we use a tensor-model-parallel size of 8. This means we are sending the same set of tensors 8 times between corresponding GPUs on adjacent multi-GPU servers. To reduce this redundancy, we can instead split the tensor on the send side into equal-sized chunks, and then only send one chunk to the corresponding rank on the next node using the rank’s own InfiniBand card (e.g., rank 1 sends to rank 3 and rank 2 sends to rank 4 in Figure 9). With 8 tensor-model-parallel ranks, each chunk would be one-eighth smaller. Then, on the receive side, we can perform an all-gather over NVLink, which is much faster than the InfiniBand interconnect, to re-materialize the full tensor. This is shown in Figure 9b. We call this the scatter/gather communication optimization. This optimization helps better leverage the multiple IB cards on the DGX A100 servers, and makes more communicationintensive schedules such as the interleaved one feasible. Quantitatively, with the scatter-gather communication optimization, the total amount of communication that needs to be performed between every pair of consecutive stages is reduced to 𝑡 , where 𝑡 is the tensor-model-parallel size, 𝑠 is the sequence length, and ℎ is the hidden size (𝑡 = 8 in our experiments).",
+        "x": 53.4,
+        "y": 164.2,
+        "w": 242.2,
+        "h": 376.1,
+        "zh": "通信优化。使用流水线并行时，我们希望前向和反向上的张量发送与接收可以并行进行。每台 DGX A100 配备 8 块 InfiniBand（IB）网卡。可惜发送和接收是点对点的，只发生在两台服务器上的一对 GPU 之间，因此流水线中的一次通信调用很难用上全部 8 块网卡。不过，我们可以利用「同时使用了张量模型并行和流水线模型并行」这一点，来降低跨节点通信的开销。具体而言，每个 transformer 层的输出在张量并行的各个 rank 上是复制的（位于 MLP 块中的 g 之后，见图 5a）。因此，相邻两个流水线阶段中正在做张量模型并行的那些 rank，发送和接收的是完全同一组张量（图 9a）。对足够大的模型，我们使用的张量模型并行度为 8。这意味着在相邻多 GPU 服务器上对应的 GPU 之间，同一组张量被发送了 8 次。为了去掉这种冗余，可以在发送端把张量切成大小相等的块，然后只用该 rank 自己的 InfiniBand 网卡，把其中一块发给下一台节点上的对应 rank（例如图 9 中，rank 1 发给 rank 3，rank 2 发给 rank 4）。有 8 个张量模型并行 rank 时，每一块只有原来的八分之一大。然后在接收端，可以通过 NVLink 做 all-gather。NVLink 比 InfiniBand 快得多，从而把完整张量重新物化出来，如图 9b 所示。我们把这称为 scatter/gather 通信优化。它能更好地利用 DGX A100 服务器上的多块 IB 网卡，并使交错调度这类通信更重的调度变得可行。定量地说，加上 scatter/gather 通信优化之后，每一对相邻阶段之间需要完成的通信总量减少到 t。其中 t 是张量模型并行度，s 是序列长度，h 是隐藏维度（我们的实验中 t = 8）。"
+      },
+      {
+        "text": "• What is the impact of the scatter-gather communication optimization? What types of limits do we put on hardware when running training iterations at scale? All of our results are run with mixed precision on the Selene supercomputer [8]. Each cluster node has 8 NVIDIA 80-GB A100 GPUs [6], connected to each other by NVLink and NVSwitch [9]. Each node has eight NVIDIA Mellanox 200Gbps HDR Infiniband HCAs for application communication, with an additional two HCAs per node for dedicated storage. The nodes are connected in a threelevel (leaf, spine, core) fat-tree topology with 850 switches. This topology allows efficient all-reduce communication (dominant communication pattern in deep learning training). The cluster uses an all-NVME shared parallel filesystem for high-performance data access and storage. The peak device throughput of an A100 GPU with 16-bit precision is 312 teraFLOP/s. For most of our results, we report throughput per GPU. Aggregate throughput can be computed by multiplying with the number of GPUs used. For our experiments, we use GPT models of appropriate sizes. In particular, for any given microbenchmark, the model needs to fit on the number of model-parallel GPUs used in the experiment. We use standard model architectures such as GPT-3 [11] when appropriate.",
+        "x": 317.7,
+        "y": 243,
+        "w": 242,
+        "h": 233.7,
+        "zh": "• scatter/gather 通信优化有什么影响？在大规模上跑训练迭代时，我们对硬件提出了什么样的限制或要求？我们的全部结果都在 Selene 超级计算机 [8] 上以混合精度运行。每个集群节点有 8 块 NVIDIA 80GB A100 GPU [6]，彼此由 NVLink 和 NVSwitch [9] 连接。每个节点有 8 块 NVIDIA Mellanox 200Gbps HDR InfiniBand HCA 用于应用通信，另外每个节点还有 2 块 HCA 专用于存储。节点以三层（leaf、spine、core）的 fat-tree 拓扑互联，共有 850 台交换机。这种拓扑有利于高效的 all-reduce（这是深度学习训练中占主导的通信模式）。集群使用全 NVMe 的共享并行文件系统，以支持高性能的数据访问和存储。A100 GPU 在 16 位精度下的设备峰值吞吐为 312 teraFLOP/s。我们的大多数结果报告的是每块 GPU 的吞吐。聚合吞吐可以用所用 GPU 的数量去乘得到。实验使用规模合适的 GPT 模型。具体而言，对任何一个微基准，模型都必须能放进该实验所使用的那些模型并行 GPU 上。在合适的时候，我们采用 GPT-3 [11] 这类标准模型结构。"
+      },
+      {
+        "text": "End-to-End Performance We consider the end-to-end performance of our system on GPT models ranging from a billion to a trillion parameters, using tensor, pipeline, and data parallelism (degrees picked using heuristics described in §3). In particular, we use the interleaved pipeline schedule with the scatter/gather optimization enabled. All models use a vocabulary size (denoted by 𝑉) of 51,200 (multiple of 1024) and a sequence length (𝑠) of 2048. We vary hidden size (ℎ), number of attention heads, and number of layers (𝑙). The number of parameters in a model, 𝑃, can be computed as:",
+        "x": 317.5,
+        "y": 116.7,
+        "w": 242.2,
+        "h": 112.3,
+        "zh": "端到端性能。我们考察本系统在从十亿参数到万亿参数的 GPT 模型上的端到端性能，同时使用张量并行、流水线并行和数据并行（度数按 §3 所述的启发式选取）。具体而言，我们使用开启了 scatter/gather 优化的交错流水线调度。所有模型的词表大小（记为 V）都是 51,200（1024 的倍数），序列长度 s 为 2048。我们改变隐藏维度 h、注意力头的数量以及层数 l。模型的参数量 P 可以按下式计算："
+      },
+      {
+        "text": "Computation Optimizations We implemented three model-specific optimizations to the computation graph to attain high performance. First, we changed the data layout in the transformer layer to avoid memory-intensive transpose operations, and to enable the use of strided batched GEMM kernels. Specifically, we changed the data layout from [𝑏, 𝑠, 𝑎, ℎ] to",
+        "x": 53.4,
+        "y": 84.7,
+        "w": 242.2,
+        "h": 68.4,
+        "zh": "计算优化。我们对计算图做了三项针对该模型的优化，以获得高性能。第一，我们改变了 transformer 层中的数据布局，以避免耗费显存的转置，并得以使用带步长的 batched GEMM kernel。具体来说，我们把数据布局从 [b, s, a, h] 改为"
+      }
+    ],
+    "8": [
+      {
+        "text": "As the model size increases, we also increase the batch size (𝐵) and the number of GPUs (𝑛). The majority of floating-point operations in the model are performed in the matrix multiplications (GEMMs) in the transformer and logit layers. Considering just these GEMMs, the number of FLOPs per iteration is (more details in the Appendix):",
+        "x": 53.5,
+        "y": 491.4,
+        "w": 241.6,
+        "h": 52.8,
+        "zh": "随着模型变大，我们也增大 batch 大小 B 和 GPU 数量 n。模型中的大部分浮点运算发生在 transformer 层和 logit 层的矩阵乘法（GEMM）中。若只考虑这些 GEMM，每次迭代的 FLOP 数量为（更多细节见附录）："
+      },
+      {
+        "text": "This is a lower bound for the true FLOP count but should be close to the actual value. We count a FLOP as a floating-point operation regardless of precision. We also note that equation (3) assumes activation recomputation and takes into account the floating-point operations associated with the extra forward pass. Table 1 shows the model configurations along with the achieved FLOP/s (both per GPU and aggregate over all GPUs). We see superlinear scaling to 3072 A100 GPUs (384 DGX A100 nodes), since GPU utilization improves as the models get larger (larger matrix multiplications) without significant increase in the communication time relative to computation time. Note that throughput is measured for end-to-end training, i.e., includes all operations including data loading, optimizer steps, communication, and logging. We achieve 52% of peak device throughput for the largest model, and 44% of peak device throughput for the smallest model. Training Time Estimates. Given these throughputs, we can also estimate the total amount of time needed for end-to-end training on 𝑇 tokens. Training requires 𝐼 = 𝑇/(𝐵 · 𝑠) iterations. Using the value of 𝐹 from equation (3) and empirical end-to-end throughputs from Table 1 (denoted by 𝑋), we can estimate total training time. We note that for the configurations in Table 1, we have 6ℎ ≫ 𝑠, 16𝑙ℎ ≫ (𝑉 + 𝑠), and 12𝑙ℎ ≫ 𝑉. Combining these observations with equations (2) and (3), we arrive at",
+        "x": 53.5,
+        "y": 209.6,
+        "w": 242,
+        "h": 250.1,
+        "zh": "这是真实 FLOP 数量的一个下界，但应当接近实际值。无论精度如何，我们都把一次浮点运算计为一个 FLOP。还要注意，式 (3) 假设使用了激活重计算，并把额外那一次前向所对应的浮点运算计算在内。表 1 给出了模型配置，以及达到的 FLOP/s（既有每块 GPU 的，也有全部 GPU 上的聚合值）。我们看到，扩展到 3072 块 A100 GPU（384 个 DGX A100 节点）时呈超线性，因为模型变大后矩阵乘法也更大，GPU 利用率提高，而通信时间相对计算时间并没有明显增加。注意，吞吐是按端到端训练测量的，也就是包含数据加载、优化器步进、通信和日志在内的全部操作。最大的模型达到设备峰值吞吐的 52%，最小的模型达到 44%。训练时间估计。给定这些吞吐，我们也可以估计在 T 个 token 上做端到端训练所需的总时间。训练需要 I = T/(B · s) 次迭代。利用式 (3) 中的 F，以及表 1 中经验上的端到端吞吐（记为 X），就可以估计总训练时间。注意，对表 1 中的配置，有 6h ≫ s、16lh ≫ (V + s)，以及 12lh ≫ V。把这些观察与式 (2) 和式 (3) 结合起来，我们得到"
+      },
+      {
+        "text": "Figure 10: Throughput per GPU of PTD-P and ZeRO-3 for two different GPT models (the 175B GPT-3 model is shown with dotted lines, and the 530B model is shown with solid lines). Global batch sizes are fixed and ZeRO-3 is used without any model parallelism.",
+        "x": 318,
+        "y": 381,
+        "w": 241.7,
+        "h": 37.9,
+        "zh": "图 10：PTD-P 与 ZeRO-3 在两个不同 GPT 模型上的单 GPU 吞吐（1750 亿参数的 GPT-3 用虚线表示，5300 亿参数的模型用实线表示）。全局 batch 大小固定，并且 ZeRO-3 不使用任何模型并行。"
+      },
+      {
+        "text": "Comparison to ZeRO-3 We compare PTD-P to ZeRO-3 [36, 37] in Table 2 and Figure 10 for the standard GPT-3 model architecture, as well as the 530-billionparameter model from Table 1. The results provide a point of comparison to a method that does not use model parallelism. We integrated ZeRO into our codebase using the DeepSpeed Python library [3]. We keep the global batch size the same as we increase the number of GPUs. With fewer GPUs and a microbatch size of 4, PTD-P results in 6% and 24% higher throughput for the 175- and 530-billion-parameter models respectively. As we increase the number of GPUs, PTD-P scales more gracefully than ZeRO-3 in isolation (see Figure 10). For example, by doubling the number of GPUs (keeping the batch size the same), PTD-P outperforms ZeRO-3 by 70% for both models due to less cross-node communication. We note that we have only considered ZeRO-3 without tensor parallelism. ZeRO-3 can be combined with model parallelism to potentially improve its scaling behavior.",
+        "x": 317.5,
+        "y": 183,
+        "w": 242.2,
+        "h": 189,
+        "zh": "与 ZeRO-3 的比较。我们在表 2 和图 10 中把 PTD-P 与 ZeRO-3 [36, 37] 进行比较，对象包括标准的 GPT-3 模型结构，以及表 1 中那个 5300 亿参数的模型。这些结果提供了一个对照，对照的方法不使用模型并行。我们用 DeepSpeed 的 Python 库 [3] 把 ZeRO 集成进了自己的代码库。增加 GPU 数量时，全局 batch 大小保持不变。在 GPU 较少、微批次大小为 4 时，对 1750 亿和 5300 亿参数的模型，PTD-P 的吞吐分别高出 6% 和 24%。随着 GPU 数量增加，PTD-P 比单独使用的 ZeRO-3 扩展得更平滑（见图 10）。例如，在 batch 大小不变的情况下把 GPU 数量加倍，由于跨节点通信更少，两个模型上 PTD-P 都比 ZeRO-3 高出 70%。需要说明的是，我们只考虑了不带张量并行的 ZeRO-3。ZeRO-3 可以与模型并行结合起来，从而有可能改善它的扩展行为。"
+      },
+      {
+        "text": "Let us consider the GPT-3 model with 𝑃 =175 billion parameters as an example. This model was trained on 𝑇 = 300 billion tokens. On 𝑛 = 1024 A100 GPUs using batch size 1536, we achieve 𝑋 = 140 teraFLOP/s per GPU. As a result, the time required to train this model is 34 days. For the 1 trillion parameter model, we assume that 450 billion tokens are needed for end-to-end training. With 3072 A100 GPUs, we can achieve a per-GPU throughput of 163 teraFLOP/s, and end-to-end training time of 84 days. We believe these training times (using a reasonable number of GPUs) are practical.",
+        "x": 53.4,
+        "y": 84.7,
+        "w": 242.1,
+        "h": 96.6,
+        "zh": "以参数量 P = 1750 亿的 GPT-3 为例。该模型在 T = 3000 亿个 token 上训练。在 n = 1024 块 A100 GPU 上、batch 大小为 1536 时，我们达到每块 GPU X = 140 teraFLOP/s。因此，训练这个模型需要 34 天。对 1 万亿参数的模型，我们假设端到端训练需要 4500 亿个 token。使用 3072 块 A100 GPU 时，单 GPU 吞吐可以达到 163 teraFLOP/s，端到端训练时间为 84 天。我们认为，在 GPU 数量合理的前提下，这些训练时间是实用的。"
+      },
+      {
+        "text": "Pipeline Parallelism We now evaluate the weak-scaling performance of pipeline parallelism in isolation, and also compare the performance of the noninterleaved schedule to the interleaved schedule.",
+        "x": 317.5,
+        "y": 124.6,
+        "w": 242.2,
+        "h": 46.5,
+        "zh": "流水线并行。下面我们单独评估流水线并行的弱扩展性能，并把非交错调度与交错调度的性能做比较。"
+      },
+      {
+        "text": "Weak Scaling. We evaluate the scaling of the default noninterleaved pipeline-parallel schedule using a weak scaling setup, a GPT model with 128 attention heads and a hidden size of 20480,",
+        "x": 318,
+        "y": 84.7,
+        "w": 241.8,
+        "h": 30.9,
+        "zh": "弱扩展。我们用弱扩展设置来评估默认的、非交错的流水线并行调度。模型是一个有 128 个注意力头、隐藏维度为 20480 的 GPT，"
+      }
+    ],
+    "9": [
+      {
+        "text": "Table 2: Comparison of PTD Parallelism to ZeRO-3 (without model paralllelism). The 530-billion-parameter GPT model did not fit on 560 GPUs when using a microbatch size of 4 with ZeRO-3, so we increased the number of GPUs used to 640 and global batch size to 2560 to provide",
+        "x": 53.5,
+        "y": 523,
+        "w": 504.7,
+        "h": 17.9,
+        "zh": "表 2：PTD 并行与 ZeRO-3（不使用模型并行）的对比。5300 亿参数的 GPT 模型在微批次大小为 4 时，用 ZeRO-3 放不进 560 块 GPU，因此我们把所用 GPU 的数量增加到 640，并把全局 batch 增加到 2560，以便给出"
+      },
+      {
+        "text": "Figure 11: Throughput per GPU of pipeline parallelism using two different batch sizes in a weak-scaling experiment setup (model size increases with the pipeline-parallel size).",
+        "x": 53.8,
+        "y": 371,
+        "w": 240.2,
+        "h": 27.9,
+        "zh": "图 11：弱扩展实验中，流水线并行在两种 batch 大小下的单 GPU 吞吐（模型规模随流水线并行度一起增大）。"
+      },
+      {
+        "text": "Figure 13: Throughput per GPU of various parallel configurations that combine pipeline and tensor model parallelism using a GPT model with 162.2 billion parameters and 64 A100 GPUs.",
+        "x": 318,
+        "y": 370.9,
+        "w": 240.5,
+        "h": 27.9,
+        "zh": "图 13：在 1622 亿参数的 GPT 模型和 64 块 A100 GPU 上，把流水线并行与张量模型并行组合起来的各种配置的单 GPU 吞吐。"
+      },
+      {
+        "text": "Interleaved versus Non-Interleaved Schedule. Figure 12 shows the per-GPU-throughput for interleaved and non-interleaved schedules on the GPT-3 [11] model with 175 billion parameters (96 layers, 96 attention heads, hidden size of 12288). The interleaved schedule with the scatter/gather communication optimization has higher computational performance than the non-interleaved (default) schedule. This gap closes as the batch size increases due to two reasons: (a) as the batch size increases, the bubble size in the default schedule decreases, and (b) the amount of point-to-point communication within the pipeline is proportional to the batch size, and consequently the non-interleaved schedule catches up as the amount of communication increases (the interleaved schedule features more communication per sample). Without the scatter/gather optimization, the default schedule performs better than the interleaved schedule at larger batch sizes (not shown).",
+        "x": 318,
+        "y": 192.8,
+        "w": 241.8,
+        "h": 162.4,
+        "zh": "交错调度与非交错调度。图 12 给出 GPT-3 [11] 模型上交错调度与非交错调度的单 GPU 吞吐。该模型有 1750 亿参数（96 层，96 个注意力头，隐藏维度 12288）。带有 scatter/gather 通信优化的交错调度，计算性能高于非交错（默认）调度。随着 batch 变大，这一差距会缩小，原因有两个：(a) batch 变大时，默认调度中的气泡变小；(b) 流水线内部的点对点通信量与 batch 大小成正比，因此通信量增加后，非交错调度会赶上来（交错调度每个样本的通信更多）。若不使用 scatter/gather 优化，在更大的 batch 下，默认调度会优于交错调度（图中未给出）。"
+      },
+      {
+        "text": "Figure 12: Throughput per GPU of interleaved and non-interleaved schedules for a GPT model (175 billion parameters) on 96 GPUs.",
+        "x": 53.8,
+        "y": 236.4,
+        "w": 240.3,
+        "h": 17.9,
+        "zh": "图 12：1750 亿参数的 GPT 模型在 96 块 GPU 上，交错调度与非交错调度的单 GPU 吞吐。"
+      },
+      {
+        "text": "and a microbatch size of 1. As we increase the number of pipeline stages, we also increase the size of the model by proportionally increasing the number of layers in the model, e.g., with a pipelineparallel size of 1, we use a model with 3 transformer layers and 15 billion parameters, and with a pipeline-parallel size of 8, we use a model with 24 transformer layers and 121 billion parameters. We use a tensor-parallel size of 8 for all configurations, and vary the total number of A100 GPUs used from 8 to 64. Figure 11 shows throughput per GPU for two different batch sizes to illustrate the impact of the pipeline bubble, which behaves as 𝑚 (§2.2.1). As expected, the higher batch size scales better since the pipeline bubble is amortized over more microbatches.",
+        "x": 53.8,
+        "y": 84.8,
+        "w": 241.8,
+        "h": 130.9,
+        "zh": "微批次大小为 1。随着流水线阶段数增加，我们也按比例增加模型的层数，从而增大模型。例如，流水线并行度为 1 时，我们使用一个有 3 个 transformer 层、150 亿参数的模型；流水线并行度为 8 时，我们使用一个有 24 个 transformer 层、1210 亿参数的模型。所有配置的张量并行度都是 8，所用 A100 GPU 的总数从 8 变到 64。图 11 给出两种 batch 大小下的单 GPU 吞吐，用来说明流水线气泡的影响，其行为如同 §2.2.1 中的 m。正如预期，更大的 batch 扩展得更好，因为流水线气泡被分摊到更多的微批次上。"
+      },
+      {
+        "text": "Comparison of Parallel Configurations In this sub-section, we show the various tradeoffs associated with combining different parallelization dimensions. In particular, we show the performance for parallel configurations using the same number of GPUs for a given model and multiple batch sizes.",
+        "x": 318,
+        "y": 124,
+        "w": 240.2,
+        "h": 57.5,
+        "zh": "并行配置的比较。本小节展示把不同并行维度组合起来时的各种取舍。具体而言，对给定的模型以及多种 batch 大小，我们给出使用相同 GPU 数量的那些并行配置的性能。"
+      },
+      {
+        "text": "Tensor versus Pipeline Parallelism. We evaluate the impact of pipeline and tensor model parallelism on performance for a given model and batch size. The empirical results in Figure 13 show the",
+        "x": 318,
+        "y": 84.7,
+        "w": 240.3,
+        "h": 30.9,
+        "zh": "张量并行与流水线并行。我们评估在给定模型和 batch 大小下，流水线模型并行与张量模型并行对性能的影响。图 13 中的实验结果表明"
+      }
+    ],
+    "10": [
+      {
+        "text": "(used by PipeDream [30] and others) in isolation can match the performance of using both techniques in conjunction.",
+        "x": 317.7,
+        "y": 687.4,
+        "w": 240.5,
+        "h": 19.9,
+        "zh": "（PipeDream [30] 以及其他工作所使用的那种）若单独使用，都达不到把两种技术结合起来时的性能。"
+      },
+      {
+        "text": "Pipeline versus Data Parallelism. We evaluate the impact of data and pipeline model parallelism on performance for a GPT model with 5.9 billion parameters (32 transformer layers, 32 attention heads, hidden size of 3840) in Figure 14. We use a smaller model than before since we want to show performance for models that fit when the model-parallel size is only 2. For simplicity, we keep the microbatch size equal to 1 in these experiments. We see that for each batch size, the throughput decreases as the pipelineparallel size increases, matching our analytical model from §3.3. Pipeline model parallelism should be used primarily to support the training of large models that do not fit on a single worker, and data parallelism should be used to scale up training.",
+        "x": 318,
+        "y": 538.9,
+        "w": 241.8,
+        "h": 129.5,
+        "zh": "流水线并行与数据并行。我们在图 14 中评估数据并行和流水线模型并行对一个 59 亿参数 GPT 模型的性能影响（32 个 transformer 层，32 个注意力头，隐藏维度 3840）。这里使用了比前面更小的模型，因为我们希望展示模型并行度只有 2 时仍然放得下的那些模型的性能。为简单起见，这些实验中的微批次大小都等于 1。可以看到，对每一个 batch 大小，吞吐都随着流水线并行度的增大而下降，这与 §3.3 的分析模型一致。流水线模型并行主要应当用来支持单块 worker 放不下的大模型的训练，而要把训练扩展到更大规模，则应当使用数据并行。"
+      },
+      {
+        "text": "Figure 14: Throughput per GPU of various parallel configurations that combine data and pipeline model parallelism using a GPT model with 5.9 billion parameters, three different batch sizes, microbatch size of 1, and 64 A100 GPUs.",
+        "x": 53.8,
+        "y": 568.1,
+        "w": 241.7,
+        "h": 37.9,
+        "zh": "图 14：在 59 亿参数的 GPT 模型上，把数据并行与流水线模型并行组合起来的各种配置的单 GPU 吞吐。图中有三种 batch 大小，微批次大小为 1，使用 64 块 A100 GPU。"
+      },
+      {
+        "text": "Tensor versus Data Parallelism. We also evaluate the impact of data and tensor model parallelism on performance for the same GPT model with 5.9 billion parameters in Figure 15 (smaller model used for same reason as above). As before, we keep the microbatch size equal to 1 initially. With larger batch sizes and a microbatch size of 1, data-parallel communication is infrequent; the all-to-all communication required in tensor model parallelism needs to be performed for every microbatch in a batch. This all-to-all communication with tensor model parallelism dominates end-to-end training time, especially when communication needs to be performed across multi-GPU nodes. Additionally, as the tensor-model-parallel size increases, we perform smaller matrix multiplications on every GPU, decreasing utilization on each GPU.",
+        "x": 318,
+        "y": 379.4,
+        "w": 241.8,
+        "h": 140.5,
+        "zh": "张量并行与数据并行。我们也在图 15 中，对同一个 59 亿参数的 GPT 模型评估数据并行和张量模型并行的性能影响（使用更小模型的原因与上面相同）。和前面一样，一开始把微批次大小保持为 1。当 batch 较大且微批次大小为 1 时，数据并行的通信并不频繁；而张量模型并行所需要的 all-to-all 通信，必须对一个 batch 中的每一个微批次都做一次。这种张量模型并行中的 all-to-all 会主导端到端训练时间，尤其是通信必须跨越多 GPU 节点的时候。此外，随着张量模型并行度增大，每块 GPU 上执行的矩阵乘法变小，每块 GPU 的利用率下降。"
+      },
+      {
+        "text": "Figure 15: Throughput per GPU of various parallel configurations that combine data and tensor model parallelism using a GPT model with 5.9 billion parameters, three different batch sizes, microbatch size of 1, and 64 A100 GPUs.",
+        "x": 53.5,
+        "y": 419.7,
+        "w": 240.6,
+        "h": 37.9,
+        "zh": "图 15：在 59 亿参数的 GPT 模型上，把数据并行与张量模型并行组合起来的各种配置的单 GPU 吞吐。图中有三种 batch 大小，微批次大小为 1，使用 64 块 A100 GPU。"
+      },
+      {
+        "text": "We should note that although data parallelism can lead to efficient scaling, we cannot use data parallelism in isolation for very large models with a limited training batch size because of a) insufficient memory capacity, and b) scaling limitations of data parallelism (e.g., GPT-3 was trained to convergence with a batch size of 1536. Data parallelism thus supports parallelization to only 1536 GPUs; however, roughly 10, 000 GPUs were used to train this model in a reasonable amount of time).",
+        "x": 317.7,
+        "y": 284.5,
+        "w": 242,
+        "h": 85.7,
+        "zh": "应当指出，尽管数据并行可以带来高效的扩展，对于训练 batch 有限的超大模型，我们不能单独使用数据并行。原因有两点：a）显存容量不够；b）数据并行自身的扩展限制（例如，GPT-3 训练到收敛时使用的 batch 大小是 1536。因此数据并行最多只能并行到 1536 块 GPU；然而，为了在合理的时间内训练这个模型，实际大约使用了 10,000 块 GPU）。"
+      },
+      {
+        "text": "Figure 16: Throughput per GPU of a (𝑡, 𝑝) = (8,8) parallel configuration for different microbatch sizes on a GPT model with 91 billion parameters, for two different batch sizes using 64 A100 GPUs.",
+        "x": 53.8,
+        "y": 281.4,
+        "w": 241.7,
+        "h": 27.9,
+        "zh": "图 16：在 910 亿参数的 GPT 模型上，并行配置为 (t, p) = (8, 8) 时，不同微批次大小下的单 GPU 吞吐。图中有两种 batch 大小，使用 64 块 A100 GPU。"
+      },
+      {
+        "text": "importance of using both tensor and pipeline model parallelism in conjunction to train a 161-billion-parameter GPT model (32 transformer layers to support pipeline-parallel size of 32, 128 attention heads, hidden size of 20480) with low communication overhead and high compute resource utilization. We observe that tensor model parallelism is best within a node (DGX A100 server) due to its expensive all-reduce communication. Pipeline model parallelism, on the other hand, uses much cheaper point-to-point communication that can be performed across nodes without bottlenecking the entire computation. However, with pipeline parallelism, significant time can be spent in the pipeline bubble: the total number of pipeline stages should thus be limited so that the number of microbatches in the pipeline is a reasonable multiple of the number of pipeline stages. Consequently, we see peak performance when the tensorparallel size is equal to the number of GPUs in a single node (8 with DGX A100 nodes). This result indicates that neither tensor model parallelism (used by Megatron [40]) nor pipeline model parallelism",
+        "x": 53.8,
+        "y": 84.7,
+        "w": 241.8,
+        "h": 184.3,
+        "zh": "必须同时使用张量模型并行和流水线模型并行，这一点很重要：只有这样，才能以较低的通信开销和较高的计算资源利用率，训练一个 1610 亿参数的 GPT 模型（32 个 transformer 层，以便支持流水线并行度为 32；128 个注意力头，隐藏维度 20480）。我们观察到，由于 all-reduce 通信很贵，张量模型并行最适合放在一个节点内部（DGX A100 服务器）。流水线模型并行使用的则是便宜得多的点对点通信，可以跨节点进行，而不会把整个计算堵住。不过，使用流水线并行时，相当多的时间可能花在流水线气泡上：因此流水线阶段的总数应当加以限制，使流水线中的微批次数成为阶段数的一个合理倍数。于是我们看到，当张量并行度等于单个节点中的 GPU 数量时（DGX A100 节点为 8），性能达到峰值。这一结果表明，无论是张量模型并行（Megatron [40] 所使用的）还是流水线模型并行"
+      },
+      {
+        "text": "We evaluate the impact of the microbatch size on the performance of parallel configurations that combine pipeline and tensor model parallelism in Figure 16 for a model with 91 billion parameters ((𝑡, 𝑝) = (8, 8)). We see that the best microbatch size is 2 for this model; the optimal microbatch size is different for other models (not shown in Figure) and model-dependent. For a given batch size, increasing the microbatch size decreases the number of microbatches in the pipeline (𝑚), leading to a larger pipeline bubble; however, increasing the microbatch size can also improve GPU utilization by increasing the arithmetic intensity of executed kernels. These two factors are at odds with each other, which makes the choice of optimal microbatch size challenging. Our analytical model from §3.3 reasonably approximates true performance, and can be used as a proxy to determine how to pick this hyperparameter value for various training configurations and models.",
+        "x": 317.5,
+        "y": 84.7,
+        "w": 242.2,
+        "h": 162.4,
+        "zh": "我们在图 16 中评估微批次大小对「流水线并行与张量模型并行相结合」的那些配置的性能影响。模型有 910 亿参数，(t, p) = (8, 8)。可以看到，对这个模型，最好的微批次大小是 2；其他模型的最优微批次大小并不相同（图中没有给出），而且依赖于模型。对给定的 batch 大小，增大微批次会减少流水线中的微批次数 m，从而使流水线气泡变大；但增大微批次也可以提高所执行 kernel 的算术强度，从而改善 GPU 利用率。这两个因素彼此牵制，因此最优微批次大小并不好选。我们在 §3.3 中的分析模型能够较好地逼近真实性能，可以当作一个代理，用来为各种训练配置和模型挑选这个超参数的取值。"
+      }
+    ],
+    "11": [
+      {
+        "text": "Inter-Node Communication Bandwidth Our strong results are a byproduct of using an optimized software and hardware stack together. In particular, we take advantage of the high-bandwidth communication links between GPUs on the same server and across servers. On the trillion-parameter model with 3072 GPUs, we observed that the effective bisection bandwidth of point-to-point communication among pipeline stages is 892 GB/s, while the effective bisection bandwidth of all-reduce operations among data-parallel replicas is 12.9 TB/s. A less-optimized partitioning of operators across devices would lead to more inter-node communication, hampering scaling performance.",
+        "x": 317.6,
+        "y": 586,
+        "w": 242.1,
+        "h": 123.2,
+        "zh": "节点间通信带宽。我们这些突出的结果，来自同时使用经过优化的软件栈和硬件栈。具体而言，我们利用了同一台服务器上、以及跨服务器的 GPU 之间的高带宽通信链路。在使用 3072 块 GPU 的万亿参数模型上，我们观察到：流水线各阶段之间点对点通信的有效对分带宽为 892 GB/s，而数据并行各副本之间 all-reduce 的有效对分带宽为 12.9 TB/s。如果算子在设备之间的划分没有优化得这么好，节点间通信就会更多，扩展性能会受到损害。"
+      },
+      {
+        "text": "Figure 17: Throughput (in sequences per second) with and without activation recomputation for a GPT model with 145 billion parameters using 128 A100 GPUs ((𝑡, 𝑝) = (8,16)).",
+        "x": 53.8,
+        "y": 580.3,
+        "w": 241.7,
+        "h": 27.9,
+        "zh": "图 17：1450 亿参数的 GPT 模型在 128 块 A100 GPU 上、有无激活重计算时的吞吐（单位为每秒序列数），配置为 (t, p) = (8, 16)。"
+      },
+      {
+        "text": "Checkpoint Loading and Saving An important practical consideration for the training of large models is loading and saving model checkpoints, which are especially large for the models considered in this paper. For example, the trillion-parameter model has a checkpoint of size 13.8 terabytes. The initial load of checkpoints for the trillion-parameter model by all 384 nodes (3072 GPUs) reaches a peak read bandwidth of 1TB/s, the maximum read throughput possible from the parallel filesystem. Checkpoint saves reach 40% of peak write bandwidth (273 GB/s).",
+        "x": 317.6,
+        "y": 471.2,
+        "w": 242.1,
+        "h": 101.3,
+        "zh": "检查点的加载与保存。训练大模型时，一个重要的实际问题是加载和保存模型检查点；对本论文所考虑的这些模型来说，检查点尤其大。例如，万亿参数模型的检查点大小为 13.8 TB。全部 384 个节点（3072 块 GPU）初次加载这个万亿参数模型的检查点时，读带宽的峰值达到 1 TB/s，这是该并行文件系统所能提供的最大读吞吐。保存检查点时，达到峰值写带宽的 40%（273 GB/s）。"
+      },
+      {
+        "text": "Scatter/gather optimization Achieved teraFLOP/s50",
+        "x": 73.7,
+        "y": 481.9,
+        "w": 146.2,
+        "h": 19.4,
+        "zh": ""
+      },
+      {
+        "text": "Figure 18: Throughput per GPU with and without the scatter/gather optimization for a GPT model with 175 billion parameters using 96 A100 GPUs and the interleaved schedule.",
+        "x": 53.5,
+        "y": 431,
+        "w": 240.7,
+        "h": 27.9,
+        "zh": "图 18：1750 亿参数的 GPT 模型在 96 块 A100 GPU 上使用交错调度时，有无 scatter/gather 优化的单 GPU 吞吐。"
+      },
+      {
+        "text": "In this section, we discuss other techniques to train models at scale.",
+        "x": 318,
+        "y": 433.1,
+        "w": 241.6,
+        "h": 9,
+        "zh": "本节讨论其他用来大规模训练模型的技术。"
+      },
+      {
+        "text": "Parallelism for Large Models. Pipeline model parallelism is a common technique used to train large models. Pipeline parallelism comes in a few flavors: the mode discussed in this paper uses flushes to ensure strict optimizer semantics. TeraPipe [26] exposes finegrained pipeline parallelism across tokens in a single training sequence for auto-regressive models like GPT. PipeTransformer [19] elastically adjusts the degree of pipelining and data parallelism by freezing layers with “stable” weights, and instead dedicates resources to train the remaining “active” layers. HetPipe [31] uses a combination of pipeline and data parallelism on a set of heterogeneous accelerators. Pipeline parallelism can also be implemented with relaxed semantics: PipeDream-2BW [30] maintains two weight versions and guarantees 1-stale weight updates without expensive flushes, while PipeMare [45] and Kosson et al. [23] use asynchoronous pipeline parallelism. These techniques have improved throughput compared to the techniques with pipeline flushes considered in this paper, but potentially at the cost of convergence rate or final accuracy. Moreover, pipeline parallelism in isolation can still only scale to a number of devices equal to the number of layers in the model, which is limiting for certain model architectures. PipeDream [29] combined pipeline parallelism and data parallelism in a principled way to reduce cross-device communication. DeepSpeed [2] combined pipeline parallelism with tensor and data parallelism to train models with up to a trillion parameters, but with lower throughput than what was shown in this paper (52% vs. 36% of peak) for a few reasons: operator fusion to keep most of the operator graph compute-bound, a more-efficient pipeline parallelism schedule to minimize the pipeline bubble size, fast hardware (A100 vs. V100 GPUs and high-bandwidth links between GPUs on the same and different servers), and scaling to more GPUs. We want to emphasize that this higher throughput makes estimated",
+        "x": 317.6,
+        "y": 84.7,
+        "w": 242.1,
+        "h": 337.7,
+        "zh": "面向大模型的并行。流水线模型并行是训练大模型时常用的技术。流水线并行有几种形态：本文讨论的那种用排空来保证严格的优化器语义。TeraPipe [26] 对 GPT 这类自回归模型，在单条训练序列的各个 token 之间暴露细粒度的流水线并行。PipeTransformer [19] 把权重已经「稳定」的层冻结，从而弹性地调整流水线的程度和数据并行度，并把资源用来训练其余仍然「活跃」的层。HetPipe [31] 在一组异构加速器上组合使用流水线并行和数据并行。流水线并行也可以用放宽之后的语义来实现：PipeDream-2BW [30] 维护两个权重版本，并保证 1-stale 的权重更新，而不需要昂贵的排空；PipeMare [45] 和 Kosson 等人 [23] 则使用异步的流水线并行。与本文所考虑的、带有流水线排空的技术相比，这些技术的吞吐更高，但可能以收敛速度或最终精度为代价。而且，流水线并行如果单独使用，能够扩展到的设备数量仍然只等于模型的层数，对某些模型结构来说这是一个限制。PipeDream [29] 以有原则的方式把流水线并行和数据并行组合起来，以减少跨设备通信。DeepSpeed [2] 把流水线并行与张量并行、数据并行组合起来，训练了参数量最多达到一万亿的模型，但吞吐低于本文所展示的结果（峰值的 52% 对比 36%）。原因有几条：用算子融合让算子图的大部分保持计算受限；用更高效的流水线并行调度来尽量缩小流水线气泡；更快的硬件（A100 对比 V100，以及同一服务器之内和不同服务器之间 GPU 的高带宽链路）；以及扩展到更多的 GPU。我们想强调的是，这样更高的吞吐使得所估计的"
+      },
+      {
+        "text": "Activation Recomputation Figure 17 shows throughput with and without activation recomputation for a GPT model with 145 billion parameters (80 transformer layers, 96 attention heads, hidden size of 12288) using 128 A100 GPUs, (𝑡, 𝑝) = (8, 16), and a range of batch sizes. For small batch sizes, activation recomputation leads to up to 33% lower throughput (in sequences per second) due to the extra forward pass that needs to be executed during the backward pass. However, activation recomputation is needed to support larger batch sizes. Throughput at large batch sizes with activation recomputation is up to 2× higher than the best throughput achieved without activation recomputation (for a smaller batch size) due to a smaller pipeline bubble.",
+        "x": 53.5,
+        "y": 271.7,
+        "w": 242,
+        "h": 134.2,
+        "zh": "激活重计算。图 17 给出一个 1450 亿参数 GPT 模型在有无激活重计算时的吞吐。该模型有 80 个 transformer 层、96 个注意力头，隐藏维度为 12288，使用 128 块 A100 GPU，(t, p) = (8, 16)，并覆盖一系列 batch 大小。batch 较小时，由于反向过程中还必须再执行一次前向，激活重计算会使吞吐（以每秒序列数计）最多降低 33%。然而，要支持更大的 batch，就需要激活重计算。在大 batch 下，带有激活重计算的吞吐最多可以达到不带激活重计算时所取得的最佳吞吐（对应一个更小的 batch）的 2 倍，原因是流水线气泡更小。"
+      },
+      {
+        "text": "Scatter-Gather Optimization Figure 18 shows per-GPU-throughput with and without (unoptimized) the scatter/gather communication optimization for the GPT-3 model with 175 billion parameters. We see an improvement of up to 11% in throughput for communication-intensive schedules (large batch size with interleaving) by reducing the amount of communication over cross-node links.",
+        "x": 53.8,
+        "y": 178.2,
+        "w": 241.8,
+        "h": 79.4,
+        "zh": "scatter/gather 优化。图 18 给出 1750 亿参数的 GPT-3 模型上，有无（未做优化时的）scatter/gather 通信优化的单 GPU 吞吐。对通信密集的调度（大 batch，并且使用交错），通过减少跨节点链路上的通信量，吞吐最多可以提高 11%。"
+      },
+      {
+        "text": "We also evaluate the performance impact of operator fusion described in §4.2. For the GPT-3 model (175 billion parameters), throughput increased by 19% with fusion (113 teraFLOP/s per GPU to 135 teraFLOP/s per GPU). For the larger GPT model with 530 billion parameters (model configuration in Figure 1), throughput increased by 11% (133 teraFLOP/s per GPU to 148 teraFLOP/s per GPU).",
+        "x": 53.4,
+        "y": 84.7,
+        "w": 246.9,
+        "h": 63.8,
+        "zh": "我们也评估了 §4.2 中所述算子融合的性能影响。对 GPT-3 模型（1750 亿参数），融合使吞吐提高了 19%（从每块 GPU 113 teraFLOP/s 提高到 135 teraFLOP/s）。对更大的、具有 5300 亿参数的 GPT 模型（模型配置见图 1），吞吐提高了 11%（从每块 GPU 133 teraFLOP/s 提高到 148 teraFLOP/s）。"
+      }
+    ],
+    "12": [
+      {
+        "text": "training times much more practical (about 3 months); an aggregate throughput of 37.6 petaFLOP/s would take about 40 months to train an equivalently-sized model. We can scale to larger models as well, but would need more GPUs to keep training time practical. Mesh-TensorFlow [39] proposes a language for easily specifying parallelization strategies that combine data and model parallelism. Switch Transformers [15] used Mesh-Tensorflow to train a sparsely activated expert-based model with 1.6 trillion parameters, with improved pre-training speed over the T5-11B model [35].",
+        "x": 53.8,
+        "y": 610.7,
+        "w": 241.6,
+        "h": 96.6,
+        "zh": "训练时间要实用得多（大约 3 个月）；若聚合吞吐为 37.6 petaFLOP/s，训练一个同等规模的模型大约需要 40 个月。我们也可以扩展到更大的模型，但要让训练时间仍然实用，就需要更多的 GPU。Mesh-TensorFlow [39] 提出了一种语言，用来方便地指定把数据并行和模型并行组合起来的策略。Switch Transformers [15] 使用 Mesh-TensorFlow 训练了一个 1.6 万亿参数、稀疏激活的专家模型，其预训练速度优于 T5-11B 模型 [35]。"
+      },
+      {
+        "text": "various tradeoffs associated with each of these types of parallelism, and how the interactions between them need to be considered carefully when combined. Even though the implementation and evaluation in this paper is GPU-centric, many of these ideas translate to other types of accelerators as well. Concretely, the following are ideas that are accelerator-agnostic: a) the idea of smartly partitioning the model training graph to minimize the amount of communication while still keeping devices active, b) minimizing the number of memorybound kernels with operator fusion and careful data layout, c) other domain-specific optimizations (e.g., scatter-gather optimization).",
+        "x": 317.7,
+        "y": 588.8,
+        "w": 242,
+        "h": 118.6,
+        "zh": "每一种并行各自带有的各种取舍，以及把它们组合起来时必须仔细考虑它们之间的相互作用。尽管本文的实现和评估以 GPU 为中心，其中许多想法同样可以搬到其他类型的加速器上。具体而言，下面这些想法与具体加速器无关：a）聪明地划分模型训练图，在尽量减少通信量的同时仍然让设备保持忙碌；b）借助算子融合和仔细的数据布局，尽量减少访存受限的 kernel；c）其他针对该领域的优化（例如 scatter/gather 优化）。"
+      },
+      {
+        "text": "Sharded Data Parallelism. As part of performance optimizations for MLPerf 0.6 [28], sharded data parallelism [24, 44], where optimizer state is sharded over data-parallel workers, was introduced. This method has two advantages: (a) it does not introduce extra communication over vanilla data parallelism, and (b) it divides the optimizer’s computation and memory cost across the data-parallel partitions. ZeRO [36, 37] extends this idea: weight parameters and gradients are sharded across data-parallel workers as well, and workers fetch relevant state from their “owning” workers before performing computations. This adds additional communication, which can be partially hidden by carefully overlapping computation and communication. However, this can become harder if tensor parallelism is not used or the batch size is not large enough to hide the extra communication overhead (Figure 10). ZeRO-Infinity [37] uses NVMe to efficiently swap parameters, enabling the training of very large models on a small number of GPUs. We note that using a small number of GPUs for training a very large model results in unrealistic training times (e.g., thousands of years to converge).",
+        "x": 53.5,
+        "y": 407.1,
+        "w": 242.1,
+        "h": 195.3,
+        "zh": "分片数据并行。作为 MLPerf 0.6 [28] 性能优化的一部分，人们提出了分片数据并行 [24, 44]：把优化器状态切分到各个数据并行 worker 上。这种方法有两个好处：(a) 相对于普通的数据并行，它不引入额外通信；(b) 它把优化器的计算成本和显存成本分摊到各个数据并行分区上。ZeRO [36, 37] 把这一想法做了扩展：权重参数和梯度也同样在数据并行的 worker 之间分片，worker 在做计算之前，从「拥有」相应状态的那些 worker 处取回所需状态。这会增加通信，但通过仔细地重叠计算与通信，可以部分地把通信藏起来。然而，如果没有使用张量并行，或者 batch 不够大、藏不住这份额外的通信开销，事情就会变得更难（图 10）。ZeRO-Infinity [37] 使用 NVMe 来高效地换入换出参数，从而能在很少的 GPU 上训练非常大的模型。我们指出，用很少的 GPU 去训练一个非常大的模型，训练时间会变得不现实（例如，要收敛可能得花上数千年）。"
+      },
+      {
+        "text": "We thank the anonymous reviewers, Seonmyeong Bak, Keshav Santhanam, Trevor Gale, Dimitrios Vytiniotis, and Siddharth Karamcheti for their help and feedback that improved this work. This research was supported in part by NSF Graduate Research Fellowship grant DGE-1656518 and NSF CAREER grant CNS-1651570. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the authors alone.",
+        "x": 317.5,
+        "y": 488.1,
+        "w": 242.2,
+        "h": 74.7,
+        "zh": "感谢匿名审稿人，以及 Seonmyeong Bak、Keshav Santhanam、Trevor Gale、Dimitrios Vytiniotis 和 Siddharth Karamcheti，他们的帮助和反馈改进了这项工作。本研究部分得到 NSF 研究生研究奖学金 DGE-1656518 以及 NSF CAREER 项目 CNS-1651570 的支持。本材料中表达的任何观点、发现、结论或建议，都只代表作者本人。"
+      },
+      {
+        "text": "APPENDIX: FLOATING-POINT OPERATIONS In this section, we describe how we calculate the number of floatingpoint operations (FLOPs) in a model. We consider a language model with 𝑙 transformer layers, hidden size ℎ, sequence length 𝑠, vocabulary size 𝑉, and training batch size 𝐵. A 𝐴𝑚×𝑘 ×𝑋𝑘×𝑛 matrix multiplication requires 2𝑚 ×𝑘 ×𝑛 FLOPs (factor of 2 needed to account for multiplies and adds). A transformer layer consists of an attention block followed by a 2-layer feed-forward network. For the attention block, the main FLOP contributors are the key, query, and value transformation (6𝐵𝑠ℎ2 operations), attention matrix computation (2𝐵𝑠2ℎ operations), attention over values (2𝐵𝑠2ℎ operations), and post-attention linear projection (2𝐵𝑠ℎ2 operations). The feed-forward network increases the hidden size to 4ℎ and then reduces it back to ℎ; this requires 16𝐵𝑠ℎ2 FLOPs. Summing these together, each transformer layer results in 24𝐵𝑠ℎ2 + 4𝐵𝑠2ℎ FLOPs for the forward pass. The backward pass requires double the number of FLOPs since we need to calculate the gradients with respect to both input and weight tensors. In addition, we are using activation recomputation, which requires an additional forward pass before the backward pass. As a result, the total number of FLOPs per transformer layer\u0000 is 4 × 24𝐵𝑠ℎ2 + 4𝐵𝑠2ℎ = 96𝐵𝑠ℎ2 1 + The other main contributor to the FLOP count is the logit layer in the language model head, which transforms features of dimension ℎ to the vocabulary dimension 𝑉. The required FLOPs for this operation is 2𝐵𝑠ℎ𝑉 in the forward pass and 4𝐵𝑠ℎ𝑉 in the backward pass, resulting in 6𝐵𝑠ℎ𝑉 FLOPs in total. Thus, for a transformer model with 𝑙 transformer layers, the total number of floating-point operations is:",
+        "x": 317.6,
+        "y": 152.4,
+        "w": 242.2,
+        "h": 325.5,
+        "zh": "附录：浮点运算。本节说明我们如何计算一个模型中的浮点运算次数（FLOP）。考虑一个语言模型，它有 l 个 transformer 层，隐藏维度为 h，序列长度为 s，词表大小为 V，训练 batch 大小为 B。一次 m×k 与 k×n 的矩阵乘法需要 2m × k × n 次 FLOP（前面的系数 2 用来把乘法和加法都计算在内）。一个 transformer 层由一个注意力块，以及随后的一个两层前馈网络组成。对注意力块而言，主要的 FLOP 来自 key、query 和 value 的变换（6Bsh² 次运算）、注意力矩阵的计算（2Bs²h 次运算）、在 value 上做注意力（2Bs²h 次运算），以及注意力之后的线性投影（2Bsh² 次运算）。前馈网络先把隐藏维度扩大到 4h，再缩回 h，这需要 16Bsh² 次 FLOP。把这些加起来，每个 transformer 层的前向产生 24Bsh² + 4Bs²h 次 FLOP。反向所需要的 FLOP 数要加倍，因为我们必须同时对输入张量和权重张量计算梯度。此外，我们使用激活重计算，这要求在反向之前再做一次前向。因此，每个 transformer 层的 FLOP 总数为 4 × (24Bsh² + 4Bs²h) = 96Bsh² (1 +。FLOP 计数的另一项主要贡献来自语言模型头部的 logit 层，它把维度为 h 的特征变换到词表维度 V。这一运算在前向需要 2BshV 次 FLOP，在反向需要 4BshV 次，合计 6BshV 次 FLOP。因此，对一个有 l 个 transformer 层的 transformer 模型，浮点运算的总数为："
+      },
+      {
+        "text": "Automatic Partitioning. FlexFlow [22], PipeDream [29], DAPPLE [14], and Tarnawski et al. [41] all auto-partition model training graphs over multiple devices with the help of cost models. However, each of these do not consider all the parallelism dimensions considered in this paper: pipeline and tensor model parallelism, data parallelism, microbatch size, and the effect of memory-savings optimizations like activation recomputation on the training of models larger than the memory capacity of an accelerator. These added dimensions increase the search space that needs to be explored. Gholami et al. [16] show how communication costs for combinations of data and model parallelism can be modeled.",
+        "x": 53.8,
+        "y": 280.2,
+        "w": 241.8,
+        "h": 118.6,
+        "zh": "自动划分。FlexFlow [22]、PipeDream [29]、DAPPLE [14] 以及 Tarnawski 等人 [41] 都借助代价模型，把模型训练图自动划分到多台设备上。然而，它们各自都没有考虑到本文所涉及的全部并行维度：流水线模型并行和张量模型并行、数据并行、微批次大小，以及激活重计算这类节省显存的优化，对训练「大于一块加速器显存容量的模型」所产生的影响。这些多出来的维度扩大了需要搜索的空间。Gholami 等人 [16] 说明了如何为数据并行与模型并行的各种组合建立通信代价的模型。"
+      },
+      {
+        "text": "HPC for Model Training. Goyal et al. [17] and You et al. [47] both demonstrate the use of High Performance Computing techniques to train highly-accurate ImageNet models in minutes. However, the image classification models considered fit comfortably on a single accelerator, rendering model parallelism unnecessary, support very large batch sizes (> 32k) that allow scaling data parallelism to large worker counts with infrequent communication, and are composed of compact convolutional layers that are inherently amenable to data-parallel communication.",
+        "x": 53.5,
+        "y": 175.2,
+        "w": 240.8,
+        "h": 96.6,
+        "zh": "用于模型训练的高性能计算。Goyal 等人 [17] 和 You 等人 [47] 都展示了如何用高性能计算技术，在数分钟内训练出高准确率的 ImageNet 模型。不过，他们所考虑的图像分类模型可以轻松地放进单块加速器，因此并不需要模型并行；这些模型支持非常大的 batch（大于 32k），从而可以把数据并行扩展到很多 worker，同时通信并不频繁；而且它们由紧凑的卷积层组成，这些层天生就适合数据并行通信。"
+      },
+      {
+        "text": "DISCUSSION AND CONCLUSION In this paper, we have shown how PTD-P (inter-node pipeline parallelism, intra-node tensor parallelism, and data parallelism) can be composed to achieve high aggregate throughput (502 petaFLOP/s) while training large models with a trillion parameters. This facilitates end-to-end training in reasonable times (estimated time of around 3 months for a trillion-parameter model). We discussed the",
+        "x": 53.5,
+        "y": 84.7,
+        "w": 242.1,
+        "h": 79.4,
+        "zh": "讨论与结论。本文说明了如何把 PTD-P（节点之间的流水线并行、节点内部的张量并行，以及数据并行）组合起来，在训练具有一万亿参数的大模型时达到很高的聚合吞吐（502 petaFLOP/s）。这使得端到端训练可以在合理的时间内完成（万亿参数模型的估计时间大约为 3 个月）。我们讨论了"
+      }
+    ],
+    "13": [
+      {
+        "text": "Devanur, Gregory R Ganger, Phillip B Gibbons, and Matei Zaharia. PipeDream: Generalized Pipeline Parallelism for DNN Training. In Proceedings of the 27th ACM Symposium on Operating Systems Principles, pages 1–15, 2019. [30] Deepak Narayanan, Amar Phanishayee, Kaiyu Shi, Xie Chen, and Matei Zaharia. Memory-Efficient Pipeline-Parallel DNN Training. In International Conference on Machine Learning, pages 7937–7947. PMLR, 2021. [31] Jay H Park, Gyeongchan Yun, M Yi Chang, Nguyen T Nguyen, Seungmin Lee, Jaesik Choi, Sam H Noh, and Young-ri Choi. HetPipe: Enabling Large DNN Training on (Whimpy) Heterogeneous GPU Clusters through Integration of Pipelined Model Parallelism and Data Parallelism. In 2020 USENIX Annual Technical Conference (USENIX ATC 20), pages 307–321, 2020. [32] Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, Alban Desmaison, Andreas Kopf, Edward Yang, Zachary DeVito, Martin Raison, Alykhan Tejani, Sasank Chilamkurthy, Benoit Steiner, Lu Fang, Junjie Bai, and Soumith Chintala. PyTorch: An Imperative Style, High-Performance Deep Learning Library. In Advances in Neural Information Processing Systems, volume 32,",
+        "x": 318,
+        "y": 562.9,
+        "w": 241.4,
+        "h": 134.5,
+        "zh": "Devanur、Gregory R. Ganger、Phillip B. Gibbons 与 Matei Zaharia。PipeDream：面向 DNN 训练的通用流水线并行。载于第 27 届 ACM Symposium on Operating Systems Principles 论文集，第 1–15 页，2019。[30] Deepak Narayanan、Amar Phanishayee、Kaiyu Shi、Xie Chen 与 Matei Zaharia。省显存的流水线并行 DNN 训练。载于 International Conference on Machine Learning，第 7937–7947 页。PMLR，2021。[31] Jay H. Park、Gyeongchan Yun、M. Yi Chang、Nguyen T. Nguyen、Seungmin Lee、Jaesik Choi、Sam H. Noh 与 Young-ri Choi。HetPipe：整合流水线模型并行与数据并行，从而在（性能较弱的）异构 GPU 集群上实现大型 DNN 训练。载于 2020 USENIX Annual Technical Conference (USENIX ATC 20)，第 307–321 页，2020。[32] Adam Paszke、Sam Gross、Francisco Massa、Adam Lerer、James Bradbury、Gregory Chanan、Trevor Killeen、Zeming Lin、Natalia Gimelshein、Luca Antiga、Alban Desmaison、Andreas Kopf、Edward Yang、Zachary DeVito、Martin Raison、Alykhan Tejani、Sasank Chilamkurthy、Benoit Steiner、Lu Fang、Junjie Bai 与 Soumith Chintala。PyTorch：一种命令式风格的高性能深度学习库。载于 Advances in Neural Information Processing Systems，第 32 卷，"
+      },
+      {
+        "text": "[1] Applications of GPT-3. https://openai.com/blog/gpt-3-apps/. [2] DeepSpeed: Extreme-Scale Model Training for Everyone. //www.microsoft.com/en-us/research/blog/deepspeed-extreme-scale-model-",
+        "x": 57,
+        "y": 671.7,
+        "w": 234.8,
+        "h": 22.9,
+        "zh": "[1] GPT-3 的应用。https://openai.com/blog/gpt-3-apps/。[2] DeepSpeed：人人可用的超大规模模型训练。//www.microsoft.com/en-us/research/blog/deepspeed-extreme-scale-model-"
+      },
+      {
+        "text": "[3] DeepSpeed Repository. https://www.deepspeed.ai/. [4] GitHub Copilot. https://copilot.github.com/. [5] Microsoft Translates Spoken Text to Code. https://techcrunch.com/2021/05/25/ microsoft-uses-gpt-3-to-let-you-code-in-natural-language/. [6] NVIDIA A100 Tensor Core GPU. https://www.nvidia.com/en-us/data-center/",
+        "x": 57,
+        "y": 623.9,
+        "w": 237.5,
+        "h": 38.9,
+        "zh": "[3] DeepSpeed 代码库。https://www.deepspeed.ai/。[4] GitHub Copilot。https://copilot.github.com/。[5] 微软把口述的文本翻译成代码。https://techcrunch.com/2021/05/25/microsoft-uses-gpt-3-to-let-you-code-in-natural-language/。[6] NVIDIA A100 Tensor Core GPU。https://www.nvidia.com/en-us/data-center/"
+      },
+      {
+        "text": "[8] NVIDIA Selene Supercomputer. https://www.top500.org/system/179842/. [9] NVLink and NVSwitch. https://www.nvidia.com/en-us/data-center/nvlink/. [10] PyTorch JIT. https://pytorch.org/docs/stable/jit.html. [11] Tom Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, and et al. Language Models are Few-Shot Learners. arXiv preprint arXiv:2005.14165, 2020. [12] Tianqi Chen, Bing Xu, Chiyuan Zhang, and Carlos Guestrin. Training Deep Nets with Sublinear Memory Cost. arXiv preprint arXiv:1604.06174, 2016. [13] Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding. arXiv preprint arXiv:1810.04805, 2018. [14] Shiqing Fan, Yi Rong, Chen Meng, Zongyan Cao, Siyu Wang, Zhen Zheng, Chuan Wu, Guoping Long, Jun Yang, Lixue Xia, et al. DAPPLE: A Pipelined Data Parallel Approach for Training Large Models. In Proceedings of the 26th ACM SIGPLAN Symposium on Principles and Practice of Parallel Programming, pages 431–445,",
+        "x": 53.8,
+        "y": 488.4,
+        "w": 241.3,
+        "h": 110.6,
+        "zh": "[8] NVIDIA Selene 超级计算机。https://www.top500.org/system/179842/。[9] NVLink 与 NVSwitch。https://www.nvidia.com/en-us/data-center/nvlink/。[10] PyTorch JIT。https://pytorch.org/docs/stable/jit.html。[11] Tom Brown、Benjamin Mann、Nick Ryder、Melanie Subbiah 等。语言模型是少样本学习者。arXiv preprint arXiv:2005.14165，2020。[12] Tianqi Chen、Bing Xu、Chiyuan Zhang 与 Carlos Guestrin。以亚线性的显存代价训练深度网络。arXiv preprint arXiv:1604.06174，2016。[13] Jacob Devlin、Ming-Wei Chang、Kenton Lee 与 Kristina Toutanova。BERT：面向语言理解的深度双向 Transformer 预训练。arXiv preprint arXiv:1810.04805，2018。[14] Shiqing Fan、Yi Rong、Chen Meng、Zongyan Cao、Siyu Wang、Zhen Zheng、Chuan Wu、Guoping Long、Jun Yang、Lixue Xia 等。DAPPLE：一种用于训练大模型的流水线式数据并行方法。载于第 26 届 ACM SIGPLAN Symposium on Principles and Practice of Parallel Programming 论文集，第 431–445 页，"
+      },
+      {
+        "text": "[33] Alec Radford, Karthik Narasimhan, Tim Salimans, and Ilya Sutskever. Improving Language Understanding by Generative Pre-Training, 2018. [34] Alec Radford, Jeffrey Wu, Rewon Child, David Luan, Dario Amodei, and Ilya Sutskever. Language Models are Unsupervised Multitask Learners. OpenAI Blog,",
+        "x": 318,
+        "y": 523,
+        "w": 241,
+        "h": 30.9,
+        "zh": "[33] Alec Radford、Karthik Narasimhan、Tim Salimans 与 Ilya Sutskever。用生成式预训练改进语言理解，2018。[34] Alec Radford、Jeffrey Wu、Rewon Child、David Luan、Dario Amodei 与 Ilya Sutskever。语言模型是无监督的多任务学习者。OpenAI Blog，"
+      },
+      {
+        "text": "[35] Colin Raffel, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael Matena, Yanqi Zhou, Wei Li, and Peter J. Liu. Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer. arXiv:1910.10683,",
+        "x": 318,
+        "y": 491.1,
+        "w": 241,
+        "h": 22.9,
+        "zh": "[35] Colin Raffel、Noam Shazeer、Adam Roberts、Katherine Lee、Sharan Narang、Michael Matena、Yanqi Zhou、Wei Li 与 Peter J. Liu。用统一的文本到文本 Transformer 探索迁移学习的极限。arXiv:1910.10683，"
+      },
+      {
+        "text": "[36] Samyam Rajbhandari, Jeff Rasley, Olatunji Ruwase, and Yuxiong He. ZeRO: Memory Optimization Towards Training A Trillion Parameter Models. arXiv preprint arXiv:1910.02054, 2019. [37] Samyam Rajbhandari, Olatunji Ruwase, Jeff Rasley, Shaden Smith, and Yuxiong He. ZeRO-Infinity: Breaking the GPU Memory Wall for Extreme Scale Deep Learning. arXiv preprint arXiv:2104.07857, 2021. [38] Jie Ren, Samyam Rajbhandari, Reza Yazdani Aminabadi, Olatunji Ruwase, Shuangyan Yang, Minjia Zhang, Dong Li, and Yuxiong He. ZeRO-Offload: Democratizing Billion-Scale Model Training. arXiv preprint arXiv:2101.06840, 2021. [39] Noam Shazeer, Youlong Cheng, Niki Parmar, Dustin Tran, Ashish Vaswani, Penporn Koanantakool, Peter Hawkins, HyoukJoong Lee, Mingsheng Hong, Cliff Young, Ryan Sepassi, and Blake Hechtman. Mesh-TensorFlow: Deep Learning for Supercomputers. In Neural Information Processing Systems, 2018. [40] Mohammad Shoeybi, Mostofa Patwary, Raul Puri, Patrick LeGresley, Jared Casper, and Bryan Catanzaro. Megatron-LM: Training Multi-Billion Parameter Language Models using GPU Model Parallelism. arXiv preprint arXiv:1909.08053, 2019. [41] Jakub M Tarnawski, Amar Phanishayee, Nikhil Devanur, Divya Mahajan, and Fanny Nina Paravecino. Efficient Algorithms for Device Placement of DNN Graph Operators. In Advances in Neural Information Processing Systems, pages",
+        "x": 318,
+        "y": 331.7,
+        "w": 241.4,
+        "h": 150.4,
+        "zh": "[36] Samyam Rajbhandari、Jeff Rasley、Olatunji Ruwase 与 Yuxiong He。ZeRO：面向万亿参数模型训练的显存优化。arXiv preprint arXiv:1910.02054，2019。[37] Samyam Rajbhandari、Olatunji Ruwase、Jeff Rasley、Shaden Smith 与 Yuxiong He。ZeRO-Infinity：打破超大规模深度学习的 GPU 显存墙。arXiv preprint arXiv:2104.07857，2021。[38] Jie Ren、Samyam Rajbhandari、Reza Yazdani Aminabadi、Olatunji Ruwase、Shuangyan Yang、Minjia Zhang、Dong Li 与 Yuxiong He。ZeRO-Offload：让十亿规模的模型训练变得普及。arXiv preprint arXiv:2101.06840，2021。[39] Noam Shazeer、Youlong Cheng、Niki Parmar、Dustin Tran、Ashish Vaswani、Penporn Koanantakool、Peter Hawkins、HyoukJoong Lee、Mingsheng Hong、Cliff Young、Ryan Sepassi 与 Blake Hechtman。Mesh-TensorFlow：面向超级计算机的深度学习。载于 Neural Information Processing Systems，2018。[40] Mohammad Shoeybi、Mostofa Patwary、Raul Puri、Patrick LeGresley、Jared Casper 与 Bryan Catanzaro。Megatron-LM：用 GPU 模型并行训练数十亿参数的语言模型。arXiv preprint arXiv:1909.08053，2019。[41] Jakub M. Tarnawski、Amar Phanishayee、Nikhil Devanur、Divya Mahajan 与 Fanny Nina Paravecino。DNN 图算子设备放置的高效算法。载于 Advances in Neural Information Processing Systems，第"
+      },
+      {
+        "text": "[15] William Fedus, Barret Zoph, and Noam Shazeer. Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity. arXiv preprint",
+        "x": 53.8,
+        "y": 464.5,
+        "w": 240.3,
+        "h": 14.9,
+        "zh": "[15] William Fedus、Barret Zoph 与 Noam Shazeer。Switch Transformers：用简单而高效的稀疏性扩展到万亿参数模型。arXiv preprint"
+      },
+      {
+        "text": "[16] Amir Gholami, Ariful Azad, Peter Jin, Kurt Keutzer, and Aydin Buluc. Integrated Model, Batch, and Domain Parallelism in Training Neural Networks. In Proceedings of the 30th on Symposium on Parallelism in Algorithms and Architectures,",
+        "x": 53.8,
+        "y": 432.6,
+        "w": 241,
+        "h": 22.9,
+        "zh": "[16] Amir Gholami、Ariful Azad、Peter Jin、Kurt Keutzer 与 Aydin Buluc。神经网络训练中模型并行、批次并行与域并行的一体化。载于第 30 届 Symposium on Parallelism in Algorithms and Architectures 论文集，"
+      },
+      {
+        "text": "[17] Priya Goyal, Piotr Dollár, Ross Girshick, Pieter Noordhuis, Lukasz Wesolowski, Aapo Kyrola, Andrew Tulloch, Yangqing Jia, and Kaiming He. Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour. arXiv preprint arXiv:1706.02677,",
+        "x": 53.8,
+        "y": 400.7,
+        "w": 241,
+        "h": 22.9,
+        "zh": "[17] Priya Goyal、Piotr Dollár、Ross Girshick、Pieter Noordhuis、Lukasz Wesolowski、Aapo Kyrola、Andrew Tulloch、Yangqing Jia 与 Kaiming He。准确的大批次 SGD：用 1 小时训练 ImageNet。arXiv preprint arXiv:1706.02677，"
+      },
+      {
+        "text": "[18] Andreas Griewank and Andrea Walther. Revolve: An Implementation of Checkpointing for the Reverse or Adjoint Mode of Computational Differentiation. ACM Transactions on Mathematical Software (TOMS), 26(1):19–45, 2000. [19] Chaoyang He, Shen Li, Mahdi Soltanolkotabi, and Salman Avestimehr. PipeTransformer: Automated Elastic Pipelining for Distributed Training of Transformers. arXiv preprint arXiv:2102.03161, 2021. [20] Yanping Huang, Youlong Cheng, Ankur Bapna, Orhan Firat, Dehao Chen, Mia Chen, HyoukJoong Lee, Jiquan Ngiam, Quoc V Le, Yonghui Wu, et al. GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism. In Advances in Neural Information Processing Systems, pages 103–112, 2019. [21] Paras Jain, Ajay Jain, Aniruddha Nrusimha, Amir Gholami, Pieter Abbeel, Joseph Gonzalez, Kurt Keutzer, and Ion Stoica. Breaking the Memory Wall with Optimal Tensor Rematerialization. In Proceedings of Machine Learning and Systems 2020,",
+        "x": 53.8,
+        "y": 289.1,
+        "w": 241.4,
+        "h": 102.6,
+        "zh": "[18] Andreas Griewank 与 Andrea Walther。Revolve：计算微分的反向模式或伴随模式中检查点方法的一种实现。ACM Transactions on Mathematical Software (TOMS)，26(1):19–45，2000。[19] Chaoyang He、Shen Li、Mahdi Soltanolkotabi 与 Salman Avestimehr。PipeTransformer：面向 Transformer 分布式训练的自动弹性流水线。arXiv preprint arXiv:2102.03161，2021。[20] Yanping Huang、Youlong Cheng、Ankur Bapna、Orhan Firat、Dehao Chen、Mia Chen、HyoukJoong Lee、Jiquan Ngiam、Quoc V. Le、Yonghui Wu 等。GPipe：用流水线并行高效训练巨型神经网络。载于 Advances in Neural Information Processing Systems，第 103–112 页，2019。[21] Paras Jain、Ajay Jain、Aniruddha Nrusimha、Amir Gholami、Pieter Abbeel、Joseph Gonzalez、Kurt Keutzer 与 Ion Stoica。用最优的张量重物化打破显存墙。载于 Proceedings of Machine Learning and Systems 2020，"
+      },
+      {
+        "text": "[42] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Lukasz Kaiser, and Illia Polosukhin. Attention is All You Need. arXiv preprint arXiv:1706.03762, 2017. [43] Eric P Xing, Qirong Ho, Wei Dai, Jin Kyu Kim, Jinliang Wei, Seunghak Lee, Xun Zheng, Pengtao Xie, Abhimanu Kumar, and Yaoliang Yu. Petuum: A New Platform for Distributed Machine Learning on Big Data. IEEE Transactions on Big Data, 1(2):49–67, 2015. [44] Yuanzhong Xu, HyoukJoong Lee, Dehao Chen, Hongjun Choi, Blake Hechtman, and Shibo Wang. Automatic Cross-Replica Sharding of Weight Updates in DataParallel Training. arXiv preprint arXiv:2004.13336, 2020. [45] Bowen Yang, Jian Zhang, Jonathan Li, Christopher Ré, Christopher Aberger, and Christopher De Sa. PipeMare: Asynchronous Pipeline Parallel DNN Training. Proceedings of Machine Learning and Systems, 2021. [46] Zhilin Yang, Zihang Dai, Yiming Yang, Jaime G. Carbonell, Ruslan Salakhutdinov, and Quoc V. Le. XLNet: Generalized Autoregressive Pretraining for Language Understanding. CoRR, abs/1906.08237, 2019. [47] Yang You, Zhao Zhang, Cho-Jui Hsieh, James Demmel, and Kurt Keutzer. ImageNet Training in Minutes. In Proceedings of the 47th International Conference on Parallel Processing, pages 1–10, 2018.",
+        "x": 318,
+        "y": 172.3,
+        "w": 241.4,
+        "h": 150.4,
+        "zh": "[42] Ashish Vaswani、Noam Shazeer、Niki Parmar、Jakob Uszkoreit、Llion Jones、Aidan N. Gomez、Lukasz Kaiser 与 Illia Polosukhin。注意力就是你所需要的一切。arXiv preprint arXiv:1706.03762，2017。[43] Eric P. Xing、Qirong Ho、Wei Dai、Jin Kyu Kim、Jinliang Wei、Seunghak Lee、Xun Zheng、Pengtao Xie、Abhimanu Kumar 与 Yaoliang Yu。Petuum：面向大数据的分布式机器学习新平台。IEEE Transactions on Big Data，1(2):49–67，2015。[44] Yuanzhong Xu、HyoukJoong Lee、Dehao Chen、Hongjun Choi、Blake Hechtman 与 Shibo Wang。数据并行训练中权重更新的自动跨副本分片。arXiv preprint arXiv:2004.13336，2020。[45] Bowen Yang、Jian Zhang、Jonathan Li、Christopher Ré、Christopher Aberger 与 Christopher De Sa。PipeMare：异步流水线并行的 DNN 训练。Proceedings of Machine Learning and Systems，2021。[46] Zhilin Yang、Zihang Dai、Yiming Yang、Jaime G. Carbonell、Ruslan Salakhutdinov 与 Quoc V. Le。XLNet：面向语言理解的广义自回归预训练。CoRR，abs/1906.08237，2019。[47] Yang You、Zhao Zhang、Cho-Jui Hsieh、James Demmel 与 Kurt Keutzer。在数分钟内完成 ImageNet 训练。载于第 47 届 International Conference on Parallel Processing 论文集，第 1–10 页，2018。"
+      },
+      {
+        "text": "[22] Zhihao Jia, Matei Zaharia, and Alex Aiken. Beyond Data and Model Parallelism for Deep Neural Networks. In Proceedings of the 2nd Conference on Machine Learning and Systems (MLSys), 2018. [23] Atli Kosson, Vitaliy Chiley, Abhinav Venigalla, Joel Hestness, and Urs Köster. Pipelined Backpropagation at Scale: Training Large Models without Batches. Proceedings of Machine Learning and Systems, 2021. [24] Sameer Kumar, Victor Bitorff, Dehao Chen, Chiachen Chou, Blake Hechtman, HyoukJoong Lee, Naveen Kumar, Peter Mattson, Shibo Wang, Tao Wang, et al. Scale MLPerf-0.6 Models on Google TPU-v3 Pods. arXiv preprint arXiv:1909.09756,",
+        "x": 53.8,
+        "y": 209.4,
+        "w": 241.3,
+        "h": 70.7,
+        "zh": "[22] Zhihao Jia、Matei Zaharia 与 Alex Aiken。超越深度神经网络中的数据并行与模型并行。载于第 2 届 Conference on Machine Learning and Systems (MLSys) 论文集，2018。[23] Atli Kosson、Vitaliy Chiley、Abhinav Venigalla、Joel Hestness 与 Urs Köster。大规模的流水线反向传播：不依赖 batch 来训练大模型。Proceedings of Machine Learning and Systems，2021。[24] Sameer Kumar、Victor Bitorff、Dehao Chen、Chiachen Chou、Blake Hechtman、HyoukJoong Lee、Naveen Kumar、Peter Mattson、Shibo Wang、Tao Wang 等。在 Google TPU-v3 Pod 上扩展 MLPerf-0.6 模型。arXiv preprint arXiv:1909.09756，"
+      },
+      {
+        "text": "[25] Shen Li, Yanli Zhao, Rohan Varma, Omkar Salpekar, Pieter Noordhuis, Teng Li, Adam Paszke, Jeff Smith, Brian Vaughan, Pritam Damania, et al. PyTorch Distributed: Experiences on Accelerating Data Parallel Training. arXiv preprint",
+        "x": 53.8,
+        "y": 177.6,
+        "w": 240.2,
+        "h": 22.9,
+        "zh": "[25] Shen Li、Yanli Zhao、Rohan Varma、Omkar Salpekar、Pieter Noordhuis、Teng Li、Adam Paszke、Jeff Smith、Brian Vaughan、Pritam Damania 等。PyTorch Distributed：加速数据并行训练的经验。arXiv preprint"
+      },
+      {
+        "text": "[26] Zhuohan Li, Siyuan Zhuang, Shiyuan Guo, Danyang Zhuo, Hao Zhang, Dawn Song, and Ion Stoica. TeraPipe: Token-Level Pipeline Parallelism for Training Large-Scale Language Models. arXiv preprint arXiv:2102.07988, 2021. [27] Yinhan Liu, Myle Ott, Naman Goyal, Jingfei Du, Mandar Joshi, Danqi Chen, Omer Levy, Mike Lewis, Luke Zettlemoyer, and Veselin Stoyanov. RoBERTa: A Robustly Optimized BERT Pretraining Approach. CoRR, abs/1907.11692, 2019. [28] Peter Mattson, Christine Cheng, Cody Coleman, Greg Diamos, Paulius Micikevicius, David Patterson, Hanlin Tang, Gu-Yeon Wei, Peter Bailis, Victor Bittorf, et al. MLPerf Training Benchmark. arXiv preprint arXiv:1910.01500, 2019.",
+        "x": 53.8,
+        "y": 97.9,
+        "w": 241.4,
+        "h": 70.7,
+        "zh": "[26] Zhuohan Li、Siyuan Zhuang、Shiyuan Guo、Danyang Zhuo、Hao Zhang、Dawn Song 与 Ion Stoica。TeraPipe：用于训练大规模语言模型的 token 级流水线并行。arXiv preprint arXiv:2102.07988，2021。[27] Yinhan Liu、Myle Ott、Naman Goyal、Jingfei Du、Mandar Joshi、Danqi Chen、Omer Levy、Mike Lewis、Luke Zettlemoyer 与 Veselin Stoyanov。RoBERTa：一种经过稳健优化的 BERT 预训练方法。CoRR，abs/1907.11692，2019。[28] Peter Mattson、Christine Cheng、Cody Coleman、Greg Diamos、Paulius Micikevicius、David Patterson、Hanlin Tang、Gu-Yeon Wei、Peter Bailis、Victor Bittorf 等。MLPerf 训练基准。arXiv preprint arXiv:1910.01500，2019。"
+      }
+    ]
+  }
+}

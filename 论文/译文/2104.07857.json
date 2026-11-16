@@ -1,0 +1,1059 @@
+{
+  "id": "2104.07857",
+  "title": "2104.07857",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "ZeRO-Infinity: Breaking the GPU Memory Wall",
+        "x": 119.9,
+        "y": 696.4,
+        "w": 372.2,
+        "h": 17.2,
+        "zh": "ZeRO-Infinity：打破 GPU 内存墙"
+      },
+      {
+        "text": "Samyam Rajbhandari, Olatunji Ruwase, Jeff Rasley, Shaden Smith, Yuxiong He",
+        "x": 115.5,
+        "y": 649.9,
+        "w": 382,
+        "h": 12,
+        "zh": "Samyam Rajbhandari、Olatunji Ruwase、Jeff Rasley、Shaden Smith、Yuxiong He"
+      },
+      {
+        "text": "In the last three years, the largest dense deep learning models have grown over 1000x to reach hundreds of billions of parameters, while the GPU memory has only grown by 5x (16 GB to 80 GB). Therefore, the growth in model scale has been supported primarily though system innovations that allow large models to fit in the aggregate GPU memory of multiple GPUs. However, we are getting close to the GPU memory wall. It requires 800 NVIDIA V100 GPUs just to fit a trillion parameter model for training, and such clusters are simply out of reach for most data scientists. In addition, training models at that scale requires complex combinations of parallelism",
+        "x": 53.8,
+        "y": 476.2,
+        "w": 241.2,
+        "h": 107.6,
+        "zh": "过去三年里，最大的稠密深度学习模型长大了 1000 倍以上，参数量到了几千亿，而 GPU 内存只增长了 5 倍（从 16 GB 到 80 GB）。因此，模型规模的增长主要靠系统上的创新来支撑：让大模型能放进多块 GPU 加在一起的内存里。不过，我们正在靠近 GPU 内存墙。只为装下一个万亿参数的模型来训练，就需要 800 块 NVIDIA V100 GPU，这样的集群对大多数数据科学家来说根本够不着。此外，在这个规模上训练，还得把多种并行方式复杂地组合起来"
+      },
+      {
+        "text": "Figure 1: ZeRO-Infinity can train a model with 32 trillion patechniques that puts a big burden on the data scientists to refactor",
+        "x": 53.8,
+        "y": 465.3,
+        "w": 506,
+        "h": 10.8,
+        "zh": "图 1：ZeRO-Infinity 可以训练一个拥有 32 万亿参数的模型。这些技术给数据科学家带来很大负担，他们必须重构"
+      },
+      {
+        "text": "rameters on 32 NVIDIA V100 DGX-2 nodes (512 GPUs), 50x larger than 3D parallelism, the existing state-of-the-art. In this paper we present ZeRO-Infinity, a novel heterogeneous system technology that leverages GPU, CPU, and NVMe memory to",
+        "x": 53.8,
+        "y": 432.4,
+        "w": 504.7,
+        "h": 32.7,
+        "zh": "参数放在 32 台 NVIDIA V100 DGX-2 节点（512 块 GPU）上，规模是现有最强 3D 并行的 50 倍。本文提出 ZeRO-Infinity，一种新的异构系统技术，它利用 GPU、CPU 和 NVMe 内存来"
+      },
+      {
+        "text": "model parallelism [7], pipeline parallelism [8–10], and ZeRO [11, 12] allow for unprecedented model scale on limited resources without",
+        "x": 53.8,
+        "y": 421.4,
+        "w": 504.4,
+        "h": 11.9,
+        "zh": "模型并行 [7]、流水线并行 [8–10] 和 ZeRO [11, 12]。在有限资源上达到前所未有的模型规模，而且不必"
+      },
+      {
+        "text": "creating a path to training larger and more powerful models. requiring model code refactoring. At the same time it achieves",
+        "x": 53.8,
+        "y": 410.5,
+        "w": 486.4,
+        "h": 11.9,
+        "zh": "走出一条训练更大、更强模型的路。不需要重构模型代码。与此同时，它还能取得"
+      },
+      {
+        "text": "The current state-of-the-art in large model training technology excellent training throughput and scalability, unencumbered by",
+        "x": 53.8,
+        "y": 399.5,
+        "w": 504.6,
+        "h": 11.9,
+        "zh": "当前大模型训练技术里的最强做法。出色的训练吞吐和可扩展性，不受限于"
+      },
+      {
+        "text": "is three-dimensional parallelism (3D parallelism [13, 14]), which the limited CPU or NVMe bandwidth. ZeRO-Infinity can fit models",
+        "x": 53.8,
+        "y": 388.6,
+        "w": 504.4,
+        "h": 11.9,
+        "zh": "是三维并行（3D 并行 [13, 14]）。有限的 CPU 或 NVMe 带宽。ZeRO-Infinity 能够装下的模型"
+      },
+      {
+        "text": "combines model (tensor-slicing) and pipeline parallelism with data with tens and even hundreds of trillions of parameters for training",
+        "x": 53.5,
+        "y": 377.6,
+        "w": 504.7,
+        "h": 11.9,
+        "zh": "把模型并行（张量切分）和流水线并行，与数据。达到几十万亿甚至几百万亿参数，供训练使用"
+      },
+      {
+        "text": "parallelism to efficiently scale DL training to trillions of parameters on current generation GPU clusters. It can be used to fine-tune",
+        "x": 53.8,
+        "y": 366.7,
+        "w": 504.4,
+        "h": 11.9,
+        "zh": "并行结合起来，从而把深度学习训练高效扩展到万亿参数。在当前这一代 GPU 集群上。它可以用来微调"
+      },
+      {
+        "text": "on hundreds or thousands of GPUs. For example, the DeepSpeed trillion parameter models on a single NVIDIA DGX-2 node, making",
+        "x": 53.8,
+        "y": 355.7,
+        "w": 504.4,
+        "h": 11.9,
+        "zh": "在几百或几千块 GPU 上。例如 DeepSpeed。在单台 NVIDIA DGX-2 节点上跑万亿参数模型，从而"
+      },
+      {
+        "text": "implementation of 3D parallelism can scale to over a trillion paramlarge models more accessible. In terms of training throughput and",
+        "x": 53.8,
+        "y": 344.7,
+        "w": 505.9,
+        "h": 11.9,
+        "zh": "3D 并行的实现可以扩展到超过一万亿参数。让大模型更容易用上。就训练吞吐和"
+      },
+      {
+        "text": "eters on 800 NVIDIA V100 GPUs by fully leveraging the aggregate scalability, it sustains over 25 petaflops on 512 NVIDIA V100 GPUs",
+        "x": 53.8,
+        "y": 333.8,
+        "w": 504.4,
+        "h": 11.9,
+        "zh": "在 800 块 NVIDIA V100 GPU 上，靠用满集群合计的。可扩展性而言，它在 512 块 NVIDIA V100 GPU 上能维持超过 25 petaflops"
+      },
+      {
+        "text": "GPU memory of a cluster [15]. (40% of peak), while also demonstrating super linear scalability. An",
+        "x": 53.5,
+        "y": 322.8,
+        "w": 376.5,
+        "h": 11.9,
+        "zh": "集群的 GPU 内存 [15]。（达到峰值的 40%），同时也呈现出超线性可扩展。一份"
+      },
+      {
+        "text": "Despite the capabilities of 3D parallelism for large model training, open source implementation of ZeRO-Infinity is available through",
+        "x": 53.8,
+        "y": 311.9,
+        "w": 505.4,
+        "h": 11.9,
+        "zh": "尽管 3D 并行已经能做大模型训练。ZeRO-Infinity 的开源实现可以通过"
+      },
+      {
+        "text": "we are now arriving at the GPU memory wall [16]. The aggregate GPU memory is simply not large enough to support the growth in model size. Even with the newest NVIDIA A100 GPUs with 80 GB",
+        "x": 317.6,
+        "y": 281.9,
+        "w": 240.6,
+        "h": 30.9,
+        "zh": "我们现在正撞上 GPU 内存墙 [16]。集群里加起来的 GPU 内存，根本撑不住模型规模的增长。即便用上最新的、带 80 GB 内存的 NVIDIA A100 GPU，"
+      },
+      {
+        "text": "of memory, 3D parallelism requires 320 GPUs just to fit a trillionDeep learning (DL) has made tremendous advances in recent years,",
+        "x": 53.8,
+        "y": 265.2,
+        "w": 505.9,
+        "h": 14.7,
+        "zh": "内存，3D 并行也要 320 块 GPU 才能装下一个万亿。深度学习（DL）近年来取得了巨大进展，"
+      },
+      {
+        "text": "parameter model for training, and scaling to a hundred trillion allowing it to become an integral part of our lives from powering",
+        "x": 53.8,
+        "y": 254.2,
+        "w": 504.4,
+        "h": 14.7,
+        "zh": "参数的模型来训练；要扩展到 100 万亿。让它成为日常生活的一部分：从驱动"
+      },
+      {
+        "text": "parameter model of the future would require over 6K GPUs even our search engines to our smart home virtual assistants. Increased",
+        "x": 53.8,
+        "y": 243.3,
+        "w": 504.4,
+        "h": 14.7,
+        "zh": "参数的未来模型，也需要超过 6000 块 GPU，即便。我们的搜索引擎，到智能家居里的虚拟助手。不断增大的"
+      },
+      {
+        "text": "if we assume a 5x increase in GPU memory in the next few years. We can no longer sustain the continuous growth in the model scale studies have shown that this trend will continue [4, 5]. As a result,",
+        "x": 53.8,
+        "y": 221.4,
+        "w": 505.8,
+        "h": 25.7,
+        "zh": "假设未来几年 GPU 内存再增长 5 倍。模型规模的持续增长已经维持不下去。多项研究表明，这一趋势还会继续 [4, 5]。因此，"
+      },
+      {
+        "text": "with GPU memory as the bottleneck. there has been significant investment in training huge models.",
+        "x": 53.8,
+        "y": 210.4,
+        "w": 399.6,
+        "h": 14.7,
+        "zh": "以 GPU 内存为瓶颈。于是在训练巨大模型上有了大量投入。"
+      },
+      {
+        "text": "The GPU memory wall also limits data scientists from accessing In the last three years, the largest trained dense model in deep",
+        "x": 63.8,
+        "y": 199.4,
+        "w": 494.4,
+        "h": 14.7,
+        "zh": "GPU 内存墙还挡住了数据科学家，使他们用不上。过去三年里，深度学习中已经训练出来的最大稠密模型，在深度"
+      },
+      {
+        "text": "even the large models of today, especially for fine tuning. Large learning has grown over 1000x, from one hundred million parame-",
+        "x": 53.8,
+        "y": 188.5,
+        "w": 504.4,
+        "h": 14.7,
+        "zh": "即便是今天这些大模型，尤其是微调。大型。学习增长超过 1000 倍，从一亿参数起"
+      },
+      {
+        "text": "models are first pretrained on large amounts of generic data, and ters (ELMo [6]) to over one hundred billion parameters (GPT-3 [4]).",
+        "x": 53.8,
+        "y": 177.5,
+        "w": 504.4,
+        "h": 14.7,
+        "zh": "模型会先在大量通用数据上预训练，然后。（ELMo [6]）直到超过一千亿参数（GPT-3 [4]）。"
+      },
+      {
+        "text": "through fine tuning the same model can be specialized for a wide In comparison, the single GPU memory has increased by a meager",
+        "x": 53.8,
+        "y": 166.6,
+        "w": 504.4,
+        "h": 14.7,
+        "zh": "再经过微调，同一个模型就能面向很宽的一类。相比之下，单块 GPU 的内存只勉强增长了"
+      },
+      {
+        "text": "variety of applications. While pretraining a model with hundreds of 5x (16 GB to 80 GB). Therefore, the growth in model size has been",
+        "x": 53.8,
+        "y": 155.6,
+        "w": 504.4,
+        "h": 14.7,
+        "zh": "各种应用。而预训练一个拥有数百。5 倍（从 16 GB 到 80 GB）。因此，模型规模的增长一直是"
+      },
+      {
+        "text": "billions of parameters can require millions of GPU compute hours, made possible mainly through advances in system technology for",
+        "x": 53.8,
+        "y": 144.6,
+        "w": 505.4,
+        "h": 14.7,
+        "zh": "十亿参数时，可能需要数百万 GPU 计算小时。成为可能，主要靠的是系统技术的进步，这些技术用于"
+      },
+      {
+        "text": "fine-tuning it is much cheaper, requiring significantly fewer GPU training large DL models, with parallelism technologies such as",
+        "x": 53.8,
+        "y": 133.7,
+        "w": 504.4,
+        "h": 14.7,
+        "zh": "微调它则便宜得多，需要的 GPU 也少得多。训练大型深度学习模型，所用的并行技术包括"
+      },
+      {
+        "text": "compute hours, and could be done on a single compute node with a handful of GPUs. While such compute resources are accessible to many businesses and users, they are unfortunately restricted by the DeepSpeed (https://www.deepspeed.ai/) is a deep learning optimization library",
+        "x": 69.9,
+        "y": 100.6,
+        "w": 488.3,
+        "h": 36.9,
+        "zh": "计算小时，而且在一台只有几块 GPU 的计算节点上就能完成。这类算力很多企业和用户都碰得到，可惜他们受限于。DeepSpeed（https://www.deepspeed.ai/）是一个深度学习优化库"
+      },
+      {
+        "text": "memory available on these compute nodes, which in turn limits the designed to make distributed training easy, efficient, and effective. DeepSpeed has",
+        "x": 53.8,
+        "y": 92.6,
+        "w": 504.4,
+        "h": 12,
+        "zh": "这些计算节点上有多少内存，这又限制了。它的目标是让分布式训练变得容易、高效、有效。DeepSpeed 已经"
+      },
+      {
+        "text": "size of the model that can be fine tuned. It makes large model fine been extensively adopted by the DL community.",
+        "x": 53.8,
+        "y": 84.7,
+        "w": 504.4,
+        "h": 9,
+        "zh": "能够微调的模型有多大。这使得大模型的微调。已被深度学习社区广泛采用。"
+      }
+    ],
+    "2": [
+      {
+        "text": "tuning inaccessible to most researchers and companies that do not have access to massive GPU clusters. For example fine-tuning GPT- 3 would require over 8 DGX-2 nodes(128 GPUs) with 3D parallelism to just fit the model for training, even though a single DGX-2 node (16-GPUs) has enough compute to fine-tune it in a reasonable time. In addition to the GPU memory wall, state-of-the-art for training massive models is also limited in terms of usability and flexibility. As discussed above, 3D parallelism requires combining data, model, and pipeline parallelism in sophisticated ways to get to hundreds of billions or trillions of parameters. While such a system can be very efficient, it requires data scientists to perform major model code refactoring, replacing single GPU operators with tensor-sliced versions, and splitting the model into load-balanced pipeline stages. This also makes 3D parallelism inflexible in the types of models that it can support. Models with complex dependencies cannot be easily converted into a load-balanced pipeline. Given the landscape of large model training, 3 questions arise:",
+        "x": 53.5,
+        "y": 523,
+        "w": 242.1,
+        "h": 184.3,
+        "zh": "微调对大多数没有大规模 GPU 集群的研究者和公司来说，仍然做不到。例如，用 3D 并行微调 GPT-3，光是把模型装进训练，就需要超过 8 台 DGX-2 节点（128 块 GPU），尽管单台 DGX-2 节点（16 块 GPU）的算力已经够在合理时间内把它微调完。除了 GPU 内存墙，现有最强的超大模型训练方法在好用程度和灵活性上也很受限。如上所述，要做到几千亿或万亿参数，3D 并行必须把数据并行、模型并行和流水线并行以很精细的方式组合起来。这样的系统可以很高效，但数据科学家得对模型代码做大改：把单 GPU 算子换成张量切分版本，再把模型拆成负载均衡的流水线阶段。这也让 3D 并行能支持的模型种类很死板。依赖关系复杂的模型，不容易变成一条负载均衡的流水线。面对大模型训练的这种局面，会出现三个问题："
+      },
+      {
+        "text": "implementation that automates all of the communication and data partitioning required for training arbitrary model architectures. The main contributions of this paper are as follows: • Memory and performance characterization for large model training that describes the memory requirements (Sec. 3) for different components of a large model training as well as their bandwidth requirements (Sec. 4) for the training to be efficient. • ZeRO-Infinity (Sec. 5, 6 & Sec. 7): A novel DL training system technology consisting five innovative technologies to address the memory and bandwidth requirements for offering unprecedented model scale that is accessible and easy to use while achieving excellent training efficiency: i) infinity offload engine to fully leverage heterogeneous architecture on modern clusters by simultaneously exploiting GPU, CPU and NVMe memory, and GPU and CPU compute, ii) memory-centric tiling to handle massive operators without requiring model parallelism, iii) bandwidthcentric partitioning for leveraging aggregate memory bandwidth across all parallel devices, iv) overlap-centric design for overlapping compute and communication, v) ease-inspired implementation to avoid model code refactoring. • An extensive evaluation of ZeRO-Infinity demonstrating: i) unprecedented scale running 32 trillion parameters on 32 NVIDIA DGX-2 nodes (512 V100 GPUs), ii) excellent training efficiency achieving over 25 petaflops in throughput on the same hardware, iii) superlinear scalability of a trillion parameter model, iv) accessibility and ease-of-use: fine-tune up to a trillion parameter model on a single DGX-2 node, without using any model parallelism or model code refactoring, and v) impact of different technologies in ZeRO-Infinity on model-scale and efficiency (Sec. 8). • A discussion of ZeRO-Infinity and its potential implications of future hardware system design (Sec. 9) • An open source implementation of ZeRO-Infinity in DeepSpeed2, a deep learning optimization library for making distributed training easy, efficient, and effective training that has been extensively adopted by the DL community.",
+        "x": 318,
+        "y": 323.8,
+        "w": 241.9,
+        "h": 383.5,
+        "zh": "实现会自动完成训练任意模型结构所需的全部通信和数据划分。本文的主要贡献如下。对大模型训练做了内存与性能刻画：说明训练各个组成部分的内存需求（第 3 节），以及训练要高效时它们各自的带宽需求（第 4 节）。ZeRO-Infinity（第 5、6 节和第 7 节）：一种新的深度学习训练系统技术，由五项创新组成，用来应对内存和带宽需求，从而提供前所未有、又容易用上的模型规模，同时保持很好的训练效率。其一，infinity 卸载引擎，同时用上现代集群上的 GPU、CPU 和 NVMe 内存，以及 GPU 和 CPU 算力，把异构结构用满。其二，以内存为中心的分块，用来处理巨大算子，而不需要模型并行。其三，以带宽为中心的划分，用来汇聚所有并行设备上的内存带宽。其四，以重叠为中心的设计，把计算和通信重叠起来。其五，以便利为出发点的实现，避免重构模型代码。对 ZeRO-Infinity 做了充分评估，表明：其一，规模前所未有，在 32 台 NVIDIA DGX-2 节点（512 块 V100 GPU）上跑到 32 万亿参数；其二，训练效率很好，同一套硬件上吞吐超过 25 petaflops；其三，一万亿参数模型呈超线性可扩展；其四，够得着、也好用：在单台 DGX-2 节点上微调最多一万亿参数的模型，不用任何模型并行，也不用重构模型代码；其五，ZeRO-Infinity 里各项技术对模型规模和效率的影响（第 8 节）。讨论了 ZeRO-Infinity，以及它对未来硬件系统设计可能意味着什么（第 9 节）。在 DeepSpeed 中开源实现了 ZeRO-Infinity。DeepSpeed 是一个深度学习优化库，用来把分布式训练做得容易、高效、有效，并已被深度学习社区广泛采用。"
+      },
+      {
+        "text": "• Looking ahead, how do we support the next 1000x growth in model size, going from models like GPT-3 with 175 billion parameters to models with hundreds of trillions of parameters? • How can we make large models of today accessible to more data scientists who don’t have access to hundreds to GPUs? • Can we make large model training easier by eliminating the need for model refactoring and multiple forms of parallelism?",
+        "x": 53.8,
+        "y": 435.3,
+        "w": 241.8,
+        "h": 74.7,
+        "zh": "向前看，下一次 1000 倍的模型增长要怎么支撑？也就是从 GPT-3 这种 1750 亿参数的模型，走到几百万亿参数的模型。怎样让今天的大模型被更多数据科学家用上，哪怕他们没有几百块 GPU？能不能去掉模型重构和多种并行，让大模型训练更容易？"
+      },
+      {
+        "text": "In this paper, we take a leap forward from 3D parallelism and present ZeRO-Infinity, a novel system capable of addressing all the aforementioned challenges of large model training. Unprecedented Model Scale ZeRO-Infinity extends the ZeRO family of technology [11, 12] with new innovations in heterogeneous memory access called the infinity offload engine. This allows ZeRO-Infinity to support massive model sizes on limited GPU resources by exploiting CPU and NVMe memory simultaneously. In addition, ZeRO-Infinity also introduces a novel GPU memory optimization technique called memory-centric tiling to support extremely large individual layers that would otherwise not fit in GPU memory even one layer at a time. With the infinity offload engine and memory-centric tiling, ZeRO-Infinity not only supports the next 1000x growth in model size, but also makes large models accessible to data scientists with limited GPU resources. Excellent Training EfficiencyZeRO-Infinity introduces a novel data partitioning strategy for leveraging aggregate memory bandwidth across all devices, which we refer to as bandwidth-centric partitioning, and combines it with powerful communication overlapcentric design, as well as optimizations for high performance NVMe access in the infinity offload engine. Together, ZeRO-Infinity offers excellent training efficiency, despite offloading data to CPU or NVMe, unencumbered by their limited bandwidth. Ease of Use With ZeRO-Infinity, data scientists no longer have to adapt their model to multiple forms of parallelism like in 3D parallelism. This is possible due to memory-centric tiling in ZeRO-Infinity discussed above aimed at reducing GPU memory requirements of large individual layers that would otherwise require model parallelism (tensor-slicing) to fit the layers in GPU memory. In addition, ZeRO-Infinity eliminates the need for manual model code refactoring, even when scaling to trillions of parameters via an ease inspired",
+        "x": 53.5,
+        "y": 84.7,
+        "w": 244.4,
+        "h": 337.7,
+        "zh": "本文相对 3D 并行迈出一步，提出 ZeRO-Infinity。这套新系统能够应对上面说的全部大模型训练难题。前所未有的模型规模。ZeRO-Infinity 在 ZeRO 这一族技术 [11, 12] 上往前走，在异构内存访问上做了新东西，叫做 infinity 卸载引擎。它同时利用 CPU 和 NVMe 内存，因此在有限的 GPU 上也能撑住巨大的模型。此外，ZeRO-Infinity 还提出一种新的 GPU 内存优化，叫以内存为中心的分块，用来支撑特别大的单层。这些层就算一次只放一层，也放不进 GPU 内存。有了 infinity 卸载引擎和以内存为中心的分块，ZeRO-Infinity 不但能支撑下一次 1000 倍的模型增长，也让 GPU 资源有限的数据科学家用得上大模型。出色的训练效率。ZeRO-Infinity 提出一种新的数据划分策略，用来汇聚所有设备上的内存带宽，我们称之为以带宽为中心的划分，并把它和很强的通信重叠设计结合起来，还在 infinity 卸载引擎里做了高性能 NVMe 访问的优化。合在一起，即便把数据卸载到 CPU 或 NVMe，ZeRO-Infinity 仍能给出很好的训练效率，不受它们带宽有限的拖累。易于使用。有了 ZeRO-Infinity，数据科学家不再像用 3D 并行那样，把模型改成多种并行。这靠的是上面说的以内存为中心的分块：它降低特别大的单层对 GPU 内存的需求，否则这些层得靠模型并行（张量切分）才能放进 GPU。此外，即便扩展到万亿参数，ZeRO-Infinity 也不需要手工重构模型代码。这靠的是一种以便利为出发点的"
+      },
+      {
+        "text": "BACKGROUND AND RELATED WORK Data, Model, Pipeline and 3D Parallelism Parallelization is an important strategy for training large models at scale. For a model that fits in the device memory for training, data parallelism (DP) can be used to scale training to multiple devices. When models do not fit in device memory, model parallelism3 (MP) [7, 17, 18] and pipeline parallelism (PP) [7–9] can split the model among processes, vertically and horizontally, respectively. 3D parallelism [14, 15] combines data, model, and pipeline parallelism to leverage the merits of each, allowing it to scale to trillions of parameters efficiently. While 3D parallelism can be highly efficient, it requires i) significant model code refactoring to split the model into model and pipeline parallel components, ii) models with complex dependency graphs are difficult to be expressed into load-balanced pipeline stages and iii) the model size is limited by the total available GPU memory. We refer the reader to Ben-Nun and Hoefler [19] for a thorough survey on parallelism in DL.",
+        "x": 317.5,
+        "y": 124.8,
+        "w": 242.2,
+        "h": 189,
+        "zh": "背景与相关工作。数据并行、模型并行、流水线并行和 3D 并行。并行是把大模型训练扩展上去的重要办法。模型放得进单设备内存时，可以用数据并行（DP）把训练扩展到多台设备。模型放不进设备内存时，模型并行（MP）[7, 17, 18] 和流水线并行（PP）[7–9] 可以分别沿垂直方向和水平方向，把模型拆到多个进程上。3D 并行 [14, 15] 把数据并行、模型并行和流水线并行合在一起，各取所长，从而高效扩展到万亿参数。3D 并行可以很高效，但它要求：其一，大幅重构模型代码，把模型拆成模型并行和流水线并行两部分；其二，依赖图复杂的模型很难表达成负载均衡的流水线阶段；其三，模型规模受限于现有 GPU 内存的总量。关于深度学习中的并行，读者可以看 Ben-Nun 和 Hoefler [19] 的综述。"
+      },
+      {
+        "text": "2https://www.deepspeed.ai/ In this paper, we make a distinction between model parallelism and pipeline parallelism, where the former is limited specifically to mean tensor-slicing based approaches, and does not include pipeline parallelism.",
+        "x": 318,
+        "y": 80.4,
+        "w": 240.2,
+        "h": 32.5,
+        "zh": "见 https://www.deepspeed.ai/。本文把模型并行和流水线并行区分开：前者专指基于张量切分的做法，不包括流水线并行。"
+      }
+    ],
+    "3": [
+      {
+        "text": "ZeRO: Zero Redundancy Optimizer ZeRO [11] removes the memory redundancies across data-parallel processes by partitioning the three model states (i.e., optimizer states, gradients, and parameters) across data-parallel processes instead of replicating them. By doing so, it boosts memory efficiency compared to classic data parallelism while retaining its computational granularity and communication efficiency. There are three stages in ZeRO corresponding to three model states: the first stage (ZeRO-1) partitions only the optimizer states, the second stage (ZeRO-2) partitions both the optimizer states and the gradients, and the final stage (ZeRO-3) partitions all three model states. In ZeRO-3, the parameters in each layer of the model are owned by a unique data parallel process. During the training, ZeRO-3 ensures that the parameters required for the forward or backward pass of an operator are available right before its execution by issuing broadcast communication collectives from the owner process. After the execution of the operator, ZeRO- 3 also removes the parameters as they are no longer needed until the next forward or backward pass of the operator. Additionally, during the parameter update phase of training, ZeRO-3 ensures that each data-parallel process only updates the optimizer states corresponding to the parameters that it owns. Thus, ZeRO-3 can keep all the model states partitioned throughout the training except for the parameters that are required by the immediate computation. Heterogeneous Training Approaches Out of several heterogeneous CPU memory based training approaches [20–26], ZeROOffload [12] is the state-of-the-art (SOTA) for large model training on multi-GPUs. ZeRO-Offload is built on top of ZeRO-2 and stores the gradients and the optimizer states in CPU memory. ZeROOffload leverages CPU memory in the absence of enough GPU devices to store the optimizer states and gradients. However, it still requires the parameters to be stored in GPU memory and replicated across all devices. Thus, the model scale with ZeRO-Offload is limited to the total number of parameters that the memory on a single GPU device can host. ZeRO-Offload also requires a large batch size to remain efficient due to suboptimal data partitioning and limited PCIe bandwidth. We address these limitations of ZeRO-Offload with ZeRO-Infinity. In terms of NVMe based approaches, Zhao et al. [27] use a hierarchical parameter server-based design to offload sparse parameters to SSD for creating a massive scale DL Ads System. In contrast, ZeRO-Infinity is designed to be a generic DL system for training massive dense models. Reducing Activation Memory Activations are the intermediate results produced during the forward propagation that need to be retained to compute the gradients during backward propagation. Multiple efforts have focused on reducing the memory required by activations through compression [28], activation checkpointing [29, 30], or live analysis [31]. ZeRO-Infinity works together with activation checkpointing to reduce activation memory. Adam Optimizer and Mixed Precision Training Adaptive optimization methods [32–35] are crucial to achieving SOTA performance and accuracy for effective model training of large models. Compared to SGD, by maintaining fine-grained first-order and second-order statistics for each model parameter and gradient at the cost of significant memory footprint. Adam [33] is the optimizer used most prominently in large model training. Large model training is generally trained in mixed precision, where the forward and backward propagation are done in FP16 and",
+        "x": 53.5,
+        "y": 84.7,
+        "w": 242.1,
+        "h": 622.7,
+        "zh": "ZeRO：零冗余优化器。ZeRO [11] 去掉数据并行进程之间的内存冗余：它把三种模型状态（优化器状态、梯度和参数）划分到各个数据并行进程上，而不是每份都复制一份。这样一来，内存效率比经典数据并行更高，计算粒度和通信效率则保留下来。ZeRO 有三个阶段，对应三种模型状态：第一阶段（ZeRO-1）只划分优化器状态，第二阶段（ZeRO-2）同时划分优化器状态和梯度，最后一阶段（ZeRO-3）把三种模型状态全部划分。在 ZeRO-3 里，模型每一层的参数由唯一一个数据并行进程持有。训练时，ZeRO-3 保证某个算子前向或反向所需的参数，在它执行前刚好就位：由持有者进程发起广播集合通信。算子执行完后，ZeRO-3 会把这些参数清掉，因为要到该算子下一次前向或反向才再需要它们。另外，在参数更新阶段，ZeRO-3 保证每个数据并行进程只更新自己持有的那部分参数所对应的优化器状态。因此，整个训练过程中，ZeRO-3 可以把全部模型状态保持为划分状态，只留下当前计算立刻要用的参数。异构训练方法。在多种基于 CPU 内存的异构训练方法 [20–26] 里，ZeRO-Offload [12] 是多 GPU 上大模型训练的现有最强方法。ZeRO-Offload 建在 ZeRO-2 之上，把梯度和优化器状态放在 CPU 内存里。GPU 设备不够、放不下优化器状态和梯度时，它就利用 CPU 内存。但它仍然要求参数放在 GPU 内存里，并在所有设备上复制。因此，ZeRO-Offload 的模型规模，受限于单块 GPU 内存能放下的参数总量。由于数据划分不够理想，再加上 PCIe 带宽有限，ZeRO-Offload 还需要很大的批大小才能保持高效。ZeRO-Infinity 针对的就是 ZeRO-Offload 的这些限制。在基于 NVMe 的方法上，Zhao 等人 [27] 用分层参数服务器，把稀疏参数卸载到 SSD，用来做超大规模的深度学习广告系统。与之不同，ZeRO-Infinity 要做的是一套通用深度学习系统，用来训练巨大的稠密模型。降低激活内存。激活是前向传播产生的中间结果，反向传播算梯度时还要留着。已有不少工作设法减少激活所占内存，办法包括压缩 [28]、激活检查点 [29, 30] 或活性分析 [31]。ZeRO-Infinity 与激活检查点配合，用来降低激活内存。Adam 优化器与混合精度训练。自适应优化方法 [32–35] 对大模型训练达到现有最强的效果和精度至关重要。相对 SGD，它们为每个模型参数和梯度维护细粒度的一阶和二阶统计量，代价是内存占用很大。大模型训练里用得最广的优化器是 Adam [33]。大模型训练一般采用混合精度：前向和反向用 FP16，而"
+      },
+      {
+        "text": "the parameter updates in FP32 [36]. This leverages the performance acceleration of the tensor core units available on modern GPUs [37].",
+        "x": 318,
+        "y": 687.4,
+        "w": 241.6,
+        "h": 19.9,
+        "zh": "参数更新用 FP32 [36]。这样就能用上现代 GPU 上 Tensor Core 单元带来的加速 [37]。"
+      },
+      {
+        "text": "This section characterizes the memory requirements for DL training. While our methodology is generic, we focus the concrete analysis on Transformer [38] based architectures since all of the SOTA models with over a billion parameters follow that. Our analysis assumes mixed precision training with the Adam optimizer since this recipe is the de facto standard for training Transformer based models. The memory required for training can be categorized into two components: i) Model states including optimizer states, gradients, and model parameters, ii) Residual states primarily referring to activation memory. To study training on heterogeneous resources, we also characterize the GPU working memory, describing the minimum amount of memory that must be available on the GPU to support training, assuming the model and residual states can be successfully offloaded from GPU memory. Memory for Model States: The model states are comprised of optimizer states, gradients, and parameters. For mixed precision training with Adam optimizer, the parameters and gradients are stored in FP16 while the optimizer states consist of FP32 momentum, variance, parameters, and gradients. In total, each parameter requires 20 bytes of memory. The total number of parameters in a Transformer based model primarily depends on the hidden dimension (ℎ𝑑) and the number of Transformer layers (𝑛𝑙). Nearly all the parameters in a Transformer block come from four linear layers within each block with sizes: (ℎ𝑑, 3ℎ𝑑), (ℎ𝑑, ℎ𝑑), (ℎ𝑑, 4ℎ𝑑) and (4ℎ𝑑, ℎ𝑑), respectively. Thus, the total parameters in a Transformer based model and can be approximated as",
+        "x": 317.5,
+        "y": 380.4,
+        "w": 242.2,
+        "h": 282.9,
+        "zh": "本节刻画深度学习训练的内存需求。方法本身是通用的，具体分析集中在基于 Transformer [38] 的结构上，因为参数量超过十亿的现有最强模型都是这种结构。分析假定使用 Adam 优化器的混合精度训练，因为这已经是训练 Transformer 模型的事实标准。训练所需内存可以分成两部分：其一，模型状态，包括优化器状态、梯度和模型参数；其二，剩余状态，主要指激活内存。为了研究在异构资源上训练，我们还刻画了 GPU 工作内存，也就是假设模型和剩余状态都能成功从 GPU 内存卸走之后，GPU 上仍必须留出的最少内存，训练才进行得下去。模型状态的内存：模型状态由优化器状态、梯度和参数组成。用 Adam 做混合精度训练时，参数和梯度用 FP16 存放，优化器状态则包括 FP32 的动量、方差、参数和梯度。每个参数一共需要 20 字节内存。基于 Transformer 的模型，参数总量主要取决于隐藏维度（hd）和 Transformer 层数（nl）。一个 Transformer 块里几乎全部参数来自块内四个线性层，尺寸分别是 (hd, 3hd)、(hd, hd)、(hd, 4hd) 和 (4hd, hd)。因此，基于 Transformer 的模型的总参数量可以近似为"
+      },
+      {
+        "text": "in bytes to store the model states. Figure 2a column 5 shows the memory required to store the model states of a GPT-3 like Transformer based model with 100 billion to a 100 trillion parameters created by varying hidden dimension and number of layers. To put the memory requirements in context, Figure 2b column 3 shows the aggregate GPU memory available on a single NVIDIA V100 DGX-2 box as well as a DGX- 2 SuperPOD cluster. Note that it requires 64 GPUs to just fit the model states for a 100B parameter model. Fitting a trillion parameter model requires over 512 GPUs, while a 10 trillion parameter model is beyond the scope of even a massive 1536 GPU cluster. Memory for Residual States: The residual states primarily consist of the activation memory, which depends on the model architecture, batch size (𝑏𝑠𝑧) and sequence length (𝑠𝑒𝑞), and it can be quite large. On the positive side, the memory required for activation can be significantly reduced via activation checkpointing [29], which trades off activation memory at the expense of 0.33x additional recomputation. Large models such as Turing-NLG 17.2B and GPT-3 175B were all trained using activation checkpointing. The memory required to store activation checkpoints is estimated as",
+        "x": 317.6,
+        "y": 102,
+        "w": 242.1,
+        "h": 217.2,
+        "zh": "字节，用来存放模型状态。图 2a 第 5 列给出类 GPT-3 的 Transformer 模型存放模型状态所需的内存。模型从 1000 亿参数到 100 万亿参数，靠改变隐藏维度和层数得到。为了把内存需求放到具体环境里看，图 2b 第 3 列给出单台 NVIDIA V100 DGX-2，以及一套 DGX-2 SuperPOD 集群上可用的 GPU 内存总量。注意，光是放下 100B 参数模型的模型状态，就需要 64 块 GPU。放下一个万亿参数模型需要超过 512 块 GPU，而 10 万亿参数的模型，即便 1536 块 GPU 的大规模集群也覆盖不了。剩余状态的内存：剩余状态主要是激活内存。它取决于模型结构、批大小（bsz）和序列长度（seq），而且可以非常大。好的一面是，激活所需内存可以用激活检查点 [29] 明显降下来：用额外 0.33 倍的重计算，换掉大部分激活内存。Turing-NLG 17.2B 和 GPT-3 175B 这类大模型，训练时都用了激活检查点。存放激活检查点所需的内存估计为"
+      }
+    ],
+    "4": [
+      {
+        "text": "Figure 2: (a) Memory requirements for massive models. (b) Available memory and achievable bandwidth on NVIDIA V100 DGX-2 Cluster (The reported bandwidths represent per GPU bandwidth when all GPUs are reading data in parallel from the",
+        "x": 53.8,
+        "y": 601.6,
+        "w": 504.4,
+        "h": 19.9,
+        "zh": "图 2：(a) 超大模型的内存需求。(b) NVIDIA V100 DGX-2 集群上的可用内存和能够达到的带宽（图中带宽是每块 GPU 的带宽，条件是所有 GPU 都在并行地从"
+      },
+      {
+        "text": "bytes where 𝑐𝑖 is the number of Transformer blocks between two activation checkpoints, and 𝑏𝑠𝑧 × 𝑠𝑒𝑞 × ℎ𝑑 is the size of the input to each Transformer block. Figure 2a column 7 shows the memory required to store activation checkpoints for batch size of 32 and sequence length of 1024 assuming we store one activation per Transformer block. Many modern GPU clusters have 8-16 GPUs per node, and so we chose a batch size of 2-4 per GPU, resulting in a batch size of 32 as a conservative estimate of activation within each node. While the resulting activation checkpoints are orders of magnitude smaller than the full set of activations (column 6) , beyond a trillion parameters they still get too large to fit in GPU memory for the batch size and sequence length under consideration. Model State Working Memory (MSWM) is the minimum amount of GPU memory required to perform forward or backward propagation on the largest single operator in the model after all the model states have been offload to CPU or NVMe. This is approximately given by the size of the parameters and gradients of that operator in the model, since there must be at least enough memory to hold the parameter and its gradient for backward propagation. For a Transformer based model, the largest operator is a linear layer that transforms hidden states from ℎ𝑑 to 4ℎ𝑑. The size of the parameter and gradients of this linear layer in bytes is",
+        "x": 53.5,
+        "y": 338,
+        "w": 242,
+        "h": 239.1,
+        "zh": "字节。其中 ci 是两个激活检查点之间的 Transformer 块数，bsz × seq × hd 是每个 Transformer 块输入的大小。图 2a 第 7 列给出存放激活检查点所需的内存，批大小为 32，序列长度为 1024，并假设每个 Transformer 块存一份激活。现在很多 GPU 集群每个节点有 8 到 16 块 GPU，因此我们按每块 GPU 批大小 2 到 4 来取，得到批大小 32，作为每个节点内激活量的保守估计。这样得到的激活检查点，比全套激活（第 6 列）小几个数量级；但参数量过了万亿之后，在所考虑的批大小和序列长度下，它们仍然大到放不进 GPU 内存。模型状态工作内存（MSWM）是：全部模型状态都卸载到 CPU 或 NVMe 之后，对模型里最大的那一个算子做前向或反向时，GPU 上至少要有的内存。它大约等于该算子的参数和梯度的大小，因为反向传播至少要有地方放下参数和它的梯度。对基于 Transformer 的模型，最大的算子是把隐藏状态从 hd 变到 4hd 的线性层。这一线性层的参数和梯度按字节计的大小是"
+      },
+      {
+        "text": "dozens of activations, and does not cause memory issues due to lack of contiguous memory as long as the total AWM can fit in GPU",
+        "x": 318,
+        "y": 557.2,
+        "w": 240.2,
+        "h": 19.9,
+        "zh": "几十份激活组成，而且只要总的 AWM 能放进 GPU，就不会因为缺少连续内存而带来内存问题"
+      },
+      {
+        "text": "BANDWIDTH REQUIREMENTS A critical question of offloading to CPU and NVMe memory is whether their limited bandwidth will hurt training efficiency. This section characterizes the impact of bandwidth on training efficiency. We start from defining an efficiency metric. Assuming a workload execution without any compute and communication overlap, we can use the peak computational throughput (𝑝𝑒𝑎𝑘𝑡𝑝), data movement bandwidth (𝑏𝑤) and its arithmetic intensity (𝑎𝑖𝑡) to estimate the training efficiency. The arithmetic intensity (AIT) of a workload is the ratio between the total computation and the data required by the computation. It describes the amount of computation per data movement. Higher AIT means a lower requirement on the data movement bandwidth, since for each data loaded the accelerator can do more computations. The efficiency metric can derived as follows:",
+        "x": 317.6,
+        "y": 367.8,
+        "w": 242.1,
+        "h": 167.1,
+        "zh": "带宽需求。把数据卸载到 CPU 和 NVMe 内存时，一个关键问题是：它们有限的带宽会不会伤害训练效率。本节刻画带宽对训练效率的影响。我们先定义一个效率指标。假设工作负载在执行时，计算和通信完全不重叠，就可以用峰值计算吞吐（peaktp）、数据搬运带宽（bw）和它的算术强度（ait）来估计训练效率。一个工作负载的算术强度（AIT）是总计算量和该计算所需数据量之比。它描述的是每搬一份数据能做多少计算。AIT 越高，对数据搬运带宽的要求就越低，因为每载入一份数据，加速器能做的计算更多。效率指标可以按下面的方式写出："
+      },
+      {
+        "text": "𝑡𝑜𝑡𝑎𝑙_𝑑𝑎𝑡𝑎_𝑚𝑜𝑣𝑒𝑚𝑒𝑛𝑡 𝑡𝑜𝑡𝑎𝑙_𝑑𝑎𝑡𝑎_𝑚𝑜𝑣𝑒𝑚𝑒𝑛𝑡 𝑐𝑜𝑚𝑚𝑢𝑛𝑖𝑐𝑎𝑡𝑖𝑜𝑛_𝑡𝑖𝑚𝑒",
+        "x": 323.7,
+        "y": 294.3,
+        "w": 192.4,
+        "h": 21.5,
+        "zh": ""
+      },
+      {
+        "text": "Note that MSWM (Figure 2a Column 8) grows significantly beyond a 100 billion parameters, requiring multiple gigabytes in contiguous memory, which can result in running out of memory during training due to lack of enough contiguous memory to satisfy these requirements. State-of-art approaches like 3D Parallelism, addresses this issue via model parallelism, by splitting individual operator across multiple GPUs. In Sec. 5.1.3, we discuss a novel approach for addressing these massive model state working memory without requiring model parallelism. Activation Working Memory (AWM) is the memory required in the backward propagation for recomputing the activations before performing the actual backward propagation. This is the size of the activations between two consecutive activation checkpoints. For example, if we create one activation checkpoint per Transformer block, the memory is given by the size of the total activation per Transformer block. This is given in bytes by approximately",
+        "x": 53.5,
+        "y": 140.1,
+        "w": 242,
+        "h": 173.4,
+        "zh": "注意，MSWM（图 2a 第 8 列）在参数量超过一千亿之后会明显变大，需要好几 GB 的连续内存。训练时可能因为凑不出这么大的连续内存而耗尽内存。3D 并行这类现有做法用模型并行来处理这个问题：把单个算子拆到多块 GPU 上。在第 5.1.3 节，我们讨论一种新办法，用来应对这么大的模型状态工作内存，而且不需要模型并行。激活工作内存（AWM）是反向传播里、在真正做反向之前重算激活所需的内存。它等于两个相邻激活检查点之间的激活大小。例如，若每个 Transformer 块设一个激活检查点，这份内存就由每个 Transformer 块的全部激活大小给出。按字节计，大约是"
+      },
+      {
+        "text": "= 𝑐𝑜𝑚𝑝𝑢𝑡𝑒_𝑡𝑖𝑚𝑒+𝑐𝑜𝑚𝑚𝑢𝑛𝑖𝑐𝑎𝑡𝑖𝑜𝑛_𝑡𝑖𝑚𝑒 The efficiency can be written as a function of 𝑝𝑒𝑎𝑘𝑡𝑝, 𝑏𝑤 and 𝑎𝑖𝑡:",
+        "x": 317.7,
+        "y": 240.9,
+        "w": 238.4,
+        "h": 28.5,
+        "zh": "等于计算时间加上通信时间。效率可以写成 peaktp、bw 和 ait 的函数："
+      },
+      {
+        "text": "We will use this simple efficiency equation to characterize the data movement bandwidth required for training massive models. But before that, we will first quantify 𝑎𝑖𝑡 for DL training workloads.",
+        "x": 318,
+        "y": 175.5,
+        "w": 241.6,
+        "h": 30.9,
+        "zh": "我们会用这个简单的效率公式，来刻画训练超大模型所需的数据搬运带宽。在那之前，先把深度学习训练负载的 ait 量化出来。"
+      },
+      {
+        "text": "Quantifying AIT in DL training Model states and activation checkpoints can have varying 𝑎𝑖𝑡. We can quantify them by first identifying the total computation in each iteration of DL training, and then identifying the data movement volume for each of the model states and activations. Total Computation per Iteration The total computation per iteration is dominated by the computation in the linear layers of",
+        "x": 317.7,
+        "y": 84.7,
+        "w": 242.1,
+        "h": 79.4,
+        "zh": "量化深度学习训练中的 AIT。模型状态和激活检查点的 ait 可以差很多。量化的办法是：先确定深度学习训练每次迭代的总计算量，再确定每种模型状态和激活各自的数据搬运量。每次迭代的总计算量。每次迭代的总计算量，主要由线性层里的计算占据，这些线性层属于"
+      },
+      {
+        "text": "𝑏𝑠𝑧 × 𝑠𝑒𝑞 × 𝑐𝑖 × (16 × ℎ𝑑 + 2 × 𝑎𝑡𝑡𝑛_ℎ𝑒𝑎𝑑𝑠 × 𝑠𝑒𝑞).",
+        "x": 83,
+        "y": 123.3,
+        "w": 181.2,
+        "h": 9,
+        "zh": ""
+      },
+      {
+        "text": "Figure 2a column 8 shows that AWM gets large beyond 10 trillion parameters, even with 𝑐𝑖 = 1. Unlike MSWM that is only composed of a single parameter and gradient, AWM is composed of",
+        "x": 53.8,
+        "y": 84.7,
+        "w": 241.8,
+        "h": 30.9,
+        "zh": "图 2a 第 8 列表明，即便 ci = 1，参数量超过 10 万亿之后 AWM 也会变大。MSWM 只由一份参数和梯度组成，AWM 则由"
+      }
+    ],
+    "5": [
+      {
+        "text": "Figure 3: Impact of bandwidth on efficiency assuming an accelerator with 70 TFlops of single GPU peak achievable throughput.",
+        "x": 53.8,
+        "y": 574.9,
+        "w": 504.4,
+        "h": 9,
+        "zh": "图 3：带宽对效率的影响。假定加速器的单 GPU 可达峰值吞吐为 70 TFlops。"
+      },
+      {
+        "text": "Bandwidth Requirements Due to the variation in the AIT, model states and activation checkpoints have very different bandwidth requirements to achieve good efficiency. The former only depends on the batch size and sequence length, while the latter only depends on the frequency of activation checkpoints and hidden dimension size of the model. Besides AIT, the bandwidth requirement for efficiency also depends on 𝑝𝑒𝑎𝑘𝑡𝑝, as shown in Eq. (6). Using 𝑝𝑒𝑎𝑘𝑡𝑝, and 𝑎𝑖𝑡 we first show how efficiency varies with bandwidth w.r.t to different model and residual states, and then discuss the bandwidth requirements on these states for DL training to be efficient. Our methodology is generic and can be applied to understanding the bandwidth requirements on any current or future generation clusters. Here, we use NVIDIA V100 DGX-2 SuperPOD cluster as our example platform. Using the𝑎𝑖𝑡 expression from Sec. 4.1 and efficiency metric based on Eq. (6), Figure 3 shows the relationship between efficiency and available bandwidth w.r.t. parameter and gradients, optimizer states, and activation checkpoints. To produce these plots, we computed the 𝑎𝑖𝑡 based on expressions derived in Sec. 4.1, for varying batch sizes, sequence length and model configurations. More specifically, we use a sequence length of 1024, the same sequence length used for GPT-2 [2], Megatron-LM [7], and Turing-NLG [39]. We vary batch size range from 1 to 16 to capture large GPU and small GPU experiments, respectively. A small batch size per GPU is used when running on large number of GPUs, while a large batch size per GPU is used when training on relatively fewer GPUs to maintain a reasonable effective batch size for training. Our hidden size ranges from 8K-64K representing models with hundreds of billions of parameters, to tens of trillions of parameters as shown in Figure 2a. To identify 𝑝𝑒𝑎𝑘𝑡𝑝 for this analysis, we use an empirical approach4. We ran models with aforementioned configurations on a single NVIDIA V100 DGX-2 box with all non-GPU communication turned off to simulate a virtually unlimited bandwidth scenario. The performance achieved ranged from 62-78 TFlops/GPU based on the hidden size of 8K-64K, respectively. We used the average of 70 TFlops/GPU to represent 𝑝𝑒𝑎𝑘𝑡𝑝 for the purpose of this analysis5.",
+        "x": 317.6,
+        "y": 163.9,
+        "w": 242.1,
+        "h": 399.4,
+        "zh": "带宽需求。由于 AIT 不同，模型状态和激活检查点要达到不错的效率，所需带宽差得很远。前者只取决于批大小和序列长度，后者只取决于激活检查点的频率和模型的隐藏维度。除了 AIT，效率对带宽的要求还取决于 peaktp，如式 (6)。我们先用 peaktp 和 ait 说明：对不同的模型和剩余状态，效率如何随带宽变化，再讨论深度学习训练要高效时，这些状态各自需要多少带宽。这套方法是通用的，可以用来理解当前或未来任何一代集群上的带宽需求。这里以 NVIDIA V100 DGX-2 SuperPOD 集群为例。用第 4.1 节的 ait 表达式，以及基于式 (6) 的效率指标，图 3 画出效率与可用带宽的关系，分别针对参数和梯度、优化器状态、激活检查点。作这些图时，ait 按第 4.1 节推出的表达式计算，并变化批大小、序列长度和模型配置。具体来说，序列长度取 1024，与 GPT-2 [2]、Megatron-LM [7] 和 Turing-NLG [39] 所用的序列长度相同。批大小从 1 变到 16，分别对应大 GPU 规模和小 GPU 规模的实验。GPU 数量很多时，每块 GPU 用小批；GPU 相对较少时，每块 GPU 用大批，以便总的有效批大小仍然合理。隐藏维度从 8K 到 64K，对应的模型从几千亿参数到几十万亿参数，如图 2a。为这次分析确定 peaktp 时，我们用的是经验做法。我们在单台 NVIDIA V100 DGX-2 上跑上述配置的模型，关掉一切非 GPU 通信，用来模拟带宽几乎无限的情形。随隐藏维度从 8K 到 64K，达到的性能在每 GPU 62 到 78 TFlops 之间。本分析取平均值，每 GPU 70 TFlops，作为 peaktp（注 4）。"
+      },
+      {
+        "text": "the Transformer. For the forward propagation this can be approximated as a function of the number of parameters, sequence length, and batch size, given by 2 × 𝑏𝑠𝑧 × 𝑠𝑒𝑞 × 𝑝𝑎𝑟𝑎𝑚𝑠. The cost of backward propagation is approximately twice that of forward propagation. Additionally, activation checkpointing requires an additional forward computation as part of recomputation during backward propagation. Therefore, the total computation per iteration is:",
+        "x": 53.5,
+        "y": 486.6,
+        "w": 242.1,
+        "h": 74.7,
+        "zh": "Transformer。前向传播可以近似成参数量、序列长度和批大小的函数，即 2 × bsz × seq × params。反向传播的代价大约是前向的两倍。此外，激活检查点会在反向过程的重计算里再做一次前向。因此，每次迭代的总计算量是："
+      },
+      {
+        "text": "= 2 × 4 × 𝑏𝑠𝑧 × 𝑠𝑒𝑞 × 𝑝𝑎𝑟𝑎𝑚𝑒𝑡𝑒𝑟𝑠 = 2 × 4 × 12 × 𝑏𝑠𝑧 × 𝑠𝑒𝑞 × 𝑛𝑙 × ℎ𝑑",
+        "x": 151.6,
+        "y": 456,
+        "w": 123.2,
+        "h": 22.7,
+        "zh": ""
+      },
+      {
+        "text": "AIT w.r.t. Parameters and Gradients During forward and back propagation, model parameters must be loaded from the source location to GPU registers at least twice, i) during forward, ii) during the actual backward, resulting in a data movement of 2×𝑝𝑎𝑟𝑎𝑚𝑒𝑡𝑒𝑟𝑠. In presence of activation checkpointing, the parameters may be loaded one additional time for re-computation during the backward pass, adding another 1 × 𝑝𝑎𝑟𝑎𝑚𝑒𝑡𝑒𝑟𝑠. Furthermore, the gradients must be stored from the GPU registers to its final location at least once, adding a final 1 × 𝑝𝑎𝑟𝑎𝑚𝑒𝑡𝑒𝑟𝑠 in data movement. Therefore, assuming that parameters and gradients are stored at the same final location, the total data movement during the forward and backward pass would be 4×𝑝𝑎𝑟𝑎𝑚𝑒𝑡𝑒𝑟𝑠, i.e. 2×4×𝑝𝑎𝑟𝑎𝑚𝑒𝑡𝑒𝑟𝑠 in bytes. The total computation per iteration is given by Sec. 4.1. Therefore the 𝑎𝑖𝑡 w.r.t parameter and gradients is",
+        "x": 53.5,
+        "y": 296.7,
+        "w": 242,
+        "h": 151.4,
+        "zh": "相对参数和梯度的 AIT。前向和反向传播期间，模型参数至少要从源位置载入 GPU 寄存器两次：其一在前向，其二在真正的反向，因此数据搬运量是 2×参数量。若使用激活检查点，反向里的重计算可能再把参数载入一次，再增加 1×参数量。另外，梯度至少要从 GPU 寄存器写到最终位置一次，再增加 1×参数量的数据搬运。因此，假定参数和梯度的最终存放位置相同，前向加反向的总数据搬运量是 4×参数量，也就是 2×4×参数量字节。每次迭代的总计算量由第 4.1 节给出。因此，相对参数和梯度的 ait 是"
+      },
+      {
+        "text": "AIT w.r.t. Optimizer States During the optimizer step, the optimizer states must be read at least once, and the optimizer states must be written at least once. So the total data movement is 2 × 𝑜𝑝𝑡𝑖𝑚𝑖𝑧𝑒𝑟_𝑠𝑡𝑎𝑡𝑒𝑠, which is approximately 2×16×𝑝𝑎𝑟𝑎𝑚𝑒𝑡𝑒𝑟𝑠 bytes. The total computation per iteration is given by Sec. 4.1. Therefore 𝑎𝑖𝑡 w.r.t optimizer states during a full training iteration is",
+        "x": 53.4,
+        "y": 208.2,
+        "w": 242.2,
+        "h": 63.8,
+        "zh": "相对优化器状态的 AIT。优化器步进时，优化器状态至少要读一次，也至少要写一次。所以总数据搬运量是 2 × 优化器状态，大约是 2×16×参数量字节。每次迭代的总计算量由第 4.1 节给出。因此，一次完整训练迭代里，相对优化器状态的 ait 是"
+      },
+      {
+        "text": "AIT w.r.t. Activation Checkpoints During the forward propagation activation checkpoints must be saved to their final location, and must be retrieved during the backward propagation. Therefore, the total data movement w.r.t activation checkpoints in bytes is given by 2×𝑡𝑜𝑡𝑎𝑙_𝑎𝑐𝑡𝑖𝑣𝑎𝑡𝑖𝑜𝑛_𝑐ℎ𝑒𝑐𝑘𝑝𝑜𝑖𝑛𝑡𝑠_𝑖𝑛_𝑏𝑦𝑡𝑒𝑠 which is given by 4×𝑛𝑙/𝑐𝑖 ×ℎ𝑑 ×𝑠𝑒𝑞 ×𝑏𝑠𝑧 from Eq. (3). The total computation per iteration is given by Sec. 4.1. So the 𝑎𝑖𝑡 w.r.t activation checkpoints",
+        "x": 53.5,
+        "y": 108.7,
+        "w": 242.1,
+        "h": 74.7,
+        "zh": "相对激活检查点的 AIT。前向传播时，激活检查点必须写到最终位置；反向传播时必须再读回来。因此，相对激活检查点的总数据搬运量按字节计是 2×激活检查点总字节数，由式 (3) 得 4×nl/ci × hd × seq × bsz。每次迭代的总计算量由第 4.1 节给出。所以相对激活检查点的 ait"
+      },
+      {
+        "text": "4Note that𝑝𝑒𝑎𝑘𝑡𝑝 is not the theoretical hardware peak, but instead the achievable peak in the absence of any communication bottleneck. Results will vary based on the value of 𝑝𝑒𝑎𝑘𝑡𝑝 used, and this analysis is a single data point, meant as a guide for understanding relationship between efficiency and bandwidth for DL workloads specifically on the NVIDIA V100 DGX-2 clusters. Furthermore, the result only considers the relationship between efficiency and bandwidth of model states and activations, one at a time, assuming infinite bandwidth for others to isolate the bandwidth requirement for each state separately.",
+        "x": 318,
+        "y": 84.7,
+        "w": 241.4,
+        "h": 64.7,
+        "zh": "注 4：peaktp 不是硬件的理论峰值，而是没有任何通信瓶颈时能够达到的峰值。结果会随所用的 peaktp 而变。这里的分析只是一个数据点，用来帮助理解深度学习负载里效率与带宽的关系，而且专门针对 NVIDIA V100 DGX-2 集群。另外，结果每次只看一种模型状态或激活的效率与带宽关系，并假定其他部分带宽无限，以便把每种状态自己的带宽需求单独分离出来。"
+      }
+    ],
+    "6": [
+      {
+        "text": "Bandwidth w.r.t. Parameter and Gradients Figure 3a shows that with a bandwidth of over 70 GB/s for parameter and gradients, we can achieve over 50% efficiency for even the smallest batch size. At this bandwidth, the data movement in theory can be completely overlapped with the computation to achieve a 100% efficiency. Bandwidth w.r.t. Optimizer States Figure 3b shows that optimizer states require nearly 4x higher bandwidth to achieve 50% efficiency compared to parameters and gradients. Furthermore, the optimizer states are updated at the end of the forward and backward propagation and cannot be overlapped with the computation. As a result they require significantly larger bandwidth to keep the overall DL workload efficient. For example achieving 90% efficiency with batch size of 2 per GPU requires nearly 1.5 TB/s of effective bandwidth, which is greater than even the GPU memory bandwidth. Bandwidth w.r.t. activation memory Figure 3c also shows that with activation checkpointing enabled, a meager bandwidth of 2 GB/s is able to sustain over 50% efficiency even for a hidden size of 2𝐾. The bandwidth requirement drops down to less than 1 GB/s once the hidden size grows over 8𝐾.",
+        "x": 53.5,
+        "y": 501.1,
+        "w": 242.1,
+        "h": 206.2,
+        "zh": "相对参数和梯度的带宽。图 3a 表明，参数和梯度的带宽超过 70 GB/s 时，即便批大小最小，效率也能超过 50%。在这个带宽下，数据搬运理论上可以完全与计算重叠，效率达到 100%。相对优化器状态的带宽。图 3b 表明，优化器状态要达到 50% 效率，所需带宽差不多是参数和梯度的 4 倍。而且优化器状态是在前向和反向结束之后才更新的，不能和计算重叠。因此，要让整个深度学习负载保持高效，它们需要大得多的带宽。例如，每块 GPU 批大小为 2 时要达到 90% 效率，有效带宽将近 1.5 TB/s，这甚至高于 GPU 内存带宽。相对激活内存的带宽。图 3c 还表明，打开激活检查点之后，哪怕带宽只有 2 GB/s，隐藏维度为 2K 时效率也能维持在 50% 以上。隐藏维度超过 8K 之后，带宽需求会降到 1 GB/s 以下。"
+      },
+      {
+        "text": "Figure 4: A snapshot of ZeRO-Infinity training a model with two layers on four data parallel (DP) ranks. Communication for the backward pass of the first layer is depicted. Partitioned parameters are moved from slow memory to GPU and then collected to form the full layer. After gradients are computed, they are aggregated, repartitoned, and then offloaded to slow memory. Layers are denoted with subscripts and DP ranks are denoted with superscripts. For ex-",
+        "x": 317.6,
+        "y": 478.6,
+        "w": 242,
+        "h": 68.7,
+        "zh": "图 4：ZeRO-Infinity 在四个数据并行（DP）rank 上训练一个两层模型的快照。图中画出的是第一层反向传播的通信。划分后的参数从慢速内存搬到 GPU，再收集成完整的一层。梯度算完之后被聚合、重新划分，然后卸载到慢速内存。层用下标表示，DP rank 用上标表示。例如"
+      },
+      {
+        "text": "ZERO-INFINITY DESIGN OVERVIEW In this section we present an overview of the design choices in ZeRO-Infinity that enable it to achieve unprecedented model scale while offering excellent training efficiency and ease of use. A bird’s eye view of ZeRO-Infinity is illustrated in Figure 4 and discussed",
+        "x": 53.5,
+        "y": 431.6,
+        "w": 240.6,
+        "h": 57.5,
+        "zh": "ZeRO-Infinity 设计概览。本节概述 ZeRO-Infinity 的设计选择。这些选择使它能达到前所未有的模型规模，同时提供很好的训练效率和易用性。图 4 给出 ZeRO-Infinity 的总览，并加以讨论"
+      },
+      {
+        "text": "of CPU memory available on a DGX-2 system, while the 3 TBs of activation checkpoints required by a 100 trillion parameter is within reach of the CPU memory of the next generation hardware. Therefore, by offloading activation checkpoints to CPU memory, ZeRO-Infinity can fit the activation checkpoints of models with hundreds of trillions of parameters.",
+        "x": 317.6,
+        "y": 379.6,
+        "w": 242,
+        "h": 63.8,
+        "zh": "一台 DGX-2 上可用的 CPU 内存；而 100 万亿参数模型所需的 3 TB 激活检查点，下一代硬件的 CPU 内存也够得到。因此，把激活检查点卸载到 CPU 内存后，ZeRO-Infinity 能够放下几百万亿参数模型的激活检查点。"
+      },
+      {
+        "text": "Design for Unprecedented Scale Modern GPU clusters are highly heterogeneous in terms of memory storage. In addition to the GPU memory, they have CPU memory as well as massive NVMe storage that is over 50x larger than the GPU memory and nearly 20x larger than CPU memory (See Fig. 2b). We developed ZeRO-Infinity, a parallel system for DL training that can transcend the GPU memory wall by exploiting these heterogeneous memory systems in modern GPU clusters. Figure 1 compares the maximum achieved model size of 3D parallelism and ZeRO-Infinity. ZeRO-Infinity supports one trillion parameters per NVIDIA V100 DGX-2 node, a 50x increase over 3D parallelism.",
+        "x": 53.5,
+        "y": 285.4,
+        "w": 242.1,
+        "h": 123.2,
+        "zh": "为前所未有的规模而设计。现代 GPU 集群在存储上高度异构。除了 GPU 内存，还有 CPU 内存，以及巨大的 NVMe 存储。NVMe 容量超过 GPU 内存的 50 倍，也接近 CPU 内存的 20 倍（见图 2b）。我们开发了 ZeRO-Infinity，一套用于深度学习训练的并行系统。它利用现代 GPU 集群上的这些异构内存，从而越过 GPU 内存墙。图 1 比较了 3D 并行和 ZeRO-Infinity 实际达到的最大模型规模。ZeRO-Infinity 在每台 NVIDIA V100 DGX-2 节点上支持一万亿参数，是 3D 并行的 50 倍。"
+      },
+      {
+        "text": "Memory-centric tiling for working memory. To reduce the working memory requirements of DL training for large models, ZeRO-Infinity introduces a novel technique called memory-centric tiling that exploits the data fetch and release pattern of ZeRO-3 to reduce the working memory requirements by breaking down a large operator into smaller tiles that can be executed sequentially. For example, to reduce the working memory for a large linear operator, ZeRO-Infinity represents the operator as a mathematically equivalent sequence of smaller linear operators consisting of tiles of parameters from the original operator, and executes them sequentially. When combined with ZeRO-3, the parameter and gradients of each tile can be fetched and released one at a time, reducing the working memory proportional to the number of tiles. Therefore, ZeRO-Infinity can support operators of arbitrary sizes, without relying on model parallelism to fit them in limited GPU memory.",
+        "x": 317.6,
+        "y": 208.5,
+        "w": 242.1,
+        "h": 162.4,
+        "zh": "针对工作内存的、以内存为中心的分块。为降低大模型训练的工作内存需求，ZeRO-Infinity 提出一种新技术，叫以内存为中心的分块。它利用 ZeRO-3 先取数据、用完即放的模式，把一个大算子拆成可以顺序执行的小块，从而降低工作内存。例如，为降低一个大线性算子的工作内存，ZeRO-Infinity 把它表示成一串数学上等价的较小线性算子，每一块都是原算子参数的一部分，然后按顺序执行。与 ZeRO-3 合用时，每一块的参数和梯度可以一次取一块、用完放掉，工作内存按块数成比例下降。因此，ZeRO-Infinity 可以支持任意大小的算子，不必靠模型并行才能把它们放进有限的 GPU 内存。"
+      },
+      {
+        "text": "Infinity offload engine for model states. ZeRO-Infinity is built on top of ZeRO-3 [11] which partitions all model states to remove memory redundancy as discussed in Sec. 2. Unlike any of the existing ZeRO family of technology, ZeRO-Infinity is designed with a powerful offload mechanism called the infinity offload engine which can offload all of the partitioned model states to CPU or NVMe memory, or keep them on the GPU based on the memory requirements. Note from Fig. 2a and Fig. 2b, even the model states required by a 100 trillion parameter model can fit in the aggregate NVMe memory of a DGX-2 cluster with 96 nodes (1536 GPUs). Therefore, the infinity offload engine allows ZeRO-Infinity to fit model states of models with hundreds of trillions of parameters. See Sec. 6 for more details.",
+        "x": 53.5,
+        "y": 135.7,
+        "w": 242.1,
+        "h": 140.5,
+        "zh": "针对模型状态的 infinity 卸载引擎。ZeRO-Infinity 建在 ZeRO-3 [11] 之上。如第 2 节所说，ZeRO-3 划分全部模型状态，以去掉内存冗余。与已有的任何 ZeRO 技术不同，ZeRO-Infinity 带有一套很强的卸载机制，叫做 infinity 卸载引擎。它可以把划分后的全部模型状态卸载到 CPU 或 NVMe 内存，也可以按内存需求把它们留在 GPU 上。从图 2a 和图 2b 可以看出，即便 100 万亿参数模型所需的模型状态，也能放进一套 96 节点（1536 块 GPU）的 DGX-2 集群的 NVMe 内存总量里。因此，infinity 卸载引擎让 ZeRO-Infinity 能够放下几百万亿参数模型的模型状态。详见第 6 节。"
+      },
+      {
+        "text": "Design for Excellent Training Efficiency Offloading all model states and activations to CPU or NVMe is only practical if ZeRO-Infinity can achieve high efficiency despite the offload. In reality this is extremely challenging since CPU memory is an order of magnitude slower than GPU memory bandwidth, while the NVMe bandwidth is yet another order of magnitude slower than the CPU memory bandwidth. Furthermore, reading and writing to these memory from GPU is even slower (see Fig. 2b). On a system like the DGX-2, the bandwidth must be greater than 70GB/s, 1.5TB/s, and 1-4 GB/s w.r.t. parameter and gradients,",
+        "x": 318,
+        "y": 84.7,
+        "w": 241.2,
+        "h": 112.3,
+        "zh": "为出色的训练效率而设计。把全部模型状态和激活都卸载到 CPU 或 NVMe，只有在卸载之后 ZeRO-Infinity 仍能保持高效率时才实用。这实际上非常难：CPU 内存带宽比 GPU 内存带宽慢一个数量级，NVMe 带宽又比 CPU 内存带宽再慢一个数量级。而且从 GPU 去读写这些内存还要更慢（见图 2b）。在 DGX-2 这样的系统上，带宽必须大于 70 GB/s、1.5 TB/s 和 1–4 GB/s，相对参数和梯度、"
+      },
+      {
+        "text": "CPU Offload for activations. In addition to model states, ZeRO-Infinity can offload activation memory to CPU memory, when necessary. Note that the activation checkpoints (0.76 TB) required by a 10 trillion parameter model can easily fit in the 1.5TB",
+        "x": 53.5,
+        "y": 84.7,
+        "w": 241.6,
+        "h": 41.8,
+        "zh": "激活的 CPU 卸载。除了模型状态，必要时 ZeRO-Infinity 还可以把激活内存卸载到 CPU 内存。注意，10 万亿参数模型所需的激活检查点（0.76 TB）可以轻松放进 1.5 TB"
+      }
+    ],
+    "7": [
+      {
+        "text": "optimizer states, and activation checkpoints, respectively for DL training to be efficient, based on our analysis in Sec. 4. Here we discuss how ZeRO-Infinity achieves the necessary bandwidths to achieve excellent efficiency. Efficiency w.r.t Parameter and Gradients. The data movement bandwidth for parameters and gradients must be greater than 70GB/s, close to the GPU-GPU bandwidth available on DGX-2 clusters [40]. Therefore, a DL parallel training solution like ZeRO- 3 [11] where parameters are broadcasted from the owner GPU to the rest before using them in forward or backward propagation can run efficiently as long as the communication is overlapped. On the contrary, a meager 12 GB/s PCIe bandwidth from a single GPU to CPU memory or NVMe (see Fig. 2b) or vice-versa is simply not sufficient to support heterogeneous training at scale6. Therefore, existing heterogeneous solutions like ZeRO-Offload where the parameters must be first moved from CPU to owner GPU before broadcasting requires significantly large batch sizes per GPU to achieve enough 𝑎𝑖𝑡 necessary to be efficient under the limited bandwidth. This poses two problems: i) for massive models the activation memory will get too large to fit even in CPU memory, and ii) the effective batch size becomes too large when scaling to hundreds or thousands of GPUs for effective convergence. ZeRO-Infinity addresses these challenges in two ways: i)bandwidthcentric partitioning: a novel data mapping and parallel data retrieval strategy for offloaded parameters and gradients that allows ZeROInfinity to achieve virtually unlimited heterogeneous memory bandwidth (details in Sec. 6.1), and ii) an overlap centric design that allows ZeRO-Infinity to overlap not only GPU-GPU communication with computation but also NVMe-CPU and CPU-GPU communications over the PCIe (details in Sec. 5.1.3). Efficiency w.r.t Optimizer States. Unlike parameters and gradients that are consumed and produced sequentially during the forward and backward propagation, optimizer states can be updated in parallel, all at once. This property is leveraged by both ZeRO-3 and ZeRO-Offload, that store and update the optimizer states in GPU and CPU memory, respectively, in parallel across all available GPUs and CPUs. As a result the aggregate GPU or CPU memory bandwidth can get much higher than the required 1.5TB/s with increase in GPU or CPU count. Since ZeRO-Infinity is built upon ZeRO-3, it can also leverage the aggregate GPU and CPU memory bandwidth as well as the aggregate CPU compute for optimizer step, when offloading optimizer states to CPU memory. However, with NVMe offload, it is necessary to bring the data from NVMe to CPU memory and back in chunks that can fit in the CPU memory to perform the optimizer step, one chunk at a time. The optimizer step is therefore limited by the NVMe-CPU memory bandwidth: while ZeRO-Infinity can achieve aggregate NVMe bandwidth across multiple nodes, it is crucial to achieve near peak NVMe bandwidth per node, to allow supporting the necessary bandwidth of over 1.5 TB/s with as few nodes, and as small batch size as possible. Furthermore, the process of bringing data in and out of NVMe to CPU memory, or from CPU memory to GPU memory can cause CPU memory fragmentation",
+        "x": 53.5,
+        "y": 117.9,
+        "w": 249.9,
+        "h": 589.4,
+        "zh": "优化器状态和激活检查点而言，深度学习训练才能高效。这是根据第 4 节的分析。这里讨论 ZeRO-Infinity 如何拿到这些带宽，从而取得很好的效率。相对参数和梯度的效率。参数和梯度的数据搬运带宽必须大于 70 GB/s，接近 DGX-2 集群上可用的 GPU 到 GPU 带宽 [40]。因此，像 ZeRO-3 [11] 这样的数据并行训练方案，在前向或反向使用参数之前，先由持有该参数的 GPU 广播给其余 GPU，只要通信被重叠起来，就可以高效运行。反过来，单块 GPU 到 CPU 内存或 NVMe 的 PCIe 带宽只有大约 12 GB/s（见图 2b），反方向也一样，根本支撑不了大规模的异构训练（注 6）。所以，ZeRO-Offload 这类已有异构方案必须先把参数从 CPU 搬到持有者 GPU，再做广播。在有限带宽下，它要很大的每 GPU 批大小，才能把 ait 堆到足够高、从而保持高效。这带来两个问题：其一，对巨大模型来说，激活内存会大到连 CPU 内存都放不下；其二，扩展到几百或几千块 GPU 时，有效批大小会大到不利于收敛。ZeRO-Infinity 用两种办法应对：其一，以带宽为中心的划分，一种针对已卸载参数和梯度的数据映射与并行取数策略，使 ZeRO-Infinity 能拿到几乎无限的异构内存带宽（详见第 6.1 节）；其二，以重叠为中心的设计，使 ZeRO-Infinity 不仅能把 GPU 到 GPU 的通信与计算重叠，还能把经过 PCIe 的 NVMe 到 CPU、CPU 到 GPU 的通信也重叠起来（详见第 5.1.3 节）。相对优化器状态的效率。参数和梯度是在前向和反向过程中按顺序消耗、产生的，优化器状态则可以并行地一次全部更新。ZeRO-3 和 ZeRO-Offload 都利用了这一点：它们分别把优化器状态放在 GPU 和 CPU 内存里，并在所有可用的 GPU 和 CPU 上并行存放、并行更新。因此，随着 GPU 或 CPU 数量增加，合计的 GPU 或 CPU 内存带宽可以远高于所需的 1.5 TB/s。ZeRO-Infinity 建在 ZeRO-3 之上，把优化器状态卸载到 CPU 内存时，同样能用上合计的 GPU 与 CPU 内存带宽，以及合计的 CPU 算力来做优化器步进。但如果卸载到 NVMe，就必须把数据按 CPU 内存放得下的块，从 NVMe 搬进 CPU 再搬回去，一次做一块优化器步进。于是优化器步进受限于 NVMe 到 CPU 的内存带宽：ZeRO-Infinity 虽然能拿到多节点加起来的 NVMe 带宽，但每个节点必须接近 NVMe 的峰值带宽，才能用尽量少的节点、尽量小的批大小，支撑超过 1.5 TB/s 的必要带宽。另外，把数据在 NVMe 与 CPU 内存之间、或从 CPU 内存搬到 GPU 内存，会造成 CPU 内存碎片"
+      },
+      {
+        "text": "in both GPU and CPU that can result in out of memory even with plenty of memory still available. The infinity offload engine can not only achieve near peak NVMe bandwidth, it can also allows ZeRO-Infinity to overlap NVMe to CPU reads with CPU to NVMe writes, as well as the CPU computation for the optimizer step at the same time to allow ZeRO-Infinity to remain efficient with a modest batch size on small number of GPUs and with small batch sizes on large numbers of GPUs. At the same time, it minimizes memory fragmentation by carefully reusing temporary buffers for data movement. We discuss the optimizations in infinity offload engine and in detail in Sec. 6.",
+        "x": 318,
+        "y": 588.8,
+        "w": 241.8,
+        "h": 118.6,
+        "zh": "在 GPU 和 CPU 上都会这样，结果是内存明明还剩很多，却仍然报内存不足。infinity 卸载引擎不仅能接近 NVMe 的峰值带宽，还能让 ZeRO-Infinity 把 NVMe 到 CPU 的读、CPU 到 NVMe 的写，以及优化器步进的 CPU 计算同时重叠起来。因此，GPU 数量少、批大小适中时，以及 GPU 数量多、每块 GPU 批大小很小时，ZeRO-Infinity 都能保持高效。与此同时，它仔细复用数据搬运用的临时缓冲区，把内存碎片压到最低。infinity 卸载引擎里的这些优化在第 6 节详细讨论。"
+      },
+      {
+        "text": "Efficiency w.r.t Activations. On a DGX-2 node, each GPU can read and write data at about 3 GB/s to CPU memory in parallel over the PCIe allowing activation checkpoints to be offloaded to CPU memory while retaining over 80% efficiency for hidden size larger 8𝐾 or larger. To also allow for high efficiency at smaller hidden sizes, ZeRO-Infinity can decrease the frequency of activation checkpoints as well as effectively overlap the communication of activation checkpoints both to and from CPU memory with the forward and backward computation on the GPU.",
+        "x": 318,
+        "y": 473.2,
+        "w": 240.4,
+        "h": 96.6,
+        "zh": "相对激活的效率。在一台 DGX-2 节点上，每块 GPU 可以经 PCIe 以大约 3 GB/s 并行读写 CPU 内存。因此可以把激活检查点卸载到 CPU 内存，同时对大于 8K 的隐藏维度仍保持 80% 以上的效率。为了在更小的隐藏维度上也保持高效率，ZeRO-Infinity 可以降低激活检查点的频率，并把激活检查点进出 CPU 内存的通信，与 GPU 上的前向和反向计算有效地重叠起来。"
+      },
+      {
+        "text": "Design for Ease of Use With ZeRO-Infinity, data scientists no longer have to adapt their model to multiple forms of parallelism like in 3D parallelism. This is possible due to memory-centric tiling in ZeRO-Infinity discussed in Sec. 5.1.3 aimed at reducing GPU memory requirements of large individual layers that would otherwise require model parallelism (tensor-slicing) to fit the layers in GPU memory. In addition, ZeRO-Infinity is implemented in PyTorch in a way that eliminates the need for manual model code refactoring even when scaling to trillions of parameters. This is made possible through an ease-inspired implementation with two automated features: i) automated data movement to gather and partition parameters right before and after they are required during the training. ZeROInfinity does this by injecting i) pre forward/backward hooks into PyTorch submodules that trigger allgather collectives to collect the parameters required before its forward/backward pass and ii) post forward/backward hooks that trigger parameter/gradient partiitoning and optionally offloading them to CPU or NVMe (see Sec. 7.1",
+        "x": 317.5,
+        "y": 251.5,
+        "w": 243.3,
+        "h": 200,
+        "zh": "为易用性而设计。有了 ZeRO-Infinity，数据科学家不再像用 3D 并行那样，把模型改成多种并行。这靠的是第 5.1.3 节讨论的、以内存为中心的分块：它降低特别大的单层对 GPU 内存的需求，否则这些层得靠模型并行（张量切分）才能放进 GPU。此外，ZeRO-Infinity 在 PyTorch 里的实现方式，使得即便扩展到万亿参数，也不需要手工重构模型代码。这靠一种以便利为出发点的实现，带有两项自动化能力。其一，自动数据搬运：在训练中参数刚要用到之前把它们收集起来，用完后再划分开。ZeRO-Infinity 的做法是注入钩子：前向/反向之前的钩子放进 PyTorch 子模块，触发 allgather 集合通信，在该模块前向/反向之前收集所需参数；前向/反向之后的钩子则触发参数和梯度的划分，并可以选择把它们卸载到 CPU 或 NVMe（见第 7.1 节"
+      },
+      {
+        "text": "ii) automated model partitioning during initialization such that models that can not fit within single GPU or CPU memory can still be initialized without requiring manual partitioning of the model across data parallel processes. ZeRO-Infinity achieves this by wrapping the constructor of all module classes so that parameters of each submodule are partitioned and offloaded immediately after they are created during initialization. The entire model is never fully instantiated on a single data parallel process (see Sec. 7.2 for",
+        "x": 317.6,
+        "y": 152.9,
+        "w": 240.8,
+        "h": 85.7,
+        "zh": "其二，初始化时自动划分模型。这样，单块 GPU 或 CPU 内存放不下的模型，仍然可以完成初始化，而不需要手工把模型划分到各个数据并行进程上。ZeRO-Infinity 的做法是包住所有模块类的构造函数，使每个子模块的参数在初始化期间一创建出来，就立刻被划分并卸载。整个模型永远不会在单个数据并行进程上被完整实例化（见第 7.2 节中的"
+      },
+      {
+        "text": "EFFICIENCY OPTIMIZATIONS In this section, we deep dive into the optimizations introduced in Sec. 5 that allow ZeRO-Infinity to achieve excellent efficiency.",
+        "x": 318,
+        "y": 84.7,
+        "w": 240.2,
+        "h": 35.6,
+        "zh": "效率优化。本节深入第 5 节引入的那些优化，它们使 ZeRO-Infinity 能够取得很好的效率。"
+      },
+      {
+        "text": "CPU and NVMe bandwidth are in the order of 100 GB/s and 25 GB/s, respectively, but reading data from CPU or NVMe to a single GPU is limited by the achievable PCIe bandwidth which is around 10-12 GB/s",
+        "x": 53.8,
+        "y": 81.9,
+        "w": 241,
+        "h": 22.9,
+        "zh": "CPU 和 NVMe 的带宽分别在 100 GB/s 和 25 GB/s 这个量级，但从 CPU 或 NVMe 把数据读进单块 GPU，会受限于能够达到的 PCIe 带宽，大约是 10–12 GB/s"
+      }
+    ],
+    "8": [
+      {
+        "text": "Bandwidth-Centric Partitioning ZeRO-Infinity implements a novel data mapping and retrieval strategy to address the NVMe and CPU memory bandwidth limitations. Unlike ZeRO [11] and ZeRO-Offload [12], where parameters of each layer are owned by a single data parallel process, which broadcasts them to the rest when needed, ZeRO-Infinity partitions individual parameters across all the data parallel process, and uses an allgather instead of a broadcast when a parameter needs to be accessed. Note that both broadcast and allgather communication collectives have the same communication cost when it comes to data movement volume if the data is located on the GPU. Therefore, this makes no difference for a GPU-only training. However, this is a game changer when the data is located in NVMe or CPU. In the broadcast-based approach, since each parameter is fully owned by one of the data parallel processes, the parameter must be first communicated from its source location to the GPU memory via the PCIe before the broadcast can happen. Note that only a single PCIe can be active for this process, while all the PCIe links connected to all the other GPUs are idle. On the contrary, with the partitioned parameter and allgather based approach in ZeROInfinity, all PCIe links are active in parallel, each bringing in 1/𝑑𝑝𝑡ℎ portion of the parameter where 𝑑𝑝 is the data parallel degree. As a result, the effective communication bandwidth between NVMe or CPU to the GPU, increases linearly with the 𝑑𝑝 degree. For example, with broadcast-based approach, the CPU/NVMe to GPU bandwidth stays constant at about 12 GB/s with PCIe Gen 3, even with 16-way data parallelism on the DGX-2 box. However, with the all-gather-based approach, the effective achievable bandwidth increases to about 48/25 GB/s (3.0/1.6 GB/s per GPU), respectively (see Fig. 2b), limited only by the max aggregate PCIe bandwidth and max NVMe bandwidth per DGX-2 node. From here, the bandwidth grows linearly with more nodes. When training a massive model at massive scale, ZeRO-Infinity can therefore offer significantly more heterogeneous memory bandwidth than necessary (virtually unlimited) for the training to remain efficient. For example, on 64 DGX-2 nodes, ZeRO-Infinity has access to over 3TB/s of CPU memory bandwidth and over 1.5TB/s of NVMe bandwidth.",
+        "x": 53.5,
+        "y": 300.6,
+        "w": 242.1,
+        "h": 408.7,
+        "zh": "以带宽为中心的划分。ZeRO-Infinity 实现了一种新的数据映射和取数策略，用来应对 NVMe 和 CPU 内存的带宽限制。在 ZeRO [11] 和 ZeRO-Offload [12] 里，每一层的参数由单个数据并行进程持有，需要时再广播给其余进程。ZeRO-Infinity 则把单个参数划分到所有数据并行进程上，参数要被访问时用 allgather，而不是广播。如果数据就在 GPU 上，广播和 allgather 这两种集合通信在数据搬运量上的代价相同。因此对纯 GPU 训练，两者没有差别。但数据放在 NVMe 或 CPU 上时，这就完全不同了。在基于广播的做法里，每个参数完整地归某一个数据并行进程所有，广播之前必须先经 PCIe，从源位置搬到 GPU 内存。这个过程只有一条 PCIe 在工作，连到其他 GPU 的 PCIe 链路都空着。反过来，ZeRO-Infinity 用划分后的参数加 allgather：所有 PCIe 链路并行工作，各自搬进该参数的 1/dp，其中 dp 是数据并行度。因此，NVMe 或 CPU 到 GPU 的有效通信带宽随 dp 线性增长。例如在基于广播的做法里，即便 DGX-2 上做 16 路数据并行，CPU/NVMe 到 GPU 的带宽在 PCIe Gen 3 下也一直停在大约 12 GB/s。而基于 allgather 的做法，能够达到的有效带宽分别提高到大约 48 GB/s 和 25 GB/s（每块 GPU 分别为 3.0 GB/s 和 1.6 GB/s，对应 CPU 与 NVMe）（见图 2b），只受每台 DGX-2 节点的 PCIe 合计带宽上限和 NVMe 带宽上限约束。从这里再往上，带宽随节点数线性增长。因此，在很大规模上训练巨大模型时，ZeRO-Infinity 能提供远超需要的异构内存带宽（几乎无限），训练仍然高效。例如在 64 台 DGX-2 节点上，ZeRO-Infinity 能用到超过 3 TB/s 的 CPU 内存带宽，以及超过 1.5 TB/s 的 NVMe 带宽。"
+      },
+      {
+        "text": "components: i) A dynamic prefetcher for overlapping the data movement required to reconstruct parameters before they are consumed in the forward or backward pass, and ii) a communication and offload overlapping mechanism for executing the data movement required by gradients in parallel with the backward computation. The dynamic prefetcher in ZeRO-Infinity traces the forward and backward computation on that fly, constructing an internal map of the operator sequence for each iteration. During each iteration, the prefetcher keeps track of where it is in the operator sequence and prefetches the parameter requires by the future operators. The prefetcher is aware of the three step communication process, and therefore can overlap the nc-transfer for one parameter, with cgtransfer and gg-transfer of other parameters. For instance, before executing the 𝑖𝑡ℎ operator, the prefetcher can invoke nc, cg, and gg-transfer for parameters required by 𝑖 +3, 𝑖 +2, and 𝑖 +1 operators, respectively. Note that all of these data movement can happen in parallel with the execution of the 𝑖𝑡ℎ operator. Furthermore, ZeRO-Infinity can update the operator sequence map in case of dynamic workflow, allowing for appropriate prefetching even when the forward and backward propagation changes across iterations. Similarly, in the backward pass, ZeRO-Infinity can overlap the reduce-scatter for gradients of the parameters in (𝑖 + 1)𝑡ℎ operator with the computation of the 𝑖𝑡ℎ operator, while simultaneous transferring the partitioned gradients from the reduce-scatter of the gradients of the (𝑖 + 2)𝑡ℎ operator to the CPU or NVMe. With this powerful overlap centric design, ZeRO-Infinity hides significant portions of data movement even when training with a small number of GPUs and small batch size per GPU.",
+        "x": 318,
+        "y": 399.8,
+        "w": 241.8,
+        "h": 307.5,
+        "zh": "组成部分：其一，一个动态预取器，把重构参数所需的数据搬运重叠起来，赶在前向或反向消费这些参数之前完成；其二，一套通信与卸载的重叠机制，让梯度所需的数据搬运与反向计算并行进行。ZeRO-Infinity 的动态预取器边跑边跟踪前向和反向计算，为每次迭代建一张内部的算子顺序图。每次迭代里，预取器记住自己走到算子序列的哪一步，并预取后面算子需要的参数。预取器知道这是三步通信，因此可以把一个参数的 nc 传输，与其他参数的 cg 传输和 gg 传输重叠起来。例如，在执行第 i 个算子之前，预取器可以分别为第 i+3、i+2、i+1 个算子所需的参数发起 nc、cg 和 gg 传输。这些数据搬运都可以与第 i 个算子的执行并行发生。另外，如果工作流是动态的，ZeRO-Infinity 可以更新算子顺序图，这样即便前向和反向在不同迭代之间发生变化，预取仍然合适。类似地，在反向过程中，ZeRO-Infinity 可以把第 (i+1) 个算子参数梯度的 reduce-scatter，与第 i 个算子的计算重叠；同时把第 (i+2) 个算子梯度在 reduce-scatter 之后得到的划分梯度，传到 CPU 或 NVMe。靠这套以重叠为中心的设计，即便 GPU 数量少、每块 GPU 批大小也小，ZeRO-Infinity 仍能把很大一部分数据搬运藏起来。"
+      },
+      {
+        "text": "Infinity Offload Engine The infinity offload engine is composed of two main components: DeepNVMe, a powerful C++ NVMe read/write library in the infinity offload engine that supports bulk read/write requests for asynchronous completion, and explicit synchronization requests to flush ongoing read/writes. The support for asynchrony allows ZeROInfinity to overlap these requests with GPU/GPU or GPU/CPU communication or computation. Most importantly, DeepNVMe is capable of achieving near peak sequential read and write bandwidths on the NVMe storage device. It achieves this high performance through a number of optimizations, including aggressive parallelization of I/O requests (whether from a single user thread or across multiple user threads), smart work scheduling, avoiding data copying, and memory pinning. Pinned memory management layer To ensure high performance tensor reads (or writes) from (to) NVMe/CPU storage, the source (or destination) tensors must reside in pinned memory buffers. However, pinned memory buffers are scarce system resources, and their oversubscription by a single process can degrade overall system performance or cause system instability. This layer manages the limited supply of pinned memory by reusing a small amount (tens of GBs) for offloading the entire model states (up to tens of TBs) to CPU or NVMe. The reuse of memory buffer prevents memory fragmentation in CPU and GPU memory. This layer also provides PyTorch tensors with pinned memory data, allowing inplace computation of the tensors so that they can then be written to NVMe without any further copies to improve bandwidth.",
+        "x": 317.6,
+        "y": 84.7,
+        "w": 242.1,
+        "h": 298.6,
+        "zh": "Infinity 卸载引擎。infinity 卸载引擎由两个主要部分组成。DeepNVMe 是其中的一个 C++ NVMe 读写库，支持批量读写请求的异步完成，也支持显式同步请求，用来把正在进行的读写刷完。异步支持让 ZeRO-Infinity 可以把这些请求与 GPU/GPU 或 GPU/CPU 的通信或计算重叠起来。更重要的是，DeepNVMe 能在 NVMe 存储设备上接近顺序读写的峰值带宽。它靠多项优化达到这一性能，包括激进地并行化 I/O 请求（无论来自单个用户线程还是多个用户线程）、聪明的工作调度、避免数据拷贝，以及内存钉住。钉住内存的管理层。为了让张量从 NVMe/CPU 存储读出或写入时保持高性能，源张量或目标张量必须放在钉住内存的缓冲区里。但钉住内存是稀缺的系统资源，单个进程过量占用会拖累整个系统，甚至让系统不稳定。这一层管理有限的钉住内存：只用一小块（几十 GB）反复使用，就把全部模型状态（最多几十 TB）卸载到 CPU 或 NVMe。缓冲区的复用避免了 CPU 和 GPU 内存里的碎片。这一层还向 PyTorch 张量提供带钉住内存的数据，使张量可以原地计算，然后直接写到 NVMe，不必再拷贝一次，从而提高带宽。"
+      },
+      {
+        "text": "Overlap Centric Design While ZeRO-Infinity can leverage sufficient heterogeneous memory bandwidth on a multi-node setup, the bandwidth can still be a bottleneck on a single GPU or single node setup. Even the GPU-GPU allgather communication has a big impact on efficiency when running with a small batch size (Fig. 3). Furthermore, accessing NVMe memory requires a three step process: i) read data from NVMe to CPU memory (nc-transfer), ii) copy the data from CPU memory to GPU memory (cg-transfer), iii) execute allgather to construct the full parameter on all GPUs (gg-transfer). The sequential nature of these data movements means that if done naively, the total communication time would be the sum of each of these three data movement cost, resulting in poor efficiency even if the bandwidth for data movement at each of these stages is individually sufficient. To address these issues, ZeRO-Infinity has an overlap engine that not only overlaps GPU-GPU communication with GPU computation, but also overlaps the NVMe to CPU, and CPU to GPU communication, all at the same time. The overlap engine has two",
+        "x": 53.4,
+        "y": 84.7,
+        "w": 242.2,
+        "h": 200,
+        "zh": "以重叠为中心的设计。ZeRO-Infinity 在多节点上可以拿到足够的异构内存带宽，但在单块 GPU 或单节点上，带宽仍然可能成为瓶颈。即便是 GPU 到 GPU 的 allgather，在批大小很小时也会明显影响效率（图 3）。而且访问 NVMe 内存要走三步：其一，从 NVMe 读到 CPU 内存（nc 传输）；其二，从 CPU 内存拷到 GPU 内存（cg 传输）；其三，执行 allgather，在所有 GPU 上拼出完整参数（gg 传输）。这几步数据搬运是串行的。如果朴素地做，总通信时间就是三步代价之和，即便每一步各自的带宽都够，效率也会很差。为解决这些问题，ZeRO-Infinity 有一个重叠引擎。它不仅把 GPU 到 GPU 的通信与 GPU 计算重叠，还同时把 NVMe 到 CPU、CPU 到 GPU 的通信也重叠起来。这个重叠引擎有两个"
+      }
+    ],
+    "9": [
+      {
+        "text": "EASE INSPIRED IMPLEMENTATION ZeRO-Infinity is implemented on top of PyTorch, and is designed to be used without any model code refactoring similar to standard data-parallel training in PyTorch. This section details some of the challenges faced in implementing such a system.",
+        "x": 53.8,
+        "y": 651.8,
+        "w": 240.2,
+        "h": 57.5,
+        "zh": "以便利为出发点的实现。ZeRO-Infinity 实现在 PyTorch 之上，设计目标是像 PyTorch 里标准的数据并行训练那样使用，不需要任何模型代码重构。本节说明实现这样一套系统时遇到的一些困难。"
+      },
+      {
+        "text": "overrides the tensor accesses. When a partitioned parameter is accessed, we do a blocking allgather on the parameter, register it as an external parameter, and then return the gathered parameter. Activation introspection A submodule may return a parameter from its forward pass to be consumed by another submodule’s forward and backward passes. For example, Megatron-LM returns bias vectors from the forward pass of linear layers and they are consumed by the parent Transformer layer modules. We inspect the activation outputs returned from each submodule’s forward pass for partitioned parameters. If one is discovered, we collect and register it as an external parameter.",
+        "x": 318,
+        "y": 588.8,
+        "w": 241.8,
+        "h": 118.6,
+        "zh": "改写对张量的访问。当一个被划分的参数被访问时，我们对它做一次阻塞的 allgather，把它登记为外部参数，然后返回收集好的参数。激活内省。一个子模块可能在前向里返回一个参数，供另一个子模块的前向和反向使用。例如，Megatron-LM 会从线性层的前向返回偏置向量，再由上层的 Transformer 模块用掉。我们检查每个子模块前向返回的激活输出里有没有被划分的参数。一旦发现，就把它收集起来并登记为外部参数。"
+      },
+      {
+        "text": "Automating Data Movement ZeRO-Infinity must coordinate the movement of tensors comprising the model parameters, gradients, and optimizer states. When a tensor is not in active use, it remains partitioned among workers and potentially offloaded to CPU or NVMe memory. The system must ensure that the tensors are resident in GPU memory in time for use and then later re-partitioned. PyTorch models are expressed as a hierarchy of modules that represent the layers of a neural network. For example, Transformer architectures [38] contain submodules such as self-attention and feedforward networks. The self-attention submodules are further comprised of linear transformations and other submodules. ZeRO-Infinity recursively injects hooks into the submodules of a model to automate the required data movement. At the start of a submodule’s forward pass, these hooks ensure that the submodule’s parameters are available for computations, otherwise it will execute the appropriate allgather collectives and block until the parmaeters become available. The overlap-centric design detailed in Sec. 6.2 is critical to minimizing stalls due to parameter communication. At the end of the submodule’s forward pass, we partition the parameters again and optionally offload them. The backward pass is handled in a similar fashion.",
+        "x": 53.8,
+        "y": 386.4,
+        "w": 240.4,
+        "h": 243.8,
+        "zh": "自动数据搬运。ZeRO-Infinity 必须协调构成模型参数、梯度和优化器状态的那些张量怎么移动。张量不在使用时，保持划分在各个 worker 上，并可能卸载到 CPU 或 NVMe 内存。系统必须保证张量在要用的时候已经位于 GPU 内存，用完后再重新划分。PyTorch 模型表示成一层层模块的层次，对应神经网络的各层。例如，Transformer 结构 [38] 含有自注意力和前馈网络等子模块。自注意力子模块又由线性变换和其他子模块组成。ZeRO-Infinity 递归地把钩子注入模型的子模块，把所需的数据搬运自动化。子模块前向开始时，这些钩子保证该子模块的参数已经可以参与计算；否则就执行相应的 allgather，并阻塞到参数可用。第 6.2 节的以重叠为中心的设计，对减少参数通信造成的停顿至关重要。子模块前向结束时，我们再次划分参数，并可以选择卸载。反向以类似方式处理。"
+      },
+      {
+        "text": "If the model is large, then it may not be possible to fully initialize the model with traditional data parallel approach, replicating it on each data parallel process before it can be partitioned for ZeROInfinity. For example, a 500 billion parameter model will occupy 1 TB of memory in half precision, and thus a system with 8 GPUs per node requires 8 TB of aggregate CPU or GPU memory just for the initial data parallel allocation step. This is beyond the GPU or CPU memory available on a node. To address this limitation, the parameters corresponding to each layer of the model must be partitioned at the time of initialization, and not after the entire model is initialized. To do this, we provide a Python ZeRO-Infinity context which decorates the __init__ method of torch.nn.Module, so that parameters allocated under each module/sub-module are partitioned immediately after its initialization among the group of data parallel processes. As a result, only individual sub-modules are fully initialized before they are partitioned, and the full model is never replicated on all the data parallel process. In the example above, the 500 billion parameter model can therefore be fully partitioned during its initialization requiring only 1 TB of aggregate CPU memory regardless of the total number of data parallel process.",
+        "x": 317.7,
+        "y": 321.2,
+        "w": 242,
+        "h": 228.1,
+        "zh": "如果模型很大，就不可能用传统数据并行的方式先完整初始化：在每个数据并行进程上复制一份，然后再为 ZeRO-Infinity 划分。例如，一个 5000 亿参数的模型，半精度就要占 1 TB 内存。因此每个节点 8 块 GPU 的系统，光是最初那一步数据并行分配，就需要合计 8 TB 的 CPU 或 GPU 内存。这超出了一个节点上的 GPU 或 CPU 内存。为应对这一限制，模型每一层对应的参数必须在初始化的当时就划分，而不能等整个模型初始化完再划分。为此，我们提供一个 Python 的 ZeRO-Infinity 上下文，它装饰 torch.nn.Module 的 __init__ 方法，使每个模块或子模块下面分配的参数，在该模块初始化之后立刻就在数据并行进程组里被划分开。结果是，只有单个子模块会在划分之前被完整初始化，整个模型永远不会在所有数据并行进程上被复制。按上面的例子，这个 5000 亿参数的模型就可以在初始化过程中被完全划分，只需要合计 1 TB 的 CPU 内存，与数据并行进程的总数无关。"
+      },
+      {
+        "text": "Auto Registration of External Parameters. In the ideal case, a submodule’s parameters and gradients are only accessed within its own forward and backward passes, making it straight forward to identify and automate the data movement as discussed in section above. However, some model architectures are exceptions, where parameters defined and allocated in a submodule is used in forward and backward propagation of a different submodule. For example, language models such as GPT [41] share the weights of the embedding layer at both the beginning and the end of the network to map words to vectors and vice versa. We refer to the parameters that are used across module boundaries as external parameters. In presence of external parameters, it is difficult to know which parameters to gather at the beginning of a submodule’s forward and backward",
+        "x": 53.5,
+        "y": 227.1,
+        "w": 242.1,
+        "h": 140.5,
+        "zh": "外部参数的自动登记。理想情况下，一个子模块的参数和梯度只在它自己的前向和反向里被访问，因此像上一节那样识别并自动化数据搬运是直接的。但有些模型结构是例外：在一个子模块里定义并分配的参数，会用在另一个子模块的前向和反向里。例如，GPT [41] 这类语言模型会在网络开头和结尾共用嵌入层的权重，用来把词映射成向量，以及把向量映射回词。我们把跨模块边界使用的参数称为外部参数。存在外部参数时，就很难知道在一个子模块的前向和反向开始时，应该收集哪些参数"
+      },
+      {
+        "text": "This section evaluates ZeRO-Infinity, demonstrating that it achieves excellent training efficiency and scalability for models with tens of trillion parameters. We also show the impact of various technologies within ZeRO-Infinity on model scale and performance.",
+        "x": 317.6,
+        "y": 252.8,
+        "w": 240.6,
+        "h": 41.8,
+        "zh": "本节评估 ZeRO-Infinity，说明它对几十万亿参数的模型能达到很好的训练效率和可扩展性。我们也展示 ZeRO-Infinity 内部各项技术对模型规模和性能的影响。"
+      },
+      {
+        "text": "Hardware. We conducted our experiments on a cluster of up to 512 V100 SXM3 32 GB GPUs (32 DGX-2 nodes) with 800 Gbps internode communication bandwidth.",
+        "x": 317.7,
+        "y": 195.4,
+        "w": 240.5,
+        "h": 30.9,
+        "zh": "硬件。实验在最多 512 块 V100 SXM3 32 GB GPU（32 台 DGX-2 节点）的集群上进行，节点间通信带宽为 800 Gbps。"
+      },
+      {
+        "text": "One way to address this is to register external parameters with ZeRO-Infinity so that they are collected for the forward and backward passes of the submodule that access them. After registration, an external parameter is treated like all others and will be included in the prefetching system as described in Sec. 6.2. We provide APIs for manual registration of external parameters. In order to improve user experience, we also provide mechanisms to detect these scenarios and automatically register external parameters so the the user does not have to make any code change: Intercepting partitioned parameter accesses PyTorch modules store their tensor parameters in a hash table. At the initialization time, we replace the hash table with a subclassed type that",
+        "x": 53.5,
+        "y": 84.7,
+        "w": 242.1,
+        "h": 129.5,
+        "zh": "一种处理办法是把外部参数向 ZeRO-Infinity 登记，使访问它们的那个子模块在前向和反向时把它们收集起来。登记之后，外部参数和其他参数一样对待，并会进入第 6.2 节描述的预取系统。我们提供了手工登记外部参数的 API。为了改善使用体验，我们也提供机制来发现这些情形并自动登记外部参数，这样用户不必改任何代码。拦截对被划分参数的访问。PyTorch 模块把张量参数存在一张哈希表里。初始化时，我们把这张哈希表换成一个子类，它会"
+      },
+      {
+        "text": "Baseline. For experiments without model parallelism (mp), we use torch’s distributed data parallel (DDP [42]) as a baseline. For experiments with model parallelism, we use Megatron-LM [7]. As a baseline for each experiment we use the relevant state-of-the-art method among 3D Parallelism [13], ZeRO [11], or ZeRO-Offload [12].",
+        "x": 318,
+        "y": 134.6,
+        "w": 241.8,
+        "h": 52.8,
+        "zh": "基线。对没有模型并行（mp）的实验，我们用 torch 的分布式数据并行（DDP [42]）作基线。对有模型并行的实验，我们用 Megatron-LM [7]。每个实验的基线，取 3D 并行 [13]、ZeRO [11] 或 ZeRO-Offload [12] 中与该实验对应的现有最强方法。"
+      },
+      {
+        "text": "Model Configurations. We use GPT-like Transformer based models. We fix the sequence length to 1024 and vary the hidden dimension and number of layers to obtain models with different number of parameters. Table 1 provides the specific model configurations",
+        "x": 317.5,
+        "y": 84.7,
+        "w": 242.1,
+        "h": 41.8,
+        "zh": "模型配置。我们使用类 GPT 的、基于 Transformer 的模型。序列长度固定为 1024，通过改变隐藏维度和层数，得到参数量不同的模型。表 1 给出具体的模型配置"
+      }
+    ],
+    "10": [
+      {
+        "text": "Table 1: Experiment configurations. Sizes are expressed in B for billions, T for trillions, and K for 1024.",
+        "x": 97.8,
+        "y": 635.4,
+        "w": 416.1,
+        "h": 9,
+        "zh": "表 1：实验配置。规模用 B 表示十亿，T 表示万亿，K 表示 1024。"
+      },
+      {
+        "text": "(a) ZeRO-Infinity efficiently trains 40x larger models than 3D parallelism on 512 GPUs.",
+        "x": 53.6,
+        "y": 467,
+        "w": 161.8,
+        "h": 17.9,
+        "zh": "(a) 在 512 块 GPU 上，ZeRO-Infinity 能高效训练的模型是 3D 并行的 40 倍。"
+      },
+      {
+        "text": "(b) ZeRO-Infinity exceeds linear scaling from 64 to 512 GPUs for a 1T parameter model.",
+        "x": 223.9,
+        "y": 467,
+        "w": 161.7,
+        "h": 17.9,
+        "zh": "(b) 对 1T 参数的模型，ZeRO-Infinity 从 64 块 GPU 到 512 块 GPU 超过了线性扩展。"
+      },
+      {
+        "text": "(c) ZeRO-Infinity can train up to 1T model on a DGX-2 node without model parallelism.",
+        "x": 394.3,
+        "y": 467,
+        "w": 161.7,
+        "h": 17.9,
+        "zh": "(c) ZeRO-Infinity 可以在一台 DGX-2 节点上、不用模型并行，训练最多 1T 的模型。"
+      },
+      {
+        "text": "Figure 5: Efficiency and scalability of ZeRO-Infinity for training multi-trillion parameter models.",
+        "x": 109.2,
+        "y": 450.1,
+        "w": 393.7,
+        "h": 9,
+        "zh": "图 5：ZeRO-Infinity 训练数万亿参数模型时的效率与可扩展性。"
+      },
+      {
+        "text": "used throughout our evaluation, (see Appendix A) for additional",
+        "x": 53.8,
+        "y": 421.9,
+        "w": 240.2,
+        "h": 9,
+        "zh": "在整个评估中都使用，（更多内容见附录 A）"
+      },
+      {
+        "text": "NVMe bandwidth to accelerate the offloading of parameters and optimizer states, and leveraging CPU compute from additional nodes for parameter update. In addition, ZeRO-Infinity already achieves over 2.8 petaflops (44 Tflops/GPU) with just 4 nodes, demonstrating that the aggregated NVMe bandwidth is sufficient to achieve good efficiency even at a modest scale.",
+        "x": 318,
+        "y": 367.1,
+        "w": 241.8,
+        "h": 63.8,
+        "zh": "NVMe 带宽，用来加速参数和优化器状态的卸载，并利用更多节点上的 CPU 算力做参数更新。此外，ZeRO-Infinity 只用 4 个节点就已经超过 2.8 petaflops（每 GPU 44 Tflops），说明即便规模还不算大，汇聚起来的 NVMe 带宽也足够取得不错的效率。"
+      },
+      {
+        "text": "Model Size and Speed Model Size ZeRO-Infinity trains models over 32 trillion parameters compared to about 650B parameters with 3D parallelism, state of the art, offering a leap of 50x in model scale (Figure 1). Model Speed Figure 5a shows the performance of ZeRO-Infinity on up to 20 trillion parameter models on 512 GPUs. For the 500B model (close to the largest that 3D parallelism can run on these resources), ZeRO-Infinity and 3D parallelism achieve nearly identical throughput, indicating ZeRO-Infinity is on par with the training efficiency of the state-of-the-art. When increasing the model size further, 3D parallelism simply runs out of memory, while ZeROInfinity trains up to 20 trillion parameter models (40x larger) with excellent throughput of up to 49 TFlops/GPU. At the extreme-scale, Figure 5a shows a performance drop from 10T (43 TFlops/GPU), and 20T (34 TFlops/GPU). This drop is not due to NVMe bandwidth as both model sizes use NVMe offload, but instead due to an extremely small batch size per GPU (Table 1) at 20T scale as a result of limited CPU memory to store activation checkpoints. This can be improved by increasing the CPU memory or offloading activation checkpoints to NVMe in a future implementation.",
+        "x": 53.8,
+        "y": 176.6,
+        "w": 241.8,
+        "h": 221.9,
+        "zh": "模型规模与速度。模型规模。ZeRO-Infinity 训练的模型超过 32 万亿参数，而现有最强的 3D 并行大约是 650B 参数，模型规模是 3D 并行的 50 倍（图 1）。模型速度。图 5a 给出 ZeRO-Infinity 在 512 块 GPU 上、最大到 20 万亿参数模型的性能。对 500B 模型（接近这套资源上 3D 并行能跑的最大规模），ZeRO-Infinity 和 3D 并行的吞吐几乎相同，说明 ZeRO-Infinity 的训练效率与现有最强方法相当。模型再加大时，3D 并行直接内存不足，而 ZeRO-Infinity 能训练到 20 万亿参数（是其 40 倍），吞吐最高达到每 GPU 49 TFlops。在极端规模上，图 5a 显示出从 10T（每 GPU 43 TFlops）到 20T（每 GPU 34 TFlops）的性能下降。这个下降不是因为 NVMe 带宽，两种规模都使用了 NVMe 卸载；原因是 20T 规模下每块 GPU 的批大小极小（表 1），而 CPU 内存又有限，放不下激活检查点。将来增加 CPU 内存，或把激活检查点卸载到 NVMe，可以改善这一点。"
+      },
+      {
+        "text": "Democratizing Large Model Training Figure 5c shows performance of training 10B to 1T models on a single node (16 GPUs) with ZeRO-Infinity without any model parallelism. With models up to 100 billion parameters, ZeRO-Infinity achieves excellent performance of over 40 TFlops/GPU, making it possible to fine-tuning models such as GPT-3 with just a single DGX-2 box. In contrast, 3D parallelism is unable to scale to models with over 20 billion parameters. These results demonstrate two aspects of ZeRO-Infinity: i) Accessibility to fine-tuning large models with up to a trillion parameters on a single NVIDIA DGX-2 node, empowering users without access to large GPU clusters. ii) Ease-of-Use: Models at this scale can be trained using ZeRO-Infinity without combining model or pipeline parallelism, or requiring model code refactoring, making it easy for data scientists to scale up their models.",
+        "x": 317.6,
+        "y": 187.5,
+        "w": 242.1,
+        "h": 167.1,
+        "zh": "让大模型训练变得普及。图 5c 给出在单节点（16 块 GPU）上、不用任何模型并行，用 ZeRO-Infinity 训练 10B 到 1T 模型的性能。模型不超过一千亿参数时，ZeRO-Infinity 能达到每 GPU 40 TFlops 以上的很好性能，因此只用一台 DGX-2 就能微调 GPT-3 这类模型。相比之下，3D 并行无法扩展到超过 200 亿参数的模型。这些结果说明 ZeRO-Infinity 的两个方面：其一，够得着，用户没有大型 GPU 集群，也能在单台 NVIDIA DGX-2 节点上微调最多一万亿参数的大模型；其二，好用，这个规模的模型可以用 ZeRO-Infinity 来训练，不必把模型并行或流水线并行组合起来，也不必重构模型代码，数据科学家因此更容易把模型做大。"
+      },
+      {
+        "text": "Impact of System Features on Model Scale We show the impact of different device placement strategies on model scale and impact of memory-centric tiling (Sec. 5.1.3) on maximum hidden size using a single DGX-2 system (16 GPUs). Maximum model size Figure 6a shows the effect of different device placement and partitioning strategies (see Table 2) on maximum model size. By using data parallelism alone we’re limited to only 1.4B parameters, due to limited GPU memory and significant",
+        "x": 317.5,
+        "y": 84.7,
+        "w": 242.2,
+        "h": 90.4,
+        "zh": "系统特性对模型规模的影响。我们在单台 DGX-2（16 块 GPU）上，展示不同的设备放置策略对模型规模的影响，以及以内存为中心的分块（第 5.1.3 节）对最大隐藏维度的影响。最大模型规模。图 6a 给出不同设备放置和划分策略（见表 2）对最大模型规模的影响。只用数据并行时，我们只能到 1.4B 参数，原因是 GPU 内存有限，以及显著的"
+      },
+      {
+        "text": "Superlinear Scalability Figure 5b shows that ZeRO-Infinity achieves super-linear scalability from 4 nodes (64 GPUs) to 32 nodes (512 GPUs) when training a 1T model. This is a weak scaling result where we keep batch size per node as constant and increase total batch size with increased number of nodes. ZeRO-Infinity exceeds perfect linear scaling by effectively leveraging the linear increase in aggregate PCIe and",
+        "x": 53.6,
+        "y": 84.7,
+        "w": 240.7,
+        "h": 79.4,
+        "zh": "超线性可扩展。图 5b 表明，训练 1T 模型时，ZeRO-Infinity 从 4 个节点（64 块 GPU）到 32 个节点（512 块 GPU）达到超线性可扩展。这是弱扩展结果：每个节点的批大小保持不变，总批大小随节点数增加。ZeRO-Infinity 超过了完美的线性扩展，靠的是有效利用合计 PCIe 的线性增长，以及"
+      }
+    ],
+    "11": [
+      {
+        "text": "ZeRO-Offload on the back propagation time of an 8B parameter model. ZeRO-Infinity leverages the aggregate PCIe bandwidth across GPUs to offload the gradients, resulting in a speedup of nearly 2x at 64 GPUs compared to ZeRO-Offload which is limited by single PCIe bandwidth. Prefetching and Overlapping Figure 6d shows the relative throughput difference with communication overlapping and prefetching turned on and off for an 8B parameter model with 64 GPUs. The figure shows that prefetching and overlapping are crucial to achieving good performance at small batch sizes per GPU, while its impact diminishes at large batch sizes. Activation checkpoint offload Figure 6e shows that CPU offloading of activation checkpoints in ZeRO-Infinity reduces the training throughput by up to 1.2x for small hidden sizes, but for hidden sizes 32K and 64K, the impact is minimal, demonstrating that it is possible to offload activation checkpoints to CPU memory without impacting efficiency for large hidden sizes.",
+        "x": 317.6,
+        "y": 378.1,
+        "w": 246.8,
+        "h": 184.3,
+        "zh": "ZeRO-Offload，比较的是一个 8B 参数模型的反向传播时间。ZeRO-Infinity 利用各 GPU 上加起来的 PCIe 带宽来卸载梯度，因此在 64 块 GPU 上相对 ZeRO-Offload 有将近 2 倍加速；ZeRO-Offload 受限于单条 PCIe 带宽。预取与重叠。图 6d 给出一个 8B 参数模型在 64 块 GPU 上，打开和关闭通信重叠与预取时的相对吞吐差别。图中表明，每块 GPU 批大小很小时，预取和重叠对取得好性能至关重要；批大小很大时，它们的影响会变小。激活检查点卸载。图 6e 表明，在较小的隐藏维度上，ZeRO-Infinity 把激活检查点卸载到 CPU，最多会让训练吞吐慢 1.2 倍；但对 32K 和 64K 的隐藏维度，影响很小。这说明对大的隐藏维度，可以把激活检查点卸载到 CPU 内存，而不损害效率。"
+      },
+      {
+        "text": "Table 2: Device placement options and partitioning strategies for optimizer, gradient, and parameter states.",
+        "x": 53.5,
+        "y": 450.5,
+        "w": 242.1,
+        "h": 19.9,
+        "zh": "表 2：优化器状态、梯度和参数状态的设备放置选项与划分策略。"
+      },
+      {
+        "text": "model state redundancies. As we introduce optimizer/gradient partitioning and offloading to CPU with ZeRO-2 and ZeRO-Offload, we are able to scale up 9x to 13B parameters on a single node. Partitioning and offloading parameter states to CPU in ZeRO-Infinity allows us to almost reach 100B parameters. However, the final major jump in scale comes from offloading model states to NVMe which finally gets us to 1T parameters, resulting in a 700x increase in model size relative to data parallelism alone. Maximum Hidden Size We evaluate the impact of memorycentric tiling in enabling large hidden sizes in the presence of memory fragmentation. We train a single layer transformer model with different hidden sizes and tiling factors to identify the largest hidden size that can be trained with and without tiling. To keep memory fragmentation consistent across all the experiments, we pre fragment the total GPU memory into 2 GB contiguous chunks so that all memory allocation requests larger than 2GB will fail. Figure 6b shows the largest hidden size that can be trained without memory-centric tiling is 8K, while we can even train a massive hidden size of 64K using memory-centric tiling factor of 16. With memory-centric tiling, ZeRO-Infinity greatly simplifies DL system stack by avoiding the need for model parallelism, making it easy for data scientists to train with large hidden sizes.",
+        "x": 53.8,
+        "y": 166.7,
+        "w": 241.8,
+        "h": 239.1,
+        "zh": "模型状态的冗余。随着我们用 ZeRO-2 和 ZeRO-Offload 引入优化器与梯度的划分，并把它们卸载到 CPU，单节点上可以把规模提高到原来的 9 倍，达到 13B 参数。在 ZeRO-Infinity 里把参数状态划分并卸载到 CPU，几乎可以达到 100B 参数。不过，规模上最后一次大的跳跃来自把模型状态卸载到 NVMe，最终到达 1T 参数，相对只用数据并行，模型规模增加 700 倍。最大隐藏维度。我们评估以内存为中心的分块，在存在内存碎片时能把隐藏维度做到多大。我们训练一个单层 Transformer 模型，变化隐藏维度和分块因子，找出有分块和没有分块时能够训练的最大隐藏维度。为了让所有实验的内存碎片保持一致，我们预先把全部 GPU 内存切成 2 GB 的连续块，因此任何大于 2 GB 的内存分配请求都会失败。图 6b 表明，没有以内存为中心的分块时，能训练的最大隐藏维度是 8K；而用分块因子 16 时，甚至可以训练隐藏维度达 64K 的巨大模型。有了以内存为中心的分块，ZeRO-Infinity 大大简化了深度学习系统栈，不必再靠模型并行，数据科学家因此容易用很大的隐藏维度来训练。"
+      },
+      {
+        "text": "Achievable peak (pflops/device) Slow memory bw requirement",
+        "x": 335.2,
+        "y": 302.8,
+        "w": 116,
+        "h": 20.3,
+        "zh": "可达峰值（pflops/设备）。慢速内存带宽需求"
+      },
+      {
+        "text": "Slow memory aggregate bw (TB/s) GPU-to-GPU bw (GB/s) Table 3: Bandwidth (bw) requirements for ZeRO-Infinity to remain efficient on a cluster of 512 accelerator devices with 10x and 100x more achievable compute than NVIDIA V100 GPUs.",
+        "x": 317.7,
+        "y": 236.9,
+        "w": 240.8,
+        "h": 52.6,
+        "zh": "慢速内存的合计带宽（TB/s）。GPU 到 GPU 的带宽（GB/s）。表 3：在 512 个加速器的集群上，可达算力比 NVIDIA V100 GPU 高 10 倍和 100 倍时，ZeRO-Infinity 要保持高效所需的带宽（bw）。"
+      },
+      {
+        "text": "In this paper, we presented ZeRO-Infinity, a novel heterogeneous system technology that leverages GPU, CPU, and NVMe memory to allow for unprecedented model scale that is accessible and easy to use while achieving excellent efficiency. It offers a paradigm shift in how we think about memory for large model training. It is no longer necessary to fit DL training on ultra-fast but expensive and limited memory like HBM2. ZeRO-Infinity demonstrates that it is possible to transcend the GPU memory wall by leveraging cheap and slow, but massive, CPU or NVMe memory in parallel across multiple devices to achieve the aggregate bandwidth necessary for efficient training on current generation of GPU clusters. As we look into the future, the GPUs and other accelerators will become more powerful, and this aggregate bandwidth required for",
+        "x": 318,
+        "y": 84.7,
+        "w": 240.5,
+        "h": 140.5,
+        "zh": "本文提出 ZeRO-Infinity，一种新的异构系统技术。它利用 GPU、CPU 和 NVMe 内存，使模型规模达到前所未有的程度，同时又够得着、好用，并保持很好的效率。它改变了我们看待大模型训练所需内存的方式。深度学习训练不再必须放进 HBM2 这种极快、但昂贵又有限的内存里。ZeRO-Infinity 表明，可以越过 GPU 内存墙：在多台设备上并行利用便宜、较慢、但容量巨大的 CPU 或 NVMe 内存，凑出当前这一代 GPU 集群上高效训练所需的合计带宽。展望未来，GPU 和其他加速器会更强，而为此所需的合计带宽"
+      },
+      {
+        "text": "Impact of System Features on Performance We evaluate the effects of the infinity offload engine (Sec. 5), bandwidthcentric partitioning (Sec. 6.1), overlap-centric design (Sec. 6.2), and activation checkpoint offloading (Sec. 4.1) on training speed. ZeRO-Infinity vs ZeRO-Offload Figure 6c shows the impact of offloading gradients to CPU memory with ZeRO-Infinity vs",
+        "x": 53.4,
+        "y": 84.7,
+        "w": 252.8,
+        "h": 68.4,
+        "zh": "系统特性对性能的影响。我们评估 infinity 卸载引擎（第 5 节）、以带宽为中心的划分（第 6.1 节）、以重叠为中心的设计（第 6.2 节）以及激活检查点卸载（第 4.1 节）对训练速度的影响。ZeRO-Infinity 与 ZeRO-Offload。图 6c 给出把梯度卸载到 CPU 内存时，ZeRO-Infinity 相对"
+      }
+    ],
+    "12": [
+      {
+        "text": "efficient training will also increase. Table 3 shows that even when the compute of the accelerators increases by 10x compared to the NVIDIA V100 GPUs, on a cluster with 512 of them, ZeRO-Infinity only requires a bandwidth of 30 GB/s between each accelerator and the slow memory to remain efficient. In fact, this is already possible with today’s technology by connecting accelerators to slow memory via NVLink [43]. For example, the Summit Supercomputer launched in 2018 [44] connects NVIDIA V100 GPUs with the CPU memory at 40GB/s per GPU. It is clear that with ZeRO-Infinity, accelerator device memory is no longer a limitation on model scale or training efficiency. However, training models with tens or hundreds of trillions of parameters in a reasonable time still requires massive leaps in compute, and running efficiently on these future devices requires a proportional leap in device-to-device bandwidth (Table 3). We hope that, with device memory no longer a limitation, ZeROInfinity will inspire a more compute and device-device bandwidth focused innovations of ultra-powerful accelerator devices and supercomputing clusters in the future to support the next 1000x growth in model scale and the advancements that they can offer.",
+        "x": 53.8,
+        "y": 490.1,
+        "w": 241.8,
+        "h": 217.2,
+        "zh": "也会提高。表 3 表明，即便加速器的算力比 NVIDIA V100 GPU 提高 10 倍，在 512 个这样的加速器组成的集群上，ZeRO-Infinity 要保持高效，每个加速器到慢速内存的带宽也只需要 30 GB/s。事实上，用今天的技术把加速器经 NVLink [43] 接到慢速内存，这一点已经做得到。例如，2018 年启用的 Summit 超级计算机 [44]，把 NVIDIA V100 GPU 与 CPU 内存以每 GPU 40 GB/s 连在一起。显然，有了 ZeRO-Infinity，加速器设备内存不再是模型规模或训练效率的限制。不过，要在合理时间内训练几十万亿或几百万亿参数的模型，计算能力仍需要巨大的飞跃；要在这些未来设备上高效运行，设备到设备的带宽也需要成比例地跃升（表 3）。我们希望，既然设备内存不再是限制，ZeRO-Infinity 能促使未来的超强加速器设备和超级计算集群，把创新更多地放到算力和设备间带宽上，从而支撑下一次 1000 倍的模型规模增长，以及这种增长所能带来的进展。"
+      },
+      {
+        "text": "DeepSpeed: Extreme-scale model training for everyone. https://www.microsoft.com/en-us/research/blog/deepspeed-extreme-scalemodel-training-for-everyone/, 2020. [14] Mohammad Shoeybi, Mostofa Patwary, Raul Puri, Patrick LeGresley, Jared Casper, and Bryan Catanzaro. Megatron-LM: Software repository. https://github.com/ NVIDIA/Megatron-LM, 2021. [15] DeepSpeed Team and Rangan Majumder. DeepSpeed: Extreme-scale model training for everyone. https://www.microsoft.com/en-us/research/blog/deepspeedextreme-scale-model-training-for-everyone/, 2020. [16] Amir Gholami, Zhewei Yao, Sehoon Kim, Michael W. Mahoney, and Kurt Keutzer. Ai and memory wall. RiseLab Medium Post, 2021. [17] Noam Shazeer, Youlong Cheng, Niki Parmar, Dustin Tran, Ashish Vaswani, Penporn Koanantakool, Peter Hawkins, HyoukJoong Lee, Mingsheng Hong, Cliff Young, Ryan Sepassi, and Blake A. Hechtman. Mesh-tensorflow: Deep learning for supercomputers. CoRR, abs/1811.02084, 2018. [18] Minjie Wang, Chien-chin Huang, and Jinyang Li. Supporting very large models using automatic dataflow graph partitioning. In Proceedings of the Fourteenth EuroSys Conference 2019, EuroSys ’19, New York, NY, USA, 2019. Association for",
+        "x": 318,
+        "y": 562.9,
+        "w": 241.4,
+        "h": 142.5,
+        "zh": "DeepSpeed：人人可用的极大规模模型训练。https://www.microsoft.com/en-us/research/blog/deepspeed-extreme-scalemodel-training-for-everyone/，2020。[14] Mohammad Shoeybi、Mostofa Patwary、Raul Puri、Patrick LeGresley、Jared Casper、Bryan Catanzaro。Megatron-LM：软件仓库。https://github.com/ NVIDIA/Megatron-LM，2021。[15] DeepSpeed Team、Rangan Majumder。DeepSpeed：人人可用的极大规模模型训练。https://www.microsoft.com/en-us/research/blog/deepspeedextreme-scale-model-training-for-everyone/，2020。[16] Amir Gholami、Zhewei Yao、Sehoon Kim、Michael W. Mahoney、Kurt Keutzer。AI 与内存墙。RiseLab Medium 文章，2021。[17] Noam Shazeer、Youlong Cheng、Niki Parmar、Dustin Tran、Ashish Vaswani、Penporn Koanantakool、Peter Hawkins、HyoukJoong Lee、Mingsheng Hong、Cliff Young、Ryan Sepassi、Blake A. Hechtman。Mesh-TensorFlow：面向超级计算机的深度学习。CoRR，abs/1811.02084，2018。[18] Minjie Wang、Chien-chin Huang、Jinyang Li。用自动数据流图划分来支撑非常大的模型。第十四届 EuroSys 会议论文集，EuroSys ’19，美国纽约州纽约市，2019。Association for"
+      },
+      {
+        "text": "[19] Tal Ben-Nun and Torsten Hoefler. Demystifying parallel and distributed deep learning: An in-depth concurrency analysis. ACM Computing Surveys (CSUR),",
+        "x": 318,
+        "y": 538.9,
+        "w": 241,
+        "h": 14.9,
+        "zh": "[19] Tal Ben-Nun、Torsten Hoefler。把并行与分布式深度学习讲清楚：一份深入的并发分析。ACM Computing Surveys（CSUR），"
+      },
+      {
+        "text": "[20] Mark Hildebrand, Jawad Khan, Sanjeev Trika, Jason Lowe-Power, and Venkatesh Akella. Autotm: Automatic tensor movement in heterogeneous memory systems using integer linear programming. InProceedings of the Twenty-Fifth International Conference on Architectural Support for Programming Languages and Operating Systems, pages 875–890, 2020. [21] Chien-Chin Huang, Gu Jin, and Jinyang Li. Swapadvisor: Pushing deep learning beyond the gpu memory limit via smart swapping. In Proceedings of the TwentyFifth International Conference on Architectural Support for Programming Languages and Operating Systems, pages 1341–1355, 2020. [22] Hai Jin, Bo Liu, Wenbin Jiang, Yang Ma, Xuanhua Shi, Bingsheng He, and Shaofeng Zhao. Layer-centric memory reuse and data migration for extremescale deep learning on many-core architectures. ACM Transactions on Architecture and Code Optimization (TACO), 15(3):1–26, 2018. [23] Xuan Peng, Xuanhua Shi, Hulin Dai, Hai Jin, Weiliang Ma, Qian Xiong, Fan Yang, and Xuehai Qian. Capuchin: Tensor-based gpu memory management for deep learning. In Proceedings of the Twenty-Fifth International Conference on Architectural Support for Programming Languages and Operating Systems, pages [24] Jie Ren, Jiaolin Luo, Kai Wu, Minjia Zhang, Hyeran Jeon, and Dong Li. Sentinel: Efficient tensor migration and allocation on heterogeneous memory systems for deep learning. In IEEE International Symposium on High Performance Computer",
+        "x": 318,
+        "y": 363.6,
+        "w": 241.4,
+        "h": 166.4,
+        "zh": "[20] Mark Hildebrand、Jawad Khan、Sanjeev Trika、Jason Lowe-Power、Venkatesh Akella。AutoTM：用整数线性规划在异构内存系统里自动搬移张量。第 25 届编程语言与操作系统体系结构支持国际会议论文集，第 875–890 页，2020。[21] Chien-Chin Huang、Gu Jin、Jinyang Li。SwapAdvisor：用聪明的换入换出，把深度学习推出 GPU 内存上限。第 25 届编程语言与操作系统体系结构支持国际会议论文集，第 1341–1355 页，2020。[22] Hai Jin、Bo Liu、Wenbin Jiang、Yang Ma、Xuanhua Shi、Bingsheng He、Shaofeng Zhao。面向众核架构上极大规模深度学习的、以层为中心的内存复用与数据迁移。ACM Transactions on Architecture and Code Optimization（TACO），15(3):1–26，2018。[23] Xuan Peng、Xuanhua Shi、Hulin Dai、Hai Jin、Weiliang Ma、Qian Xiong、Fan Yang、Xuehai Qian。Capuchin：面向深度学习的、基于张量的 GPU 内存管理。第 25 届编程语言与操作系统体系结构支持国际会议论文集，第 [24] Jie Ren、Jiaolin Luo、Kai Wu、Minjia Zhang、Hyeran Jeon、Dong Li。Sentinel：在面向深度学习的异构内存系统上高效迁移和分配张量。IEEE International Symposium on High Performance Computer"
+      },
+      {
+        "text": "We thank Elton Zheng, Reza Yazdani Aminabadi, Arash Ashari for their help on improving various components of the code, and Cheng Li for her help in proof reading the paper. We thank Andrey Proskurin, Gopi Kumar, Junhua Wang, Mikhail Parakhin, and Rangan Majumder for their continuous support.",
+        "x": 53.4,
+        "y": 407.4,
+        "w": 242.2,
+        "h": 52.8,
+        "zh": "感谢 Elton Zheng、Reza Yazdani Aminabadi、Arash Ashari 帮助改进代码的多个部分，感谢 Cheng Li 帮助校对论文。感谢 Andrey Proskurin、Gopi Kumar、Junhua Wang、Mikhail Parakhin 和 Rangan Majumder 的持续支持。"
+      },
+      {
+        "text": "[1] Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. BERT: pretraining of deep bidirectional transformers for language understanding. CoRR,",
+        "x": 57,
+        "y": 363.6,
+        "w": 238.2,
+        "h": 14.9,
+        "zh": "[1] Jacob Devlin、Ming-Wei Chang、Kenton Lee、Kristina Toutanova。BERT：面向语言理解的深度双向 Transformer 预训练。CoRR，"
+      },
+      {
+        "text": "[2] Alec Radford, Jeff Wu, Rewon Child, David Luan, Dario Amodei, and Ilya Sutskever. Language models are unsupervised multitask learners. 2019. [3] Colin Raffel, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael Matena, Yanqi Zhou, Wei Li, and Peter J. Liu. Exploring the limits of transfer learning with a unified text-to-text transformer, 2019. [4] Tom B Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, et al. Language models are few-shot learners. arXiv preprint arXiv:2005.14165,",
+        "x": 57,
+        "y": 291.9,
+        "w": 238.2,
+        "h": 62.8,
+        "zh": "[2] Alec Radford、Jeff Wu、Rewon Child、David Luan、Dario Amodei、Ilya Sutskever。语言模型是无监督的多任务学习者。2019。[3] Colin Raffel、Noam Shazeer、Adam Roberts、Katherine Lee、Sharan Narang、Michael Matena、Yanqi Zhou、Wei Li、Peter J. Liu。用统一的文本到文本 Transformer 探索迁移学习的极限，2019。[4] Tom B Brown、Benjamin Mann、Nick Ryder、Melanie Subbiah、Jared Kaplan、Prafulla Dhariwal、Arvind Neelakantan、Pranav Shyam、Girish Sastry、Amanda Askell 等。语言模型是少样本学习者。arXiv preprint arXiv:2005.14165，"
+      },
+      {
+        "text": "[25] Minsoo Rhu, Natalia Gimelshein, Jason Clemons, Arslan Zulfiqar, and Stephen W Keckler. vdnn: Virtualized deep neural networks for scalable, memory-efficient neural network design. In 2016 49th Annual IEEE/ACM International Symposium on Microarchitecture (MICRO), pages 1–13. IEEE, 2016. [26] Linnan Wang, Jinmian Ye, Yiyang Zhao, Wei Wu, Ang Li, Shuaiwen Leon Song, Zenglin Xu, and Tim Kraska. Superneurons: Dynamic gpu memory management for training deep neural networks. In Proceedings of the 23rd ACM SIGPLAN symposium on principles and practice of parallel programming, pages 41–53, 2018. [27] Weijie Zhao, Deping Xie, Ronglai Jia, Yulei Qian, Ruiquan Ding, Mingming Sun, and Ping Li. Distributed hierarchical gpu parameter server for massive scale deep learning ads systems, 2020. [28] Animesh Jain, Amar Phanishayee, Jason Mars, Lingjia Tang, and Gennady Pekhimenko. Gist: Efficient data encoding for deep neural network training. In International Symposium on Computer Architecture (ISCA 2018), 2018. [29] Tianqi Chen, Bing Xu, Chiyuan Zhang, and Carlos Guestrin. Training deep nets with sublinear memory cost. CoRR, abs/1604.06174, 2016. [30] Paras Jain, Ajay Jain, Aniruddha Nrusimha, Amir Gholami, Pieter Abbeel, Kurt Keutzer, Ion Stoica, and Joseph E. Gonzalez. Checkmate: Breaking the memory wall with optimal tensor rematerialization. ArXiv, abs/1910.02653, 2019. [31] Linnan Wang, Jinmian Ye, Yiyang Zhao, Wei Wu, Ang Li, Shuaiwen Leon Song, Zenglin Xu, and Tim Kraska. Superneurons: Dynamic GPU memory management for training deep neural networks. CoRR, abs/1801.04380, 2018. [32] John Duchi, Elad Hazan, and Yoram Singer. Adaptive subgradient methods for online learning and stochastic optimization. J. Mach. Learn. Res., 12(null):2121–2159,",
+        "x": 318,
+        "y": 164.4,
+        "w": 241.4,
+        "h": 190.3,
+        "zh": "[25] Minsoo Rhu、Natalia Gimelshein、Jason Clemons、Arslan Zulfiqar、Stephen W Keckler。vDNN：面向可扩展、省内存神经网络设计的虚拟化深度神经网络。2016 年第 49 届 IEEE/ACM 微体系结构国际研讨会（MICRO），第 1–13 页。IEEE，2016。[26] Linnan Wang、Jinmian Ye、Yiyang Zhao、Wei Wu、Ang Li、Shuaiwen Leon Song、Zenglin Xu、Tim Kraska。SuperNeurons：训练深度神经网络时的动态 GPU 内存管理。第 23 届 ACM SIGPLAN 并行编程原理与实践研讨会论文集，第 41–53 页，2018。[27] Weijie Zhao、Deping Xie、Ronglai Jia、Yulei Qian、Ruiquan Ding、Mingming Sun、Ping Li。面向极大规模深度学习广告系统的分布式分层 GPU 参数服务器，2020。[28] Animesh Jain、Amar Phanishayee、Jason Mars、Lingjia Tang、Gennady Pekhimenko。Gist：面向深度神经网络训练的高效数据编码。计算机体系结构国际研讨会（ISCA 2018），2018。[29] Tianqi Chen、Bing Xu、Chiyuan Zhang、Carlos Guestrin。以亚线性内存代价训练深度网络。CoRR，abs/1604.06174，2016。[30] Paras Jain、Ajay Jain、Aniruddha Nrusimha、Amir Gholami、Pieter Abbeel、Kurt Keutzer、Ion Stoica、Joseph E. Gonzalez。Checkmate：用最优的张量重物化打破内存墙。ArXiv，abs/1910.02653，2019。[31] Linnan Wang、Jinmian Ye、Yiyang Zhao、Wei Wu、Ang Li、Shuaiwen Leon Song、Zenglin Xu、Tim Kraska。SuperNeurons：训练深度神经网络时的动态 GPU 内存管理。CoRR，abs/1801.04380，2018。[32] John Duchi、Elad Hazan、Yoram Singer。用于在线学习和随机优化的自适应次梯度方法。J. Mach. Learn. Res.，12(null):2121–2159，"
+      },
+      {
+        "text": "[5] Jared Kaplan, Sam McCandlish, Tom Henighan, Tom B. Brown, Benjamin Chess, Rewon Child, Scott Gray, Alec Radford, Jeffrey Wu, and Dario Amodei. Scaling laws for neural language models, 2020. [6] Matthew E Peters, Mark Neumann, Mohit Iyyer, Matt Gardner, Christopher Clark, Kenton Lee, and Luke Zettlemoyer. Deep contextualized word representations. arXiv preprint arXiv:1802.05365, 2018. [7] Mohammad Shoeybi, Mostofa Patwary, Raul Puri, Patrick LeGresley, Jared Casper, and Bryan Catanzaro. Megatron-lm: Training multi-billion parameter language models using model parallelism, 2019. [8] Aaron Harlap, Deepak Narayanan, Amar Phanishayee, Vivek Seshadri, Nikhil R. Devanur, Gregory R. Ganger, and Phillip B. Gibbons. Pipedream: Fast and efficient pipeline parallel DNN training. CoRR, abs/1806.03377, 2018. [9] Yanping Huang, Yonglong Cheng, Dehao Chen, HyoukJoong Lee, Jiquan Ngiam, Quoc V. Le, and Zhifeng Chen. Gpipe: Efficient training of giant neural networks using pipeline parallelism. ArXiv, abs/1811.06965, 2018. [10] Deepak Narayanan, Amar Phanishayee, Kaiyu Shi, Xie Chen, and Matei Zaharia. Memory-efficient pipeline-parallel dnn training. arXiv preprint arXiv:2006.09503,",
+        "x": 53.8,
+        "y": 148.4,
+        "w": 241.3,
+        "h": 134.5,
+        "zh": "[5] Jared Kaplan、Sam McCandlish、Tom Henighan、Tom B. Brown、Benjamin Chess、Rewon Child、Scott Gray、Alec Radford、Jeffrey Wu、Dario Amodei。神经语言模型的缩放定律，2020。[6] Matthew E Peters、Mark Neumann、Mohit Iyyer、Matt Gardner、Christopher Clark、Kenton Lee、Luke Zettlemoyer。深度上下文化的词表示。arXiv preprint arXiv:1802.05365，2018。[7] Mohammad Shoeybi、Mostofa Patwary、Raul Puri、Patrick LeGresley、Jared Casper、Bryan Catanzaro。Megatron-LM：用模型并行训练数十亿参数的语言模型，2019。[8] Aaron Harlap、Deepak Narayanan、Amar Phanishayee、Vivek Seshadri、Nikhil R. Devanur、Gregory R. Ganger、Phillip B. Gibbons。PipeDream：快速高效的流水线并行 DNN 训练。CoRR，abs/1806.03377，2018。[9] Yanping Huang、Yonglong Cheng、Dehao Chen、HyoukJoong Lee、Jiquan Ngiam、Quoc V. Le、Zhifeng Chen。GPipe：用流水线并行高效训练巨大神经网络。ArXiv，abs/1811.06965，2018。[10] Deepak Narayanan、Amar Phanishayee、Kaiyu Shi、Xie Chen、Matei Zaharia。省内存的流水线并行 DNN 训练。arXiv preprint arXiv:2006.09503，"
+      },
+      {
+        "text": "[33] Diederik P. Kingma and Jimmy Ba. Adam: A method for stochastic optimization. In Yoshua Bengio and Yann LeCun, editors, 3rd International Conference on Learning Representations, ICLR 2015, San Diego, CA, USA, May 7-9, 2015, Conference",
+        "x": 318,
+        "y": 132.5,
+        "w": 241.3,
+        "h": 22.9,
+        "zh": "[33] Diederik P. Kingma、Jimmy Ba。Adam：一种随机优化方法。载于 Yoshua Bengio、Yann LeCun 编，第 3 届学习表征国际会议，ICLR 2015，美国加利福尼亚州圣迭戈，2015 年 5 月 7–9 日，Conference"
+      },
+      {
+        "text": "[11] Samyam Rajbhandari, Jeff Rasley, Olatunji Ruwase, and Yuxiong He. ZeRO: Memory Optimizations toward Training Trillion Parameter Models. In Proceedings of the International Conference for High Performance Computing, Networking, Storage and Analysis, SC ’20. IEEE Press, 2020. [12] Jie Ren, Samyam Rajbhandari, Reza Yazdani Aminabadi, Olatunji Ruwase, Shuangyan Yang, Minjia Zhang, Dong Li, and Yuxiong He. ZeRO-Offload: Democratizing Billion-Scale Model Training, 2021.",
+        "x": 53.8,
+        "y": 84.7,
+        "w": 241.4,
+        "h": 54.8,
+        "zh": "[11] Samyam Rajbhandari、Jeff Rasley、Olatunji Ruwase、Yuxiong He。ZeRO：面向万亿参数模型训练的内存优化。高性能计算、网络、存储与分析国际会议论文集，SC ’20。IEEE Press，2020。[12] Jie Ren、Samyam Rajbhandari、Reza Yazdani Aminabadi、Olatunji Ruwase、Shuangyan Yang、Minjia Zhang、Dong Li、Yuxiong He。ZeRO-Offload：让十亿规模的模型训练变得普及，2021。"
+      },
+      {
+        "text": "[34] Yang You, Igor Gitman, and Boris Ginsburg. Scaling SGD batch size to 32k for imagenet training. CoRR, abs/1708.03888, 2017. [35] Yang You, Jing Li, Jonathan Hseu, Xiaodan Song, James Demmel, and Cho-Jui Hsieh. Reducing BERT pre-training time from 3 days to 76 minutes. CoRR,",
+        "x": 318,
+        "y": 92.6,
+        "w": 241,
+        "h": 30.9,
+        "zh": "[34] Yang You、Igor Gitman、Boris Ginsburg。把 SGD 批大小扩展到 32K 以训练 ImageNet。CoRR，abs/1708.03888，2017。[35] Yang You、Jing Li、Jonathan Hseu、Xiaodan Song、James Demmel、Cho-Jui Hsieh。把 BERT 预训练时间从 3 天减到 76 分钟。CoRR，"
+      }
+    ],
+    "13": [
+      {
+        "text": "[36] Paulius Micikevicius, Sharan Narang, Jonah Alben, Gregory Diamos, Erich Elsen, David Garcia, Boris Ginsburg, Michael Houston, Oleksii Kuchaiev, Ganesh Venkatesh, and Hao Wu. Mixed precision training, 2017. [37] NVIDIA Tensor Cores. https://www.nvidia.com/en-us/data-center/tensor-cores/, 2018. [Online, accessed 5-April-2021]. [38] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, and Illia Polosukhin. Attention is all you need. CoRR, abs/1706.03762, 2017. [39] turing-nlg: A 17-billion-parameter language model by microsoft. [40] NVIDIA. NVIDIA DGX SuperPOD delivers world record supercomputing to any enterprise. https://developer.nvidia.com/blog/dgx-superpod-world-recordsupercomputing-enterprise/, 2019. [41] Alec Radford, Karthik Narasimhan, Tim Salimans, and Ilya Sutskever. Improving language understanding by generative pre-training. 2018. [42] Shen Li, Yanli Zhao, Rohan Varma, Omkar Salpekar, Pieter Noordhuis, Teng Li, Adam Paszke, Jeff Smith, Brian Vaughan, Pritam Damania, et al. Pytorch distributed: Experiences on accelerating data parallel training. arXiv preprint",
+        "x": 53.8,
+        "y": 570.8,
+        "w": 241.3,
+        "h": 134.5,
+        "zh": "[36] Paulius Micikevicius、Sharan Narang、Jonah Alben、Gregory Diamos、Erich Elsen、David Garcia、Boris Ginsburg、Michael Houston、Oleksii Kuchaiev、Ganesh Venkatesh、Hao Wu。混合精度训练，2017。[37] NVIDIA Tensor Cores。https://www.nvidia.com/en-us/data-center/tensor-cores/，2018。[在线，访问于 2021 年 4 月 5 日]。[38] Ashish Vaswani、Noam Shazeer、Niki Parmar、Jakob Uszkoreit、Llion Jones、Aidan N. Gomez、Lukasz Kaiser、Illia Polosukhin。注意力就是你所需要的一切。CoRR，abs/1706.03762，2017。[39] Turing-NLG：微软的一个 170 亿参数语言模型。[40] NVIDIA。NVIDIA DGX SuperPOD 把世界纪录级的超算带给任何企业。https://developer.nvidia.com/blog/dgx-superpod-world-recordsupercomputing-enterprise/，2019。[41] Alec Radford、Karthik Narasimhan、Tim Salimans、Ilya Sutskever。用生成式预训练改进语言理解。2018。[42] Shen Li、Yanli Zhao、Rohan Varma、Omkar Salpekar、Pieter Noordhuis、Teng Li、Adam Paszke、Jeff Smith、Brian Vaughan、Pritam Damania 等。PyTorch Distributed：加速数据并行训练的经验。arXiv preprint"
+      },
+      {
+        "text": "[43] Denis Foley and John Danskin. Ultra-performance pascal gpu and nvlink interconnect. IEEE Micro, 37(2):7–17, 2017. [44] Oak Ridge National Laboratory. ORNL Launches Summit Supercomputer. https: //www.ornl.gov/news/ornl-launches-summit-supercomputer, 2018. [Online;",
+        "x": 53.8,
+        "y": 531,
+        "w": 241.4,
+        "h": 30.9,
+        "zh": "[43] Denis Foley、John Danskin。超高性能 Pascal GPU 与 NVLink 互连。IEEE Micro，37(2):7–17，2017。[44] Oak Ridge National Laboratory。ORNL 启用 Summit 超级计算机。https: //www.ornl.gov/news/ornl-launches-summit-supercomputer，2018。[在线；"
+      }
+    ],
+    "14": [
+      {
+        "text": "Table 4: Model configurations for Figure 6(a)",
+        "x": 215.9,
+        "y": 581.2,
+        "w": 179.9,
+        "h": 9,
+        "zh": "表 4：图 6(a) 的模型配置"
+      },
+      {
+        "text": "Table 5: Model configurations for Figure 6(b)",
+        "x": 215.6,
+        "y": 485,
+        "w": 180.4,
+        "h": 9,
+        "zh": "表 5：图 6(b) 的模型配置"
+      },
+      {
+        "text": "Table 6: Model configurations for Figure 6(c)",
+        "x": 216.2,
+        "y": 419.8,
+        "w": 179.4,
+        "h": 9,
+        "zh": "表 6：图 6(c) 的模型配置"
+      },
+      {
+        "text": "Table 7: Model configurations for Figure 6(d)",
+        "x": 215.7,
+        "y": 354.7,
+        "w": 180.3,
+        "h": 9,
+        "zh": "表 7：图 6(d) 的模型配置"
+      },
+      {
+        "text": "Table 8: Model configurations for Figure 6(e)",
+        "x": 216,
+        "y": 248.1,
+        "w": 179.7,
+        "h": 9,
+        "zh": "表 8：图 6(e) 的模型配置"
+      }
+    ]
+  }
+}

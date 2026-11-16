@@ -1,0 +1,1115 @@
+{
+  "id": "1806.03377",
+  "title": "1806.03377",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "PipeDream: Fast and Efficient Pipeline Parallel DNN Training",
+        "x": 74.8,
+        "y": 688.1,
+        "w": 458.1,
+        "h": 17.2,
+        "zh": "PipeDream：快速、高效的流水线并行 DNN 训练"
+      },
+      {
+        "text": "Microsoft Research Carnegie Mellon University Stanford University",
+        "x": 142.2,
+        "y": 610.1,
+        "w": 334.4,
+        "h": 12,
+        "zh": "微软研究院、卡内基梅隆大学、斯坦福大学"
+      },
+      {
+        "text": "reflects updates across all inputs. The amount of data communicated per aggregation is proportional to the size of the model. Although data-parallel training works well with some popular models that have high computationto-communication ratios, two important trends threaten",
+        "x": 315,
+        "y": 512.3,
+        "w": 225,
+        "h": 57.8,
+        "zh": "反映所有输入上的更新。每次聚合要通信的数据量与模型大小成正比。尽管数据并行训练对一些计算–通信比很高的流行模型效果不错，但有两个重要趋势正在威胁"
+      },
+      {
+        "text": "PipeDream is a Deep Neural Network (DNN) training system for GPUs that parallelizes computation by pipelining execution across multiple machines. parallel computing model avoids the slowdowns faced by data-parallel training when large models and/or limited network bandwidth induce high communication-tocomputation ratios. PipeDream reduces communication by up to 95% for large DNNs relative to data-parallel training, and allows perfect overlap of communication and computation. PipeDream keeps all available GPUs productive by systematically partitioning DNN layers among them to balance work and minimize communication, versions model parameters for backward pass correctness, and schedules the forward and backward passes of different inputs in round-robin fashion to optimize “time to target accuracy”. Experiments with five different DNNs on two different clusters show that PipeDream is up to 5x faster in time-to-accuracy compared to data-",
+        "x": 72,
+        "y": 337.2,
+        "w": 225,
+        "h": 213.2,
+        "zh": "PipeDream 是面向 GPU 的深度神经网络（DNN）训练系统，它把执行做成跨多台机器的流水线，从而并行计算。这种并行计算模型避开了数据并行训练会碰到的减速：模型很大，或者网络带宽有限时，通信–计算比会很高。相对数据并行训练，PipeDream 对大型 DNN 最多能把通信量减少 95%，并让通信与计算完全重叠。PipeDream 把 DNN 各层系统地划分到全部可用 GPU 上，以平衡工作量并尽量减少通信，从而使这些 GPU 一直在干活；它为模型参数保留版本，以保证反向传播正确；并以轮转方式调度不同输入的前向和反向传播，从而优化“达到目标准确率的时间”。在两个不同集群上用五种不同 DNN 做的实验表明，PipeDream 在达到目标准确率的时间上最多比数据并行快 5 倍"
+      },
+      {
+        "text": "First, growing model sizes increase peraggregation communication. Indeed, some widely-used models are large enough that the communication overheads already eclipse computation time, limiting scaling and dominating total training time (e.g., up to 85% of training time for VGG-16 [36]). Second, rapid increases in GPU compute capacity further shift the bottleneck of training towards communication across models. Our results show these effects quantitatively (Figure 1) for three generations of NVIDIA GPUs (Kepler, Pascal, and Volta), across five different DNN models. Another approach to distributed training, model parallelism, is used traditionally for models that are too large to keep in a worker’s memory or cache during training [10, 25, 7]. Model-parallel training involves partitioning the model among workers such that each worker",
+        "x": 315,
+        "y": 316.1,
+        "w": 225,
+        "h": 194.2,
+        "zh": "首先，模型越来越大，每次聚合的通信量也跟着增加。事实上，一些广泛使用的模型已经大到通信开销盖过计算时间，限制了扩展，并主导总训练时间（例如 VGG-16 [36] 最多有 85% 的训练时间花在通信上）。其次，GPU 算力迅速提高，进一步把训练瓶颈推向各模型上的通信。我们的结果在三代 NVIDIA GPU（Kepler、Pascal 和 Volta）上、针对五种不同的 DNN 模型，定量展示了这些影响（图 1）。分布式训练的另一种做法是模型并行，传统上用于那些太大、训练时放不进单个 worker 的内存或缓存的模型 [10, 25, 7]。模型并行训练把模型划分到各个 worker 上，使每个 worker"
+      },
+      {
+        "text": "evaluates and performs updates for only a subset of the model’s parameters. However, even though model parallelism enables training of very large models, traditional model parallelism can lead to severe underutilization of compute resources since it either actively uses only one worker at a time (if each layer is assigned to a worker) or",
+        "x": 315,
+        "y": 244.3,
+        "w": 225,
+        "h": 69.7,
+        "zh": "只对模型参数的一个子集做计算和更新。然而，尽管模型并行能够训练非常大的模型，传统模型并行仍可能让计算资源严重利用不足：它要么同一时刻只让一个 worker 真正干活（如果每一层分给一个 worker），要么"
+      },
+      {
+        "text": "The last five years has seen a rapid increase in the use of Deep Neural Networks (DNNs), with researchers and practitioners applying these models to great effect across a wide range of applications, including image and video",
+        "x": 72,
+        "y": 246.8,
+        "w": 225,
+        "h": 45.8,
+        "zh": "过去五年里，深度神经网络（DNN）的使用迅速增加。研究者和实践者把这些模型用到范围很广的应用上，效果很好，其中包括图像和视频"
+      },
+      {
+        "text": "cannot overlap computation and communication (if each",
+        "x": 315,
+        "y": 232.4,
+        "w": 225,
+        "h": 10,
+        "zh": "无法让计算与通信重叠（如果每一"
+      },
+      {
+        "text": "tion [16, 17, 21, 22, 44]. As DNNs have become more widely developed and used, model sizes have grown to increase effectiveness—models today have tens to hundreds of layers totaling 10–20 million parameters. Such growth not only stresses the already time- and resource-intensive DNN training processes, but also causes the commonly used parallelization approaches to break down. The most common approach is data parallelism, where the DNN model is replicated on multiple worker machines, with each worker processing a subset of the training data. Weight updates computed on individual workers are aggregated to obtain a final weight update that",
+        "x": 72,
+        "y": 91,
+        "w": 225,
+        "h": 141.8,
+        "zh": "tion [16, 17, 21, 22, 44]。随着 DNN 被更广泛地开发和使用，模型为了提高效果而越来越大——如今的模型有几十到几百层，参数一共 10–20 million。这种增长不仅加重了本就耗时、耗资源的 DNN 训练，也让常用的并行方法开始失效。最常见的做法是数据并行：把 DNN 模型复制到多台 worker 机器上，每台 worker 处理训练数据的一个子集。各台 worker 算出的权重更新被聚合起来，得到一份最终的权重更新，它"
+      },
+      {
+        "text": "layer is partitioned). In addition, determining how best to partition a DNN model among workers is a challenging task even for the most experienced machine learning practitioners [30], often leading to additional inefficiency. This paper describes PipeDream, a new distributed training system specialized for DNNs. Like model parallelism, it partitions the DNN and assigns subsets of layers to each worker machine. But, unlike traditional model parallelism, PipeDream aggressively pipelines minibatch processing, with different workers processing different inputs at any instant of time. This is accomplished by injecting multiple inputs into the worker with the first DNN layer, thereby keeping the pipeline full and ensur-",
+        "x": 315,
+        "y": 72,
+        "w": 225,
+        "h": 158.4,
+        "zh": "层被切开）。此外，怎样把 DNN 模型最好地划分到各个 worker 上，即便对最有经验的机器学习实践者来说也很难 [30]，常常带来额外的低效。本文介绍 PipeDream，一个专为 DNN 设计的新分布式训练系统。和模型并行一样，它划分 DNN，把若干层分给每台 worker 机器。但与传统模型并行不同，PipeDream 激进地把 minibatch 的处理做成流水线，任意时刻不同 worker 处理不同的输入。做法是向持有 DNN 第一层的 worker 注入多个输入，从而让流水线保持充满，并确保"
+      }
+    ],
+    "2": [
+      {
+        "text": "ing concurrent processing on all workers. It also uses data parallelism for selected subsets of layers to balance computation load among workers. We refer to this combination of pipelining, model parallelism, and data parallelism as pipeline-parallel training. Pipeline-parallel training has the potential to provide high DNN training performance when data parallelism struggles. In particular, inter-worker communication can be limited to activations (on the forward pass) and gradients (backward) between adjacent layers assigned to different workers. We observe such communication to be up to 95% less than that for data-parallel training. PipeDream is the first system to combine pipelining, model parallelism, and data parallelism in a general and automated way. It realizes the potential of pipeline parallelism with a design that addresses several challenges. First, like pipelining in processors, achieving high efficiency requires the right partitioning of the DNN into",
+        "x": 72,
+        "y": 491.9,
+        "w": 225,
+        "h": 216.1,
+        "zh": "所有 worker 上都在并发处理。它还会对选定的若干层子集使用数据并行，以平衡各 worker 之间的计算负载。我们把流水线、模型并行和数据并行的这种组合称为流水线并行训练。当数据并行吃力时，流水线并行训练有潜力把 DNN 训练做得很快。具体而言，worker 之间的通信可以限制在分给不同 worker 的相邻层之间：前向传播传激活，反向传播传梯度。我们观察到，这种通信量比数据并行训练最多少 95%。PipeDream 是第一个以通用且自动化的方式，把流水线、模型并行和数据并行结合起来的系统。它用一套针对若干挑战的设计，把流水线并行的潜力兑现出来。首先，和处理器里的流水线一样，要达到高效率，就要把 DNN 恰当地划分成"
+      },
+      {
+        "text": "parallel BSP. When training the S2VT [43] model on the MSVD [3] dataset, PipeDream speeds up training by 3x compared to data-parallel BSP. To summarize, this paper makes four primary contributions. First, it introduces a parallelization approach specialized to DNN training to address communication bottlenecks by combining model parallelism with aggressive pipelining and data parallelism where appropriate. Second, it identifies the key challenges in realizing the performance potential of this idea and details solutions for each. Third, it describes a system (PipeDream) that efficiently implements pipeline-parallel DNN training. Fourth, it experimentally demonstrates that PipeDream allows parallel DNN training in circumstances where communication overheads limit data-parallel training, including cases where data-parallel is slower than single-machine",
+        "x": 315,
+        "y": 518.7,
+        "w": 225,
+        "h": 189.4,
+        "zh": "并行 BSP。在 MSVD [3] 数据集上训练 S2VT [43] 模型时，相比数据并行 BSP，PipeDream 把训练加速了 3 倍。总结起来，本文有四项主要贡献。第一，它提出一种专门针对 DNN 训练的并行方法，在合适的地方把模型并行、激进的流水线以及数据并行结合起来，以应对通信瓶颈。第二，它指出要兑现这一想法的性能潜力所面临的关键挑战，并逐一给出解法。第三，它描述了一个系统（PipeDream），高效地实现流水线并行的 DNN 训练。第四，实验表明，在通信开销限制了数据并行训练的情形下，PipeDream 仍然能够做并行 DNN 训练，其中包括数据并行比单机更慢的情形"
+      },
+      {
+        "text": "Background & Related Work This section discusses distributed DNN training, including terminology, common approaches and their limitations, and related work, using training of image classification models as a concrete example.",
+        "x": 315,
+        "y": 430.2,
+        "w": 225,
+        "h": 66.5,
+        "zh": "背景与相关工作。本节讨论分布式 DNN 训练，包括术语、常见做法及其局限，以及相关工作，并以图像分类模型的训练作为具体例子。"
+      },
+      {
+        "text": "“stages” (layer sub-sequences) that are each executed on a different worker; this depends on both the model architecture and the hardware deployment. Bad partitionings, where stages have widely skewed amounts of work, can lead to workers spending significant time idle. PipeDream automatically determines how to partition the layers of the DNN based on a short profiling run, using an algorithm that balances computation load among the different stages while minimizing communication. Second, since DNNs will not always divide evenly among available workers, PipeDream can use data parallelism for some stages—multiple workers can be assigned to a given stage, processing different minibatches in parallel. Third, unlike traditional uni-directional pipelines, DNN training is bi-directional—the forward pass is followed by a backward pass through the same layers in reverse order. PipeDream interleaves forward and backward minibatch processing on each worker, while making sure to route minibatches through the same workers on the backward pass. This helps to keep all workers busy without pipeline stalls, while preventing excessive inprogress minibatches and ensuring model convergence. Fourth, weight versions need to be managed carefully to obtain a high-quality model at the end of training. We find that allowing the backward pass for a given minibatch to use more up-to-date parameters than those used in the corresponding forward pass can be a significant problem. PipeDream maintains parameter value versions for each in-flight minibatch to combat this problem. Experiments with PipeDream confirm its effectiveness for each of the five models we evaluated and that cover two important DNN classes – CNNs and RNNs (seqto-seq). When training Inception-v3 [19], VGG16 [36], Resnet-50 [16], and AlexNet [26] on the ILSVRC12 [32] dataset, PipeDream speeds up training by up to 1.45x, 5.12x, 1.21x and 6.76x respectively compared to data-",
+        "x": 72,
+        "y": 60,
+        "w": 225,
+        "h": 429.9,
+        "zh": "“阶段”（层的子序列），每个阶段在不同的 worker 上执行；这既取决于模型结构，也取决于硬件怎么部署。划分得不好时，各阶段的工作量会差得很远，worker 就会空等很久。PipeDream 根据一次短暂的性能剖析，自动决定如何划分 DNN 的各层；所用算法在不同阶段之间平衡计算负载，同时尽量减少通信。第二，DNN 并不总能在可用 worker 之间均匀切开，因此 PipeDream 可以对某些阶段使用数据并行——把多个 worker 分给同一个阶段，并行处理不同的 minibatch。第三，与传统的单向流水线不同，DNN 训练是双向的：前向传播之后，还要按相反顺序再走一遍同样的层，做反向传播。PipeDream 在每个 worker 上交错处理 minibatch 的前向和反向，同时保证反向传播时 minibatch 走回同一批 worker。这样既能让所有 worker 保持忙碌、流水线不停滞，又能避免在途 minibatch 过多，并保证模型收敛。第四，要在训练结束时得到高质量模型，必须小心管理权重的版本。我们发现，若允许某个 minibatch 的反向传播使用比对应前向传播更新的参数，会是一个严重问题。PipeDream 为每个在途 minibatch 保留参数值的版本，以应对这个问题。实验证实，PipeDream 对我们评估的五个模型都有效，这些模型覆盖两类重要的 DNN：CNN 和 RNN（seq-to-seq）。在 ILSVRC12 [32] 数据集上训练 Inception-v3 [19]、VGG16 [36]、Resnet-50 [16] 和 AlexNet [26] 时，相比数据并行，PipeDream 分别最多把训练加速 1.45 倍、5.12 倍、1.21 倍和 6.76 倍"
+      },
+      {
+        "text": "A DNN model consists of a sequence of layers of different types (e.g., convolutional, fully connected, pooling). DNN models are typically trained using a dataset of labeled images. Training consists of multiple epochs, where an epoch is one iteration through all images in the dataset. In each epoch, the model trains over all images in the dataset in steps. In each step, the current model first makes a prediction for a small set of training samples, also known as a minibatch. This process is referred to as a forward pass. To make a prediction, input data from the minibatch is fed to the first layer of the model. Each layer then computes a function over its inputs, often using learned parameters (or weights), to produce an output for the next layer. The output of the last layer is the class prediction. Based on the model’s predicted label and the actual label of each image, the output layer computes a loss (or error). In the ensuing backward pass, each layer computes 1) the error for the previous layer, and 2) the weight update (gradient of the loss) for all relevant layers, which move the model’s predictions toward the desired",
+        "x": 315,
+        "y": 167.7,
+        "w": 225,
+        "h": 237.1,
+        "zh": "一个 DNN 模型由一串不同类型的层组成（例如卷积层、全连接层、池化层）。DNN 模型通常用带标签的图像数据集来训练。训练包含多个 epoch，一个 epoch 就是把数据集里的全部图像过一遍。在每个 epoch 里，模型按步骤在数据集的全部图像上训练。每一步中，当前模型先对一小批训练样本做预测，这一小批也叫 minibatch。这个过程称为前向传播。为了做预测，把 minibatch 的输入数据送进模型的第一层。每一层再对自己的输入计算一个函数，通常会用到学到的参数（或称权重），为下一层产生输出。最后一层的输出就是类别预测。输出层根据模型预测的标签和每张图像的真实标签计算损失（或误差）。随后的反向传播中，每一层计算：1）给上一层的误差，以及 2）所有相关层的权重更新（损失的梯度）。这些更新把模型的预测推向所期望的"
+      },
+      {
+        "text": "The goal of DNN training is to obtain a high-accuracy model in as little time as possible. captured with two metrics: 1) statistical efficiency, the number of epochs needed to reach a desired level of accuracy, and 2) hardware efficiency, the time required to complete a single epoch. The total training time to reach a desired accuracy level is simply the product of these two metrics [15]. To train large models in a reasonable",
+        "x": 315,
+        "y": 60,
+        "w": 225,
+        "h": 93.6,
+        "zh": "DNN 训练的目标，是在尽可能短的时间内得到高准确率的模型。这一点用两个指标来刻画：1）统计效率，即达到期望准确率所需的 epoch 数；2）硬件效率，即完成一个 epoch 所需的时间。达到期望准确率的总训练时间，就是这两个指标的乘积 [15]。要在合理的"
+      }
+    ],
+    "3": [
+      {
+        "text": "Figure 1: Communication overhead as a percentage of total training time for different hardware configurations. Many models (AlexNet, VGG16, S2VT) have a high communication overhead, even on the relatively slow K80. Two factors contribute to an increase in the communication overhead across all models: (i) an increase in the number of data-parallel workers, and (ii) an increase",
+        "x": 72,
+        "y": 559.1,
+        "w": 468,
+        "h": 30.9,
+        "zh": "图 1：不同硬件配置下，通信开销占总训练时间的百分比。许多模型（AlexNet、VGG16、S2VT）即使在相对较慢的 K80 上，通信开销也很高。有两个因素会让所有模型的通信开销上升：（i）数据并行 worker 的数量增加，（ii）以及一项增加"
+      },
+      {
+        "text": "amount of time, training is distributed across multiple GPUs1, usually using one of two approaches: data or",
+        "x": 72,
+        "y": 510.2,
+        "w": 225,
+        "h": 21.9,
+        "zh": "的时间里，训练被分布到多块 GPU1 上，通常采用两种做法之一：数据，或者"
+      },
+      {
+        "text": "With data parallelism, the input dataset is partitioned across multiple GPUs. Each GPU maintains a full copy of the model and trains on its own partition of data while periodically synchronizing weights with other GPUs, using either collective communication primitives [14] or Parameter Servers [28, 9]. The frequency of parameter synchronization affects both statistical and hardware efficiency. On one end, synchronizing at the end of every minibatch (referred to as bulk synchronous parallel or BSP [42]) reduces the staleness of weights used to compute gradients, ensuring good statistical efficiency. However, as shown in Figure 2, BSP requires each GPU to wait or stall for gradients from other GPUs, thus significantly lowering hardware efficiency. Despite optimizations such as Wait-free Backpropagation [47], where weight gradients are sent as soon as they are available, (common in modern parameter servers), communication stalls are inevitable in data-parallel training due to the structure of the DNN computation, and the fact that communication can often dominate total execution time. Furthermore, rapid increases in computation speeds further shift the training bottleneck towards communication. Figure 1 quantitatively shows the fraction of training time spent in communication stalls for five different DNN models run on “commodity” public cloud servers using three different generations of NVIDIA GPUs— Kepler (K80), Pascal (Titan X), and Volta (V100)— linked by a 10Gbps network. We focus on three takeaways. First, starting with slower GPUs such as the K80s, we note that some CNNs (VGG16 and AlexNet) and the sequence-to-sequence model for video transcription",
+        "x": 72,
+        "y": 98.3,
+        "w": 225,
+        "h": 381.3,
+        "zh": "在数据并行中，输入数据集被划分到多块 GPU 上。每块 GPU 保存模型的完整副本，在自己那一份数据上训练，并周期性地与其他 GPU 同步权重；同步既可以用集合通信原语 [14]，也可以用参数服务器 [28, 9]。参数同步的频率同时影响统计效率和硬件效率。一端是每个 minibatch 结束时就同步（称为批量同步并行，即 BSP [42]）。这能降低计算梯度时所用权重的陈旧程度，从而保证较好的统计效率。然而如图 2 所示，BSP 要求每块 GPU 停下来等其他 GPU 的梯度，因此硬件效率明显下降。尽管已有 Wait-free Backpropagation（无等待反向传播）[47] 这类优化——权重梯度一算出来就发送，这在现代参数服务器里很常见——数据并行训练里的通信停顿仍然不可避免。原因在于 DNN 计算本身的结构，以及通信常常会占掉总执行时间的大头。此外，计算速度迅速提高，进一步把训练瓶颈推向通信。图 1 定量给出了五种不同 DNN 模型花在通信停顿上的训练时间比例。这些模型跑在“商用”公有云服务器上，使用三代 NVIDIA GPU——Kepler（K80）、Pascal（Titan X）和 Volta（V100）——由 10Gbps 网络连接。我们重点看三个结论。第一，从较慢的 GPU（如 K80）看起，一些 CNN（VGG16 和 AlexNet）以及用于视频转录的 sequence-to-sequence 模型"
+      },
+      {
+        "text": "Figure 2: Example data-parallel setup with 4 machines. Timeline at one of the machines shows communication stalls during model parameter exchanges.",
+        "x": 315,
+        "y": 287.1,
+        "w": 225,
+        "h": 30.9,
+        "zh": "图 2：4 台机器的数据并行示例。其中一台机器上的时间线显示，交换模型参数期间会出现通信停顿。"
+      },
+      {
+        "text": "(S2VT) spend significant time communicating. Networks such as ResNet50 and Inception-v3 have comparatively low communication overhead. Second, as the number of data parallel workers increases, communication overheads increase for all models. Third, as GPU compute speeds increase (K80s to V100s), communication stalls also increase for all five models. Prior work has proposed more relaxed synchronization models, where each GPU proceeds with the computation for the next minibatch without stalling for the gradients from the other GPUs. This approach, which we refer to as asynchronous parallel or ASP, reduces GPU idle time, and as a result, improves hardware efficiency compared to BSP. However, this process can lead to gradients being computed on stale weights, thereby lowering statistical efficiency. Our experimental results corroborate recent findings that show that ASP does not reduce end-to-end",
+        "x": 315,
+        "y": 60,
+        "w": 225,
+        "h": 204.5,
+        "zh": "（S2VT）把大量时间花在通信上。ResNet50 和 Inception-v3 这类网络的通信开销相对较低。第二，数据并行 worker 变多以后，所有模型的通信开销都会上升。第三，GPU 计算变快以后（从 K80 到 V100），五种模型的通信停顿也都增加。已有工作提出了更宽松的同步方式：每块 GPU 不等其他 GPU 的梯度，就继续算下一个 minibatch。我们把这种做法称为异步并行（ASP）。它减少了 GPU 空闲时间，因此相比 BSP，硬件效率更高。然而，这样做可能导致在陈旧权重上计算梯度，从而降低统计效率。我们的实验结果印证了近期的发现：ASP 并不能降低端到端的"
+      },
+      {
+        "text": "1For the rest of this paper, we use the terms “GPU”, “worker”, and “machine” interchangeably, although a machine may have multiple GPUs each running a worker thread.",
+        "x": 72,
+        "y": 60,
+        "w": 225,
+        "h": 26.9,
+        "zh": "1 在本文其余部分，我们把“GPU”、“worker”和“machine”这三个词互换使用，尽管一台机器上可能有多块 GPU，每块 GPU 跑一个 worker 线程。"
+      }
+    ],
+    "4": [
+      {
+        "text": "With model parallelism, the model is partitioned across multiple GPUs, with each GPU responsible for only a portion of the model. chine learning (ML) problems such as matrix factorization, topic modeling, and linear regression, prior work [29, 27, 45, 23] has shown that model parallelism can often achieve faster training times than data parallelism because of the improved statistical efficiency that arises from not using extremely large minibatch sizes; the STRADS framework [23] shows that pipelining multiple minibatches can further improve training times for these ML problems. Model parallelism has also been used for DNNs, but traditionally only as a last resort when the working set of model training is too large to fit in a single worker’s memory or cache [25, 7, 10] (making data parallelism not an option). This is because traditional model-parallel DNN training suffers from two major lim-",
+        "x": 72,
+        "y": 486.5,
+        "w": 225,
+        "h": 201.2,
+        "zh": "在模型并行中，模型被划分到多块 GPU 上，每块 GPU 只负责模型的一部分。对矩阵分解、主题建模、线性回归这类机器学习（ML）问题，已有工作 [29, 27, 45, 23] 表明，模型并行常常能比数据并行训练得更快，因为不必使用极大的 minibatch，统计效率更好；STRADS 框架 [23] 表明，把多个 minibatch 做成流水线，还能进一步缩短这些问题的训练时间。模型并行也被用于 DNN，但传统上只是最后手段：当模型训练的工作集太大、放不进单个 worker 的内存或缓存时 [25, 7, 10]（这时数据并行就不可行）。这是因为传统的模型并行 DNN 训练有两个主要局限"
+      },
+      {
+        "text": "Figure 3: Model parallel training with 4 machines. Numbers indicate minibatch ID. For simplicity, here we assume that forward and backward work in every stage takes one time unit, and communicating activations across machines has no overhead.",
+        "x": 315,
+        "y": 572.4,
+        "w": 225,
+        "h": 41.8,
+        "zh": "图 3：4 台机器上的模型并行训练。数字是 minibatch 编号。为简单起见，这里假设每个阶段的前向和反向都花一个时间单位，并且跨机器传递激活没有开销。"
+      },
+      {
+        "text": "server SKUs and one can expect such offerings to be prohibitively expensive when they are offered. In contrast, in our work we investigate the use of commodity SKUs available in public cloud offerings; this is training infrastructure readily accessible to the masses. CNTK’s [33] 1-bit quantization technique tackles the problem of communication bottlenecks in data parallelism training [35]. This approximation strategy lacks generality and is effective for limited scenarios; it does not hurt convergence for some speech models [34], but hurts statistical performance due to noisy gradients in",
+        "x": 315,
+        "y": 423.2,
+        "w": 225,
+        "h": 130.7,
+        "zh": "服务器 SKU，而且可以预期，这类产品一旦提供，价格会高到用不起。与此相反，我们考察的是公有云里就能买到的普通 SKU；这是大家都能用上的训练基础设施。CNTK [33] 的 1-bit 量化针对的是数据并行训练中的通信瓶颈 [35]。这种近似缺少通用性，只在有限场景里有效；它对某些语音模型的收敛没有损害 [34]，但由于梯度带噪声，会损害统计性能，在"
+      },
+      {
+        "text": "First, model-parallel DNN training results in severe under-utilization of GPU resources, as illustrated in Figure 3. The figure shows a partitioning of the DNN layers across four machines, such that each machine is responsible for a group of consecutive layers; in this regime, the inter-layer values (activations and gradients) between these groups are the only parameters that need to be communicated across machines. 2 For each minibatch, only a single stage is active at any instant of time. Pipelining multiple minibatches back-to-back would improve utilization, but is traditionally not done because, 1) the bidirectionality of DNNs (the forward pass is followed by a backward pass through the same layers in reverse order) makes pipelining challenging, and more importantly 2) a naive pipelining mechanism introduces weight update computations on stale weights, leading to the final model achieving a lower accuracy than in the data-parallel",
+        "x": 72,
+        "y": 271.1,
+        "w": 225,
+        "h": 201.2,
+        "zh": "第一，模型并行的 DNN 训练会让 GPU 严重利用不足，如图 3 所示。该图把 DNN 的层划分到四台机器上，每台机器负责一组连续的层；在这种安排下，这些组之间的层间值（激活和梯度）是唯一需要跨机器通信的参数。2 对每个 minibatch，任意时刻只有一个阶段在干活。把多个 minibatch 一个接一个做成流水线可以提高利用率，但传统上并不这么做，原因有二：1）DNN 是双向的（前向传播之后，还要按相反顺序再走同样的层做反向传播），流水线因此很难做；更重要的是，2）朴素的流水线会在陈旧权重上计算权重更新，导致最终模型的准确率低于数据并行"
+      },
+      {
+        "text": "Goyal et al. [14] uses more efficient implementations of all_reduce, like the recursive halving-and-doubling algorithm and the bucket algorithm to reduce the amount of data being sent over the network [39]. Others have explored techniques from the HPC literature to reduce the overhead of communication [2, 41]. But all these reduction approaches still involve synchronous communication patterns, resulting in smaller network stalls that only slightly alleviate the communication bottleneck introduced due to ever growing model sizes and faster com-",
+        "x": 315,
+        "y": 290.5,
+        "w": 225,
+        "h": 117.6,
+        "zh": "Goyal 等人 [14] 使用更高效的 all_reduce 实现，例如递归 halving-and-doubling 算法和 bucket 算法，以减少通过网络发送的数据量 [39]。也有人借用 HPC 文献中的技术来降低通信开销 [2, 41]。但这些归约方法仍然是同步通信，只能把网络停顿变小一点，对模型不断变大、计算更快所带来的通信瓶颈，只能稍稍缓解"
+      },
+      {
+        "text": "Chen et al. [6] briefly explore the potential benefits of pipelining minibatches in model parallel training, but do not address the conditions for good statistical efficiency, scale, and generality as applicable to large real-world models. In fact, our work shows that pipelining computation naively is not enough for real-world models. In our proposed solution (Section 3), we address key issues ignored in prior work, and offer a general and automated",
+        "x": 315,
+        "y": 181.6,
+        "w": 225,
+        "h": 93.6,
+        "zh": "Chen 等人 [6] 简要探讨了在模型并行训练里把 minibatch 做成流水线的潜在好处，但没有讨论大型真实模型要怎样才能有好的统计效率、规模和通用性。事实上，我们的工作表明，朴素地把计算做成流水线，对真实模型是不够的。在我们提出的方案（第 3 节）里，我们处理了先前工作忽略的关键问题，并给出一种通用且自动化的"
+      },
+      {
+        "text": "Second, the burden of partitioning a model across multiple GPUs is left to the programmer [25], resulting in",
+        "x": 72,
+        "y": 235.1,
+        "w": 225,
+        "h": 21.9,
+        "zh": "第二，把模型划分到多块 GPU 上的负担留给了程序员 [25]，从而导致"
+      },
+      {
+        "text": "Recent work explores the use of reinforcement learning to automatically determine device placement for model parallelism [30]. such online decision making techniques are time- and resource-intensive; they also don’t seamlessly combine pipelining, data-, and model- parallelism.",
+        "x": 72,
+        "y": 163.3,
+        "w": 225,
+        "h": 69.7,
+        "zh": "近期工作探索用强化学习来自动决定模型并行的设备放置 [30]。这类在线决策既费时间也费资源；它们也不能把流水线、数据并行和模型并行无缝地结合起来。"
+      },
+      {
+        "text": "Recent work on fast training of Convolutional Neural Networks (CNNs) make use of highly optimized and expensive clusters with high-speed intra- and inter-machine interconnects [14, 12]. Many public cloud providers do not yet offer such optimized",
+        "x": 72,
+        "y": 88,
+        "w": 225,
+        "h": 57.8,
+        "zh": "近期关于快速训练卷积神经网络（CNN）的工作，用的是高度优化、价格昂贵、机器内部和机器之间都有高速互联的集群 [14, 12]。许多公有云提供商尚未提供这种优化过的"
+      },
+      {
+        "text": "PipeDream combines traditional data parallelism with model parallelism enhanced with pipelining. We call this scheme pipeline parallelism (PP). In this section, we first describe PP, and then describe PipeDream’s design that addresses the challenges associated with making pipelineparallel training work effectively.",
+        "x": 315,
+        "y": 60,
+        "w": 225,
+        "h": 69.7,
+        "zh": "PipeDream 把传统数据并行，与加上了流水线的模型并行结合起来。我们把这套方案称为流水线并行（PP）。本节先描述 PP，再描述 PipeDream 的设计。这些设计用来解决让流水线并行训练真正有效时所遇到的挑战。"
+      },
+      {
+        "text": "2While other partitioning schemes are possible, this is the most common, and the one we will use for model parallelism in this paper.",
+        "x": 72,
+        "y": 60,
+        "w": 225,
+        "h": 17.4,
+        "zh": "2 虽然也可以用别的划分方式，但这是最常见的一种，也是本文讨论模型并行时要使用的方式。"
+      }
+    ],
+    "5": [
+      {
+        "text": "Figure 5: Sizes of layer output data for VGG16 with a minibatch size of 32 on ImageNet1K data. The black dotted line indicates the size of the model parameters.",
+        "x": 315,
+        "y": 614.5,
+        "w": 225,
+        "h": 30.9,
+        "zh": "图 5：在 ImageNet1K 数据上、minibatch 大小为 32 时，VGG16 各层输出数据的大小。黑色虚线表示模型参数的大小。"
+      },
+      {
+        "text": "ing the backward pass for a minibatch, each stage asynchronously sends the gradient to the previous stage, while starting computation for another minibatch. Pipelining has two main advantages over data-parallel training: Pipelining communicates less. PP requires far less communication compared to BSP. Figure 5 compares the size of each layer’s output to the overall size of model parameters for VGG16. Instead of having to communicate all the parameters, as is done in BSP, each machine in a PP execution only has to communicate the output data of one of the layers. This often results in large reductions in communication (e.g., >90% reduction for VGG16). Pipelining overlaps computation and communication. Asynchronous communication of forward output activations and backward gradients across stages results in a significant overlap of communication with computation of a subsequent minibatch, thus achieving better hardware efficiency compared to BSP (Figure 4). While pipelining by itself reduces training time compared to data parallelism, we observe model parallelism and data parallelism work best for different types of",
+        "x": 315,
+        "y": 352.1,
+        "w": 225,
+        "h": 249.6,
+        "zh": "某个 minibatch 的反向传播时，每个阶段异步地把梯度发给上一阶段，同时开始计算另一个 minibatch。相对数据并行训练，流水线有两个主要好处。流水线的通信量更少。相比 BSP，PP 需要的通信少得多。图 5 比较了 VGG16 每一层输出的大小与模型参数的总大小。BSP 必须把全部参数都传一遍；PP 执行中，每台机器只需传递其中某一层的输出数据。通信量因此常常大幅下降（例如 VGG16 下降超过 90%）。流水线让计算与通信重叠。跨阶段异步传递前向的输出激活和反向的梯度，使通信与后一个 minibatch 的计算大幅重叠，因此相比 BSP，硬件效率更好（图 4）。流水线本身相对数据并行已经缩短了训练时间，但我们观察到，模型并行和数据并行各自最适合不同类型的"
+      },
+      {
+        "text": "Figure 4: An example pipeline-parallel assignment with four machines and an example timeline at one of the machines, highlighting the temporal overlap of computation and activation / gradient communication.",
+        "x": 72,
+        "y": 438.7,
+        "w": 225,
+        "h": 41.8,
+        "zh": "图 4：四台机器上的一个流水线并行划分示例，以及其中一台机器上的时间线。时间线标出了计算与激活、梯度通信在时间上的重叠。"
+      },
+      {
+        "text": "Pipeline Parallelism Pipeline-parallel training partitions the layers of the model being trained into multiple stages – each stage contains a consecutive set of layers in the model. Each stage is mapped to a separate GPU that performs both the forward and backward pass for all the layers in that stage. We refer to the stage that contains the input layer as the input stage, and the one that contains the output layer as the output stage. Figure 4 shows a simple example of a pipeline-parallel assignment, where the DNN is split across four machines. In the simplest case, only one minibatch is active in the system, as in traditional model-parallel training. Figure 3 shows the computation timeline of an example configuration with four machines and one active minibatch in the pipeline. In the forward phase, each stage performs the forward pass for the minibatch for the layers in that stage and sends the results to the next stage. The output stage, after completing its forward pass, computes the loss for the minibatch. In the backward phase, each stage performs the backward pass and propagates the loss to the previous stage. With only one active minibatch, at most one GPU is active at any given point in time. To ensure that no GPU is idle at any point in time, we inject multiple minibatches into the pipeline one after the other, thus enhancing model-parallel training with pipelining. On completing the forward pass for a minibatch, each stage asynchronously sends the output activations to the next stage, while simultaneously starting to process another minibatch. Similarly, after complet-",
+        "x": 72,
+        "y": 60,
+        "w": 225,
+        "h": 363.8,
+        "zh": "流水线并行。流水线并行训练把正在训练的模型的层划分成多个阶段，每个阶段包含模型里连续的一组层。每个阶段映射到单独一块 GPU，这块 GPU 对该阶段的所有层既做前向，也做反向。我们把包含输入层的阶段称为输入阶段，把包含输出层的阶段称为输出阶段。图 4 是一个简单的流水线并行划分，DNN 被分到四台机器上。最简单的情形下，系统里只有一个 minibatch 处于活跃状态，和传统模型并行训练一样。图 3 给出一个示例配置的计算时间线：四台机器，流水线里只有一个活跃 minibatch。前向阶段，每个阶段对该 minibatch 在本阶段各层做前向，并把结果发给下一阶段。输出阶段做完前向之后，计算该 minibatch 的损失。反向阶段，每个阶段做反向，并把损失传给上一阶段。只有一个活跃 minibatch 时，任意时刻最多只有一块 GPU 在干活。为了让任意时刻都没有 GPU 空闲，我们把多个 minibatch 一个接一个注入流水线，用流水线来增强模型并行训练。某个 minibatch 的前向一完成，每个阶段就异步地把输出激活发给下一阶段，同时开始处理另一个 minibatch。类似地，在完成"
+      },
+      {
+        "text": "As a result, PipeDream aims to combine pipelined model parallelism and data parallelism in a manner that minimizes overall training time. Figure 6 shows how pipeline parallelism might partition layers of a hypothetical model across stages on 8 machines. However, there are three challenges that need to be addressed to make this approach effective for large real-world DNN",
+        "x": 315,
+        "y": 268.4,
+        "w": 225,
+        "h": 81.7,
+        "zh": "因此，PipeDream 要把流水线化的模型并行和数据并行结合起来，使总训练时间最小。图 6 展示了流水线并行如何把一个假设模型的层，划分到 8 台机器上的各个阶段。然而，要让这种方法对大型真实世界的 DNN 真正有效，还有三个挑战需要解决"
+      },
+      {
+        "text": "1. Automatic partitioning of work across available",
+        "x": 322.5,
+        "y": 236,
+        "w": 217.5,
+        "h": 10,
+        "zh": "1. 自动把工作划分到可用的"
+      },
+      {
+        "text": "2. Scheduling of computation to maximize throughput while ensuring forward progress in the learning task. 3. Ensuring that learning is effective in the face of asynchrony introduced by pipelining.",
+        "x": 322.5,
+        "y": 176.2,
+        "w": 217.5,
+        "h": 45.8,
+        "zh": "2. 调度计算，在保证学习任务持续向前推进的同时把吞吐做到最大。3. 面对流水线带来的异步，仍然让学习有效。"
+      },
+      {
+        "text": "The remainder of this section describes these challenges and PipeDream’s approach to address them. Partitioning Layers Across Machines Given a model and a set of machines, PipeDream’s first challenge is to automatically partition layers of the model across available machines so as to minimize overall training time. Figure 7 shows the workflow adopted by PipeDream to partition the layers of the DNN among",
+        "x": 315,
+        "y": 60,
+        "w": 225,
+        "h": 105.7,
+        "zh": "本节余下部分描述这些挑战，以及 PipeDream 应对它们的做法。跨机器划分层。给定一个模型和一组机器，PipeDream 的第一个挑战是自动把模型的层划分到可用机器上，使总训练时间最小。图 7 展示了 PipeDream 把 DNN 各层划分到其中时所采用的工作流程"
+      }
+    ],
+    "6": [
+      {
+        "text": "the output activations of the layer (also the size of input gradients in the backward pass), and 3) wl, the size of parameters for layer l. To determine Tl for all layers, PipeDream profiles a short run of the DNN model using 1000 minibatches on one of the machines.3",
+        "x": 315,
+        "y": 637.5,
+        "w": 225,
+        "h": 70.5,
+        "zh": "该层输出激活的大小（也是反向传播中输入梯度的大小），以及 3）wl，即层 l 的参数大小。为了确定所有层的 Tl，PipeDream 在其中一台机器上，用 1000 个 minibatch 对 DNN 模型做一次短程剖析。3"
+      },
+      {
+        "text": "Using this profile, PipeDream computes Tl as the sum of the forward and backward computation times for the layer l. All communication happens in three steps: 1) move data from the GPU to the CPU of the sender, 2) send data from sender to receiver over the network, and 3) move data from the CPU to the GPU of the receiver. PipeDream estimates the time taken for communication as the amount of data that needs to be transferred divided by the network bandwidth on the communication link. Cl, the time taken to communicate the activations from layer l to l + 1 in a pipeline, is estimated using al. The amount of data communicated per worker in data-parallel configurations with m machines is 4 × (m − 1) × |wl|/m; this is used to estimate Wl , the time for weight synchronization for the layer when using a distributed parameter server. PipeDream’s Partitioning Algorithm. Our partitioning algorithm takes the output of the profiling step, and computes: 1) a partitioning of layers into stages, 2) the replication factor for each stage, and 3) optimal number of minibatches to keep the training pipeline busy. The partitioning algorithm tries to minimize the overall training time of the model. For a pipelined system, this problem is equivalent to minimizing the time taken by the slowest stage of the pipeline. This problem has the optimal sub-problem property; a pipeline that maximizes throughput given a machine count is composed of subpipelines that maximize throughput for smaller machine counts. Consequently, we can find the optimal solution to this problem using Dynamic Programming. Let A(j, m) denote the time taken by the slowest stage in the optimal pipeline between layers 1 and j using m machines. The goal of our algorithm is to find A(N, M), and the corresponding partitioning. denote the time taken by a single stage spanning layers i through j, replicated over m machines.",
+        "x": 315,
+        "y": 216.1,
+        "w": 225,
+        "h": 431.4,
+        "zh": "利用这份剖析，PipeDream 把 Tl 算成层 l 前向与反向计算时间之和。所有通信分三步：1）把数据从发送方的 GPU 搬到 CPU，2）经网络把数据从发送方送到接收方，3）把数据从接收方的 CPU 搬到 GPU。PipeDream 把通信时间估计为：需要传输的数据量，除以这条链路上的网络带宽。Cl 是流水线中把激活从层 l 传到层 l + 1 的时间，用 al 来估计。在 m 台机器的数据并行配置里，每个 worker 的通信数据量是 4 × (m − 1) × |wl| / m；用它来估计 Wl，即使用分布式参数服务器时、该层做权重同步的时间。PipeDream 的划分算法。划分算法取剖析步骤的输出，并算出三件事：1）把层划分成阶段的方案，2）每个阶段的复制因子，3）让训练流水线保持忙碌的最优 minibatch 数。划分算法要最小化模型的总训练时间。对流水线系统，这个问题等价于最小化流水线中最慢阶段所花的时间。该问题具有最优子问题性质：给定机器数量时吞吐最大的流水线，是由机器数更少时吞吐最大的子流水线组成的。因此可以用动态规划求最优解。令 A(j, m) 表示用 m 台机器、在层 1 到层 j 之间的最优流水线里，最慢阶段所花的时间。算法的目标是求出 A(N, M)，以及对应的划分。表示单个阶段所花的时间：该阶段覆盖层 i 到层 j，并在 m 台机器上复制。"
+      },
+      {
+        "text": "Figure 6: Pipeline Parallel training in PipeDream combines pipelining, model- and data-parallel training.",
+        "x": 72,
+        "y": 550.2,
+        "w": 225,
+        "h": 19.9,
+        "zh": "图 6：PipeDream 中的流水线并行训练，把流水线、模型并行和数据并行训练结合在一起。"
+      },
+      {
+        "text": "PipeDream first profiles the input DNN, to get estimates for each layer’s compute time and output size. Using these estimates, PipeDream’s optimizer partitions layers across available machines.",
+        "x": 72,
+        "y": 325.3,
+        "w": 225,
+        "h": 41.8,
+        "zh": "PipeDream 先剖析输入的 DNN，得到每一层计算时间和输出大小的估计。利用这些估计，PipeDream 的优化器把层划分到可用机器上。"
+      },
+      {
+        "text": "the available machines. When partitioning layers into different stages across machines, PipeDream’s partitioning algorithm must ensure that each stage roughly performs the same amount of total work. At the same time, the partitioning algorithm must also ensure that the amount of data communicated across stages is as small as possible, to avoid communication stalls. Load imbalance across machines or excessive communication between machines can lower hardware efficiency (throughput). Taking these factors into account, given a DNN with N layers and M available machines, PipeDream first profiles the model on a single machine, and then runs a partitioning algorithm that groups layers into stages, while also determining the replication factor for each stage that minimizes the overall training time for the model. Profiling the DNN Model. Our profiling mechanism exploits the fact that DNN training shows little variance in the computation and communication time across mini-",
+        "x": 72,
+        "y": 95.9,
+        "w": 225,
+        "h": 213.3,
+        "zh": "可用机器。把层划分到跨机器的不同阶段时，PipeDream 的划分算法必须让每个阶段的总工作量大致相同。同时，跨阶段通信的数据量也要尽可能小，以免出现通信停顿。机器之间负载不均，或者机器之间通信过多，都会降低硬件效率（吞吐）。把这些因素考虑进去：给定一个有 N 层、有 M 台可用机器的 DNN，PipeDream 先在单台机器上剖析模型，再运行划分算法，把层组成阶段，并确定每个阶段的复制因子，使模型的总训练时间最小。剖析 DNN 模型。我们的剖析利用了这样一个事实：DNN 训练的计算时间和通信时间，在各个 minibatch 之间差别很小"
+      },
+      {
+        "text": "where the left term inside the max is the total computation time for all the layers in the stage, and the right term is the total communication time for all the layers in the stage. The optimal pipeline consisting of layers from 1 through j using m machines could either be a single stage replicated m times, or be composed of multiple stages.",
+        "x": 315,
+        "y": 90.3,
+        "w": 225,
+        "h": 70.5,
+        "zh": "其中 max 里面左边那一项，是该阶段所有层的总计算时间，右边那一项是该阶段所有层的总通信时间。用 m 台机器、由层 1 到层 j 组成的最优流水线，既可以是复制 m 份的单个阶段，也可以由多个阶段组成。"
+      },
+      {
+        "text": "PipeDream records three quantities for each layer l: 1) Tl, the total computation time across the forward and backward pass for the layer, 2) al, the size of",
+        "x": 72,
+        "y": 58.5,
+        "w": 225,
+        "h": 35.4,
+        "zh": "PipeDream 为每一层 l 记录三个量：1）Tl，该层前向与反向传播的总计算时间；2）al，即其大小"
+      },
+      {
+        "text": "3All the GPUs used in individual experiments are identical. As a result, it is sufficient to profile performance on a single GPU.",
+        "x": 315,
+        "y": 60,
+        "w": 225,
+        "h": 17.4,
+        "zh": "3 各个实验里用的 GPU 都相同。因此，在单块 GPU 上剖析性能就够了。"
+      }
+    ],
+    "7": [
+      {
+        "text": "Case 1: The optimal pipeline contains only one stage, replicated m times. In this case,",
+        "x": 72,
+        "y": 686.1,
+        "w": 225,
+        "h": 21.9,
+        "zh": "情形 1：最优流水线只包含一个阶段，复制 m 份。在这种情形下，"
+      },
+      {
+        "text": "Case 2: The optimal pipeline contains more than one stage. In this case, it can be broken into an optimal subpipeline consisting of layers from 1 through i with m−m′ machines followed by a single stage with layers i + 1 through j replicated over m′ machines. Then, using the optimal sub-problem property, we have",
+        "x": 72,
+        "y": 583,
+        "w": 225,
+        "h": 69.7,
+        "zh": "情形 2：最优流水线包含不止一个阶段。这时，它可以拆成一条最优子流水线，加上后面单独一个阶段。子流水线包含层 1 到层 i，使用 m − m′ 台机器；后面那个阶段包含层 i + 1 到层 j，在 m′ 台机器上复制。然后，利用最优子问题性质，我们有"
+      },
+      {
+        "text": "Figure 8: An example pipeline with 4 machines, showing startup and steady states.",
+        "x": 315,
+        "y": 586.7,
+        "w": 225,
+        "h": 19.9,
+        "zh": "图 8：4 台机器的流水线示例，标出了启动阶段和稳态。"
+      },
+      {
+        "text": "work. We propose a scheduling mechanism that avoids",
+        "x": 315,
+        "y": 557.2,
+        "w": 225,
+        "h": 10,
+        "zh": "工作。我们提出一种调度机制，用来避免"
+      },
+      {
+        "text": "In the startup phase, the input stage admits NOAM minibatches to keep the pipeline full in steady state. Once in steady state, each stage alternates between performing the forward and backward pass for a minibatch. We call this mechanism one-forward-one-backward (1F1B). In a balanced pipeline, 1F1B ensures that no GPU is idle in steady state and that we make forward progress in learning from each minibatch. Figure 8 shows the corresponding compute timeline for a pipeline with 4 stages each running on one machine. The NOAM for this configuration is 4. In the startup phase, the input stage admits exactly four minibatches that propagate their way to the output stage. As soon as the output stage completes the forward pass for the first minibatch, it performs the backward pass for the same minibatch, and then starts alternating between performing forward and backward passes for subsequent minibatches. As the backward pass starts propagating to earlier stages in the pipeline, every stage starts alternating between forward and backward pass for different minibatches. As shown in the figure, in the steady state, every machine is busy either doing the forward pass or backward pass for a minibatch. For 1F1B to be effective, it is not necessary for the forward pass to take as long as the backward pass. In fact, we observe that in practice, the backward pass is always larger than the forward pass, and 1F1B remains an effective scheduling mechanism. When stages run in a data-parallel configuration, replicated across multiple GPUs, we use deterministic round-robin load balancing (minibatchID stageReplicaID) to spread work from the previous stages across the replicas.",
+        "x": 315,
+        "y": 157.4,
+        "w": 225,
+        "h": 384.1,
+        "zh": "在启动阶段，输入阶段放入 NOAM 个 minibatch，以便进入稳态后流水线是满的。进入稳态后，每个阶段交替对 minibatch 做前向和反向。我们把这种机制称为一前向一反向（1F1B）。在平衡的流水线里，1F1B 保证稳态下没有 GPU 空闲，并且每个 minibatch 上的学习都在向前推进。图 8 给出对应的计算时间线：流水线有 4 个阶段，每个阶段跑在一台机器上。该配置的 NOAM 是 4。启动阶段，输入阶段恰好放入四个 minibatch，它们一路传到输出阶段。输出阶段一完成第一个 minibatch 的前向，就对同一个 minibatch 做反向，然后开始对后面的 minibatch 交替做前向和反向。反向开始向流水线中更早的阶段传回去时，每个阶段都开始对不同的 minibatch 交替做前向和反向。如图所示，稳态下每台机器都在忙，要么在对某个 minibatch 做前向，要么在做反向。要让 1F1B 有效，并不需要前向和反向花同样长的时间。事实上，我们观察到实践中反向总是比前向更长，而 1F1B 仍然是有效的调度。当阶段按数据并行配置、复制到多块 GPU 上运行时，我们用确定性的轮转负载均衡（minibatchID mod stageReplicaID），把前面阶段来的工作分摊到各个副本上。"
+      },
+      {
+        "text": "where the first term inside the max is the time taken by the slowest stage of the optimal sub-pipeline between layers 1 and i with m − m machines, the second term is the time taken to communicate the activations and gradients between layers i and i + 1, and the third term is the time taken by the single stage containing the remaining layers in a data-parallel configuration of m machines. Initialization. A(1, m) := T(1 → 1, m), where T(.) is as defined above, and m is varied from 1 through M (the total number of machines). A(i, 1) := T(1 → i, 1), where i is varied from 1 through N (the total number of layers",
+        "x": 71.8,
+        "y": 393.6,
+        "w": 225.2,
+        "h": 129.5,
+        "zh": "其中 max 里面的第一项，是层 1 到层 i、使用 m − m 台机器的最优子流水线中，最慢阶段所花的时间；第二项是在层 i 与层 i + 1 之间传递激活和梯度所花的时间；第三项是剩下那些层所组成的单个阶段、在 m 台机器的数据并行配置下所花的时间。初始化。A(1, m) := T(1 → 1, m)，其中 T(·) 如上所定义，m 从 1 取到 M（机器总数）。A(i, 1) := T(1 → i, 1)，其中 i 从 1 取到 N（层的总数"
+      },
+      {
+        "text": "Runtime Analysis. The total number of sub-problems",
+        "x": 72,
+        "y": 369.7,
+        "w": 225,
+        "h": 10,
+        "zh": "运行时间分析。子问题的总数"
+      },
+      {
+        "text": "Time complexity per sub-problem is also O(N M), leading to a total time complexity of O(N2M2). Based on the partitioning generated by our algorithm, the optimal number of minibatches admitted per input stage to keep the pipeline full in steady state is given by d (# machines) / (# machines in the input stage) e.",
+        "x": 71.9,
+        "y": 298,
+        "w": 225.1,
+        "h": 69.7,
+        "zh": "每个子问题的时间复杂度同样是 O(NM)，因此总时间复杂度为 O(N²M²)。根据算法给出的划分，为了在稳态下让流水线保持充满，每个输入阶段放入的最优 minibatch 数由 ⌈（机器数）/（输入阶段的机器数）⌉ 给出。"
+      },
+      {
+        "text": "Unlike traditional uni-directional pipelines, pipelined DNN training involves a bi-directional pipeline. The forward pass for a minibatch starts at the input layer and the backward pass ends at the input layer. Consequently, each active minibatch in the pipeline may be in a different layer, either in the forward pass or backward pass. As a result, each machine in the system has to make a choice between two options: i) perform the forward pass for a minibatch, thus pushing the minibatch to downstream machines, and ii) perform the backward pass for a different minibatch, thus ensuring forward progress in learning. A simple scheduling mechanism that always prioritizes forward work hinders overall forward progress as weight updates can be applied only once backward passes complete. Similarly, always prioritizing backward work may periodically result in idle machines with no available",
+        "x": 72,
+        "y": 60,
+        "w": 225,
+        "h": 189.3,
+        "zh": "与传统的单向流水线不同，流水线化的 DNN 训练是一条双向流水线。某个 minibatch 的前向从输入层开始，反向在输入层结束。因此，流水线里每个活跃的 minibatch 可能位于不同的层，要么正在前向，要么正在反向。于是系统中每台机器都要在两件事里选一件：i）对某个 minibatch 做前向，从而把它推向下游机器；ii）对另一个 minibatch 做反向，从而保证学习继续向前。一种总是优先做前向的简单调度会拖住整体的向前推进，因为权重更新只有在反向做完之后才能加上。类似地，总是优先做反向，可能会周期性地让机器闲下来，因为手头没有可用的"
+      },
+      {
+        "text": "Such deterministic loadbalancing ensures that the backward pass for a minibatch is performed on the machine responsible for the minibatch’s forward pass. Both the 1F1B scheduling policy for stages in a pipeline and the round-robin scheduling policy for load balancing across replicated stages are static policies. Thus, they can be executed by each machine independently without requiring expensive distributed coordination.",
+        "x": 315,
+        "y": 60,
+        "w": 225,
+        "h": 107.4,
+        "zh": "这种确定性的负载均衡保证：某个 minibatch 的反向，会在负责该 minibatch 前向的那台机器上执行。流水线中各阶段的 1F1B 调度，以及在复制阶段之间做负载均衡的轮转调度，都是静态策略。因此每台机器可以独立执行，不需要昂贵的分布式协调。"
+      }
+    ],
+    "8": [
+      {
+        "text": ". This coordination across stages is asynchronous. Staleness. We can now formalize the degree of staleness of weight updates for each of these techniques. For this discussion, we assume a straight pipeline with the model split into n stages; the weights in each stage are represented as w1, w2, and so on. In addition, we denote w1 as the weights w1 after t minibatches. Now, after every minibatch, we compute the gradient O f (w1, w2, . . . , wn) averaged over all samples in the minibatch. Vanilla minibatch SGD ( f is the loss function we’re trying to optimize and ν is the learning rate) has the following gradient update, w(t+1) = w(t) − ν · O f (w(t), w(t), . . . , w(t)) With weight stashing, gradients in stage1are computed with weights that are n steps delayed, gradients for stage 2 are computed with weights that are n − 1 steps delayed, and so on. Mathematically, this means our weight update",
+        "x": 315,
+        "y": 496.6,
+        "w": 225,
+        "h": 211.5,
+        "zh": "这种跨阶段的协调是异步的。陈旧度。现在可以把这些做法里权重更新的陈旧程度写清楚。下面假设一条直流水线，模型分成 n 个阶段；各阶段的权重记为 w1、w2，依此类推。另外，我们把经过 t 个 minibatch 之后的权重 w1 记为 w1。每过一个 minibatch，就计算梯度 ∇f(w1, w2, …, wn)，它对 minibatch 里的全部样本取平均。普通 minibatch SGD（f 是要优化的损失函数，ν 是学习率）的梯度更新是 w(t+1) = w(t) − ν · ∇f(w(t), w(t), …, w(t))。使用 weight stashing 时，阶段 1 的梯度用延迟了 n 步的权重来算，阶段 2 的梯度用延迟了 n − 1 步的权重来算，依此类推。从数学上说，这意味着我们的权重更新"
+      },
+      {
+        "text": "In a naively pipelined system, the forward pass for each minibatch is performed using one version of parameters and the backward pass using a different version of parameters. Figure 8 illustrates this using a partitioning with no data parallelism. If we observe stage 1 (machine 1), the forward pass for minibatch 5 is performed after the updates from minibatch 1 are applied, whereas the backward pass for minibatch 5 is performed after updates from minibatches 2, 3, and 4 are applied. As a result, in the backward pass for minibatch 5 on stage 1, the gradient is computed using a different set of weights than the ones used in the corresponding forward pass; this discrepancy in weight versions can prevent the model from",
+        "x": 72,
+        "y": 539.1,
+        "w": 225,
+        "h": 153.4,
+        "zh": "在朴素的流水线系统里，每个 minibatch 的前向用一个版本的参数，反向用另一个版本的参数。图 8 用一个没有数据并行的划分说明了这一点。看阶段 1（机器 1）：minibatch 5 的前向，是在加上 minibatch 1 的更新之后做的；而 minibatch 5 的反向，是在加上 minibatch 2、3 和 4 的更新之后做的。因此，在阶段 1 上对 minibatch 5 做反向时，算梯度用的那组权重，和对应前向用的那组不一样。权重版本的这种不一致，会使得模型无法"
+      },
+      {
+        "text": "Furthermore, different stages in the DNN model suffer from different degrees of staleness. For example, in the third stage, each minibatch has only one interleaved update between its forward and backward pass, while the output stage has no interleaved updates. This asymmetry across layers can further impact model convergence. Our experimental results show that naive pipelining does not achieve the same accuracy as data-parallel training. To address this problem, PipeDream uses two techniques. Weight Stashing. Weight Stashing maintains multiple versions of the weights, one for each active minibatch. When performing the forward pass, each stage processes a minibatch using the latest version of weights available. After completing the forward pass, PipeDream stores the weights used as part of the intermediate state for that minibatch. When performing the minibatch’s backward pass, the same version of the weights is used to compute the weight gradient. Weight stashing ensures that within a stage, the same version of model parameters are used for the forward and backward pass of a given minibatch. For example, in Figure 8, minibatch 5 uses parameters updates from batch 1 on machine 1 and from 2 on machine 2. Weight stashing says nothing about the consistency of parameter versions used for a given minibatch across stages. Vertical Sync. Vertical Sync eliminates the potential inconsistency across stages. For example, in Figure 8, using vertical sync, minibatch 5 uses parameters updated by minibatch 1 on all machines for both its forward and backward passes. Each minibatch (mi) that enters the pipeline is associated with the latest weight version (w(i−x)) seen at the input stage. This information is propagated along with the activations and gradients as the minibatch mi flows through the pipeline in the forward direction. Across all stages, the forward pass for mi uses the stashed weights w(i−x), as opposed to the latest weight update. After performing the backward pass for mi (using stashed weights ), each stage independently applies weight updates to create the latest weights (w",
+        "x": 72,
+        "y": 60,
+        "w": 225,
+        "h": 464.9,
+        "zh": "而且，DNN 里不同阶段的陈旧程度并不一样。例如在第三个阶段，每个 minibatch 的前向和反向之间只夹着一次更新；输出阶段则没有夹在中间的更新。层与层之间的这种不对称，还会进一步影响模型收敛。实验表明，朴素流水线达不到数据并行训练的准确率。为了解决这个问题，PipeDream 用了两种办法。Weight Stashing（权重暂存）。Weight Stashing 为每个活跃 minibatch 留一份权重。做前向时，每个阶段用当时最新的权重来处理 minibatch。前向做完后，PipeDream 把用过的权重存进该 minibatch 的中间状态。做这个 minibatch 的反向时，用同一份权重来计算权重梯度。Weight stashing 保证：在同一个阶段里，一个 minibatch 的前向和反向用的是同一版模型参数。例如在图 8 里，minibatch 5 在机器 1 上用的是 batch 1 的参数更新，在机器 2 上用的是来自 2 的更新。Weight stashing 并不说明，同一个 minibatch 在各个阶段之间用的参数版本是一致的。Vertical Sync（垂直同步）。Vertical Sync 去掉阶段之间可能出现的不一致。例如在图 8 里，用了 vertical sync 之后，minibatch 5 在所有机器上、前向和反向都使用由 minibatch 1 更新过的参数。进入流水线的每个 minibatch（mi）都绑到输入阶段当时看到的最新权重版本 w(i−x)。minibatch mi 沿前向流过流水线时，这个信息跟着激活和梯度一起传。在所有阶段上，mi 的前向用的是暂存权重 w(i−x)，而不是最新的那次权重更新。对 mi 做完反向之后（用的是暂存权重），每个阶段各自把权重更新加上，得到最新权重（w"
+      },
+      {
+        "text": "Without weight stashing, the weight update is not a valid gradient of the loss function f for any weight vector",
+        "x": 315,
+        "y": 428.9,
+        "w": 225,
+        "h": 21.9,
+        "zh": "如果没有 weight stashing，这次权重更新就不是损失函数 f 对任何一个权重向量的有效梯度"
+      },
+      {
+        "text": "Adding vertical sync alters the weight update to,",
+        "x": 325,
+        "y": 404.8,
+        "w": 192.4,
+        "h": 10,
+        "zh": "加上 vertical sync 之后，权重更新变为"
+      },
+      {
+        "text": "This is semantically the same as data parallelism with BSP synchronization on n machines (with the same original minibatch size on each machine). Weight stashing is critical for meaningful learning.4 PipeDream’s default semantics (weight stashing but no vertical sync) are between regular minibatched SGD on a single machine, and data parallelism with BSP synchronization [8, 18]. Our evaluation demonstrates its effectiveness across several models, datasets, and hardware",
+        "x": 315,
+        "y": 265.3,
+        "w": 225,
+        "h": 105.8,
+        "zh": "这在语义上等同于在 n 台机器上做带 BSP 同步的数据并行（每台机器上原来的 minibatch 大小相同）。Weight stashing 对学出有意义的结果至关重要。4 PipeDream 的默认语义是做 weight stashing、但不做 vertical sync，它介于单机上常规的 minibatch SGD，以及带 BSP 同步的数据并行 [8, 18] 之间。评估表明，这一语义在多种模型、数据集和硬件上都有效"
+      },
+      {
+        "text": "GPU Memory Management As minibatches enter and leave the pipeline, the system has to ensure that the inputs, weights, and other intermediate state required by the GPU for its computation are present in GPU memory. If not managed carefully, the overhead of dynamic memory allocation in the GPU, and data transfer between GPU and CPU memory can greatly reduce hardware efficiency. PipeDream extracts the layer parameters from the DNN model and computes the size of activations, parameters, and intermediate state that needs to be stored at each stage, across the active minibatches present in the pipeline. The",
+        "x": 315,
+        "y": 97.5,
+        "w": 225,
+        "h": 147.2,
+        "zh": "GPU 内存管理。minibatch 进入和离开流水线时，系统必须保证 GPU 计算要用的输入、权重和其他中间状态都在 GPU 内存里。如果管不好，GPU 上动态分配内存的开销，以及 GPU 与 CPU 内存之间的数据搬运，会把硬件效率拉得很低。PipeDream 从 DNN 模型里取出层参数，并算出每个阶段要存的激活、参数和中间状态有多大，范围覆盖流水线里那些活跃的 minibatch。这些"
+      },
+      {
+        "text": "4In our experiments, we find that the impact of vertical sync is negligible. PipeDream’s default semantics exclude vertical sync as it requires more metadata to be stored at every stage in the pipeline.",
+        "x": 315,
+        "y": 60,
+        "w": 225,
+        "h": 26.9,
+        "zh": "4 在我们的实验里，vertical sync 的影响可以忽略。PipeDream 的默认语义不包括 vertical sync，因为它要求流水线的每个阶段都多存一份元数据。"
+      }
+    ],
+    "9": [
+      {
+        "text": "cating memory in the GPU for the activations, weights, gradients, and the intermediate state (which includes the input activations and stashed weights for each active minibatch). Once a machine is initialized, the ML worker pulls its next work assignment from PipeDream; PipeDream’s runtime provides the ML worker with pointers to input data. The input stage kick starts the pipeline by creating a minibatch of forward work for its ML worker. From then on, each machine follows the 1F1B scheduling algorithm, while limiting the total number of active minibatches to",
+        "x": 315,
+        "y": 590.5,
+        "w": 225,
+        "h": 117.6,
+        "zh": "在 GPU 里为激活、权重、梯度和中间状态分配内存（中间状态包括每个活跃 minibatch 的输入激活，以及暂存的权重）。一台机器初始化之后，ML worker 从 PipeDream 领取下一项工作；PipeDream 的运行时把指向输入数据的指针交给 ML worker。输入阶段为自己的 ML worker 创建一个做前向的 minibatch，流水线就这样启动。此后每台机器按 1F1B 调度，同时把活跃 minibatch 的总数限制为"
+      },
+      {
+        "text": "For the assigned minibatch (forward or backward), the ML worker iterates through each layer in the stage and performs the relevant work for the minibatch. The ML worker uses appropriate PipeDream API calls to get pointers to the inputs, parameters, outputs, gradients, and intermediate state for each layer. Once the minibatch is processed, the ML worker indicates the completion of work to PipeDream, and pulls its next work item. Parameter State. For each stage, PipeDream maintains all parameters associated with the layers assigned to the stage directly in GPU memory. The parameters for each layer are stored separately, and each assigned a unique ID. If the stage is not replicated, PipeDream applies the updates to the most recent version of the parameter data stored in GPU memory when the weight update is available in the provided GPU buffer. If the stage is replicated, the weight update is copied to host memory and then sent to the parameter server. When a newer version of the parameters becomes available, the prior version is not immediately discarded, as part of the",
+        "x": 315,
+        "y": 337.2,
+        "w": 225,
+        "h": 238.2,
+        "zh": "对分到的 minibatch（前向或反向），ML worker 遍历该阶段的每一层，做这个 minibatch 该做的计算。ML worker 调用相应的 PipeDream API，取得每一层的输入、参数、输出、梯度和中间状态的指针。minibatch 处理完后，ML worker 通知 PipeDream 这项工作已完成，并领取下一项。参数状态。对每个阶段，PipeDream 把分给该阶段的那些层的全部参数直接放在 GPU 内存里。每一层的参数分开存放，并各自有一个唯一 ID。如果该阶段没有被复制，那么一旦给定的 GPU 缓冲区里有了权重更新，PipeDream 就把更新加到 GPU 内存中参数数据的最新版本上。如果该阶段被复制，权重更新会先拷到主机内存，再发给参数服务器。更新的参数版本可用之后，旧版本不会马上丢掉，作为其一部分"
+      },
+      {
+        "text": "Figure 9: Architecture of the stage runtime and integration with Caffe. PipeDream provides the ML worker thread (Caffe) pointers to GPU memory containing layer input data, parameters, and buffers for recording layer outputs and parameter updates. PipeDream manages buffer pools, and handles all intraand inter-machine communication.",
+        "x": 72,
+        "y": 473.3,
+        "w": 225,
+        "h": 63.8,
+        "zh": "图 9：阶段运行时的架构，以及它和 Caffe 的集成。PipeDream 向 ML worker 线程（Caffe）提供指向 GPU 内存的指针，里面是层的输入数据、参数，以及用来记下层输出和参数更新的缓冲区。PipeDream 管理缓冲池，并处理机器内部和机器之间的全部通信。"
+      },
+      {
+        "text": "number of minibatches for which each stage has to maintain intermediate state varies from stage to stage. While the output stage has to maintain intermediate state for only one active minibatch, the input stage needs to do so for NOAM minibatches. PipeDream allocates all required GPU memory at the beginning of training, and reuses the allocated memory as appropriate. This significantly reduces the overhead of dynamically managing",
+        "x": 72,
+        "y": 366.6,
+        "w": 225,
+        "h": 93.6,
+        "zh": "每个阶段要为多少个 minibatch 保留中间状态，各阶段并不一样。输出阶段只需要为一个活跃 minibatch 保留中间状态，输入阶段则要为 NOAM 个 minibatch 保留。PipeDream 在训练开始时把需要的 GPU 内存一次分配好，然后按需要复用。这大大降低了动态管理的开销"
+      },
+      {
+        "text": "weight stashing scheme. Parameter data is only discarded once a backward pass that uses fresher parameters is per-",
+        "x": 315,
+        "y": 313.3,
+        "w": 225,
+        "h": 21.9,
+        "zh": "weight stashing 方案。参数数据只有在某次使用了较新参数的反向传播已经执行"
+      },
+      {
+        "text": "Figure 7 shows PipeDream’s high-level workflow. The input to our system is a model architecture, the training dataset, and the number of GPUs that will be used for training. PipeDream first profiles the model on a single machine with a subset of minibatches from the training dataset. It then runs the optimization algorithm described in Section 3.2 to partition the DNN model into k stages, with some stages replicated.",
+        "x": 72,
+        "y": 228.1,
+        "w": 225,
+        "h": 93.6,
+        "zh": "图 7 给出 PipeDream 的整体流程。系统的输入是模型结构、训练数据集，以及将用来训练的 GPU 数量。PipeDream 先从训练数据集里取一部分 minibatch，在单台机器上剖析模型。然后运行第 3.2 节的优化算法，把 DNN 模型分成 k 个阶段，其中有些阶段会复制。"
+      },
+      {
+        "text": "Intermediate State. Each layer’s intermediate data is also assigned a unique blob ID. Upon receiving intermediate data from the prior stage (or from disk in the case of the input stage), PipeDream copies the intermediate data to GPU memory and places a pointer to the associated buffer in a work queue. Intermediate data from the forward pass is not discarded until the associated minibatch completes that stage’s backward pass. Intermediate data from the backward pass is released as soon as the ML worker finishes using it, and if necessary, after it is sent to the next stage. Due to the differing requirements for intermediate data in the forward and backward pass, stages in PipeDream commonly manage multiple versions of intermediate data from forward passes, and just a single version of intermediate data from the currently running",
+        "x": 315,
+        "y": 120.9,
+        "w": 225,
+        "h": 177.3,
+        "zh": "中间状态。每一层的中间数据也有一个唯一的 blob ID。从上一阶段收到中间数据后（输入阶段则是从磁盘读入），PipeDream 把它拷进 GPU 内存，并把指向对应缓冲区的指针放进工作队列。前向的中间数据要留到对应 minibatch 做完该阶段的反向才丢弃。反向的中间数据则在 ML worker 用完后马上释放；如果还要发给下一阶段，就等发完再释放。前向和反向对中间数据的需求不一样，所以 PipeDream 里的阶段通常会留着多份来自前向传播的中间数据，而来自当前正在进行的那次计算的中间数据只留一份"
+      },
+      {
+        "text": "The PipeDream runtime then assigns each stage to a single GPU. Figure 9 shows the high-level architecture of the stage runtime in PipeDream. The interface to PipeDream is implemented as a C++ library that manages the parameter and intermediate data for the ML worker that runs on the GPU. In our current implementation, we use Caffe [20] as the ML worker. However, PipeDream is extensible and can work with other ML frameworks such as Tensorflow [1], MXNet [5], and CNTK [33] as well. As an initialization step, the PipeDream library in each machine initializes the GPU data structures corresponding to the stage that is assigned to the machine. This involves 1) initializing the ML worker with the layers that it must execute as part of the stage, and 2) statically allo-",
+        "x": 72,
+        "y": 60,
+        "w": 225,
+        "h": 178,
+        "zh": "接着，PipeDream 运行时把每个阶段分给单独一块 GPU。图 9 是 PipeDream 里阶段运行时的整体结构。PipeDream 的接口是一个 C++ 库，为跑在 GPU 上的 ML worker 管理参数和中间数据。当前实现用 Caffe [20] 作为 ML worker。PipeDream 也可以扩展，能配合 Tensorflow [1]、MXNet [5] 和 CNTK [33] 等其他 ML 框架。初始化时，每台机器上的 PipeDream 库会建好分给这台机器的那个阶段所对应的 GPU 数据结构。这包括两件事：1）用该阶段要执行的那些层来初始化 ML worker；2）静态分配"
+      },
+      {
+        "text": "Data Parallelism. PipeDream uses a distributed parameter server, similar to GeePS [9], to synchronize parameters for layers of data-parallel stages. Using wait-free back propagation, weight gradients are communicated to",
+        "x": 315,
+        "y": 60,
+        "w": 225,
+        "h": 45.8,
+        "zh": "数据并行。PipeDream 用一个分布式参数服务器来同步数据并行阶段中各层的参数，做法类似于 GeePS [9]。借助 wait-free backpropagation，权重梯度被送到"
+      }
+    ],
+    "10": [
+      {
+        "text": "servers as soon as they are as computed, rather than waiting for computation to finish for all layers. Each worker contains an instance of a parameter server shard that stores a unique subset of the parameters. The server shards push the newest version of their parameters to the other shards as soon as updates from all stage replicas are aggregated. Since we support replication of individual stages, dataparallel training can be thought of as a special case in our framework – we represent this as a single stage that contains all the layers of the DNN model, and replicate the stage across all available machines.",
+        "x": 72,
+        "y": 577.8,
+        "w": 225,
+        "h": 130.2,
+        "zh": "服务器上，一算出来就发送，而不是等所有层都算完。每个 worker 里有一个参数服务器分片，存放互不重叠的一份参数。一旦该阶段所有副本的更新都聚合完，服务器分片就把自己参数的最新版本推给其他分片。由于单个阶段也可以复制，数据并行训练可以看成这个框架里的一个特例：把它表示成只含一个阶段，这个阶段包含 DNN 模型的全部层，再把该阶段复制到所有可用机器上。"
+      },
+      {
+        "text": "The machines are connected via a 25 Gbps Ethernet interface. Cluster-B is public cloud cluster (AWS p3.2xlarge instances) of NVIDIA V100 GPUs, with 16 GB of GPU device memory. Each machine has a E5-2690 Xeon CPU, 64 GB of RAM with a 10 Gbps Ethernet interface. Machines on both clusters run 64-bit Ubuntu 16.04 with CUDA toolkit 8.0 and cuDNN v6. In comparison to Cluster-A, Cluster-B has faster GPUs, but a slower network. As a result, as we show later in this section, the performance benefits of PipeDream are higher in Cluster-B than in Cluster-A.",
+        "x": 315,
+        "y": 577.9,
+        "w": 225,
+        "h": 130.1,
+        "zh": "这些机器通过 25 Gbps 以太网接口连接。Cluster-B 是公有云集群（AWS p3.2xlarge 实例），用的是 NVIDIA V100 GPU，GPU 显存 16 GB。每台机器有一颗 E5-2690 Xeon CPU、64 GB 内存，以及 10 Gbps 以太网接口。两个集群上的机器都运行 64 位 Ubuntu 16.04，CUDA toolkit 8.0 和 cuDNN v6。和 Cluster-A 比，Cluster-B 的 GPU 更快，网络更慢。因此，如本节后面所示，PipeDream 在 Cluster-B 上的性能收益高于 Cluster-A。"
+      },
+      {
+        "text": "PipeDream’s stages, both in data-parallel and pipelineparallel settings, uses ZeroMQ [46] and an efficient communication stack with fast custom serialization. Checkpointing. PipeDream supports periodic checkpointing of model parameters for fault-tolerance, with default checkpointing across stages at the end of every epoch. Checkpoints don’t require expensive global coordination; each stage locally decides to dump its model parameters when it performs the backward pass for the last minibatch in an epoch. Restarting a failed training run due to a stage failure entails starting from the last epoch successfully checkpointed by all the stages.",
+        "x": 72,
+        "y": 420.9,
+        "w": 225,
+        "h": 142.2,
+        "zh": "PipeDream 的各个阶段，无论在数据并行还是流水线并行的设置下，都使用 ZeroMQ [46]，以及一套带快速自定义序列化的通信栈。检查点。为了容错，PipeDream 支持定期把模型参数做成检查点，默认是每个 epoch 结束时在各阶段做一次。检查点不需要昂贵的全局协调：每个阶段在对本 epoch 最后一个 minibatch 做反向时，自己决定把模型参数写出来。某个阶段失败之后，要重跑这次训练，就从所有阶段都成功写过检查点的最后一个 epoch 接着开始。"
+      },
+      {
+        "text": "1) VGG16 [36] with a model size of 550 MB, 2) Inception-v3 [19] with a model size of 157 MB, and 3) S2VT [43], a sequence-to-sequence model for video transcription, with a model size of 349MB. We use the ILSVRC12 dataset to train VGG16 and Inception-v3, and the MSVD dataset to train S2VT model. In our experiments, we trained the VGG16 and S2VT models using SGD with a momentum of 0.9 and an initial learning rate of 0.01. For Inception-v3, we used RMSProp [40] with an initial learning rate of 0.045, decayed every two epochs using an exponential rate of 0.94. We used a mini-batch size of 32 per machine for VGG16 and Inception-v3 and a mini-batch size of 80 per machine for S2VT. For all the experiments, we measure the time taken to train the models until they reach their advertised validation accuracy: top-1 accuracy of 68% for VGG16, top-1 accuracy of 67% for Inception-v3, and METEOR [11] score of 0.294 for S2VT. Guided by prior work, we adjust the learning rate during training to converge to the desired result faster [31, 37, 38, 13, 24]. PipeDream’s Data-Parallel Implementation. measure the performance improvements introduced from using PipeDream, we compare to PipeDream in dataparallel and single machine configurations. This allows us to perform a fair comparison of the different schemes. To confirm its efficiency, we compared PipeDream’s dataparallel implementation to the open source version of GeePS, an efficient data-parallel DNN training system that also uses Caffe at individual workers and performs favorably, if not better than, other state-of-the-art DNN frameworks [9]. In our experiments, PipeDream’s dataparallel configuration ran at least as fast as GeePS for all models and datasets tested. PipeDream vs. Data Parallelism Table 1 summarizes results comparing PipeDream with data-parallel training (BSP). For the three models, the table shows PipeDream’s auto-generated configuration and the corresponding speedup in training time over single machine and data-parallel training (BSP). It also shows the communication reduction achieved by PipeDream",
+        "x": 315,
+        "y": 60,
+        "w": 225,
+        "h": 491.4,
+        "zh": "1）VGG16 [36]，模型大小 550 MB；2）Inception-v3 [19]，模型大小 157 MB；3）S2VT [43]，一个做视频转录的 sequence-to-sequence 模型，模型大小 349 MB。我们用 ILSVRC12 数据集训练 VGG16 和 Inception-v3，用 MSVD 数据集训练 S2VT。实验中，VGG16 和 S2VT 用 SGD 训练，动量 0.9，初始学习率 0.01。Inception-v3 用 RMSProp [40]，初始学习率 0.045，每两个 epoch 按指数率 0.94 衰减。VGG16 和 Inception-v3 每台机器的 mini-batch 大小为 32，S2VT 每台机器为 80。所有实验都测量把模型训练到其所宣称的验证准确率要花多久：VGG16 的 top-1 准确率 68%，Inception-v3 的 top-1 准确率 67%，S2VT 的 METEOR [11] 分数 0.294。参照已有工作，我们在训练过程中调整学习率，以便更快收敛到想要的结果 [31, 37, 38, 13, 24]。PipeDream 的数据并行实现。衡量使用 PipeDream 带来的性能提升时，我们把它和数据并行配置、单机配置下的 PipeDream 比较。这样不同方案之间的比较才公平。为了确认它确实高效，我们把 PipeDream 的数据并行实现和 GeePS 的开源版本做了比较。GeePS 是一个高效的数据并行 DNN 训练系统，各个 worker 上也用 Caffe，表现不差于、甚至好于其他先进的 DNN 框架 [9]。在我们的实验里，对所有测过的模型和数据集，PipeDream 的数据并行配置至少和 GeePS 一样快。PipeDream 与数据并行。表 1 汇总了 PipeDream 与数据并行训练（BSP）的比较。对这三个模型，表里给出 PipeDream 自动生成的配置，以及相对单机和数据并行训练（BSP）在训练时间上的加速，也给出 PipeDream 做到的通信量下降"
+      },
+      {
+        "text": "This section compares the effectiveness of PipeDream with data-parallel training and model-parallel training across models on two clusters. The results of our experiments support a number of important findings: 1) combining pipelining, model parallelism, and data parallelism performs significantly better than using model parallelism or data parallelism alone, 2) PipeDream greatly reduces the overhead of communication compared to dataparallel training, and 3) PipeDream’s improvements are higher for configurations that have a lower computationto-communication ratio.",
+        "x": 72,
+        "y": 255.5,
+        "w": 225,
+        "h": 129.5,
+        "zh": "本节在两个集群上、跨多个模型，比较 PipeDream 与数据并行训练、模型并行训练的效果。实验结果支持几点重要发现：1）把流水线、模型并行和数据并行合在一起，明显好于单独用模型并行或单独用数据并行；2）和数据并行训练相比，PipeDream 把通信开销降得很低；3）计算–通信比更低的配置上，PipeDream 的提升更大。"
+      },
+      {
+        "text": "Datasets. We used two datasets in our experiments. The first is the dataset for the Large Scale Visual Recognition Challenge 2012 (ILSVRC12) [32], also called the ImageNet 1K dataset. This dataset has ∼1.3 million training images categorized into 1000 classes, and 50,000 validation images. The second is the Microsoft Video description corpus (MSVD) [3], which is a collection of YouTube clips depicting different activities, collected on Mechanical Turk. The dataset contains 1,970 videos and a vocabulary of 12,594 words to describe them. Clusters. We used two different clusters in our experiments. Cluster-A is a private cluster of NVIDIA Titan X GPUs with 12 GB of GPU device memory. Each machine has a E5-2698Bv3 Xeon CPU with 64 GB of RAM.",
+        "x": 72,
+        "y": 60,
+        "w": 225,
+        "h": 166.1,
+        "zh": "数据集。实验用了两个数据集。第一个是 Large Scale Visual Recognition Challenge 2012（ILSVRC12）[32] 的数据集，也叫 ImageNet 1K。它有约 1.3 million 张训练图像，分成 1000 类，另有 50,000 张验证图像。第二个是微软视频描述语料 Microsoft Video description corpus（MSVD）[3]，这是在 Mechanical Turk 上收集的一组 YouTube 片段，内容是不同的活动。该数据集有 1,970 个视频，描述它们的词表有 12,594 个词。集群。实验用了两个集群。Cluster-A 是私有集群，用 NVIDIA Titan X GPU，GPU 显存 12 GB。每台机器有一颗 E5-2698Bv3 Xeon CPU，内存 64 GB。"
+      }
+    ],
+    "11": [
+      {
+        "text": "Table 1: Summary of results comparing PipeDream with data-parallel configurations (BSP) when training models to their advertised final accuracy. “PipeDream config” represents the configuration generated by our partinioning algorithm—e.g., “2-1-1” is a configuration in which the model is split into three stages with the first stage replicated across 2 machines.",
+        "x": 72,
+        "y": 562.9,
+        "w": 468,
+        "h": 30.9,
+        "zh": "表 1：把模型训练到其所宣称的最终准确率时，PipeDream 与数据并行配置（BSP）的结果汇总。“PipeDream config”是我们的划分算法生成的配置。例如“2-1-1”表示模型分成三个阶段，第一阶段复制到 2 台机器上。"
+      },
+      {
+        "text": "Figure 10: Accuracy vs. time for VGG16 and Inception-v3 with 8 machines on Cluster-A",
+        "x": 144.6,
+        "y": 451.9,
+        "w": 322.8,
+        "h": 9,
+        "zh": "图 10：Cluster-A 上用 8 台机器训练 VGG16 和 Inception-v3 时，准确率随时间的变化"
+      },
+      {
+        "text": "compared to data-parallel training. PipeDream Configurations.",
+        "x": 72,
+        "y": 416.7,
+        "w": 137.8,
+        "h": 22.8,
+        "zh": "相比数据并行训练。PipeDream 的配置。"
+      },
+      {
+        "text": "machine. PipeDream’s partitioning algorithm (Section 3.2) selects a data-parallel configuration (no pipelining or model parallelism) to train Incpetion-v3 on Cluster-A, thus matching the data-parallel BSP performance (Fig-",
+        "x": 315,
+        "y": 393.7,
+        "w": 225,
+        "h": 45.8,
+        "zh": "机器。PipeDream 的划分算法（第 3.2 节）选择了数据并行配置（不做流水线，也不做模型并行）来在 Cluster-A 上训练 Inception-v3，因此和数据并行 BSP 的性能一致（图"
+      },
+      {
+        "text": "As described in Section 3.2, given a DNN model and a set of machines, PipeDream’s optimizer selects the best configuration that partitions the layers of the model into multiple stages and assigns one or more machines to each stage. While most prior research has focused on improving data-parallel training, our results indicate that the best configurations are neither fully data-parallel nor fully model-parallel. In all but one of our experiments, the best PipeDream configuration combines model parallelism, pipelining, and data parallelism; each of these configurations significantly outperform data-parallel training, thus highlighting the importance of pipeline parallelism. PipeDream’s optimizer recommends data-parallel as the best configuration for Inception-v3 with 8 machines in Cluster-A. Base Results: 8 Machines in Cluster-A. Figure 10",
+        "x": 72,
+        "y": 236.6,
+        "w": 225,
+        "h": 190.1,
+        "zh": "如第 3.2 节所述，给定一个 DNN 模型和一组机器，PipeDream 的优化器会选出最好的配置：把模型的层分成多个阶段，每个阶段分到一台或多台机器。以往大多数工作都在改进数据并行训练，我们的结果则表明，最好的配置既不是纯数据并行，也不是纯模型并行。除了一次实验，最好的 PipeDream 配置都同时用了模型并行、流水线和数据并行；这些配置都明显好于数据并行训练，说明流水线并行很重要。在 Cluster-A 上用 8 台机器训练 Inception-v3 时，PipeDream 的优化器把数据并行推荐为最好的配置。基本结果：Cluster-A 上的 8 台机器。图 10"
+      },
+      {
+        "text": "Effect of using faster compute (V100s). Figure 11",
+        "x": 325,
+        "y": 364.3,
+        "w": 215,
+        "h": 10,
+        "zh": "换用更快的计算（V100）会怎样。图 11"
+      },
+      {
+        "text": "training time for VGG16 and Inception-v3, using 8 machines in Cluster-B, for both BSP and PipeDream. Compared to Cluster-A, ClusterB employs faster V100 GPUs with 10Gbps interconnect between the machines (as granted by the cloud provider). Thus, models running on Cluster-B have lower computation-to-communication ratios. We note that the faster GPUs result in faster end-to-end training time — e.g., training time for VGG16 reduces from 220 hours on Cluster-A to little less than 100 hours on Cluster-B (Figures 10 and 11). We also observe that the higher communication overhead causes both BSP and PipeDream to scale less effectively to 8 machines. increased communication overhead affects BSP significantly more than PipeDream. Moving from Cluster-A to Cluster-B, the speedup of PipeDream over BSP increases from 2.99× to 5.12× for VGG16. Even for Inception-v3, PipeDream improves training time by 45% compared to",
+        "x": 315,
+        "y": 149.1,
+        "w": 225,
+        "h": 213.2,
+        "zh": "VGG16 和 Inception-v3 的训练时间，用的是 Cluster-B 上的 8 台机器，BSP 和 PipeDream 都包括在内。和 Cluster-A 比，Cluster-B 用的是更快的 V100 GPU，机器之间是云厂商提供的 10Gbps 互联。因此跑在 Cluster-B 上的模型，计算–通信比更低。更快的 GPU 让端到端训练更短——例如 VGG16 的训练时间从 Cluster-A 上的 220 小时，降到 Cluster-B 上略少于 100 小时（图 10 和图 11）。更高的通信开销也让 BSP 和 PipeDream 扩展到 8 台机器时都没那么有效。通信开销变大对 BSP 的影响，明显大于对 PipeDream 的影响。从 Cluster-A 换到 Cluster-B，VGG16 上 PipeDream 相对 BSP 的加速从 2.99× 提高到 5.12×。即便是 Inception-v3，PipeDream 也把训练时间改善了 45%，相比于"
+      },
+      {
+        "text": "training time for VGG16 and Inception-v3, using 8 machines in Cluster-A, for both BSP and PipeDream 5.",
+        "x": 72,
+        "y": 200.7,
+        "w": 225,
+        "h": 33.9,
+        "zh": "VGG16 和 Inception-v3 的训练时间，用的是 Cluster-A 上的 8 台机器，BSP 和 PipeDream 都包括在内 5。"
+      },
+      {
+        "text": "The first conclusion we draw is that for VGG16, BSP with 8 machines reduces training time by only 2.35× compared to training with a single machine since with 8 machines, the communication overhead for VGG16 in Cluster-A is 72%. PipeDream eliminates 95% of this communication overhead thereby improving performance by 7.04× compared to training with single machine (2.99× compared to BSP). Second, for Inception-v3, the communication overhead with 8 machines on Cluster-A is just 5%. As a result, BSP achieves near perfect scaling with a 7.66× speedup over a single",
+        "x": 72,
+        "y": 81.1,
+        "w": 225,
+        "h": 129.5,
+        "zh": "我们得到的第一个结论是：对 VGG16，8 台机器的 BSP 相对单机训练只取得 2.35× 的加速，因为在 Cluster-A 上用 8 台机器时，VGG16 的通信开销占 72%。PipeDream 去掉了其中 95% 的通信开销，从而相对单机训练把性能提高到 7.04×（相对 BSP 为 2.99×）。第二，对 Inception-v3，在 Cluster-A 上用 8 台机器时通信开销只有 5%。因此 BSP 几乎完美扩展，相对单机达到 7.66× 的加速"
+      },
+      {
+        "text": "Due to space constraints we do not present end-to-end training results for AlexNet [26] and ResNet-50 [16] models. Experiments with these models on Cluster-B showed that PipeDream provides a 1.21x and 6.78x throughput improvement for ResNet-50 and AlexNet respectively, compared to 8 machine data-parallel BSP.",
+        "x": 315,
+        "y": 60,
+        "w": 225,
+        "h": 69.7,
+        "zh": "由于篇幅限制，这里不给出 AlexNet [26] 和 ResNet-50 [16] 的端到端训练结果。在 Cluster-B 上用这两个模型做的实验表明，相对 8 台机器的数据并行 BSP，PipeDream 给 ResNet-50 和 AlexNet 分别带来 1.21 倍和 6.78 倍的吞吐提升。"
+      }
+    ],
+    "12": [
+      {
+        "text": "Figure 11: Accuracy vs. time for VGG16 and Inception-v3 with 8 machines on Cluster-B",
+        "x": 144.7,
+        "y": 612.3,
+        "w": 322.6,
+        "h": 9,
+        "zh": "图 11：Cluster-B 上用 8 台机器训练 VGG16 和 Inception-v3 时，准确率随时间的变化"
+      },
+      {
+        "text": "because with 4 machines, the communication overhead for S2VT on Cluster-A is 70%. PipeDream reduces the communication overhead by 95% compared to BSP, in turn slashing training time by 3.34× compared to single machine training (3.01× compared to BSP). Value of Data Parallelism in stages Figure 13 plots the reduction in training time compared to single machine training for three parallelization approaches: 1) simple model parallelism (no pipelining or data parallelism), 2) pipeline parallelism without data parallelism (no stage replication), and 3) PipeDream (combined model parallelism, pipelining and data par-",
+        "x": 315,
+        "y": 448.8,
+        "w": 225,
+        "h": 151.1,
+        "zh": "因为在 Cluster-A 上用 4 台机器时，S2VT 的通信开销占 70%。相比 BSP，PipeDream 把通信开销降低了 95%，进而相对单机训练取得 3.34× 的加速（相对 BSP 为 3.01×）。阶段里数据并行的价值。图 13 画出三种并行方法相对单机训练缩短了多少训练时间：1）简单模型并行（不做流水线，也不做数据并行）；2）没有数据并行的流水线并行（阶段不复制）；3）PipeDream（模型并行、流水线和数据并行合在一起"
+      },
+      {
+        "text": "Figure 12: Accuracy vs. time for different configurations for VGG16 on Cluster-A with 4 and 16 workers.",
+        "x": 72,
+        "y": 498.2,
+        "w": 225,
+        "h": 19.9,
+        "zh": "图 12：Cluster-A 上用 4 个和 16 个 worker、不同配置训练 VGG16 时，准确率随时间的变化。"
+      },
+      {
+        "text": "Effect of varying number of machines. With an increase in the number of machines, the communication overhead also increases for all models (as shown in Figure 1). Figure 12 compares the accuracy vs. training time for VGG16, using 4 and 16 machines in Cluster-A, for BSP and PipeDream. As expected, BSP scales poorly with increasing number of machines. With 4, 8, and 16 machines, BSP offers speedups of only 1.47×, 2.35×, and 3.28×, respectively, compared to single machine training. In contrast, PipeDream offers speedups of 3.14×, 7.04×, and 9.86× with 4, 8, and 16 machines compared to training on a single machine.",
+        "x": 72,
+        "y": 339.7,
+        "w": 225,
+        "h": 141.5,
+        "zh": "机器数量变化的影响。机器一多，所有模型的通信开销也会上升（如图 1）。图 12 比较了在 Cluster-A 上用 4 台和 16 台机器、以 BSP 和 PipeDream 训练 VGG16 时，准确率与训练时间的关系。正如预期，BSP 随机器数增加扩展得很差。用 4、8 和 16 台机器时，相对单机训练，BSP 的加速分别只有 1.47×、2.35× 和 3.28×。PipeDream 则在 4、8 和 16 台机器上，相对单机训练达到 3.14×、7.04× 和 9.86×。"
+      },
+      {
+        "text": "The figure shows these results for training VGG16 using 4 and 8 machines on Cluster-A.",
+        "x": 315,
+        "y": 424.9,
+        "w": 225,
+        "h": 21.9,
+        "zh": "该图给出在 Cluster-A 上用 4 台和 8 台机器训练 VGG16 的这些结果。"
+      },
+      {
+        "text": "Notably, PipeDream with 4 machines is almost as good as BSP with 16 machines. Comparison to asynchronous parallel (ASP). To reduce communication overhead in data-parallel training, we experimented with running four machine data-parallel with ASP synchronization. Unlike BSP, which synchronizes the parameter data after every mini-batch, ASP has no synchronization, and the workers use the most recent parameter data available.",
+        "x": 72,
+        "y": 241.7,
+        "w": 225,
+        "h": 107.9,
+        "zh": "值得注意的是，4 台机器的 PipeDream 几乎和 16 台机器的 BSP 一样好。与异步并行（ASP）的比较。为了降低数据并行训练里的通信开销，我们试过用 ASP 同步来跑四台机器的数据并行。BSP 会在每个 mini-batch 之后同步参数；ASP 则不做同步，worker 用手头最新的参数数据。"
+      },
+      {
+        "text": "Pipeline Parallelism vs. PipeDream for VGG16 on Cluster-A",
+        "x": 315,
+        "y": 299.6,
+        "w": 225,
+        "h": 19.9,
+        "zh": "Cluster-A 上，VGG16 的流水线并行与 PipeDream 的对比"
+      },
+      {
+        "text": "Model Parallelism. Simple model parallelism uses only one machine at any point in time, and hence is slower than the single machine configurations. plement model-parallel configurations in Tensorflow [1], which does not support pipelining but implements model parallelism as described in this paper; we observe similar performance drop-offs.",
+        "x": 315,
+        "y": 203.5,
+        "w": 225,
+        "h": 81.7,
+        "zh": "模型并行。简单模型并行在任意时刻只用一台机器，因此比单机配置更慢。在 Tensorflow [1] 里实现模型并行配置。Tensorflow 不支持流水线，但按本文描述的方式做了模型并行；我们看到类似的性能下降。"
+      },
+      {
+        "text": "Figure 12 also shows the accuracy vs. time curve for ASP with 4 machines in Cluster-A. Due to ASP’s poor statistical efficiency, PipeDream reaches a 48% accuracy 7.4x faster than ASP data-parallel, even though ASP has no communication",
+        "x": 72,
+        "y": 193.9,
+        "w": 225,
+        "h": 57.8,
+        "zh": "图 12 也给出了 Cluster-A 上 4 台机器、使用 ASP 时的准确率–时间曲线。由于 ASP 的统计效率很差，PipeDream 达到 48% 准确率的速度比 ASP 数据并行快 7.4 倍，尽管 ASP 没有通信"
+      },
+      {
+        "text": "Combining model parallelism with pipelining results in straight pipeline configurations (no data parallelism compared to PipeDream). Straight pipeline configurations greatly reduce training time compared to single machine training—2.56× and 3.49× with 4 and 8 machines, respectively. provements are better than data parallel training, which achieves corresponding speedups of 1.47× and 2.35× compared to single machine training. Pipeline Parallelism.",
+        "x": 315,
+        "y": 84,
+        "w": 225,
+        "h": 117.6,
+        "zh": "把模型并行和流水线合在一起，就得到直流水线配置（相对 PipeDream，这里没有数据并行）。直流水线相对单机训练能把训练时间降很多：4 台机器为 2.56×，8 台机器为 3.49×。这些提升好于数据并行训练，后者相对单机训练的对应加速是 1.47× 和 2.35×。流水线并行。"
+      },
+      {
+        "text": "Training a Recurrent Neural Network. and Inception-v3 are Convolutional Neural Networks (CNNs), used for tasks such as image classification. We also evaluate PipeDream’s performance on the S2VT model, which is a sequence-to-sequence recurrent neural network that generates descriptive captions for videos. For many recurrent neural networks consisting of LSTM layers, BSP data-parallel training scales poorly. S2VT, BSP with 4 machines reduces training time by only 1.1x compared to single machine training. This is",
+        "x": 72,
+        "y": 60,
+        "w": 225,
+        "h": 117.6,
+        "zh": "训练循环神经网络。和 Inception-v3 都是卷积神经网络（CNN），用于图像分类这类任务。我们也评估了 PipeDream 在 S2VT 上的表现。S2VT 是一个 sequence-to-sequence 循环神经网络，用来给视频生成描述性字幕。对许多由 LSTM 层组成的循环神经网络，BSP 数据并行扩展得很差。对 S2VT，4 台机器的 BSP 相对单机训练只把训练加速了 1.1 倍。这是"
+      },
+      {
+        "text": "PipeDream’s pipeline parallelism provides the biggest reductions in training time— 3.14× and 7.04× with 4 and 8 machines compared to",
+        "x": 315,
+        "y": 60,
+        "w": 225,
+        "h": 33.9,
+        "zh": "PipeDream 的流水线并行把训练时间降得最多——4 台机器为 3.14×，8 台机器为 7.04×，相比于"
+      }
+    ],
+    "13": [
+      {
+        "text": "single machine training. These results demonstrate that a combination of pipelining, model parallelism and data parallelism achieve faster training than either model parallelism, model parallelism with pipelining, or data par-",
+        "x": 72,
+        "y": 662.2,
+        "w": 225,
+        "h": 45.8,
+        "zh": "单机训练。这些结果表明，流水线、模型并行和数据并行合在一起，比单独的模型并行、带流水线的模型并行，或者数据并行，都训练得更快"
+      },
+      {
+        "text": "[9] H. Cui, H. Zhang, G. R. Ganger, P. B. Gibbons, and E. P. Xing. Geeps: Scalable deep learning on distributed gpus with a gpu-specialized parameter server. InProceedings of the Eleventh European Conference on Computer Systems,",
+        "x": 319.5,
+        "y": 665.2,
+        "w": 220.5,
+        "h": 41.8,
+        "zh": "[9] H. Cui、H. Zhang、G. R. Ganger、P. B. Gibbons 与 E. P. Xing。GeePS：在分布式 GPU 上，用面向 GPU 的参数服务器做可扩展深度学习。见 Proceedings of the Eleventh European Conference on Computer Systems，"
+      },
+      {
+        "text": "[10] J. Dean, G. Corrado, R. Monga, K. Chen, M. Devin,",
+        "x": 315,
+        "y": 640.6,
+        "w": 225,
+        "h": 9,
+        "zh": "[10] J. Dean、G. Corrado、R. Monga、K. Chen、M. Devin、"
+      },
+      {
+        "text": "M. Mao, A. Senior, P. Tucker, K. Yang, Q. V. Le, et al.",
+        "x": 334.9,
+        "y": 629.6,
+        "w": 205.1,
+        "h": 9,
+        "zh": "M. Mao、A. Senior、P. Tucker、K. Yang、Q. V. Le 等。"
+      },
+      {
+        "text": "Large scale distributed deep networks. In Advances in neural information processing systems, pages 1223–1231,",
+        "x": 334.9,
+        "y": 607.7,
+        "w": 205.1,
+        "h": 19.9,
+        "zh": "大规模分布式深度网络。见 Advances in Neural Information Processing Systems，第 1223–1231 页，"
+      },
+      {
+        "text": "Pipeline-parallel DNN training addresses the communication overheads that bottleneck data-parallel training of very large DNNs. PipeDream automatically partitions and aggressively pipelines DNN training across worker",
+        "x": 72,
+        "y": 576,
+        "w": 225,
+        "h": 45.8,
+        "zh": "流水线并行的 DNN 训练，针对的是拖住超大 DNN 数据并行训练的那些通信开销。PipeDream 自动划分，并激进地把 DNN 训练在各个 worker 上做成流水线"
+      },
+      {
+        "text": "[11] M. Denkowski and A. Lavie. Meteor universal: Language specific translation evaluation for any target language. In Proceedings of the ninth workshop on statistical machine translation, pages 376–380, 2014. [12] DGX-1. NVIDIA DGX-1. https://www.nvidia.com/ en-us/data-center/dgx-1/. [13] J. Duchi, E. Hazan, and Y. Singer. Adaptive subgradient methods for online learning and stochastic optimization. Journal of Machine Learning Research, 12(Jul):",
+        "x": 315,
+        "y": 490,
+        "w": 225,
+        "h": 102.1,
+        "zh": "[11] M. Denkowski 与 A. Lavie。Meteor universal：面向任意目标语言的、依语言而定的翻译评估。见 Proceedings of the ninth workshop on statistical machine translation，第 376–380 页，2014。[12] DGX-1。NVIDIA DGX-1。https://www.nvidia.com/ en-us/data-center/dgx-1/。[13] J. Duchi、E. Hazan 与 Y. Singer。用于在线学习和随机优化的自适应次梯度方法。Journal of Machine Learning Research，12(Jul)："
+      },
+      {
+        "text": "Compared to state-of-the-art approaches, PipeDream is up to 5× faster in “time to target accuracy” for experiments with five different DNNs on two",
+        "x": 72,
+        "y": 540.1,
+        "w": 225,
+        "h": 33.9,
+        "zh": "相比当前最好的方法，在用五种不同 DNN、于两个……上所做的实验里，PipeDream 在“达到目标准确率的时间”上最多快 5×"
+      },
+      {
+        "text": "[1] M. Abadi, P. Barham, J. Chen, Z. Chen, A. Davis, J. Dean, M. Devin, S. Ghemawat, G. Irving, M. Isard, M. Kudlur, J. Levenberg, R. Monga, S. Moore, D. G. Murray, B. Steiner, P. Tucker, V. Vasudevan, P. Warden, M. Wicke, Y. Yu, and X. Zheng. Tensorflow: A system for large-scale machine learning. In 12th USENIX Symposium on Operating Systems Design and Implementation (OSDI 16), pages 265–283, GA, 2016. URL https://www.tensorflow.org/.",
+        "x": 76.5,
+        "y": 402.8,
+        "w": 220.5,
+        "h": 96.6,
+        "zh": "[1] M. Abadi、P. Barham、J. Chen、Z. Chen、A. Davis、J. Dean、M. Devin、S. Ghemawat、G. Irving、M. Isard、M. Kudlur、J. Levenberg、R. Monga、S. Moore、D. G. Murray、B. Steiner、P. Tucker、V. Vasudevan、P. Warden、M. Wicke、Y. Yu 与 X. Zheng。TensorFlow：一个大规模机器学习系统。见 12th USENIX Symposium on Operating Systems Design and Implementation（OSDI 16），第 265–283 页，GA，2016。URL https://www.tensorflow.org/。"
+      },
+      {
+        "text": "L. Wesolowski, A. Kyrola, A. Tulloch, Y. Jia, and K. He. Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour. arXiv preprint arXiv:1706.02677, 2017. [15] S. Hadjis, C. Zhang, I. Mitliagkas, D. Iter, and C. Ré. Omnivore: An optimizer for multi-device deep learning on cpus and gpus. arXiv preprint arXiv:1606.04487, 2016. [16] K. He, X. Zhang, S. Ren, and J. Sun. Deep residual learning for image recognition. CoRR, abs/1512.03385, 2015. URL http://arxiv.org/abs/1512.03385. [17] G. Hinton, L. Deng, D. Yu, G. E. Dahl, A. r. Mohamed, N. Jaitly, A. Senior, V. Vanhoucke, P. Nguyen, T. N. Sainath, and B. Kingsbury. Deep neural networks for acoustic modeling in speech recognition: The shared views of four research groups. IEEE Signal Processing Magazine, 29(6):82–97, Nov 2012. [18] Q. Ho, J. Cipar, H. Cui, S. Lee, J. K. Kim, P. B. Gibbons, G. A. Gibson, G. Ganger, and E. P. Xing. More effective distributed ml via a stale synchronous parallel parameter server. In Advances in neural information processing systems, pages 1223–1231, 2013. [19] S. Ioffe and C. Szegedy. Batch normalization: Accelerating deep network training by reducing internal covariate shift. In International Conference on Machine Learning, pages 448–456, 2015. [20] Y. Jia, E. Shelhamer, J. Donahue, S. Karayev, J. Long, R. Girshick, S. Guadarrama, and T. Darrell. Caffe: Convolutional architecture for fast feature embedding. arXiv preprint arXiv:1408.5093, 2014. [21] N. Kalchbrenner, E. Grefenstette, and P. Blunsom. A convolutional neural network for modelling sentences. CoRR, abs/1404.2188, 2014. URL http://arxiv.org/",
+        "x": 315,
+        "y": 106.6,
+        "w": 225,
+        "h": 356.7,
+        "zh": "L. Wesolowski、A. Kyrola、A. Tulloch、Y. Jia 与 K. He。Accurate, Large Minibatch SGD：在 1 小时内训练 ImageNet。arXiv 预印本 arXiv:1706.02677，2017。[15] S. Hadjis、C. Zhang、I. Mitliagkas、D. Iter 与 C. Ré。Omnivore：面向 CPU 和 GPU 上多设备深度学习的优化器。arXiv 预印本 arXiv:1606.04487，2016。[16] K. He、X. Zhang、S. Ren 与 J. Sun。用于图像识别的深度残差学习。CoRR，abs/1512.03385，2015。URL http://arxiv.org/abs/1512.03385。[17] G. Hinton、L. Deng、D. Yu、G. E. Dahl、A. r. Mohamed、N. Jaitly、A. Senior、V. Vanhoucke、P. Nguyen、T. N. Sainath 与 B. Kingsbury。用于语音识别声学建模的深度神经网络：四个研究组的共同看法。IEEE Signal Processing Magazine，29(6)：82–97，2012 年 11 月。[18] Q. Ho、J. Cipar、H. Cui、S. Lee、J. K. Kim、P. B. Gibbons、G. A. Gibson、G. Ganger 与 E. P. Xing。借助陈旧同步并行的参数服务器，做更有效的分布式机器学习。见 Advances in Neural Information Processing Systems，第 1223–1231 页，2013。[19] S. Ioffe 与 C. Szegedy。Batch normalization：通过减小内部协变量偏移来加速深度网络训练。见 International Conference on Machine Learning，第 448–456 页，2015。[20] Y. Jia、E. Shelhamer、J. Donahue、S. Karayev、J. Long、R. Girshick、S. Guadarrama 与 T. Darrell。Caffe：用于快速特征嵌入的卷积架构。arXiv 预印本 arXiv:1408.5093，2014。[21] N. Kalchbrenner、E. Grefenstette 与 P. Blunsom。用于给句子建模的卷积神经网络。CoRR，abs/1404.2188，2014。URL http://arxiv.org/"
+      },
+      {
+        "text": "Bringing HPC Techniques to Deep Learning, 2017. URL http://research.baidu.com/ bringing-hpc-techniques-deep-learning/. [3] D. L. Chen and W. B. Dolan. Collecting highly parallel data for paraphrase evaluation. In Proceedings of the 49th Annual Meeting of the Association for Computational Linguistics: Human Language Technologies-Volume 1, pages 190–200. Association for Computational Linguis-",
+        "x": 76.5,
+        "y": 311.1,
+        "w": 220.5,
+        "h": 87.7,
+        "zh": "把 HPC 技术带入深度学习，2017。URL http://research.baidu.com/ bringing-hpc-techniques-deep-learning/。[3] D. L. Chen 与 W. B. Dolan。为释义评估收集高度平行的数据。见 Proceedings of the 49th Annual Meeting of the Association for Computational Linguistics: Human Language Technologies-Volume 1，第 190–200 页。Association for Computational Linguis-"
+      },
+      {
+        "text": "[4] J. Chen, R. Monga, S. Bengio, and R. Jozefowicz. Revisiting distributed synchronous sgd. In International Conference on Learning Representations Workshop Track, 2016. URL https://arxiv.org/abs/1604.00981. [5] T. Chen, M. Li, Y. Li, M. Lin, N. Wang, M. Wang, T. Xiao, B. Xu, C. Zhang, and Z. Zhang. Mxnet: A flexible and efficient machine learning library for heterogeneous distributed systems. CoRR, abs/1512.01274, 2015. URL http://arxiv.org/abs/1512.01274. [6] X. Chen, A. Eversole, G. Li, D. Yu, and F. Seide. Pipelined Back-propagation for Context-dependent Deep Neural Networks. In Interspeech, 2012. [7] T. M. Chilimbi, Y. Suzue, J. Apacible, and K. Kalyanaraman. Project adam: Building an efficient and scalable deep learning training system. In OSDI, volume 14, pages",
+        "x": 76.5,
+        "y": 127.8,
+        "w": 220.5,
+        "h": 168.4,
+        "zh": "[4] J. Chen、R. Monga、S. Bengio 与 R. Jozefowicz。重新审视分布式同步 SGD。见 International Conference on Learning Representations Workshop Track，2016。URL https://arxiv.org/abs/1604.00981。[5] T. Chen、M. Li、Y. Li、M. Lin、N. Wang、M. Wang、T. Xiao、B. Xu、C. Zhang 与 Z. Zhang。MXNet：面向异构分布式系统的灵活、高效的机器学习库。CoRR，abs/1512.01274，2015。URL http://arxiv.org/abs/1512.01274。[6] X. Chen、A. Eversole、G. Li、D. Yu 与 F. Seide。面向上下文相关深度神经网络的流水线反向传播。见 Interspeech，2012。[7] T. M. Chilimbi、Y. Suzue、J. Apacible 与 K. Kalyanaraman。Project Adam：构建高效、可扩展的深度学习训练系统。见 OSDI，第 14 卷，第"
+      },
+      {
+        "text": "[8] H. Cui, J. Cipar, Q. Ho, J. K. Kim, S. Lee, A. Kumar, J. Wei, W. Dai, G. R. Ganger, P. B. Gibbons, et al. Exploiting bounded staleness to speed up big data analytics. In USENIX Annual Technical Conference, pages 37–48,",
+        "x": 76.5,
+        "y": 71,
+        "w": 220.5,
+        "h": 41.8,
+        "zh": "[8] H. Cui、J. Cipar、Q. Ho、J. K. Kim、S. Lee、A. Kumar、J. Wei、W. Dai、G. R. Ganger、P. B. Gibbons 等。利用有界陈旧度来加速大数据分析。见 USENIX Annual Technical Conference，第 37–48 页，"
+      },
+      {
+        "text": "[22] A. Karpathy, G. Toderici, S. Shetty, T. Leung, R. Sukthankar, and L. Fei-Fei. Large-scale video classification with convolutional neural networks. In 2014 IEEE Confer-",
+        "x": 315,
+        "y": 60,
+        "w": 225,
+        "h": 30.9,
+        "zh": "[22] A. Karpathy、G. Toderici、S. Shetty、T. Leung、R. Sukthankar 与 L. Fei-Fei。用卷积神经网络做大规模视频分类。见 2014 IEEE Confer-"
+      }
+    ],
+    "14": [
+      {
+        "text": "networks for large-scale image recognition. arXiv preprint arXiv:1409.1556, 2014. [37] J. Snoek, H. Larochelle, and R. P. Adams. bayesian optimization of machine learning algorithms. In Advances in neural information processing systems, pages",
+        "x": 315,
+        "y": 652.3,
+        "w": 225,
+        "h": 54.8,
+        "zh": "用于大规模图像识别的网络。arXiv 预印本 arXiv:1409.1556，2014。[37] J. Snoek、H. Larochelle 与 R. P. Adams。机器学习算法的贝叶斯优化。见 Advances in Neural Information Processing Systems，第"
+      },
+      {
+        "text": "ence on Computer Vision and Pattern Recognition, pages 1725–1732, June 2014. [23] J. K. Kim, Q. Ho, S. Lee, X. Zheng, W. Dai, G. A. Gibson, and E. P. Xing. STRADS: a distributed framework for scheduled model parallel machine learning. In EuroSys, pages 5:1–5:16, 2016. [24] D. Kingma and J. Ba. Adam: A method for stochastic optimization. arXiv preprint arXiv:1412.6980, 2014. [25] A. Krizhevsky. One weird trick for parallelizing convolutional neural networks. arXiv preprint arXiv:1404.5997,",
+        "x": 72,
+        "y": 589.5,
+        "w": 225,
+        "h": 117.5,
+        "zh": "ence on Computer Vision and Pattern Recognition，第 1725–1732 页，2014 年 6 月。[23] J. K. Kim、Q. Ho、S. Lee、X. Zheng、W. Dai、G. A. Gibson 与 E. P. Xing。STRADS：按调度做模型并行机器学习的分布式框架。见 EuroSys，第 5:1–5:16 页，2016。[24] D. Kingma 与 J. Ba。Adam：一种随机优化方法。arXiv 预印本 arXiv:1412.6980，2014。[25] A. Krizhevsky。并行化卷积神经网络的一个古怪技巧。arXiv 预印本 arXiv:1404.5997，"
+      },
+      {
+        "text": "[38] E. R. Sparks, A. Talwalkar, D. Haas, M. J. Franklin, M. I. Jordan, and T. Kraska. Automating model search for large scale machine learning. In Proceedings of the Sixth ACM Symposium on Cloud Computing, pages 368–380. ACM,",
+        "x": 315,
+        "y": 595.5,
+        "w": 225,
+        "h": 41.8,
+        "zh": "[38] E. R. Sparks、A. Talwalkar、D. Haas、M. J. Franklin、M. I. Jordan 与 T. Kraska。为大规模机器学习自动搜索模型。见 Proceedings of the Sixth ACM Symposium on Cloud Computing，第 368–380 页。ACM，"
+      },
+      {
+        "text": "[39] R. Thakur, R. Rabenseifner, and W. Gropp. Optimization of collective communication operations in mpich. The International Journal of High Performance Computing Applications, 19(1):49–66, 2005. [40] T. Tieleman and G. Hinton. Lecture 6.5-rmsprop: Divide the gradient by a running average of its recent magnitude. COURSERA: Neural networks for machine learning, 4(2):",
+        "x": 315,
+        "y": 503.8,
+        "w": 225,
+        "h": 76.7,
+        "zh": "[39] R. Thakur、R. Rabenseifner 与 W. Gropp。MPICH 中集合通信操作的优化。The International Journal of High Performance Computing Applications，19(1)：49–66，2005。[40] T. Tieleman 与 G. Hinton。第 6.5 讲 RMSProp：用梯度近期幅度的滑动平均来除梯度。COURSERA: Neural networks for machine learning，4(2)："
+      },
+      {
+        "text": "[26] A. Krizhevsky, I. Sutskever, and G. E. Hinton. Imagenet classification with deep convolutional neural networks. In Advances in neural information processing systems, pages",
+        "x": 72,
+        "y": 542.4,
+        "w": 225,
+        "h": 30.9,
+        "zh": "[26] A. Krizhevsky、I. Sutskever 与 G. E. Hinton。用深度卷积神经网络做 ImageNet 分类。见 Advances in Neural Information Processing Systems，第"
+      },
+      {
+        "text": "[27] S. Lee, J. K. Kim, X. Zheng, Q. Ho, G. A. Gibson, and E. P. Xing. On model parallelization and scheduling strategies for distributed machine learning. In NIPS, pages 2834–",
+        "x": 72,
+        "y": 495.3,
+        "w": 225,
+        "h": 30.9,
+        "zh": "[27] S. Lee、J. K. Kim、X. Zheng、Q. Ho、G. A. Gibson 与 E. P. Xing。论分布式机器学习中的模型并行化与调度策略。见 NIPS，第 2834–"
+      },
+      {
+        "text": "[41] Uber Technologies Inc. Meet Horovod: Uber’s Open Source Distributed Deep Learning Framework for TensorFlow, 2017. URL https://eng.uber.com/horovod/. [42] L. G. Valiant. A bridging model for parallel computation. Commun. ACM, 33(8), Aug. 1990. [43] S. Venugopalan, M. Rohrbach, J. Donahue, R. Mooney, T. Darrell, and K. Saenko. Sequence to sequence-video to text. In Proceedings of the IEEE international conference on computer vision, pages 4534–4542, 2015. [44] O. Vinyals, A. Toshev, S. Bengio, and D. Erhan. Show",
+        "x": 315,
+        "y": 375.3,
+        "w": 225,
+        "h": 113.6,
+        "zh": "[41] Uber Technologies Inc.。认识 Horovod：Uber 面向 TensorFlow 的开源分布式深度学习框架，2017。URL https://eng.uber.com/horovod/。[42] L. G. Valiant。并行计算的一种桥接模型。Commun. ACM，33(8)，1990 年 8 月。[43] S. Venugopalan、M. Rohrbach、J. Donahue、R. Mooney、T. Darrell 与 K. Saenko。Sequence to sequence：从视频到文本。见 Proceedings of the IEEE international conference on computer vision，第 4534–4542 页，2015。[44] O. Vinyals、A. Toshev、S. Bengio 与 D. Erhan。Show"
+      },
+      {
+        "text": "[28] M. Li, D. G. Andersen, J. W. Park, A. J. Smola, A. Ahmed, V. Josifovski, J. Long, E. J. Shekita, and B.-Y. Su. Scaling distributed machine learning with the parameter server. In OSDI, volume 1, page 3, 2014. [29] Y. Low, J. Gonzalez, A. Kyrola, D. Bickson, C. Guestrin, and J. M. Hellerstein. Distributed graphlab: A framework for machine learning in the cloud. PVLDB, 5(8):716–727,",
+        "x": 72,
+        "y": 401,
+        "w": 225,
+        "h": 78,
+        "zh": "[28] M. Li、D. G. Andersen、J. W. Park、A. J. Smola、A. Ahmed、V. Josifovski、J. Long、E. J. Shekita 与 B.-Y. Su。用参数服务器扩展分布式机器学习。见 OSDI，第 1 卷，第 3 页，2014。[29] Y. Low、J. Gonzalez、A. Kyrola、D. Bickson、C. Guestrin 与 J. M. Hellerstein。分布式 GraphLab：云上的机器学习框架。PVLDB，5(8)：716–727，"
+      },
+      {
+        "text": "[30] A. Mirhoseini, H. Pham, Q. Le, M. Norouzi, S. Bengio, B. Steiner, Y. Zhou, N. Kumar, R. Larsen, and J. Dean. Device placement optimization with reinforcement learning. 2017. URL https://arxiv.org/abs/1706.04972.",
+        "x": 72,
+        "y": 342.9,
+        "w": 225,
+        "h": 41.8,
+        "zh": "[30] A. Mirhoseini、H. Pham、Q. Le、M. Norouzi、S. Bengio、B. Steiner、Y. Zhou、N. Kumar、R. Larsen 与 J. Dean。用强化学习优化设备放置。2017。URL https://arxiv.org/abs/1706.04972。"
+      },
+      {
+        "text": "A neural image caption generator. abs/1411.4555, 2014.",
+        "x": 334.9,
+        "y": 353.4,
+        "w": 171.5,
+        "h": 19.9,
+        "zh": "一种神经图像描述生成器。abs/1411.4555，2014。"
+      },
+      {
+        "text": "[45] J. Yuan, F. Gao, Q. Ho, W. Dai, J. Wei, X. Zheng, E. P. Xing, T. Liu, and W. Ma. Lightlda: Big topic models on modest computer clusters. In WWW, pages 1351–1361.",
+        "x": 315,
+        "y": 307.5,
+        "w": 225,
+        "h": 30.9,
+        "zh": "[45] J. Yuan、F. Gao、Q. Ho、W. Dai、J. Wei、X. Zheng、E. P. Xing、T. Liu 与 W. Ma。LightLDA：在普通计算机集群上训练大主题模型。见 WWW，第 1351–1361 页。"
+      },
+      {
+        "text": "On bayesian methods for seeking the extremum. In Optimization Techniques IFIP Technical Conference, pages 400–404. Springer, 1975. [32] O. Russakovsky, J. Deng, H. Su, J. Krause, S. Satheesh, S. Ma, Z. Huang, A. Karpathy, A. Khosla, M. Bernstein, et al. Imagenet large scale visual recognition challenge. International Journal of Computer Vision, 115(3):211–",
+        "x": 72,
+        "y": 259.6,
+        "w": 225,
+        "h": 78,
+        "zh": "论用贝叶斯方法寻求极值。见 Optimization Techniques IFIP Technical Conference，第 400–404 页。Springer，1975。[32] O. Russakovsky、J. Deng、H. Su、J. Krause、S. Satheesh、S. Ma、Z. Huang、A. Karpathy、A. Khosla、M. Bernstein 等。ImageNet 大规模视觉识别挑战。International Journal of Computer Vision，115(3)：211–"
+      },
+      {
+        "text": "[46] ZeroMQ. Distributed Messaging. http://zeromq.org/. [47] H. Zhang, Z. Zheng, S. Xu, W. Dai, Q. Ho, X. Liang, Z. Hu, J. Wei, P. Xie, and E. P. Xing. Poseidon: An efficient communication architecture for distributed deep learning on GPU clusters.",
+        "x": 315,
+        "y": 237.8,
+        "w": 225,
+        "h": 54.8,
+        "zh": "[46] ZeroMQ。分布式消息传递。http://zeromq.org/。[47] H. Zhang、Z. Zheng、S. Xu、W. Dai、Q. Ho、X. Liang、Z. Hu、J. Wei、P. Xie 与 E. P. Xing。Poseidon：面向 GPU 集群上分布式深度学习的高效通信架构。"
+      },
+      {
+        "text": "In 2017 USENIX Annual Technical Conference (USENIX ATC 17), pages 181–193, Santa Clara, CA, 2017. USENIX Association. ISBN 978-",
+        "x": 334.9,
+        "y": 215.9,
+        "w": 205.1,
+        "h": 30.9,
+        "zh": "见 2017 USENIX Annual Technical Conference（USENIX ATC 17），第 181–193 页，Santa Clara，CA，2017。USENIX Association。ISBN 978-"
+      },
+      {
+        "text": "[33] F. Seide and A. Agarwal. CNTK: Microsoft’s open-source deep-learning toolkit. In Proceedings of the 22Nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, KDD ’16, pages 2135–2135, New York, NY, USA, 2016. URL https://github.com/",
+        "x": 72,
+        "y": 190.5,
+        "w": 225,
+        "h": 52.8,
+        "zh": "[33] F. Seide 与 A. Agarwal。CNTK：微软的开源深度学习工具包。见 Proceedings of the 22Nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining，KDD ’16，第 2135–2135 页，New York，NY，USA，2016。URL https://github.com/"
+      },
+      {
+        "text": "[34] F. Seide, H. Fu, J. Droppo, G. Li, and D. Yu. On parallelizability of stochastic gradient descent for speech dnns. In International Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE SPS, May 2014. [35] F. Seide, H. Fu, J. Droppo, G. Li, and D. Yu. 1-bit stochastic gradient descent and its application to data-parallel distributed training of speech dnns. In Fifteenth Annual Conference of the International Speech Communication",
+        "x": 72,
+        "y": 85.3,
+        "w": 225,
+        "h": 89,
+        "zh": "[34] F. Seide、H. Fu、J. Droppo、G. Li 与 D. Yu。论随机梯度下降对语音 DNN 的可并行性。见 International Conference on Acoustics, Speech and Signal Processing（ICASSP）。IEEE SPS，2014 年 5 月。[35] F. Seide、H. Fu、J. Droppo、G. Li 与 D. Yu。1-bit 随机梯度下降，以及它在语音 DNN 的数据并行分布式训练中的应用。见 Fifteenth Annual Conference of the International Speech Communication"
+      },
+      {
+        "text": "[36] K. Simonyan and A. Zisserman. Very deep convolutional",
+        "x": 72,
+        "y": 60,
+        "w": 225,
+        "h": 9,
+        "zh": "[36] K. Simonyan 与 A. Zisserman。极深的卷积"
+      }
+    ]
+  }
+}

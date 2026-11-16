@@ -1,0 +1,1869 @@
+{
+  "id": "2306.01708",
+  "title": "2306.01708",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "TIES-MERGING: Resolving Interference When",
+        "x": 132.3,
+        "y": 678.9,
+        "w": 347.3,
+        "h": 17.2,
+        "zh": "TIES-MERGING：消解干扰，当"
+      },
+      {
+        "text": "University of North Carolina at Chapel Hill",
+        "x": 165.3,
+        "y": 580.5,
+        "w": 173.4,
+        "h": 10,
+        "zh": "北卡罗来纳大学教堂山分校"
+      },
+      {
+        "text": "leshem.choshen@ibm.com {praty,dtredsox,craffel,mbansal}@cs.unc.edu",
+        "x": 177.5,
+        "y": 558.6,
+        "w": 257,
+        "h": 20.9,
+        "zh": ""
+      },
+      {
+        "text": "Transfer learning – i.e., further fine-tuning a pre-trained model on a downstream task – can confer significant advantages, including improved downstream performance, faster convergence, and better sample efficiency. These advantages have led to a proliferation of task-specific fine-tuned models, which typically can only perform a single task and do not benefit from one another. Recently, model merging techniques have emerged as a solution to combine multiple task-specific models into a single multitask model without performing additional training. However, existing merging methods often ignore the interference between parameters of different models, resulting in large performance drops when merging multiple models. In this paper, we demonstrate that prior merging techniques inadvertently lose valuable information due to two major sources of interference: (a) interference due to redundant parameter values and (b) disagreement on the sign of a given parameter’s values across models. To address this, we propose our method, TRIM, ELECT SIGN & MERGE (TIES-MERGING), which introduces three novel steps when merging models: (1) resetting parameters that only changed a small amount during fine-tuning, (2) resolving sign conflicts, and (3) merging only the parameters that are in alignment with the final agreed-upon sign. We find that TIES-MERGING outperforms several existing methods in diverse settings covering a range of modalities, domains, number of tasks, model sizes, architectures, and fine-tuning settings. We further analyze the impact of different types of interference on model parameters, and highlight the importance of resolving sign interference.",
+        "x": 143.8,
+        "y": 274.5,
+        "w": 326,
+        "h": 228.1,
+        "zh": "迁移学习——也就是把预训练模型在下游任务上继续微调——能带来明显好处，包括更好的下游性能、更快的收敛，以及更高的样本效率。这些优势催生了大量任务专用的微调模型。它们通常只能做单一任务，彼此也无法互相受益。近来，模型合并被用来把多个任务专用模型合成一个多任务模型，而且不必再训练。然而，现有合并方法常常忽略不同模型参数之间的干扰，因此在合并多个模型时性能会大幅下降。本文表明，以往的合并技术会因两类主要干扰，在无意中丢掉有价值的信息：（a）冗余参数值造成的干扰；（b）同一参数在不同模型上的取值符号不一致。为此，我们提出 TRIM、ELECT SIGN & MERGE（TIES-MERGING）。它在合并模型时引入三个新步骤：（1）把微调中只改变了一点点的参数重置回去；（2）消解符号冲突；（3）只合并那些与最终商定符号一致的参数。我们发现，在涵盖多种模态、领域、任务数量、模型规模、架构和微调设定的多样场景中，TIES-MERGING 都优于若干现有方法。我们还分析了不同类型的干扰对模型参数的影响，并强调消解符号干扰的重要性。"
+      },
+      {
+        "text": "Pre-trained models (PTMs) have become widespread in many real-world applications [91, 6]. Using PTMs typically involves fine-tuning them to specialize on a specific task [69, 12], which can lead to improved performance with less task-specific labeled data. These benefits have resulted in the release of thousands of finetuned checkpoints [81] derived from popular PTMs such as ViT [14] for vision and T5 [58] for language. However, having a separate fine-tuned model for each task has various drawbacks: (1) for each new application, a separate model has to be stored and deployed [17, 89], and (2) models trained in isolation cannot leverage information from related tasks to improve in-domain performance or out-of-domain generalization [66, 58, 75]. Multitask learning [66, 57] could address these concerns but requires costly training and simultaneous access to all tasks [17]. Moreover, it can be complex and resource-intensive to determine how best to mix datasets to ensure that multitask training is beneficial for all tasks [55, 54, 80, 52, 2, 17].",
+        "x": 107.7,
+        "y": 104.9,
+        "w": 396.6,
+        "h": 119.1,
+        "zh": "预训练模型（PTM）已经广泛用于许多实际应用 [91, 6]。使用 PTM 时，通常要把它微调到某个具体任务上 [69, 12]，这样可以用更少的任务专用标注数据获得更好的性能。这些好处使得人们发布了成千上万个微调检查点 [81]，它们来自流行的 PTM，例如用于视觉的 ViT [14] 和用于语言的 T5 [58]。不过，每个任务单独放一个微调模型有不少缺点：（1）每来一个新应用，就要单独存储并部署一个模型 [17, 89]；（2）孤立训练的模型无法利用相关任务的信息来提高域内性能或域外泛化 [66, 58, 75]。多任务学习 [66, 57] 可以应对这些顾虑，但训练代价高，而且需要同时拿到所有任务 [17]。此外，要确定怎样混合数据集，才能让多任务训练对所有任务都有益，这件事本身既复杂又耗费资源 [55, 54, 80, 52, 2, 17]。"
+      },
+      {
+        "text": "Our code is available at https://github.com/prateeky2806/ties-merging",
+        "x": 124.1,
+        "y": 82.7,
+        "w": 250.5,
+        "h": 9,
+        "zh": "我们的代码见 https://github.com/prateeky2806/ties-merging"
+      },
+      {
+        "text": "37th Conference on Neural Information Processing Systems (NeurIPS 2023).",
+        "x": 108,
+        "y": 52.1,
+        "w": 277.2,
+        "h": 9,
+        "zh": "第 37 届神经信息处理系统会议（NeurIPS 2023）。"
+      }
+    ],
+    "2": [
+      {
+        "text": "Figure 1: A depiction of the steps involved in TIES-MERGING. We visualize each parameter in a model as a square. The arrows depict the update (task vector, τ) to a parameter produced by fine-tuning on different tasks (coded by colors), with direction denoting sign and length denoting magnitude. We first trim the task vector values based on their magnitude, then we elect the sign for each parameter (γm, green vector containing +1 or −1) by resolving sign conflicts. Finally, we pick only the values that align with the elected sign and take their mean as the final parameter value.",
+        "x": 108,
+        "y": 494.6,
+        "w": 396.3,
+        "h": 64.5,
+        "zh": "图 1：TIES-MERGING 各步骤的示意。我们把模型中的每个参数画成一个方块。箭头表示在不同任务上微调所产生的参数更新（任务向量 τ），颜色区分任务，方向表示符号，长度表示幅度。我们先按幅度裁剪任务向量的取值，再为每个参数选出符号（γm，由 +1 或 −1 组成的绿色向量），从而消解符号冲突。最后，只保留与选出符号方向一致的值，并取它们的均值作为最终参数值。"
+      },
+      {
+        "text": "Recently, a growing body of research has focused on model merging [40]. One application of merging involves combining multiple task-specific models into a single multitask model without performing additional training. Previous works merge models by summing the individual model weights with different weighting schemes, either via a simple average [9, 28, 83], via more sophisticated means that incorporate parameter importance [45] or account for permutation invariances [1, 31, 70, 74, 42]. Combining fine-tuned models in this way can be seen as adding together task vectors [29] that are computed by subtracting the pre-trained model’s parameter values from those of the fine-tuned model. While weighted averaging of model parameters has proven effective for merging, all of these methods ignore the possibility that values may interfere across models, thereby harming the performance of the merged model. In this paper, we first demonstrate that interference can stem from two major causes (see Fig. 2), both of which can reduce parameter magnitudes in the merged model and eliminate subtle distinctions among values: (1) INTERFERENCE FROM REDUNDANT PARAMETERS: Previous studies on model pruning [25, 76] have shown that during fine-tuning, many model parameters can change over the course of fine-tuning [63] but only have a small",
+        "x": 107.7,
+        "y": 241.1,
+        "w": 398.1,
+        "h": 222.7,
+        "zh": "近来，越来越多的工作关注模型合并 [40]。合并的一个用途，是把多个任务专用模型合成一个多任务模型，且不再额外训练。先前工作用不同的加权方式把各个模型的权重加总：或者简单平均 [9, 28, 83]，或者用更精细的办法纳入参数重要性 [45]，或考虑置换不变性 [1, 31, 70, 74, 42]。以这种方式组合微调模型，可以看成把任务向量 [29] 加在一起；任务向量由微调模型的参数减去预训练模型的参数得到。尽管对模型参数做加权平均在合并上是有效的，这些方法都忽略了一种可能：不同模型之间的取值会互相干扰，从而损害合并后模型的性能。本文首先说明，干扰主要来自两个原因（见图 2），两者都会压低合并模型里的参数幅度，并抹掉取值之间的细微差别：（1）来自冗余参数的干扰。关于模型剪枝的先前研究 [25, 76] 表明，微调过程中许多参数会发生变化 [63]，但只有很小的"
+      },
+      {
+        "text": "Different types of conflict and impact on performance. However, when merging",
+        "x": 108,
+        "y": 230.2,
+        "w": 396,
+        "h": 16.6,
+        "zh": "不同类型的冲突及其对性能的影响。然而，在合并时"
+      },
+      {
+        "text": "merged outputs produced by either averaging a parameter that is influential for one model but re-",
+        "x": 108,
+        "y": 219.3,
+        "w": 396,
+        "h": 16.6,
+        "zh": "由平均得到的合并输出；某个对一个模型有影响、但对其他模型却 re- 的参数"
+      },
+      {
+        "text": "or TIES-MERGING. The parameters causing dundant (i.e. not influential) for other models, the",
+        "x": 108,
+        "y": 208.4,
+        "w": 396,
+        "h": 16.6,
+        "zh": "或 TIES-MERGING。造成这一现象的参数。对其他模型而言是冗余的（也就是没有影响），该"
+      },
+      {
+        "text": "interference are denoted by dotted arrows. influential value may be obscured by the redundant values, lowering the overall model performance (# in Fig. 2). (2) INTERFERENCE FROM SIGN DISAGREEMENT: A given parameter might have a positive value for some models and a negative value for others. Consequently, employing simple averaging might compromise the performance on both tasks (7 in Fig. 2). In both of these situations, simply aggregating the values lead to interference that shrinks the parameter’s value in the merged model. This interference between influential parameters might explain why the performance gap between the merged model and multitask-trained model increases as the number of models increases [31]. To address these sources of interference, we propose TIES-MERGING (TRIM, ELECT SIGN & MERGE) method, a method for merging models by combining task vectors that has three steps (visualized in Fig. 1): First, we trim each task vector to retain only the influential parameter values by setting the redundant values in each task vector to zero (or, equivalently, resetting the fine-tuned",
+        "x": 107.7,
+        "y": 72,
+        "w": 398.1,
+        "h": 142.1,
+        "zh": "干扰用虚线箭头标出。有影响的取值可能被冗余取值掩盖，从而拉低模型的整体性能（图 2 中的 #）。（2）来自符号不一致的干扰：某个参数在一些模型上可能为正，在另一些模型上可能为负。于是，简单平均可能同时损害两个任务上的性能（图 2 中的 7）。在这两种情形下，只是把取值聚合起来就会产生干扰，使该参数在合并模型中的值变小。有影响的参数之间的这种干扰，或许可以解释为什么合并模型与多任务训练模型之间的性能差距会随模型数量增加而变大 [31]。为应对这些干扰来源，我们提出 TIES-MERGING（TRIM、ELECT SIGN & MERGE），一种通过组合任务向量来合并模型的方法，包含三个步骤（见图 1）：首先，我们裁剪每个任务向量，只保留有影响的参数值，做法是把每个任务向量里的冗余值设为零（等价地，把微调后的"
+      }
+    ],
+    "3": [
+      {
+        "text": "parameter value back to the value from the pre-trained model). After this step, sign conflicts may still persist among influential parameter values, as visualized in Fig. 4. Our second step therefore resolves the sign conflicts between different values and our last step only averages parameters whose sign agrees with the direction of the largest total movement across models. We demonstrate the effectiveness of our proposed TIES-MERGING method in various setups with: (1) different modalities, including language and vision benchmarks, (2) distinct model sizes and families, such as T5-base and T5-large [58] as well as ViT-B/32 and ViT-L/14 [14], (3) in-domain and out-ofdomain tasks, (4) full finetuning or parameter-efficient finetuning, and (5) in the presence or absence of a validation set for setting merging hyperparameters. We show that TIES-MERGING outperforms other merging methods, such as Task Arithmetic [29], RegMean [31], Fisher Merging [45], and weight averaging [9, 82] across all these experimental settings. Notably, for in-domain evaluation, TIES-MERGING outperforms the strongest baseline by an average of 2.3% and 1.7% absolute in NLP and vision settings (Table 1), respectively. For out-of-domain generalization (Table 2), TIESMERGING outperforms the strongest baseline by 1.0% and 4.4% absolute for T5-base and T5-large models respectively. In Section 7, we perform ablations on our method components and demonstrate the impact of interference on parameter values. Additionally, we showcase the increased advantage of TIES-MERGING over task arithmetic [29] as the number of tasks increases. Finally, we examine the importance of obtaining the correct sign vector. Our results and analysis establish TIES-MERGING as a powerful and effective method for combining fine-tuned models into a single multi-task model.",
+        "x": 107.5,
+        "y": 508.2,
+        "w": 398.1,
+        "h": 211.8,
+        "zh": "参数值重置回预训练模型中的取值）。这一步之后，有影响的参数值之间仍可能存在符号冲突，如图 4 所示。因此，第二步消解不同取值之间的符号冲突，最后一步只对那些符号与各模型上总移动量最大的方向一致的参数取平均。我们在多种设定下展示了 TIES-MERGING 的有效性：（1）不同模态，包括语言和视觉基准；（2）不同的模型规模与系列，例如 T5-base、T5-large [58]，以及 ViT-B/32、ViT-L/14 [14]；（3）域内与域外任务；（4）全量微调或参数高效微调；（5）有没有用于设定合并超参数的验证集。我们表明，在所有这些实验设定中，TIES-MERGING 都优于其他合并方法，例如 Task Arithmetic [29]、RegMean [31]、Fisher Merging [45] 和权重平均 [9, 82]。值得注意的是，在域内评估中，TIES-MERGING 相对最强基线的平均绝对提升，在 NLP 和视觉设定下分别为 2.3% 和 1.7%（表 1）。在域外泛化上（表 2），相对最强基线的绝对提升，对 T5-base 和 T5-large 分别为 1.0% 和 4.4%。在第 7 节，我们对方法的各个组成部分做消融，并展示干扰对参数值的影响。此外，随着任务数量增加，TIES-MERGING 相对 task arithmetic [29] 的优势会变大。最后，我们考察得到正确符号向量有多重要。结果与分析表明，TIES-MERGING 是把多个微调模型合成单一多任务模型的一种有力且有效的方法。"
+      },
+      {
+        "text": "Loss Landscape and Weight Interpolation. generally non-convex, recent work has demonstrated that the parameter values from different training runs can sometimes be interpolated without increasing the loss (i.e. they are mode-connected) [15, 20, 21, 32, 22]. For example, Frankle et al. [19] showed that if a part of the optimization trajectory is shared between two neural networks then they can be interpolated without lowering accuracy. On the other hand, Neyshabur et al. [48] showed that naively interpolating two neural networks with completely disjoint optimization trajectories can result in a catastrophic drop in their accuracies. Entezari et al. [16] hypothesized that if we account for the permutation symmetry of neural networks, then all neural networks of a given architecture trained on the same dataset are linear mode connected. Ainsworth et al. [1], Singh and Jaggi [70], Wang et al. [79] therefore used techniques based on finding permutations [79, 1] and optimal transport [70] to better align neural networks trained from scratch so that they can be interpolated without increasing the loss.",
+        "x": 107.6,
+        "y": 322.3,
+        "w": 398.1,
+        "h": 130,
+        "zh": "损失曲面与权重插值。一般是非凸的，但近期工作表明，不同训练运行得到的参数值有时可以插值而不增加损失（也就是说，它们是 mode-connected 的）[15, 20, 21, 32, 22]。例如，Frankle 等人 [19] 表明，如果两个神经网络共享一部分优化轨迹，就可以在不降低准确率的情况下对它们插值。另一方面，Neyshabur 等人 [48] 表明，对优化轨迹完全不相交的两个神经网络做朴素插值，可能导致准确率灾难性下降。Entezari 等人 [16] 猜想，如果考虑到神经网络的置换对称性，那么在同一数据集上训练的、架构相同的所有神经网络都是线性 mode connected 的。因此，Ainsworth 等人 [1]、Singh 与 Jaggi [70]、Wang 等人 [79] 使用基于寻找置换 [79, 1] 和最优传输 [70] 的技术，把从头训练的神经网络更好地对齐，从而可以在不增加损失的情况下插值。"
+      },
+      {
+        "text": "While the loss function of a neural network is",
+        "x": 307.6,
+        "y": 442.3,
+        "w": 196.4,
+        "h": 10,
+        "zh": "虽然神经网络的损失函数"
+      },
+      {
+        "text": "Model Merging and Different Use Cases. pre-trained model effectively share a part of the optimization trajectory, and can therefore often be merged without accounting for permutation symmetry [82, 83, 29, 31]. Therefore, merging fine-tuned models can improve performance on a single target task [30, 23, 82, 9], improving out-of-domain generalization [31, 29, 7, 4, 60, 59], creating a multitask models from different tasks [31, 29, 38], for federated learning [46, 41], compression [39], multimodal merging models [72], continual learning [86, 85], and other settings [38, 13]. The range of applications has led to a proliferation of methods to improve beyond simple parameter averaging. RegMean [31] proposed a closed-form solution for the merged model’s parameters by solving a local linear regression problem for each individual linear layer in the model. However, this requires transmitting additional data statistics that are the same size as the model and requires additional inference steps to calculate them. Fisher Merging [45] goes beyond simple averaging to identify the importance of individual parameters using Fisher Information Matrix [18, 3, 34] and uses it to weigh the parameters in each model when merging. However, this shows little gains when merging multiple checkpoints and also requires computing gradients which has a high memory cost. Task Arithmetic [29] presented a method for merging models by generating task vectors and performing arithmetic operations, such as addition, to obtain a multitask checkpoint. A concurrent work by Ortiz-Jiménez et al. [51] provided theoretical insights on model merging based on the weight disentanglement property that arises during pretraining. They showed that finetuning models in their tangent space enhance this property, leading to better-merged models. Our method follows these past works on model merging but additionally takes into account the interference between different parameters during merging.",
+        "x": 107.6,
+        "y": 72,
+        "w": 398.2,
+        "h": 228.1,
+        "zh": "模型合并及其不同用途。预训练模型实际上共享一部分优化轨迹，因此常常可以在不考虑置换对称性的情况下合并 [82, 83, 29, 31]。因此，合并微调模型可以提升单一目标任务上的性能 [30, 23, 82, 9]，改善域外泛化 [31, 29, 7, 4, 60, 59]，从不同任务构建多任务模型 [31, 29, 38]，也可用于联邦学习 [46, 41]、压缩 [39]、多模态模型合并 [72]、持续学习 [86, 85]，以及其他设定 [38, 13]。应用范围如此之广，催生了许多超越简单参数平均的方法。RegMean [31] 针对模型中的每一个线性层，通过求解一个局部线性回归问题，给出合并模型参数的闭式解。不过，这需要传输与模型同等大小的额外数据统计量，并且要多做推理步骤才能把它们算出来。Fisher Merging [45] 不停留在简单平均，而是用 Fisher 信息矩阵 [18, 3, 34] 识别各个参数的重要性，并在合并时用它给每个模型中的参数加权。然而，在合并多个检查点时收益很小，而且需要计算梯度，内存开销很高。Task Arithmetic [29] 提出一种合并办法：生成任务向量，并做加法等算术运算，从而得到多任务检查点。同期工作 Ortiz-Jiménez 等人 [51] 基于预训练期间出现的权重解耦性质，给出了模型合并的理论认识。他们表明，在切空间里微调模型会增强这一性质，从而得到更好的合并模型。我们的方法沿袭这些模型合并工作，但额外考虑了合并过程中不同参数之间的干扰。"
+      },
+      {
+        "text": "Different fine-tuned models initialized from the same",
+        "x": 291.3,
+        "y": 290.2,
+        "w": 212.7,
+        "h": 10,
+        "zh": "从同一个初始化得到的不同微调模型"
+      }
+    ],
+    "4": [
+      {
+        "text": "Performance depends on a small Figure 4: Sign conflicts occur even after trimfraction of high-magnitude parameters. For ming and increase with the number of models. each task vector, we keep only the largest - top- We plot the fraction of parameters that have a sign k% parameters and plot the average performance conflict after trimming versus the number of modacross eleven tasks. Keeping only the top-20% of els being merged. the parameter does not degrade the performance.",
+        "x": 108,
+        "y": 567.2,
+        "w": 397.7,
+        "h": 64.5,
+        "zh": "性能取决于一小部分高幅度参数。对每个任务向量，我们只保留幅度最大的 top-k% 参数，并画出十一项任务上的平均性能。只保留前 20% 的参数，并不会降低性能。图 4：即使裁剪之后仍会出现符号冲突，而且冲突会随模型数量增加。我们画出裁剪后存在符号冲突的参数比例，横轴为被合并的模型数量。"
+      },
+      {
+        "text": "Given a set of tasks {t1, . . . , tn} and a pre-trained model such as T5 [58] or ViT [14], we either finetune the entire model or employ a parameter-efficient finetuning (PEFT) method [43, 26]. In both cases, we denote the trainable parameters as θ, the initialization as θinit, and the finetuned parameters as θft. In this paper, we assume access to finetuned model parameters θft for multiple tasks and devise a method to merge the weights of these models into a single multitask model proficient on both in-domain and out-of-domain datasets. We follow Ilharco et al. [29] and perform merging with task vectors. Specifically, for a task t, the task-vector τt ∈ R is defined as τt = θft − θinit. This operation allows us to focus on the changes that happen during the fine-tuning phase of each task-specific model and is equivalent to computing a weighted average of the models’ weights with appropriate scaling.",
+        "x": 107.6,
+        "y": 412.8,
+        "w": 398,
+        "h": 108.1,
+        "zh": "给定一组任务 {t1, . . . , tn} 以及一个预训练模型，例如 T5 [58] 或 ViT [14]，我们要么微调整个模型，要么采用参数高效微调（PEFT）方法 [43, 26]。两种情形下，可训练参数记为 θ，初始化记为 θinit，微调后的参数记为 θft。本文假定可以拿到多个任务的微调参数 θft，并设计一种方法，把这些模型的权重合并成一个多任务模型，使其在域内和域外数据集上都胜任。我们遵循 Ilharco 等人 [29]，用任务向量做合并。具体地，对任务 t，任务向量 τt ∈ R 定义为 τt = θft − θinit。这一运算让我们聚焦每个任务专用模型在微调阶段发生的变化，并且等价于在适当缩放下对模型权重做加权平均。"
+      },
+      {
+        "text": "Algorithm 1 TIES-MERGING Procedure. First, we demonstrate that in a given task",
+        "x": 108,
+        "y": 378.7,
+        "w": 354.1,
+        "h": 13.5,
+        "zh": "算法 1：TIES-MERGING 流程。首先，我们表明，在给定的一个任务"
+      },
+      {
+        "text": "Input: Fine-tuned models {θt}t=1, Initialization θinit, vector, many values are redundant (denoted by # in Fig. 2), and removing them does",
+        "x": 107.8,
+        "y": 356.9,
+        "w": 397.5,
+        "h": 21.4,
+        "zh": "输入：微调模型 {θt}t=1，初始化 θinit。向量里许多值是冗余的（图 2 中记为 #），去掉它们并不会"
+      },
+      {
+        "text": "Output: Merged Model θm not affect the performance of the task.",
+        "x": 108,
+        "y": 345.1,
+        "w": 297.1,
+        "h": 11.5,
+        "zh": "输出：合并模型 θm。不影响该任务的性能。"
+      },
+      {
+        "text": "forall t in1, ..., n do Fig. 3 shows the average",
+        "x": 166,
+        "y": 335.1,
+        "w": 209.1,
+        "h": 10.5,
+        "zh": "对 t = 1, ..., n 中的每一个执行。图 3 展示的是平均"
+      },
+      {
+        "text": "▷ Create task vectors. performance across eleven task-specific models when \"trimming\" each task vector to retain only the top-k% largest-magnitude",
+        "x": 108,
+        "y": 302.4,
+        "w": 296.1,
+        "h": 32.4,
+        "zh": "▷ 创建任务向量。在把每个任务向量“裁剪”为只保留幅度最大的 top-k% 时，十一个任务专用模型上的性能"
+      },
+      {
+        "text": "Trim redundant parameters. τˆt ← keep_topk_reset_rest_to_zero(τt, k) values and resetting the rest to their initial value (i.e. setting the corresponding value in the task vector to 0). Fig. 3 shows the average performance across varying values of k, demonstrating that keeping only the top-20% of values delivers comparable results to retaining all parameters. additional details and the results on the",
+        "x": 107.8,
+        "y": 215.1,
+        "w": 370,
+        "h": 94.8,
+        "zh": "裁剪冗余参数。τˆt ← keep_topk_reset_rest_to_zero(τt, k)。这些值，并把其余重置为初始值（也就是把任务向量中对应的值设为 0）。图 3 展示了不同 k 下的平均性能，表明只保留前 20% 的值，就能得到与保留全部参数相当的结果。更多细节，以及在"
+      },
+      {
+        "text": "forall p in1, ..., d do Ap = {t ∈P[n] | γˆp = γp } T5 model, please refer to Appendix C.3. This shows that many parameter changes introduced during fine-tuning are redundant. Hence, disregarding those values during",
+        "x": 107.7,
+        "y": 171.5,
+        "w": 308.9,
+        "h": 52.6,
+        "zh": "对 p = 1, ..., d 中的每一个执行。Ap = {t ∈ P[n] | γˆp = γp}。T5 模型上的结果请见附录 C.3。这表明，微调引入的许多参数变化是冗余的。因此，在此期间忽略这些值，"
+      },
+      {
+        "text": "▷ Obtain merged checkpoint merging could prevent interference with the influential parameters without compromising the task’s performance.",
+        "x": 108,
+        "y": 138.7,
+        "w": 297.5,
+        "h": 38.6,
+        "zh": "▷ 得到合并后的检查点。合并可以避免干扰那些有影响的参数，同时不损害该任务的性能。"
+      },
+      {
+        "text": "Different fine-tuned models might introduce opposing changes to a parameter in their task vectors, causing interference due to conflicting signs (denoted by 7 in Fig. 2). Fig. 4 presents an analysis of the frequency of sign conflicts when merging varying numbers of models. We first trim the task vectors for eleven tasks by keeping only the top 20% of influential parameters. Then, we plot the percentage of parameters that have a sign conflict as we",
+        "x": 108,
+        "y": 72,
+        "w": 396,
+        "h": 53.6,
+        "zh": "不同的微调模型可能在各自的任务向量里对同一个参数引入方向相反的变化，从而因符号冲突产生干扰（图 2 中记为 7）。图 4 分析了合并不同数量的模型时，符号冲突出现的频率。我们先对十一项任务的任务向量做裁剪，只保留前 20% 有影响的参数。然后，随着"
+      }
+    ],
+    "5": [
+      {
+        "text": "increase the number of models to be merged from 2 to 11. Notably, sign conflicts occur even when merging only 2 models from different tasks or when merging multiple models from the same task (see Appendix Figure 10), and the likelihood of a sign conflict increases with the number of models being merged. For additional details and the results on the T5 model, please refer to Appendix C.3.",
+        "x": 107.7,
+        "y": 677.3,
+        "w": 396.6,
+        "h": 42.7,
+        "zh": "被合并的模型数量从 2 增加到 11，我们画出存在符号冲突的参数所占百分比。值得注意的是，即使只合并来自不同任务的 2 个模型，或者合并同一任务上的多个模型（见附录图 10），也会出现符号冲突；而且模型越多，出现符号冲突的可能性越高。更多细节以及 T5 模型上的结果请见附录 C.3。"
+      },
+      {
+        "text": "To address the aforementioned issues, we present TIES-MERGING (TRIM, ELECT SIGN & MERGE), which aims to address the kinds of interference mentioned above before performing merging.",
+        "x": 107.6,
+        "y": 614.1,
+        "w": 397.6,
+        "h": 20.9,
+        "zh": "为应对上述问题，我们提出 TIES-MERGING（TRIM、ELECT SIGN & MERGE），目的是在真正合并之前，先处理上面提到的那几类干扰。"
+      },
+      {
+        "text": "represents a direction and the amount of movement required in the ddimensional parameter space relative to the initialization that leads to a low loss region for the task t. Each entry in τt (corresponding to a particular parameter) can be thought of as an axis in the d-dimensional space. The sign of a parameter denotes the direction along this axis (positive or negative) that decreases the loss on task t. Hence, a given task-vector τt can be decomposed into a sign vector γt ∈ R and a magnitude vector μt ∈ R as τt = γt ⊙ μt, where ⊙ is the elementwise product. Formally, γt = sgn(τt), where sgn(x) ∗ |x| = x and returns a value of +1, 0, or −1. The magnitude vector μt is defined as μt = |τt| and the value μt tells us the movement required in the i-th dimension from the initialization.",
+        "x": 108,
+        "y": 481.6,
+        "w": 397.7,
+        "h": 97.2,
+        "zh": "它表示的是：相对于初始化，在 d 维参数空间中为了到达任务 t 的低损失区域，所需要移动的方向和幅度。τt 的每一项（对应某个参数）可以看成这 d 维空间中的一根轴。参数的符号表示沿这根轴使任务 t 的损失下降的方向（正或负）。因此，给定任务向量 τt 可以分解成符号向量 γt ∈ R 和幅度向量 μt ∈ R，即 τt = γt ⊙ μt，其中 ⊙ 是逐元素乘积。形式上，γt = sgn(τt)，其中 sgn(x) ∗ |x| = x，返回值为 +1、0 或 −1。幅度向量定义为 μt = |τt|，而 μt 的取值告诉我们，从初始化出发，在第 i 维上需要移动多少。"
+      },
+      {
+        "text": "To merge multiple task-specific models {θt}t=1, we first create corresponding task vectors {τt}t=1. Given these task vectors, TIES-MERGING method follows three steps in order to perform a merge (see Fig. 1 for a diagram and Algorithm 1):",
+        "x": 107.7,
+        "y": 414.7,
+        "w": 398.1,
+        "h": 31.8,
+        "zh": "要合并多个任务专用模型 {θt}t=1，我们先构造对应的任务向量 {τt}t=1。给定这些任务向量，TIES-MERGING 依次做三步来完成合并（示意见图 1，流程见算法 1）："
+      },
+      {
+        "text": "1. Trim: For each task t, we trim the redundant parameters from the task vector τt to create τˆt by keeping the top-k% values according to their magnitude and trimming the bottom (100−k)% of the redundant parameters by resetting them to 0. This can be decomposed further as τˆt = ˆγt⊙μˆt. 2. Elect: Next, we create an aggregate elected sign vector γm for the merged model that resolves the disagreements in the sign for each parameter p across different models. To create the elected sign vector, we choose the sign with the highest total magnitude across all relevant models. For each parameter p ∈ {1, 2, . . . , d}, we separate the values {τˆt }t=1 based on their sign (+1 or −1) and take their sum to calculate the total mass (i.e., total magnitude) in the positive and the negative direction. We then assign γmPas the sign with greater total movement. This can be efficiently computed using γm = sgn( 3. Disjoint Merge: Then, for each parameter p, we compute a disjoint mean by only keeping the parameter values from the models whose signs are the same as the aggregated elected signP and calculate their mean. Formally, let A = {t ∈ [n] | γˆt = γm}, then τm = |Ap| Note that the disjoint mean always ignores the zero values.",
+        "x": 115.5,
+        "y": 240.2,
+        "w": 390.3,
+        "h": 162.7,
+        "zh": "1. 裁剪（Trim）：对每个任务 t，从任务向量 τt 中裁掉冗余参数，得到 τˆt。按幅度保留最大的 top-k% 取值，并把底部 (100−k)% 的冗余参数重置为 0。这可以进一步写成 τˆt = ˆγt ⊙ μˆt。2. 选举（Elect）：接下来，为合并模型构造一个聚合后的当选符号向量 γm，用来消解每个参数 p 在不同模型之间的符号分歧。构造时，我们在所有相关模型上选择总幅度最大的那个符号。对每个参数 p ∈ {1, 2, . . . , d}，按符号（+1 或 −1）把 {τˆt}t=1 分开，分别求和，得到正方向和负方向上的总质量（即总幅度）。然后把总移动量更大的那个符号赋给 γm_p。这可以用 γm = sgn( 高效算出。3. 不相交合并（Disjoint Merge）：然后对每个参数 p 计算不相交均值，只保留符号与聚合当选符号相同的那些模型的参数值，再取平均。形式上，令 A = {t ∈ [n] | γˆt = γm}，则 τm = |Ap|。注意，不相交均值始终忽略零值。"
+      },
+      {
+        "text": "Given the final merged task vector τm, we scale it and add it to the initial parameter values to obtain the merged model parameters θm as θm = θinit + λ ∗ τm, where λ is a scaling hyperparameter (as used in past work [29]).",
+        "x": 108,
+        "y": 196.7,
+        "w": 396,
+        "h": 31.8,
+        "zh": "得到最终的合并任务向量 τm 之后，我们把它缩放，再加到初始参数上，得到合并模型的参数 θm = θinit + λ ∗ τm，其中 λ 是缩放超参数（用法与以往工作 [29] 相同）。"
+      },
+      {
+        "text": "We compare TIES-MERGING with four baseline merging methods: (1) Simple Averaging [9, P82] calculates the element-wise mean of all the individual models and can be",
+        "x": 108,
+        "y": 130,
+        "w": 397.7,
+        "h": 24.3,
+        "zh": "我们把 TIES-MERGING 与四种基线合并方法比较：（1）简单平均 [9, 82] 计算所有单个模型的逐元素均值，可以写成"
+      },
+      {
+        "text": "t=1 θt/n. (2) Fisher Merging [45] uses a diagonal approximation of the Fisher Information Matrix Fˆt [34, 3, 18] to measure the importance of each parameter for task t, where Fˆt = Ex∼DtEy∼pθ (y|x)∇θt(log pθt(y|xt))2. The final merged model is obtained by reweighting each parameter in each fine-tuned model by the corresponding value in the model’s approximate Fisher matrix as θm =",
+        "x": 108,
+        "y": 70.5,
+        "w": 396.2,
+        "h": 62,
+        "zh": "从 t=1 起的 θt/n。（2）Fisher Merging [45] 用 Fisher 信息矩阵的对角近似 Fˆt [34, 3, 18] 来度量每个参数对任务 t 的重要性，其中 Fˆt = E_{x∼Dt} E_{y∼pθ}(y|x) ∇_{θt}(log p_{θt}(y|xt))^2。最终的合并模型，是用每个模型近似 Fisher 矩阵中的对应值，对该微调模型里的每个参数重新加权得到的，即 θm ="
+      },
+      {
+        "text": "t=1 Ft. (3) RegMean [31] computes a closed-form solution to",
+        "x": 260,
+        "y": 69,
+        "w": 244,
+        "h": 13,
+        "zh": "从 t=1 起的 Ft。（3）RegMean [31] 为一个问题计算闭式解，该问题是"
+      }
+    ],
+    "6": [
+      {
+        "text": "Table 1: Comparing model merging methods across multiple fine-tuning settings and modalities (NLP and Vision) with and without the availability of a validation set.",
+        "x": 107.7,
+        "y": 565.5,
+        "w": 396.3,
+        "h": 20.9,
+        "zh": "表 1：在多种微调设定和模态（NLP 与视觉）下比较模型合并方法，并区分有无验证集。"
+      },
+      {
+        "text": "a least-squares regression problem that aims to minimize the distance between the merged model’s ac-P tivations and the individual models’ activations as θm = ( Xt is the input activation of a given layer. (4) Task Artithmetic [29] scales and then adds the taskP vectors to the initial model to produce the merged model as θm = θinit + λ ∗ to these baselines, we present the performance of the individual fine-tuned models involved in the merging process as well as the performance of a multi-task model trained on the concatenation of all tasks’ datasets. For more details on compute resources, dataset licenses, and the finetuning procedures, refer to Appendix C.1, C.2, and C.6.",
+        "x": 107.8,
+        "y": 452.2,
+        "w": 397.9,
+        "h": 86.3,
+        "zh": "一个最小二乘回归问题，目标是让合并模型的激活靠近各个模型的激活，写成 θm = （Xt 是给定层的输入激活。（4）Task Arithmetic [29] 先缩放任务向量，再把它们加到初始模型上，得到合并模型 θm = θinit + λ ∗。除这些基线外，我们还报告参与合并的各个微调模型的性能，以及把所有任务的数据拼在一起训练得到的多任务模型的性能。关于计算资源、数据集许可和微调流程的更多细节，见附录 C.1、C.2 和 C.6。"
+      },
+      {
+        "text": "Prior works [29, 45, 82] on model merging assume access to a validation set, which is utilized to compute the Fisher matrix or tune hyper-parameters. To avoid the need for a validation set, RegMean [31] proposed storing and transmitting inner product matrices of the training data for each task that are the same size as the original model. This can quickly become expensive for large models as the storage and transmission scale linearly with model size and the number of tasks. To consider the setting where no validation set is available, we developed a generic recipe of TIESMERGING with fixed hyperparameters that could be applied in any setting without hyperparameter tuning on a validation set. The recipe keeps the top-20% parameters in the task vector resetting the rest to 0 and sets λ = 1. We chose this recipe based on results in the parameter-efficient fine-tuning (PEFT) setting, so we only apply it to the unseen settings of full model fine-tuning on ViT (vision) and T5 (language) models. We also compare TIES-MERGING with the Task Arithmetic method without a validation set by utilizing the recommended value of λ = 0.4 [29]. For further details on how this recipe was created please refer to Appendix C.4.",
+        "x": 107.6,
+        "y": 277.6,
+        "w": 398.1,
+        "h": 157.3,
+        "zh": "先前关于模型合并的工作 [29, 45, 82] 假定可以拿到验证集，用来计算 Fisher 矩阵或调节超参数。为了不必依赖验证集，RegMean [31] 提出为每个任务存储并传输训练数据的内积矩阵，其大小与原模型相同。对大模型来说，这很快就会变得昂贵，因为存储和传输会随模型规模和任务数量线性增长。为了覆盖没有验证集的情形，我们定了一套通用的 TIES-MERGING 配方，超参数固定，因此可以用于任何设定，而不必在验证集上调参。该配方保留任务向量中幅度最大的前 20% 参数，其余重置为 0，并设 λ = 1。这一配方是根据参数高效微调（PEFT）设定下的结果选定的，因此我们只把它用到尚未见过的设定上，也就是在 ViT（视觉）和 T5（语言）上做全模型微调。我们还与不使用验证集的 Task Arithmetic 比较，采用其推荐值 λ = 0.4 [29]。这一配方是如何得到的，详见附录 C.4。"
+      },
+      {
+        "text": "Merging in Absence of the Validation Set.",
+        "x": 108,
+        "y": 424.9,
+        "w": 179.8,
+        "h": 10,
+        "zh": "在没有验证集时进行合并。"
+      },
+      {
+        "text": "Our main goal is to merge multiple task-specific models into a single multitask model that can perform well on both in-domain and out-of-domain scenarios. In this section, we evaluate the performance of TIES-MERGING with other methods across multiple different experimental settings.",
+        "x": 107.6,
+        "y": 197.5,
+        "w": 396.4,
+        "h": 31.8,
+        "zh": "我们的主要目标，是把多个任务专用模型合并成一个多任务模型，使其在域内和域外都能表现良好。本节在多种实验设定下，比较 TIES-MERGING 与其他方法的性能。"
+      },
+      {
+        "text": "Consider the setting where task vectors are computed based on parameters introduced during parameter-efficient fine-tuning. Specifically, we focus on (IA) [43], a PEFT method that scales the base model activations with learned vectors. We follow Liu et al. [43] and use T0-3B [66] as the base model and finetune (IA) models on the train split of eleven datasets including sentence completion (COPA [61], H-SWAG [88], and Story Cloze [68] datasets), natural language inference (ANLI [49], CB [44], and RTE [11]), coreference resolution (WSC [37] and Winogrande [64]), and word sense disambiguation (WiC [53]). When fine-tuning (IA) parameters added to the T0-3B model, we use prompt templates from the Public Pool of Prompts (P3 [5]) to convert each example in each dataset to a prompted text-to-text format where each label corresponds to a different string. For experiments with (IA) , for each dataset, we report the median score across all templates.",
+        "x": 107.7,
+        "y": 72,
+        "w": 398.1,
+        "h": 108.1,
+        "zh": "考虑这样一种设定：任务向量来自参数高效微调所引入的参数。具体地，我们关注 (IA) [43]，这是一种 PEFT 方法，用学到的向量去缩放基座模型的激活。我们遵循 Liu 等人 [43]，以 T0-3B [66] 为基座模型，在十一个数据集的训练集上微调 (IA) 模型，包括句子补全（COPA [61]、H-SWAG [88]、Story Cloze [68]）、自然语言推理（ANLI [49]、CB [44]、RTE [11]）、共指消解（WSC [37]、Winogrande [64]），以及词义消歧（WiC [53]）。微调加到 T0-3B 上的 (IA) 参数时，我们使用 Public Pool of Prompts（P3 [5]）里的提示模板，把每个数据集的每个样本转换成带提示的文本到文本格式，每个标签对应一个不同的字符串。对 (IA) 实验，每个数据集报告的是所有模板得分的中位数。"
+      }
+    ],
+    "7": [
+      {
+        "text": "Table 2: TIES-MERGING generalizes better. Figure 5: TIES-MERGING scales better. AverOut of Distribution Generalization for T5-Base age performance when merging a different num-",
+        "x": 107.7,
+        "y": 580.3,
+        "w": 398,
+        "h": 20.9,
+        "zh": "表 2：TIES-MERGING 泛化得更好。T5-Base 的分布外泛化。图 5：TIES-MERGING 的扩展性更好。合并不同数量时的平均性能"
+      },
+      {
+        "text": "Table 1 using TIES-MERGING to merge models trained with (IA) exceeds the performance of all other merging methods – with a validation set, TIES-MERGING shows an average enhancement of 2.5% across 11 tasks compared to the top baseline. For detailed results, refer to Appendix Table 8.",
+        "x": 107.7,
+        "y": 514.3,
+        "w": 396.3,
+        "h": 31.8,
+        "zh": "表 1 中，用 TIES-MERGING 合并以 (IA) 训练的模型，性能超过所有其他合并方法。在有验证集时，相对最强基线，TIES-MERGING 在 11 项任务上平均提高 2.5%。详细结果见附录表 8。"
+      },
+      {
+        "text": "Merging Fully Finetuned Vision Models. setting from Ilharco et al. [29, 28]. We employ two variants of the CLIP model [56] with ViT-B/32 and ViT-L/14 models [14] as visual encoders. Subsequently, we finetune the visual encoder on the eight tasks derived from Ilharco et al. [28, 29], Radford et al. [56] while keeping the text encoder fixed. This setting considers a variety of classification domains such as remote sensing, traffic classification, and satellite imagery recognition. Specifically, we work with the following datasets: Cars [35], DTD [10], EuroSAT [24], GTSRB [71], MNIST [36], RESISC45 [8], SUN397 [84], and SVHN [47]. Table 1 shows that using TIES-MERGING to merge fully fine-tuned ViT-B/32 and ViT-L/14 models leads to an average improvement of 1.8% and 1.5% over 8 tasks, given the availability of a validation set. In the absence of a validation set, TIES-MERGING improves by 6.6% and 2.7% over other methods for ViT-B/32 and ViT-L/14, respectively. Notably, TIES-MERGING without validation outperforms Task Arithmetic [29] with validation by 2.3% and 1.5% for ViT-B/32 and ViT-L/14. For more detailed results, refer to Appendix Table 11 and 12.",
+        "x": 107.7,
+        "y": 354.6,
+        "w": 398.1,
+        "h": 146.4,
+        "zh": "合并全量微调的视觉模型。实验设定来自 Ilharco 等人 [29, 28]。我们采用 CLIP 模型 [56] 的两个变体，分别以 ViT-B/32 和 ViT-L/14 [14] 作为视觉编码器。随后，在 Ilharco 等人 [28, 29] 与 Radford 等人 [56] 的八个任务上微调视觉编码器，文本编码器保持固定。该设定涵盖多种分类领域，例如遥感、交通分类和卫星图像识别。具体使用这些数据集：Cars [35]、DTD [10]、EuroSAT [24]、GTSRB [71]、MNIST [36]、RESISC45 [8]、SUN397 [84] 和 SVHN [47]。表 1 表明，在有验证集时，用 TIES-MERGING 合并全量微调的 ViT-B/32 和 ViT-L/14，在 8 项任务上平均分别提高 1.8% 和 1.5%。在没有验证集时，相对其他方法，TIES-MERGING 在 ViT-B/32 和 ViT-L/14 上分别提高 6.6% 和 2.7%。值得注意的是，无验证集的 TIES-MERGING 仍然优于有验证集的 Task Arithmetic [29]，在 ViT-B/32 和 ViT-L/14 上分别高出 2.3% 和 1.5%。更详细的结果见附录表 11 和表 12。"
+      },
+      {
+        "text": "For image classification, we adhere to the experimental",
+        "x": 287.3,
+        "y": 491,
+        "w": 216.7,
+        "h": 10,
+        "zh": "对于图像分类，我们遵循的实验"
+      },
+      {
+        "text": "For the NLP domain, we use the T5-base and T5-large",
+        "x": 284.8,
+        "y": 331.3,
+        "w": 219.2,
+        "h": 10,
+        "zh": "在 NLP 领域，我们使用 T5-base 和 T5-large"
+      },
+      {
+        "text": "[57] models, which are encoder-decoder transformers [77] pretrained via masked language modeling on a large text corpus. We finetune both T5-base and T5-large on seven tasks: question answering (QASC [33], WikiQA [87], and QuaRTz [73]), Paraphrase Identification (PAWS [90]), Sentence Completion (Story Cloze [68]), and Coreference Resolution (Winogrande [64] and WSC [37]). Table 1 shows that using TIES-MERGING on T5-base and T5-large models with a validation set produces an improvement of 0.7% and 3.6% respectively over 7 tasks compared to the state-of-the-art. Moreover, for T5-large TIES-MERGING without validation outperforms all baselines (even with a validation set) by 1.1%. For more detailed results, refer to Appendix Table 9 and 10.",
+        "x": 107.7,
+        "y": 238.6,
+        "w": 398.1,
+        "h": 91.8,
+        "zh": "[57] 模型。它们是编码器–解码器 Transformer [77]，在大规模文本语料上用掩码语言建模预训练。我们把 T5-base 和 T5-large 都微调到七个任务上：问答（QASC [33]、WikiQA [87]、QuaRTz [73]）、释义识别（PAWS [90]）、句子补全（Story Cloze [68]），以及共指消解（Winogrande [64]、WSC [37]）。表 1 表明，在有验证集时，对 T5-base 和 T5-large 使用 TIES-MERGING，相对现有最优方法，在 7 项任务上分别提高 0.7% 和 3.6%。此外，对 T5-large 而言，无验证集的 TIES-MERGING 比所有基线（包括有验证集的基线）高出 1.1%。更详细的结果见附录表 9 和表 10。"
+      },
+      {
+        "text": "In many use-cases, multitask models are used for their ability to generalize better to domain shift. Hence, we use the T5-base and T5-large models merged on the seven in-domain datasets from the previous experiments and evaluate them on six held-out datasets from T0 mixture [65] to measure out-of-domain generalization. Specifically, we report the average performance over the following tasks and datasets: Cosmos QA [27], Social IQA [67], and QuAIL [62] for question answering; WiC [53] for word sense disambiguation; and COPA [61], and H-SWAG [88] for sentence completion. Table 2 shows that TIES-MERGING outperforms the strongest baseline for both T5-base and T5-Large by 1.0% and 4.4% respectively, demonstrating better out-of-domain generalization. For more elaborate results please refer to Appendix B.6 and Table 13 and 14.",
+        "x": 108,
+        "y": 128,
+        "w": 396.5,
+        "h": 97.2,
+        "zh": "在许多使用场景里，人们采用多任务模型，是因为它们在领域偏移下泛化更好。因此，我们取先前实验里在七个域内数据集上合并得到的 T5-base 和 T5-large，放到 T0 混合数据 [65] 的六个留出数据集上评估，用来衡量域外泛化。具体地，我们报告以下任务和数据集的平均性能：问答为 Cosmos QA [27]、Social IQA [67] 和 QuAIL [62]；词义消歧为 WiC [53]；句子补全为 COPA [61] 和 H-SWAG [88]。表 2 表明，TIES-MERGING 在 T5-base 和 T5-Large 上都超过最强基线，分别高出 1.0% 和 4.4%，说明域外泛化更好。更完整的结果见附录 B.6 以及表 13、表 14。"
+      },
+      {
+        "text": "We evaluate the performance of the merged model on the",
+        "x": 274.4,
+        "y": 104.7,
+        "w": 229.6,
+        "h": 10,
+        "zh": "我们在改变被合并任务数量的同时，评估合并模型在"
+      },
+      {
+        "text": "in-domain tasks as we vary the number of tasks being merged. In Fig. 5, we normalize the accuracy of each task by its fine-tuned model performance and report the average normalized accuracy on the in-domain tasks. We compare with the strongest baseline – Task Arithmetic [29] – as well as",
+        "x": 108,
+        "y": 72,
+        "w": 396.3,
+        "h": 31.8,
+        "zh": "域内任务上的性能。在图 5 中，我们用该任务微调模型的性能对准确率做归一化，并报告域内任务上的平均归一化准确率。我们与最强基线 Task Arithmetic [29] 以及"
+      }
+    ],
+    "8": [
+      {
+        "text": "Table 4: A TIES-merged model is a better iniTable 3: Model soups experimental setup. TIES",
+        "x": 107.7,
+        "y": 625,
+        "w": 398,
+        "h": 15.2,
+        "zh": "表 4：经 TIES 合并的模型是更好的初始。表 3：Model soups 实验设定。TIES"
+      },
+      {
+        "text": "tialization for finetuning. For each task, we improves performance when merging check-",
+        "x": 108,
+        "y": 614.1,
+        "w": 396,
+        "h": 15.2,
+        "zh": "初始化，以便微调。对每个任务，我们在合并检查点时能提升性能，check-"
+      },
+      {
+        "text": "merge the checkpoints from the 7 other GLUE points on the same tasks. For each task, we",
+        "x": 108,
+        "y": 603.2,
+        "w": 396,
+        "h": 15.2,
+        "zh": "合并其余 7 个 GLUE 任务的检查点。相同任务上的检查点。对每个任务，我们"
+      },
+      {
+        "text": "tasks and then finetune and evaluate on the semerge 10 checkpoints from Huggingface hub and evaluate on the one task they were trained on.",
+        "x": 108,
+        "y": 581.4,
+        "w": 397.7,
+        "h": 26.1,
+        "zh": "这些任务，然后微调并评估。从 Huggingface Hub 合并 10 个检查点，并在它们所训练的那一个任务上评估。"
+      },
+      {
+        "text": "Bins of Sign Agreement (a) Redundant Parameter Interference.",
+        "x": 135.1,
+        "y": 454.1,
+        "w": 332.4,
+        "h": 22.9,
+        "zh": "符号一致程度的分箱。(a) 冗余参数干扰。"
+      },
+      {
+        "text": "(b) Sign Interference. Figure 6: Trimming Parameters and Electing Signs prevents interference. Demonstration of parameter interference between different models and its impact on parameter values. The Standard Mean (red) shrinks magnitudes and does it more when there is less agreement on the sign (right) or the parameter is influential for multiple tasks (left).",
+        "x": 108,
+        "y": 403.8,
+        "w": 396.2,
+        "h": 59.3,
+        "zh": "（b）符号干扰。图 6：裁剪参数并选举符号可以防止干扰。这里展示不同模型之间的参数干扰，以及它对参数值的影响。标准均值（红色）会把幅度缩小；当符号更不一致时（右图），或者该参数对多个任务都有影响时（左图），缩小得更明显。"
+      },
+      {
+        "text": "simple averaging [82]. Each data point signifies merging a subset of the tasks, with the solid line representing the mean performance across multiple subsets. For similar results with the T5-base model, please refer to Appendix C.5 and Figure 13. From Fig. 5, we observe the following: (1) As the number of merged tasks increases, the performance of all methods decreases. (2) When merging two tasks, both TIES-MERGING and Task Arithmetic achieve an average normalized accuracy close to one, indicating negligible performance loss. In contrast, Simple Averaging suffers from a 10% performance drop. (3) As the number of tasks increases, the merging performance of Task Arithmetic declines more rapidly than TIES-MERGING. This suggests that task interference is present when merging multiple tasks and that TIES-MERGING is more effective at mitigating this issue.",
+        "x": 107.7,
+        "y": 264.8,
+        "w": 398.1,
+        "h": 113.6,
+        "zh": "简单平均 [82]。每个数据点表示合并任务的一个子集，实线是多个子集上的平均性能。T5-base 上的类似结果见附录 C.5 和图 13。从图 5 可以看到：（1）被合并的任务越多，所有方法的性能都下降。（2）只合并两个任务时，TIES-MERGING 和 Task Arithmetic 的平均归一化准确率都接近 1，性能损失可以忽略。与之相对，简单平均会下降 10%。（3）任务一多，Task Arithmetic 的合并性能就比 TIES-MERGING 掉得更快。这说明合并多个任务时存在任务干扰，而 TIES-MERGING 更能缓解这个问题。"
+      },
+      {
+        "text": "We perform additional experiments to merge multiple checkpoints trained on the same task (as done in ModelSoups [82]) to see if it can improve robustness. Typically, ensembling is used to combine different models on the same task for better generalization. We use the experimental setting and the code from Fisher Merging [45] to merge top-10 fine-tuned base sized BERT models from huggingface for RTE, MRPC, and WNLI datasets from GLUE. From the results presented in Table 3, we observe that TIES-MERGING works the best in all cases except WNLI, where it only slightly underperforms Task Vectors. Notably, TIES-MERGING provides a dramatic boost over both Fisher Merging, averaging, and outperforms ensembling in all cases. Moreover, in Appendix B.4, we show that interference exists even between differently finetuned checkpoints of the same tasks.",
+        "x": 107.9,
+        "y": 141.1,
+        "w": 397.7,
+        "h": 108.1,
+        "zh": "我们又做了一组实验：合并同一任务上训练出的多个检查点（做法同 Model Soups [82]），看能否提高稳健性。通常，集成用来组合任务相同的不同模型，以获得更好的泛化。我们采用 Fisher Merging [45] 的实验设定和代码，合并 Hugging Face 上、针对 GLUE 的 RTE、MRPC 和 WNLI 微调的、排名前 10 的 base 规模 BERT 模型。从表 3 看，除 WNLI 外，TIES-MERGING 在所有情形下都最好；在 WNLI 上只是略低于 Task Vectors。值得注意的是，TIES-MERGING 相对 Fisher Merging 和平均都有大幅提升，并且在所有情形下都优于集成。此外，附录 B.4 表明，即使是同一任务上以不同方式微调的检查点之间，也存在干扰。"
+      },
+      {
+        "text": "Merging Checkpoints of the Same Task For Better Robustness",
+        "x": 108,
+        "y": 239.3,
+        "w": 266.2,
+        "h": 10,
+        "zh": "合并同一任务的检查点，以获得更好的稳健性"
+      },
+      {
+        "text": "Merging Models for Better Initialization.",
+        "x": 108,
+        "y": 115.6,
+        "w": 176.5,
+        "h": 10,
+        "zh": "合并模型，以获得更好的初始化。"
+      },
+      {
+        "text": "Next, we perform experiments following the setting [9], where we merge checkpoints from different tasks for a better initialization when fine-tuning on a downstream task. We take the finetuned bert-base-uncased checkpoints for 8 GLUE [78] tasks (wnli, sst2, rte, qnli, mrpc, cola, mnli, qqp) from Huggingface [81]. We consider three of these GLUE tasks (RTE, MRPC, WNLI) as our downstream tasks. When fine-tuning on a particular",
+        "x": 108,
+        "y": 72,
+        "w": 396.2,
+        "h": 53.6,
+        "zh": "接下来，我们按设定 [9] 做实验：把来自不同任务的检查点合并起来，作为下游任务微调时更好的初始化。我们从 Huggingface [81] 取 8 个 GLUE [78] 任务（wnli、sst2、rte、qnli、mrpc、cola、mnli、qqp）上微调好的 bert-base-uncased 检查点。其中三个 GLUE 任务（RTE、MRPC、WNLI）被当作下游任务。在某一个特定任务上微调时"
+      }
+    ],
+    "9": [
+      {
+        "text": "Table 5: TIES-MERGING can perform close to multitask models if the signs can be estimated correctly. We use the signs from the multitask vector as the elected sign and perform merging and report the perfor-",
+        "x": 333.4,
+        "y": 560.3,
+        "w": 172.2,
+        "h": 53.6,
+        "zh": "表 5：如果符号能够估计正确，TIES-MERGING 可以接近多任务模型。我们把多任务向量的符号当作当选符号来合并，并报告性能。"
+      },
+      {
+        "text": "Figure 7: Flipping the signs of high magnitude parameters leads to catastrophic performance drops. Average Performance when flipping the directions of Top-k% and Bottom-k% parameters for each task. We report the results averaged over eleven (IA) tasks.",
+        "x": 107.6,
+        "y": 534.1,
+        "w": 212,
+        "h": 53.6,
+        "zh": "图 7：翻转高幅度参数的符号会导致灾难性的性能下降。图中是每个任务上翻转幅度最高的 Top-k% 与最低的 Bottom-k% 参数方向之后的平均性能。结果在十一项 (IA) 任务上取平均。"
+      },
+      {
+        "text": "downstream task (say RTE), we merge all the checkpoints from the other seven tasks together (apart from the chosen task). From Table 4, we find that TIES-MERGING works well in this setting and outperforms all other merging methods by a significant margin (apart from Averaging for WNLI).",
+        "x": 108,
+        "y": 475,
+        "w": 396,
+        "h": 31.8,
+        "zh": "下游任务（例如 RTE）时，我们把其余七个任务的检查点全部合并（不含所选任务）。从表 4 可见，TIES-MERGING 在这一设定下表现良好，并且明显优于其他合并方法（WNLI 上的 Averaging 除外）。"
+      },
+      {
+        "text": "Types of Interference and Their Effect on Merging",
+        "x": 130.4,
+        "y": 416.1,
+        "w": 215.1,
+        "h": 10,
+        "zh": "干扰的类型及其对合并的影响"
+      },
+      {
+        "text": "(a) Importance of Removing Redundant Parameters. dundant parameters on the resulting magnitude of merged parameters, we separate the parameters into three groups: redundant parameters (using a trimming threshold of 20%), parameters that are influential to exactly one model, and parameters that are influential to more than one model. We then compare the parameter values when they are directly merged versus when they are first trimmed and then (disjointly) merged without electing signs. Specifically, we only take the mean of non-trimmed values. The results are shown for the PEFT setting in Fig. 6a, which demonstrates that redundant parameters cause interference. Specifically, we find that when a parameter is not an influential parameter for any of the task-specific models, the mean value is low, and therefore may be considered noise. However, when only one model sees the parameter as influential, the merged value can still be low since other models assign a small value to this parameter. The merged value is larger when more models see the parameter as influential. When trimming, we see this interference is mostly avoided, and the average size is mostly the same whether one or more models consider a parameter influential. This is because we remove the effect of noisy parameters that unnecessarily decrease the magnitude (see # in Fig. 2). In the Appendix B.5, we bring a more detailed view, including a comparison to applying TIES-MERGING and show reducing interference encourages diversity in specific parameter values (std) together with the similarity of their influence (mean).",
+        "x": 107.7,
+        "y": 219.7,
+        "w": 398.1,
+        "h": 184.5,
+        "zh": "（a）去掉冗余参数的重要性。冗余参数会作用在合并参数的最终幅度上。我们把参数分成三组：冗余参数（裁剪阈值取 20%）、恰好只对一个模型有影响的参数，以及对不止一个模型有影响的参数。然后比较两种取值：直接合并，以及先裁剪、再做不相交合并、但不选举符号。具体地，我们只对没有被裁掉的值取均值。PEFT 设定下的结果见图 6a，说明冗余参数会造成干扰。具体而言，如果一个参数对任何一个任务专用模型都算不上有影响，均值就很低，因此可以看成噪声。可是，当只有一个模型认为它有影响时，合并值仍然可能很低，因为其他模型给了它一个很小的值。认为它有影响的模型越多，合并值越大。裁剪之后，这种干扰大体被避开了：无论一个还是多个模型认为某参数有影响，平均幅度都差不多。这是因为我们去掉了那些会无谓压低幅度的噪声参数（见图 2 中的 #）。附录 B.5 给出了更细的比较，其中包括直接套用 TIES-MERGING。那里还表明，减少干扰会让具体参数值更加分散（标准差），同时让它们的影响更为接近（均值）。"
+      },
+      {
+        "text": "To quantify the impact of sign interference, we group the parameters by their sign agreement. A value of 0.5 indicates an equal number of positive and negative signs for a given parameter across different models, whereas 1 implies all the parameters have the same sign. We compare the parameter values when those are merged, or when sign disagreement is first resolved by election and then they are (disjointly) merged. The results in the PEFT setting are shown in Fig. 6b, where we demonstrate that the ELECT step preserves the relative parameter magnitudes to avoid sign interference. Specifically, we find that resolving signs increases the overall parameter magnitudes across different ranges of sign agreements. Parameters with low agreement tend to be smaller on average regardless of the interference. One potential cause could be that the sign from noisy parameters pulls the average down, as seen in Fig. 6a. We show in Appendix B.5 that combining both methods indeed reduces some of the difference, but not all, suggesting that a high agreement is correlated with overall influential parameters.",
+        "x": 107.6,
+        "y": 72,
+        "w": 397.6,
+        "h": 130,
+        "zh": "为了量化符号干扰的影响，我们按符号一致程度把参数分组。0.5 表示某个参数在不同模型上正号和负号数量相等，1 表示所有符号都相同。我们比较直接合并后的参数值，以及先用选举消解符号分歧、再做不相交合并后的参数值。PEFT 设定下的结果见图 6b。可以看出，ELECT 这一步保住了参数的相对幅度，从而避开符号干扰。具体而言，把符号定下来之后，在各个一致程度区间上，参数的整体幅度都会变大。一致程度低的参数，无论有没有这种干扰，平均都更小。一个可能的原因是，噪声参数的符号把平均值往下拉，如图 6a 所示。附录 B.5 表明，两种做法合在一起确实能缩小一部分差距，但不是全部。这说明，高一致程度和“整体上有影响的参数”是相关的。"
+      },
+      {
+        "text": "(b) Importance of Resolving Sign Interference.",
+        "x": 108,
+        "y": 192,
+        "w": 206.1,
+        "h": 10,
+        "zh": "（b）消解符号干扰的重要性。"
+      }
+    ],
+    "10": [
+      {
+        "text": "Relevance of Signs of the Top-k% Parameters",
+        "x": 130.4,
+        "y": 710,
+        "w": 194.6,
+        "h": 10,
+        "zh": "幅度最大的 Top-k% 参数，其符号为何重要"
+      },
+      {
+        "text": "In this experiment, we work with the (IA) models and aim to quantify the importance of the top-k% parameters and their directions on a task’s performance. For each task vector τt, we flip the direction of each of the top-k% parameters (by magnitude) with a probability p to obtain τ˜t. Flipping the direction is done by multiplying the parameters with −1. Then we add back this direction flipped τ˜t to the initialization to get θ˜t = θinit + ˜τt. Finally, we evaluate θ˜t and compute the average performance over all tasks t for each value of k and p. As a baseline, we also flip the directions of the bottom (100 − k)% of the parameters. We report the results averaged over three independent runs. In Fig. 7, we plot the average performance as a function of p, the probability of flipping the direction. A probability of 0 means that the direction of none of the top-k% parameters is flipped and a value of 1 means that the direction of all the top-k% parameters is flipped. For the top-20/30% of the parameters (solid lines), we observe that the performance monotonically decreases as we increase the probability of flipping the direction. In contrast, flipping the directions of the bottom-80/70% of the parameters (dashed lines) has little impact on the performance. These results establish the importance of having the right directions for the parameters with a high magnitude and show the catastrophic performance drop that happens with incorrect directions.",
+        "x": 106.8,
+        "y": 530.2,
+        "w": 398.9,
+        "h": 169.7,
+        "zh": "本实验使用 (IA) 模型，用来量化 top-k% 参数及其方向对任务性能有多重要。对每个任务向量 τt，我们以概率 p 翻转其中幅度最大的 top-k% 参数的方向，得到 τ˜t。翻转就是把这些参数乘以 −1。再把方向翻转后的 τ˜t 加回初始化，得到 θ˜t = θinit + ˜τt。然后评估 θ˜t，并对所有任务 t 计算平均性能，对应每一组 k 和 p。作为对照，我们也翻转幅度最低的 (100 − k)% 参数的方向。结果是三次独立运行的平均。图 7 把平均性能画成 p 的函数，p 是翻转方向的概率。p = 0 表示 top-k% 参数的方向一个都不翻，p = 1 表示全部翻转。对幅度最高的 20% 和 30% 参数（实线），性能随着翻转概率增大而单调下降。相反，翻转幅度最低的 80% 和 70% 参数（虚线）对性能几乎没有影响。这说明，高幅度参数的方向必须正确；方向错了，性能会灾难性地下跌。"
+      },
+      {
+        "text": "We perform ablations on the individual components of TIES-MERGING to assess their importance. In Table 6, we start with TIES-MERGING and remove one component at a time and report the performance on the validation set for full model merging (T5-base) and merging PEFT models ((IA)3 on T03B). Removing elect while keeping the disjoint mean refers to taking the mean of values with signs +1 and −1 but not including the 0 values of the",
+        "x": 107.6,
+        "y": 408.9,
+        "w": 229.2,
+        "h": 86.3,
+        "zh": "我们对 TIES-MERGING 的各个组成部分做消融，看它们各自有多重要。表 6 从完整的 TIES-MERGING 出发，一次去掉一个部分，并报告验证集性能，设定包括全模型合并（T5-base）和 PEFT 模型合并（T0-3B 上的 (IA)3）。去掉 elect、同时保留不相交均值，指的是对符号为 +1 和 −1 的值取均值，但不把"
+      },
+      {
+        "text": "Ablation on all the steps of trimmed task vectors in the mean. Removing disjoint mean but trimming and electing refers to taking the mean of the values with the elected signs and the 0 for the trimmed values. Removing scaling means using λ = 1. Table 6 shows that all components of the method are crucial for optimal performance. Specifically, scaling and the disjoint mean emerge as the most crucial, causing performance declines of 2.5% and 1.9% in T5-base, and 5.2% and 3.2% in (IA) , respectively.",
+        "x": 108,
+        "y": 343.5,
+        "w": 397.7,
+        "h": 67.7,
+        "zh": "对所有步骤的消融。被裁剪任务向量里的 0 放进均值。去掉不相交均值、但保留裁剪和选举，指的是对具有当选符号的值取均值，被裁掉的位置则取 0。去掉缩放意味着使用 λ = 1。表 6 表明，这些部分对达到最好的性能都必不可少。其中缩放和不相交均值最关键：在 T5-base 上分别使性能下降 2.5% 和 1.9%，在 (IA) 上分别下降 5.2% 和 3.2%。"
+      },
+      {
+        "text": "Importance of Estimating Correct Signs When Merging Models",
+        "x": 130.4,
+        "y": 318.7,
+        "w": 270.6,
+        "h": 10,
+        "zh": "合并模型时，正确估计符号有多重要"
+      },
+      {
+        "text": "Given the importance of sign vectors, we now aim to understand the performance that can be obtained by TIES-MERGING if we can use the oracle sign vector from the multitask model. To test this, we train a multitask (IA) model, θmult, on the eleven tasks under consideration (as in § 6). We then create the multitask vector τmult and the multitask sign vector γmult. Next, while merging models using TIES-MERGING, we assume access to the oracle multitask-sign-vector γmult. Hence, we skip the conflict resolution step and directly set γm = γmult. Surprisingly, from Table 5, we observe that when merging tasks by using the oracle sign vector, we get a performance of 72% compared to 73.1% for the multitask trained model. Moreover, on average the merged model performs better task-specific models. This implies that if we can obtain the correction directions for the merged model, then we can closely bridge the gap to multitask models. In Appendix B.1 and Table 7, we attempt to estimate the multitask-sign-vector by using limited data.",
+        "x": 107.6,
+        "y": 189.5,
+        "w": 396.8,
+        "h": 119.1,
+        "zh": "既然符号向量这么重要，我们想知道：如果能用上来自多任务模型的 oracle 符号向量，TIES-MERGING 能做到什么程度。为此，我们在所考虑的十一项任务上训练一个多任务 (IA) 模型 θmult（如第 6 节）。然后构造多任务向量 τmult 和多任务符号向量 γmult。接下来用 TIES-MERGING 合并时，假定可以拿到这个 oracle 多任务符号向量 γmult，于是跳过冲突消解，直接令 γm = γmult。令人惊讶的是，表 5 显示，用 oracle 符号向量合并时性能达到 72%，而多任务训练模型是 73.1%。并且平均来看，合并模型优于各个任务专用模型。这意味着，只要能为合并模型得到正确的方向，就可以大大缩小与多任务模型的差距。附录 B.1 和表 7 尝试用有限数据来估计多任务符号向量。"
+      },
+      {
+        "text": "We introduced TIES-MERGING to address interference when merging models. TIES-MERGING trims low-magnitude changes in fine-tuned model’s values and then resolves sign disagreements across the models being merged. We found experimentally that TIES-MERGING enhances the performance of the merged multitask model across various settings and domains, despite being simple with fixed hyperparameters. Our study also sheds light on the impact of different types of interference on model parameters and emphasizes the importance of signs in the merging process. For some discussion on limitations and future directions please refer to Appendix A.",
+        "x": 107.5,
+        "y": 72,
+        "w": 396.5,
+        "h": 75.4,
+        "zh": "我们提出 TIES-MERGING，用来处理合并模型时的干扰。它先裁掉微调模型里幅度较低的那些变化，再消解被合并模型之间的符号分歧。实验表明，尽管方法简单、超参数固定，TIES-MERGING 仍能在多种设定和领域中提高合并后多任务模型的性能。这项研究也说明了不同类型的干扰会怎样影响模型参数，并强调符号在合并中的重要性。关于局限和未来方向的讨论见附录 A。"
+      }
+    ],
+    "11": [
+      {
+        "text": "We thank Yi-Lin Sung, Shiyue Zhang, Archiki Prasad, and the reviewers for their valuable feedback on this paper. This work is supported by NSF-AI Engage Institute DRL211263, NSF-CAREER Award 1846185, DARPA MCS Grant N66001-19-2-4031, and NSF Grant 2145822. The views, opinions, and/or findings contained in this article are those of the authors and not of the funding",
+        "x": 107.5,
+        "y": 653.8,
+        "w": 397.7,
+        "h": 42.7,
+        "zh": "感谢 Yi-Lin Sung、Shiyue Zhang、Archiki Prasad 以及各位审稿人对本文的宝贵意见。本工作得到 NSF-AI Engage Institute DRL211263、NSF-CAREER Award 1846185、DARPA MCS Grant N66001-19-2-4031 以及 NSF Grant 2145822 的支持。本文中的观点、意见和/或发现属于作者，不属于资助"
+      },
+      {
+        "text": "[1] S. K. Ainsworth, J. Hayase, and S. Srinivasa. Git re-basin: Merging models modulo permutation symmetries, 2022. https://arxiv.org/abs/2209.04836.",
+        "x": 113,
+        "y": 584.8,
+        "w": 391,
+        "h": 20.9,
+        "zh": "[1] S. K. Ainsworth、J. Hayase 与 S. Srinivasa。Git Re-Basin：在模置换对称的意义下合并模型，2022。https://arxiv.org/abs/2209.04836。"
+      },
+      {
+        "text": "[2] A. Albalak, C. Raffel, and W. Y. Wang. Improving few-shot generalization by exploring and exploiting auxiliary data. arXiv preprint arXiv:2302.00674, 2023.",
+        "x": 113,
+        "y": 553.7,
+        "w": 391,
+        "h": 20.9,
+        "zh": "[2] A. Albalak、C. Raffel 与 W. Y. Wang。通过探索并利用辅助数据来改善少样本泛化。arXiv 预印本 arXiv:2302.00674，2023。"
+      },
+      {
+        "text": "[3] S. Amari. Neural learning in structured parameter spaces - natural riemannian gradient. In",
+        "x": 113,
+        "y": 533.6,
+        "w": 391,
+        "h": 10,
+        "zh": "[3] S. Amari。结构化参数空间中的神经学习：自然黎曼梯度。载于"
+      },
+      {
+        "text": "[4] D. Arpit, H. Wang, Y. Zhou, and C. Xiong. Ensemble of averages: Improving model selection and boosting performance in domain generalization. arXiv preprint arXiv:2110.10832, 2021.",
+        "x": 113,
+        "y": 491.6,
+        "w": 391,
+        "h": 20.9,
+        "zh": "[4] D. Arpit、H. Wang、Y. Zhou 与 C. Xiong。平均的集成：改善模型选择，并提升领域泛化中的性能。arXiv 预印本 arXiv:2110.10832，2021。"
+      },
+      {
+        "text": "[5] S. H. Bach, V. Sanh, Z.-X. Yong, A. Webson, C. Raffel, N. V. Nayak, A. Sharma, T. Kim, M. S. Bari, T. Févry, et al. PromptSource: An integrated development environment and repository for natural language prompts. arXiv preprint arXiv:2202.01279, 2022.",
+        "x": 113,
+        "y": 449.7,
+        "w": 392.8,
+        "h": 31.8,
+        "zh": "[5] S. H. Bach、V. Sanh、Z.-X. Yong、A. Webson、C. Raffel、N. V. Nayak、A. Sharma、T. Kim、M. S. Bari、T. Févry 等。PromptSource：面向自然语言提示的集成开发环境与资源库。arXiv 预印本 arXiv:2202.01279，2022。"
+      },
+      {
+        "text": "[6] R. Bommasani, D. A. Hudson, E. Adeli, R. Altman, S. Arora, S. von Arx, M. S. Bernstein, J. Bohg, A. Bosselut, E. Brunskill, et al. On the opportunities and risks of foundation models, 2021. https://arxiv.org/abs/2108.07258.",
+        "x": 113,
+        "y": 407.7,
+        "w": 392.3,
+        "h": 31.8,
+        "zh": "[6] R. Bommasani、D. A. Hudson、E. Adeli、R. Altman、S. Arora、S. von Arx、M. S. Bernstein、J. Bohg、A. Bosselut、E. Brunskill 等。论基础模型的机遇与风险，2021。https://arxiv.org/abs/2108.07258。"
+      },
+      {
+        "text": "[7] J. Cha, S. Chun, K. Lee, H.-C. Cho, S. Park, Y. Lee, and S. Park. Swad: Domain generalization by seeking flat minima. Advances in Neural Information Processing Systems, 34:22405–22418,",
+        "x": 113,
+        "y": 376.6,
+        "w": 392.3,
+        "h": 20.9,
+        "zh": "[7] J. Cha、S. Chun、K. Lee、H.-C. Cho、S. Park、Y. Lee 与 S. Park。SWAD：通过寻找平坦极小值实现领域泛化。Advances in Neural Information Processing Systems，34:22405–22418，"
+      },
+      {
+        "text": "[8] G. Cheng, J. Han, and X. Lu. Remote sensing image scene classification: Benchmark and state of the art. Proceedings of the Institute of Electrical and Electronics Engineers (IEEE), 2017. https://ieeexplore.ieee.org/abstract/document/7891544.",
+        "x": 113,
+        "y": 323.8,
+        "w": 392.8,
+        "h": 31.8,
+        "zh": "[8] G. Cheng、J. Han 与 X. Lu。遥感图像场景分类：基准与当前水平。Proceedings of the Institute of Electrical and Electronics Engineers (IEEE)，2017。https://ieeexplore.ieee.org/abstract/document/7891544。"
+      },
+      {
+        "text": "[9] L. Choshen, E. Venezian, N. Slonim, and Y. Katz. Fusing finetuned models for better pretraining, 2022. https://arxiv.org/abs/2204.03044.",
+        "x": 113,
+        "y": 292.7,
+        "w": 392.3,
+        "h": 20.9,
+        "zh": "[9] L. Choshen、E. Venezian、N. Slonim 与 Y. Katz。融合微调模型以改进预训练，2022。https://arxiv.org/abs/2204.03044。"
+      },
+      {
+        "text": "In Conference on Computer Vision and Pattern Recognition (CVPR), 2014. https://openaccess.thecvf.com/content_cvpr_2014/ html/Cimpoi_Describing_Textures_in_2014_CVPR_paper.html.",
+        "x": 129.6,
+        "y": 239.8,
+        "w": 376.1,
+        "h": 31.8,
+        "zh": "载于计算机视觉与模式识别会议（CVPR），2014。https://openaccess.thecvf.com/content_cvpr_2014/html/Cimpoi_Describing_Textures_in_2014_CVPR_paper.html。"
+      },
+      {
+        "text": "[11] I. Dagan, O. Glickman, and B. Magnini. The pascal recognising textual entailment challenge. In Machine Learning Challenges Workshop, 2005.",
+        "x": 108,
+        "y": 208.8,
+        "w": 397.7,
+        "h": 20.9,
+        "zh": "[11] I. Dagan、O. Glickman 与 B. Magnini。Pascal 识别文本蕴含挑战。载于 Machine Learning Challenges Workshop，2005。"
+      },
+      {
+        "text": "https://link.springer.com/ chapter/10.1007/11736790_9.",
+        "x": 129.6,
+        "y": 197.9,
+        "w": 375.6,
+        "h": 20.9,
+        "zh": ""
+      },
+      {
+        "text": "[12] J. Devlin, M.-W. Chang, K. Lee, and K. Toutanova. BERT: Pre-training of deep bidirectional transformers for language understanding. arXiv preprint arXiv:1810.04805, 2018.",
+        "x": 108,
+        "y": 166.8,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[12] J. Devlin、M.-W. Chang、K. Lee 与 K. Toutanova。BERT：面向语言理解的深度双向 Transformer 预训练。arXiv 预印本 arXiv:1810.04805，2018。"
+      },
+      {
+        "text": "[13] S. Don-Yehiya, E. Venezian, C. Raffel, N. Slonim, Y. Katz, and L. Choshen. Cold fusion: Collaborative descent for distributed multitask finetuning, 2022. https://arxiv.org/",
+        "x": 108,
+        "y": 135.8,
+        "w": 397.4,
+        "h": 20.9,
+        "zh": "[13] S. Don-Yehiya、E. Venezian、C. Raffel、N. Slonim、Y. Katz 与 L. Choshen。Cold Fusion：面向分布式多任务微调的协同下降，2022。https://arxiv.org/"
+      },
+      {
+        "text": "[14] A. Dosovitskiy, L. Beyer, A. Kolesnikov, D. Weissenborn, X. Zhai, T. Unterthiner, M. Dehghani, M. Minderer, G. Heigold, S. Gelly, J. Uszkoreit, and N. Houlsby. An image is worth 16x16 words: Transformers for image recognition at scale. In International Conference on Learning Representations (ICLR), 2021. https://openreview.net/forum?id=YicbFdNTTy.",
+        "x": 108,
+        "y": 72,
+        "w": 397.7,
+        "h": 42.7,
+        "zh": "[14] A. Dosovitskiy、L. Beyer、A. Kolesnikov、D. Weissenborn、X. Zhai、T. Unterthiner、M. Dehghani、M. Minderer、G. Heigold、S. Gelly、J. Uszkoreit 与 N. Houlsby。一张图像抵得上 16×16 个词：规模化的图像识别 Transformer。载于学习表征国际会议（ICLR），2021。https://openreview.net/forum?id=YicbFdNTTy。"
+      }
+    ],
+    "12": [
+      {
+        "text": "[15] F. Draxler, K. Veschgini, M. Salmhofer, and F. Hamprecht. Essentially no barriers in neural network energy landscape. In International Conference on Machine Learning (ICML), 2018. https://arxiv.org/abs/1803.00885.",
+        "x": 108,
+        "y": 688.2,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "[15] F. Draxler、K. Veschgini、M. Salmhofer 与 F. Hamprecht。神经网络能量景观中实质上没有障碍。载于国际机器学习会议（ICML），2018。https://arxiv.org/abs/1803.00885。"
+      },
+      {
+        "text": "[16] R. Entezari, H. Sedghi, O. Saukh, and B. Neyshabur. The role of permutation invariance in linear mode connectivity of neural networks. arXiv preprint arXiv:2110.06296, 2021.",
+        "x": 108,
+        "y": 658.6,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[16] R. Entezari、H. Sedghi、O. Saukh 与 B. Neyshabur。置换不变性在神经网络线性模式连通中的作用。arXiv 预印本 arXiv:2110.06296，2021。"
+      },
+      {
+        "text": "[17] C. Fifty, E. Amid, Z. Zhao, T. Yu, R. Anil, and C. Finn. Efficiently identifying task groupings for multi-task learning. Advances in Neural Information Processing Systems, 34:27503–27516,",
+        "x": 108,
+        "y": 628.9,
+        "w": 397.2,
+        "h": 20.9,
+        "zh": "[17] C. Fifty、E. Amid、Z. Zhao、T. Yu、R. Anil 与 C. Finn。高效识别多任务学习中的任务分组。Advances in Neural Information Processing Systems，34:27503–27516，"
+      },
+      {
+        "text": "[18] R. A. Fisher. On the mathematical foundations of theoretical statistics. Philosophical transactions of the Royal Society of London. Series A, containing papers of a mathematical or physical character, 222(594-604):309–368, 1922.",
+        "x": 108,
+        "y": 577.5,
+        "w": 397.6,
+        "h": 31.8,
+        "zh": "[18] R. A. Fisher。论理论统计学的数学基础。Philosophical Transactions of the Royal Society of London. Series A, Containing Papers of a Mathematical or Physical Character，222(594-604):309–368，1922。"
+      },
+      {
+        "text": "[19] J. Frankle, G. K. Dziugaite, D. Roy, and M. Carbin.",
+        "x": 108,
+        "y": 558.7,
+        "w": 245.5,
+        "h": 10,
+        "zh": "[19] J. Frankle、G. K. Dziugaite、D. Roy 与 M. Carbin。"
+      },
+      {
+        "text": "Linear mode connectivity and the lottery ticket hypothesis. In International Conference on Machine Learning (ICML), 2020. https://proceedings.mlr.press/v119/frankle20a.html.",
+        "x": 129.6,
+        "y": 536.9,
+        "w": 376.2,
+        "h": 31.8,
+        "zh": "线性模式连通与彩票假设。载于国际机器学习会议（ICML），2020。https://proceedings.mlr.press/v119/frankle20a.html。"
+      },
+      {
+        "text": "[20] C. D. Freeman and J. Bruna. Topology and geometry of half-rectified network optimization. arXiv preprint arXiv:1611.01540, 2016.",
+        "x": 108,
+        "y": 507.2,
+        "w": 397.7,
+        "h": 20.9,
+        "zh": "[20] C. D. Freeman 与 J. Bruna。半整流网络优化的拓扑与几何。arXiv 预印本 arXiv:1611.01540，2016。"
+      },
+      {
+        "text": "[21] T. Garipov, P. Izmailov, D. Podoprikhin, D. Vetrov, and A. G. Wilson. Loss surfaces, mode connectivity, and fast ensembling of dnns. In Advances in Neural Information Processing Systems (NeurIPS), 2018. https://arxiv.org/abs/1802.10026.",
+        "x": 108,
+        "y": 466.7,
+        "w": 396,
+        "h": 31.8,
+        "zh": "[21] T. Garipov、P. Izmailov、D. Podoprikhin、D. Vetrov 与 A. G. Wilson。损失曲面、模式连通，以及 DNN 的快速集成。载于神经信息处理系统进展（NeurIPS），2018。https://arxiv.org/abs/1802.10026。"
+      },
+      {
+        "text": "[22] A. Gueta, E. Venezian, C. Raffel, N. Slonim, Y. Katz, and L. Choshen. Knowledge is a region in weight space for fine-tuned language models. arXiv preprint arXiv:2302.04863, 2023.",
+        "x": 108,
+        "y": 437,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[22] A. Gueta、E. Venezian、C. Raffel、N. Slonim、Y. Katz 与 L. Choshen。对微调语言模型而言，知识是权重空间中的一块区域。arXiv 预印本 arXiv:2302.04863，2023。"
+      },
+      {
+        "text": "[23] V. Gupta, S. A. Serrano, and D. DeCoste. Stochastic weight averaging in parallel: Large-batch training that generalizes well. International Conference on Learning Representations, 2020.",
+        "x": 108,
+        "y": 407.4,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[23] V. Gupta、S. A. Serrano 与 D. DeCoste。并行的随机权重平均：泛化良好的大批量训练。International Conference on Learning Representations，2020。"
+      },
+      {
+        "text": "[24] P. Helber, B. Bischke, A. Dengel, and D. Borth. Eurosat: A novel dataset and deep learning benchmark for land use and land cover classification. Journal of Selected Topics in Applied Earth Observations and Remote Sensing, 2019. https://arxiv.org/abs/1709.00029.",
+        "x": 108,
+        "y": 366.8,
+        "w": 396,
+        "h": 31.8,
+        "zh": "[24] P. Helber、B. Bischke、A. Dengel 与 D. Borth。EuroSAT：面向土地利用与土地覆盖分类的新数据集和深度学习基准。Journal of Selected Topics in Applied Earth Observations and Remote Sensing，2019。https://arxiv.org/abs/1709.00029。"
+      },
+      {
+        "text": "[25] T. Hoefler, D. Alistarh, T. Ben-Nun, N. Dryden, and A. Peste. Sparsity in deep learning: Pruning and growth for efficient inference and training in neural networks. The Journal of Machine Learning Research, 22(1):10882–11005, 2021.",
+        "x": 108,
+        "y": 326.3,
+        "w": 396,
+        "h": 31.8,
+        "zh": "[25] T. Hoefler、D. Alistarh、T. Ben-Nun、N. Dryden 与 A. Peste。深度学习中的稀疏性：为了高效推理和训练而做的剪枝与生长。The Journal of Machine Learning Research，22(1):10882–11005，2021。"
+      },
+      {
+        "text": "[26] E. J. Hu, Y. Shen, P. Wallis, Z. Allen-Zhu, Y. Li, S. Wang, and W. Chen. LoRA: Low-rank adaptation of large language models. ArXiv, abs/2106.09685, 2021.",
+        "x": 108,
+        "y": 296.6,
+        "w": 396.2,
+        "h": 20.9,
+        "zh": "[26] E. J. Hu、Y. Shen、P. Wallis、Z. Allen-Zhu、Y. Li、S. Wang 与 W. Chen。LoRA：大语言模型的低秩适配。ArXiv，abs/2106.09685，2021。"
+      },
+      {
+        "text": "[27] L. Huang, R. Le Bras, C. Bhagavatula, and Y. Choi. Cosmos qa: Machine reading comprehension with contextual commonsense reasoning. In Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP), pages 2391–2401, 2019.",
+        "x": 108,
+        "y": 245.1,
+        "w": 397.6,
+        "h": 42.7,
+        "zh": "[27] L. Huang、R. Le Bras、C. Bhagavatula 与 Y. Choi。Cosmos QA：带有情境常识推理的机器阅读理解。载于 2019 年自然语言处理经验方法会议暨第 9 届自然语言处理国际联合会议（EMNLP-IJCNLP）论文集，第 2391–2401 页，2019。"
+      },
+      {
+        "text": "[28] G. Ilharco, M. Wortsman, S. Y. Gadre, S. Song, H. Hajishirzi, S. Kornblith, A. Farhadi, and L. Schmidt. Patching open-vocabulary models by interpolating weights. In Advances in Neural Information Processing Systems (NeurIPS), 2022. https://arXiv.org/abs/",
+        "x": 108,
+        "y": 204.6,
+        "w": 397.2,
+        "h": 31.8,
+        "zh": "[28] G. Ilharco、M. Wortsman、S. Y. Gadre、S. Song、H. Hajishirzi、S. Kornblith、A. Farhadi 与 L. Schmidt。通过插值权重来修补开放词表模型。载于神经信息处理系统进展（NeurIPS），2022。https://arXiv.org/abs/"
+      },
+      {
+        "text": "[29] G. Ilharco, M. T. Ribeiro, M. Wortsman, L. Schmidt, H. Hajishirzi, and A. Farhadi. Editing models with task arithmetic. In The Eleventh International Conference on Learning Representations, 2023. URL https://openreview.net/forum?id=6t0Kwf8-jrj.",
+        "x": 108,
+        "y": 153.1,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "[29] G. Ilharco、M. T. Ribeiro、M. Wortsman、L. Schmidt、H. Hajishirzi 与 A. Farhadi。用任务算术编辑模型。载于第十一届学习表征国际会议，2023。URL https://openreview.net/forum?id=6t0Kwf8-jrj。"
+      },
+      {
+        "text": "[30] P. Izmailov, D. Podoprikhin, T. Garipov, D. Vetrov, and A. G. Wilson. Averaging weights leads to wider optima and better generalization. In Conference on Uncertainty in Artificial Intelligence (UAI), 2018. https://arxiv.org/abs/1803.05407.",
+        "x": 108,
+        "y": 112.6,
+        "w": 396,
+        "h": 31.8,
+        "zh": "[30] P. Izmailov、D. Podoprikhin、T. Garipov、D. Vetrov 与 A. G. Wilson。对权重取平均会得到更宽的最优解和更好的泛化。载于人工智能不确定性会议（UAI），2018。https://arxiv.org/abs/1803.05407。"
+      },
+      {
+        "text": "[31] X. Jin, X. Ren, D. Preotiuc-Pietro, and P. Cheng. Dataless knowledge fusion by merging weights of language models. In The Eleventh International Conference on Learning Representations, 2023. URL https://openreview.net/forum?id=FCnohuR6AnM.",
+        "x": 108,
+        "y": 72,
+        "w": 397.2,
+        "h": 31.8,
+        "zh": "[31] X. Jin、X. Ren、D. Preotiuc-Pietro 与 P. Cheng。通过合并语言模型的权重实现无数据的知识融合。载于第十一届学习表征国际会议，2023。URL https://openreview.net/forum?id=FCnohuR6AnM。"
+      }
+    ],
+    "13": [
+      {
+        "text": "[32] K. Jordan, H. Sedghi, O. Saukh, R. Entezari, and B. Neyshabur. REPAIR: REnormalizing permuted activations for interpolation repair. In The Eleventh International Conference on Learning Representations, 2023. URL https://openreview.net/forum?id=gU5sJ6ZggcX.",
+        "x": 108,
+        "y": 688.2,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "[32] K. Jordan、H. Sedghi、O. Saukh、R. Entezari 与 B. Neyshabur。REPAIR：为修复插值而对置换后的激活重新归一化。载于第十一届学习表征国际会议，2023。URL https://openreview.net/forum?id=gU5sJ6ZggcX。"
+      },
+      {
+        "text": "[33] T. Khot, P. Clark, M. Guerquin, P. Jansen, and A. Sabharwal. Qasc: A dataset for question answering via sentence composition. In Proceedings of the AAAI Conference on Artificial Intelligence, volume 34, pages 8082–8090, 2020.",
+        "x": 108,
+        "y": 647,
+        "w": 396,
+        "h": 31.8,
+        "zh": "[33] T. Khot、P. Clark、M. Guerquin、P. Jansen 与 A. Sabharwal。QASC：一个借助句子组合来做问答的数据集。载于 AAAI 人工智能会议论文集，第 34 卷，第 8082–8090 页，2020。"
+      },
+      {
+        "text": "[34] J. Kirkpatrick, R. Pascanu, N. Rabinowitz, J. Veness, G. Desjardins, A. A. Rusu, K. Milan, J. Quan, T. Ramalho, A. Grabska-Barwinska, et al. Overcoming catastrophic forgetting in neural networks. Proceedings of the National Academy of Sciences (PNAS), 2017. https: //arxiv.org/abs/1612.00796.",
+        "x": 108,
+        "y": 594.8,
+        "w": 399,
+        "h": 42.7,
+        "zh": "[34] J. Kirkpatrick、R. Pascanu、N. Rabinowitz、J. Veness、G. Desjardins、A. A. Rusu、K. Milan、J. Quan、T. Ramalho、A. Grabska-Barwinska 等。克服神经网络中的灾难性遗忘。Proceedings of the National Academy of Sciences (PNAS)，2017。https://arxiv.org/abs/1612.00796。"
+      },
+      {
+        "text": "[35] J. Krause, M. Stark, J. Deng, and L. Fei-Fei.",
+        "x": 108,
+        "y": 575.4,
+        "w": 214.3,
+        "h": 10,
+        "zh": "[35] J. Krause、M. Stark、J. Deng 与 L. Fei-Fei。"
+      },
+      {
+        "text": "3d object representations for fine-grained In International Conference on Computer Vision Workshops (ICML), https://www.cv-foundation.org/openaccess/content_iccv_ workshops_2013/W19/html/Krause_3D_Object_Representations_2013_",
+        "x": 129.3,
+        "y": 542.7,
+        "w": 376,
+        "h": 42.7,
+        "zh": "面向细粒度的三维物体表示。载于国际计算机视觉研讨会（ICML）。https://www.cv-foundation.org/openaccess/content_iccv_workshops_2013/W19/html/Krause_3D_Object_Representations_2013_"
+      },
+      {
+        "text": "[36] Y. LeCun. The mnist database of handwritten digits, 1998. http://yann.lecun.com/",
+        "x": 108,
+        "y": 512.3,
+        "w": 397.2,
+        "h": 10,
+        "zh": "[36] Y. LeCun。手写数字的 MNIST 数据库，1998。http://yann.lecun.com/"
+      },
+      {
+        "text": "[37] H. Levesque, E. Davis, and L. Morgenstern. The winograd schema challenge. Thirteenth International Conference on the Principles of Knowledge Representation and Reasoning, 2012.",
+        "x": 108,
+        "y": 471.1,
+        "w": 397.6,
+        "h": 20.9,
+        "zh": "[37] H. Levesque、E. Davis 与 L. Morgenstern。Winograd 模式挑战。第十三届知识表示与推理原理国际会议，2012。"
+      },
+      {
+        "text": "[38] M. Li, S. Gururangan, T. Dettmers, M. Lewis, T. Althoff, N. A. Smith, and L. Zettlemoyer. Branch-train-merge: Embarrassingly parallel training of expert language models, 2022. https: //arxiv.org/abs/2208.03306.",
+        "x": 108,
+        "y": 429.9,
+        "w": 399,
+        "h": 31.8,
+        "zh": "[38] M. Li、S. Gururangan、T. Dettmers、M. Lewis、T. Althoff、N. A. Smith 与 L. Zettlemoyer。Branch-Train-Merge：专家语言模型的易并行训练，2022。https://arxiv.org/abs/2208.03306。"
+      },
+      {
+        "text": "[39] P. Li, Z. Zhang, P. Yadav, Y.-L. Sung, Y. Cheng, M. Bansal, and T. Chen. Merge, then compress: Demystify efficient smoe with hints from its routing policy, 2023.",
+        "x": 108,
+        "y": 399.5,
+        "w": 397.4,
+        "h": 20.9,
+        "zh": "[39] P. Li、Z. Zhang、P. Yadav、Y.-L. Sung、Y. Cheng、M. Bansal 与 T. Chen。先合并，再压缩：从路由策略得到提示，来看清高效 SMoE，2023。"
+      },
+      {
+        "text": "[40] W. Li, Y. Peng, M. Zhang, L. Ding, H. Hu, and L. Shen. Deep model fusion: A survey. arXiv preprint arXiv:2309.15698, 2023.",
+        "x": 108,
+        "y": 369.2,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[40] W. Li、Y. Peng、M. Zhang、L. Ding、H. Hu 与 L. Shen。深度模型融合：一项综述。arXiv 预印本 arXiv:2309.15698，2023。"
+      },
+      {
+        "text": "[41] X. Li, K. Huang, W. Yang, S. Wang, and Z. Zhang. On the convergence of fedavg on non-iid data. In International Conference on Learning Representations, 2019.",
+        "x": 108,
+        "y": 338.9,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[41] X. Li、K. Huang、W. Yang、S. Wang 与 Z. Zhang。FedAvg 在非独立同分布数据上的收敛性。载于学习表征国际会议，2019。"
+      },
+      {
+        "text": "[42] Y. Li, J. Yosinski, J. Clune, H. Lipson, and J. Hopcroft. Convergent learning: Do different neural networks learn the same representations? arXiv preprint arXiv:1511.07543, 2015.",
+        "x": 108,
+        "y": 308.5,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[42] Y. Li、J. Yosinski、J. Clune、H. Lipson 与 J. Hopcroft。收敛式学习：不同的神经网络会学到相同的表示吗？arXiv 预印本 arXiv:1511.07543，2015。"
+      },
+      {
+        "text": "[43] H. Liu, D. Tam, M. Muqeeth, J. Mohta, T. Huang, M. Bansal, and C. A. Raffel. Few-shot parameter-efficient fine-tuning is better and cheaper than in-context learning. Advances in Neural Information Processing Systems, 35:1950–1965, 2022.",
+        "x": 108,
+        "y": 267.3,
+        "w": 396,
+        "h": 31.8,
+        "zh": "[43] H. Liu、D. Tam、M. Muqeeth、J. Mohta、T. Huang、M. Bansal 与 C. A. Raffel。少样本参数高效微调比上下文学习更好，也更便宜。Advances in Neural Information Processing Systems，35:1950–1965，2022。"
+      },
+      {
+        "text": "[44] M.-C. d. Marneffe, M. Simons, and J. Tonhauser.",
+        "x": 108,
+        "y": 247.9,
+        "w": 231.7,
+        "h": 10,
+        "zh": "[44] M.-C. d. Marneffe、M. Simons 与 J. Tonhauser。"
+      },
+      {
+        "text": "The CommitmentBank: Investigating projection in naturally occurring discourse. Proceedings of Sinn und Bedeutung 23, 2019.",
+        "x": 129.6,
+        "y": 237,
+        "w": 374.4,
+        "h": 20.9,
+        "zh": "CommitmentBank：考察自然话语中的投射。Proceedings of Sinn und Bedeutung 23，2019。"
+      },
+      {
+        "text": "[45] M. Matena and C. Raffel. Merging models with fisher-weighted averaging. In Advances in Neural Information Processing Systems (NeurIPS), 2021. https://arxiv.org/abs/",
+        "x": 108,
+        "y": 206.6,
+        "w": 397.2,
+        "h": 20.9,
+        "zh": "[45] M. Matena 与 C. Raffel。用 Fisher 加权平均来合并模型。载于神经信息处理系统进展（NeurIPS），2021。https://arxiv.org/abs/"
+      },
+      {
+        "text": "[46] B. McMahan, E. Moore, D. Ramage, S. Hampson, and B. A. y Arcas. Communication-efficient learning of deep networks from decentralized data. In Artificial intelligence and statistics, pages 1273–1282. PMLR, 2017.",
+        "x": 108,
+        "y": 154.5,
+        "w": 396,
+        "h": 31.8,
+        "zh": "[46] B. McMahan、E. Moore、D. Ramage、S. Hampson 与 B. A. y Arcas。从去中心化数据中，以节省通信的方式学习深度网络。载于 Artificial Intelligence and Statistics，第 1273–1282 页。PMLR，2017。"
+      },
+      {
+        "text": "[47] Y. Netzer, T. Wang, A. Coates, A. Bissacco, B. Wu, and A. Y. Ng. Reading digits in natural images with unsupervised feature learning. In Advances in Neural Information Processing Systems (NeurIPS) Workshops, 2011. https://storage.googleapis.com/ pub-tools-public-publication-data/pdf/37648.pdf.",
+        "x": 108,
+        "y": 102.3,
+        "w": 397.7,
+        "h": 42.7,
+        "zh": "[47] Y. Netzer、T. Wang、A. Coates、A. Bissacco、B. Wu 与 A. Y. Ng。用无监督特征学习读取自然图像中的数字。载于神经信息处理系统进展（NeurIPS）研讨会，2011。https://storage.googleapis.com/pub-tools-public-publication-data/pdf/37648.pdf。"
+      },
+      {
+        "text": "[48] B. Neyshabur, H. Sedghi, and C. Zhang. What is being transferred in transfer learning? Advances in neural information processing systems, 33:512–523, 2020.",
+        "x": 108,
+        "y": 72,
+        "w": 396.4,
+        "h": 20.9,
+        "zh": "[48] B. Neyshabur、H. Sedghi 与 C. Zhang。迁移学习里被迁移的究竟是什么？Advances in Neural Information Processing Systems，33:512–523，2020。"
+      }
+    ],
+    "14": [
+      {
+        "text": "[49] Y. Nie, A. Williams, E. Dinan, M. Bansal, J. Weston, and D. Kiela. Adversarial NLI: A new benchmark for natural language understanding. arXiv preprint arXiv:1910.14599, 2019.",
+        "x": 108,
+        "y": 699.1,
+        "w": 396.4,
+        "h": 20.9,
+        "zh": "[49] Y. Nie、A. Williams、E. Dinan、M. Bansal、J. Weston 与 D. Kiela。对抗式 NLI：一个新的自然语言理解基准。arXiv 预印本 arXiv:1910.14599，2019。"
+      },
+      {
+        "text": "[50] H. Orgad, B. Kawar, and Y. Belinkov. Editing implicit assumptions in text-to-image diffusion models. arXiv preprint arXiv:2303.08084, 2023.",
+        "x": 108,
+        "y": 668.2,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[50] H. Orgad、B. Kawar 与 Y. Belinkov。编辑文生图扩散模型中的隐含假设。arXiv 预印本 arXiv:2303.08084，2023。"
+      },
+      {
+        "text": "[51] G. Ortiz-Jiménez, A. Favero, and P. Frossard. Task arithmetic in the tangent space: Improved editing of pre-trained models. NeurIPS, 2023. https://arxiv.org/abs/2305:12827.",
+        "x": 108,
+        "y": 637.3,
+        "w": 397.7,
+        "h": 20.9,
+        "zh": "[51] G. Ortiz-Jiménez、A. Favero 与 P. Frossard。切空间中的任务算术：改进对预训练模型的编辑。NeurIPS，2023。https://arxiv.org/abs/2305:12827。"
+      },
+      {
+        "text": "[52] J. Phang, T. Févry, and S. R. Bowman. Sentence encoders on stilts: Supplementary training on intermediate labeled-data tasks. arXiv preprint arXiv:1811.01088, 2018.",
+        "x": 108,
+        "y": 606.4,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[52] J. Phang、T. Févry 与 S. R. Bowman。踩着高跷的句子编码器：在中间的有标注任务上做补充训练。arXiv 预印本 arXiv:1811.01088，2018。"
+      },
+      {
+        "text": "[53] M. T. Pilehvar and J. Camacho-Collados. WiC: The word-in-context dataset for evaluating context-sensitive meaning representations. In Proceedings of NAACL-HLT, 2019.",
+        "x": 108,
+        "y": 575.5,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[53] M. T. Pilehvar 与 J. Camacho-Collados。WiC：用于评估上下文敏感语义表示的词在上下文中数据集。载于 NAACL-HLT 论文集，2019。"
+      },
+      {
+        "text": "[54] C. Poth, J. Pfeiffer, A. Rücklé, and I. Gurevych. What to pre-train on? Efficient intermediate task selection. In Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing, pages 10585–10605, Online and Punta Cana, Dominican Republic, Nov. 2021.",
+        "x": 108,
+        "y": 533.7,
+        "w": 396.2,
+        "h": 31.8,
+        "zh": "[54] C. Poth、J. Pfeiffer、A. Rücklé 与 I. Gurevych。该在什么数据上预训练？高效选择中间任务。载于 2021 年自然语言处理经验方法会议论文集，第 10585–10605 页，线上及多米尼加共和国蓬塔卡纳，2021 年 11 月。"
+      },
+      {
+        "text": "[55] Y. Pruksachatkun, J. Phang, H. Liu, P. M. Htut, X. Zhang, R. Y. Pang, C. Vania, K. Kann, and S. R. Bowman. Intermediate-task transfer learning with pretrained language models: When and why does it work?",
+        "x": 108,
+        "y": 491.9,
+        "w": 396,
+        "h": 31.8,
+        "zh": "[55] Y. Pruksachatkun、J. Phang、H. Liu、P. M. Htut、X. Zhang、R. Y. Pang、C. Vania、K. Kann 与 S. R. Bowman。借助预训练语言模型做中间任务迁移：它何时有效，又为什么有效？"
+      },
+      {
+        "text": "In Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics, pages 5231–5247, Online, July 2020.",
+        "x": 129.3,
+        "y": 481,
+        "w": 374.8,
+        "h": 20.9,
+        "zh": "载于计算语言学协会第 58 届年会论文集，第 5231–5247 页，线上，2020 年 7 月。"
+      },
+      {
+        "text": "[56] A. Radford, J. W. Kim, C. Hallacy, A. Ramesh, G. Goh, S. Agarwal, G. Sastry, A. Askell, P. Mishkin, J. Clark, G. Krueger, and I. Sutskever. Learning transferable visual models from natural language supervision. In International Conference on Machine Learning (ICML), 2021. https://arxiv.org/abs/2103.00020.",
+        "x": 108,
+        "y": 428.3,
+        "w": 397.7,
+        "h": 42.7,
+        "zh": "[56] A. Radford、J. W. Kim、C. Hallacy、A. Ramesh、G. Goh、S. Agarwal、G. Sastry、A. Askell、P. Mishkin、J. Clark、G. Krueger 与 I. Sutskever。从自然语言监督中学习可迁移的视觉模型。载于国际机器学习会议（ICML），2021。https://arxiv.org/abs/2103.00020。"
+      },
+      {
+        "text": "[57] C. Raffel, N. Shazeer, A. Roberts, K. Lee, S. Narang, M. Matena, Y. Zhou, W. Li, and P. J. Liu. Exploring the limits of transfer learning with a unified text-to-text transformer. Journal of Machine Learning Research (JMLR), 2020. http://jmlr.org/papers/v21/20-074.",
+        "x": 108,
+        "y": 386.5,
+        "w": 400.2,
+        "h": 31.8,
+        "zh": "[57] C. Raffel、N. Shazeer、A. Roberts、K. Lee、S. Narang、M. Matena、Y. Zhou、W. Li 与 P. J. Liu。用统一的文本到文本 Transformer 探索迁移学习的极限。Journal of Machine Learning Research (JMLR)，2020。http://jmlr.org/papers/v21/20-074。"
+      },
+      {
+        "text": "[58] C. Raffel, N. M. Shazeer, A. Roberts, K. Lee, S. Narang, M. Matena, Y. Zhou, W. Li, and P. J. Liu. Exploring the limits of transfer learning with a unified text-to-text transformer. ArXiv, abs/1910.10683, 2020.",
+        "x": 108,
+        "y": 333.8,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "[58] C. Raffel、N. M. Shazeer、A. Roberts、K. Lee、S. Narang、M. Matena、Y. Zhou、W. Li 与 P. J. Liu。用统一的文本到文本 Transformer 探索迁移学习的极限。ArXiv，abs/1910.10683，2020。"
+      },
+      {
+        "text": "[59] A. Ramé, K. Ahuja, J. Zhang, M. Cord, L. Bottou, and D. Lopez-Paz. Model ratatouille: Recycling diverse models for out-of-distribution generalization. arXiv preprint arXiv:2212.10445,",
+        "x": 108,
+        "y": 302.9,
+        "w": 397.6,
+        "h": 20.9,
+        "zh": "[59] A. Ramé、K. Ahuja、J. Zhang、M. Cord、L. Bottou 与 D. Lopez-Paz。Model Ratatouille：回收多样的模型，用于分布外泛化。arXiv 预印本 arXiv:2212.10445，"
+      },
+      {
+        "text": "[60] A. Ramé, M. Kirchmeyer, T. Rahier, A. Rakotomamonjy, P. Gallinari, and M. Cord. Diverse weight averaging for out-of-distribution generalization. ICML, 2023.",
+        "x": 108,
+        "y": 261.1,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[60] A. Ramé、M. Kirchmeyer、T. Rahier、A. Rakotomamonjy、P. Gallinari 与 M. Cord。面向分布外泛化的多样化权重平均。ICML，2023。"
+      },
+      {
+        "text": "[61] M. Roemmele, C. A. Bejan, and A. S. Gordon. Choice of plausible alternatives: An evaluation of commonsense causal reasoning. 2011 AAAI Spring Symposium Series, 2011.",
+        "x": 108,
+        "y": 230.2,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[61] M. Roemmele、C. A. Bejan 与 A. S. Gordon。合理替代项的选择：对常识因果推理的一项评估。2011 AAAI Spring Symposium Series，2011。"
+      },
+      {
+        "text": "[62] A. Rogers, O. Kovaleva, M. Downey, and A. Rumshisky. Getting closer to AI complete question answering: A set of prerequisite real tasks. In The Thirty-Fourth AAAI Conference on Artificial Intelligence, AAAI 2020, The Thirty-Second Innovative Applications of Artificial Intelligence Conference, IAAI 2020, The Tenth AAAI Symposium on Educational Advances in Artificial Intelligence, EAAI 2020, New York, NY, USA, February 7-12, 2020, pages 8722–8731. AAAI Press, 2020. URL https://aaai.org/ojs/index.php/AAAI/article/view/",
+        "x": 108,
+        "y": 155.6,
+        "w": 397.2,
+        "h": 64.5,
+        "zh": "[62] A. Rogers、O. Kovaleva、M. Downey 与 A. Rumshisky。更接近完全人工智能问答：一组作为前提的真实任务。载于第三十四届 AAAI 人工智能会议（AAAI 2020）、第三十二届人工智能创新应用会议（IAAI 2020）、第十届 AAAI 人工智能教育进展研讨会（EAAI 2020），美国纽约州纽约市，2020 年 2 月 7–12 日，第 8722–8731 页。AAAI Press，2020。URL https://aaai.org/ojs/index.php/AAAI/article/view/"
+      },
+      {
+        "text": "An overview of gradient descent optimization algorithms. arXiv:1609.04747, 2016.",
+        "x": 129.6,
+        "y": 113.8,
+        "w": 301.9,
+        "h": 20.9,
+        "zh": "梯度下降优化算法综述。arXiv:1609.04747，2016。"
+      },
+      {
+        "text": "[64] K. Sakaguchi, R. Le Bras, C. Bhagavatula, and Y. Choi. Winogrande: An adversarial winograd schema challenge at scale. In Proceedings of the AAAI Conference on Artificial Intelligence,",
+        "x": 108,
+        "y": 82.9,
+        "w": 397.2,
+        "h": 20.9,
+        "zh": "[64] K. Sakaguchi、R. Le Bras、C. Bhagavatula 与 Y. Choi。WinoGrande：大规模的对抗式 Winograd 模式挑战。载于 AAAI 人工智能会议论文集，"
+      }
+    ],
+    "15": [
+      {
+        "text": "[65] V. Sanh, A. Webson, C. Raffel, S. H. Bach, L. Sutawika, Z. Alyafeai, A. Chaffin, A. Stiegler, T. L. Scao, A. Raja, et al. Multitask prompted training enables zero-shot task generalization. arXiv preprint arXiv:2110.08207, 2021.",
+        "x": 108,
+        "y": 688.2,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "[65] V. Sanh、A. Webson、C. Raffel、S. H. Bach、L. Sutawika、Z. Alyafeai、A. Chaffin、A. Stiegler、T. L. Scao、A. Raja 等。多任务提示训练使零样本任务泛化成为可能。arXiv 预印本 arXiv:2110.08207，2021。"
+      },
+      {
+        "text": "[66] V. Sanh, A. Webson, C. Raffel, S. H. Bach, L. Sutawika, Z. Alyafeai, A. Chaffin, A. Stiegler, T. L. Scao, A. Raja, et al. Multitask prompted training enables zero-shot task generalization. In International Conference on Learning Representations (ICLR), 2021. https://arxiv.",
+        "x": 108,
+        "y": 647.1,
+        "w": 400.2,
+        "h": 31.8,
+        "zh": "[66] V. Sanh、A. Webson、C. Raffel、S. H. Bach、L. Sutawika、Z. Alyafeai、A. Chaffin、A. Stiegler、T. L. Scao、A. Raja 等。多任务提示训练使零样本任务泛化成为可能。载于学习表征国际会议（ICLR），2021。https://arxiv."
+      },
+      {
+        "text": "[67] M. Sap, H. Rashkin, D. Chen, R. Le Bras, and Y. Choi. Social iqa: Commonsense reasoning about social interactions. In Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP), pages 4463–4473, 2019.",
+        "x": 108,
+        "y": 584.2,
+        "w": 396,
+        "h": 42.7,
+        "zh": "[67] M. Sap、H. Rashkin、D. Chen、R. Le Bras 与 Y. Choi。Social IQA：关于社会互动的常识推理。载于 2019 年自然语言处理经验方法会议暨第 9 届自然语言处理国际联合会议（EMNLP-IJCNLP）论文集，第 4463–4473 页，2019。"
+      },
+      {
+        "text": "[68] R. Sharma, J. Allen, O. Bakhshandeh, and N. Mostafazadeh. Tackling the story ending biases in the story cloze test. In Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 2: Short Papers), pages 752–757, 2018.",
+        "x": 108,
+        "y": 543.2,
+        "w": 396,
+        "h": 31.8,
+        "zh": "[68] R. Sharma、J. Allen、O. Bakhshandeh 与 N. Mostafazadeh。应对故事完型测试中的结局偏见。载于计算语言学协会第 56 届年会论文集（第 2 卷：短文），第 752–757 页，2018。"
+      },
+      {
+        "text": "[69] E. Shnarch, A. Halfon, A. Gera, M. Danilevsky, Y. Katsis, L. Choshen, M. S. Cooper, D. Epelboim, Z. Zhang, D. Wang, et al. Label sleuth: From unlabeled text to a classifier in a few hours. In Conference on Empirical Methods in Natural Language Processing, 2022.",
+        "x": 108,
+        "y": 502.1,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "[69] E. Shnarch、A. Halfon、A. Gera、M. Danilevsky、Y. Katsis、L. Choshen、M. S. Cooper、D. Epelboim、Z. Zhang、D. Wang 等。Label Sleuth：几小时内，从无标注文本得到一个分类器。载于自然语言处理经验方法会议，2022。"
+      },
+      {
+        "text": "[70] S. P. Singh and M. Jaggi. Model fusion via optimal transport. Advances in Neural Information Processing Systems, 33:22045–22055, 2020.",
+        "x": 108,
+        "y": 471.9,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[70] S. P. Singh 与 M. Jaggi。经由最优传输实现模型融合。Advances in Neural Information Processing Systems，33:22045–22055，2020。"
+      },
+      {
+        "text": "[71] J. Stallkamp, M. Schlipsing, J. Salmen, and C. Igel. The german traffic sign recognition benchmark: a multi-class classification competition. In International Joint Conference on Neural Networks (IJCNN), 2011. https://ieeexplore.ieee.org/document/6033395.",
+        "x": 108,
+        "y": 430.8,
+        "w": 396,
+        "h": 31.8,
+        "zh": "[71] J. Stallkamp、M. Schlipsing、J. Salmen 与 C. Igel。德国交通标志识别基准：一项多类分类竞赛。载于国际联合神经网络会议（IJCNN），2011。https://ieeexplore.ieee.org/document/6033395。"
+      },
+      {
+        "text": "[72] Y.-L. Sung, L. Li, K. Lin, Z. Gan, M. Bansal, and L. Wang. An empirical study of multimodal model merging. Empirical Methods in Natural Language Processing (Findings), 2023.",
+        "x": 108,
+        "y": 400.6,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[72] Y.-L. Sung、L. Li、K. Lin、Z. Gan、M. Bansal 与 L. Wang。多模态模型合并的实证研究。Empirical Methods in Natural Language Processing (Findings)，2023。"
+      },
+      {
+        "text": "[73] O. Tafjord, M. Gardner, K. Lin, and P. Clark. Quartz: An open-domain dataset of qualitative relationship questions. In Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP), pages 5941–5946, 2019.",
+        "x": 108,
+        "y": 348.7,
+        "w": 396,
+        "h": 42.7,
+        "zh": "[73] O. Tafjord、M. Gardner、K. Lin 与 P. Clark。QuaRTz：一个开放域的定性关系问题数据集。载于 2019 年自然语言处理经验方法会议暨第 9 届自然语言处理国际联合会议（EMNLP-IJCNLP）论文集，第 5941–5946 页，2019。"
+      },
+      {
+        "text": "[74] N. Tatro, P.-Y. Chen, P. Das, I. Melnyk, P. Sattigeri, and R. Lai. Optimizing mode connectivity via neuron alignment. Advances in Neural Information Processing Systems, 33:15300–15311,",
+        "x": 108,
+        "y": 318.5,
+        "w": 397.2,
+        "h": 20.9,
+        "zh": "[74] N. Tatro、P.-Y. Chen、P. Das、I. Melnyk、P. Sattigeri 与 R. Lai。通过神经元对齐来优化模式连通。Advances in Neural Information Processing Systems，33:15300–15311，"
+      },
+      {
+        "text": "[75] Y. Tay, M. Dehghani, V. Q. Tran, X. Garcia, J. Wei, X. Wang, H. W. Chung, D. Bahri, T. Schuster, S. Zheng, et al. Ul2: Unifying language learning paradigms. In The Eleventh International Conference on Learning Representations, 2022.",
+        "x": 108,
+        "y": 266.5,
+        "w": 397.2,
+        "h": 31.8,
+        "zh": "[75] Y. Tay、M. Dehghani、V. Q. Tran、X. Garcia、J. Wei、X. Wang、H. W. Chung、D. Bahri、T. Schuster、S. Zheng 等。UL2：统一语言学习范式。载于第十一届学习表征国际会议，2022。"
+      },
+      {
+        "text": "[76] G. Thimm and E. Fiesler. Evaluating pruning methods. In International Symposium on Artificial Neural Networks, 1995.",
+        "x": 108,
+        "y": 236.3,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[76] G. Thimm 与 E. Fiesler。评估剪枝方法。载于人工神经网络国际研讨会，1995。"
+      },
+      {
+        "text": "[77] A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, Ł. Kaiser, and I. Polosukhin. Attention is all you need. Advances in Neural Information Processing Systems (NeurIPS), 2017. https://arxiv.org/abs/1706.03762.",
+        "x": 108,
+        "y": 195.2,
+        "w": 396,
+        "h": 31.8,
+        "zh": "[77] A. Vaswani、N. Shazeer、N. Parmar、J. Uszkoreit、L. Jones、A. N. Gomez、Ł. Kaiser 与 I. Polosukhin。注意力就是你所需要的一切。Advances in Neural Information Processing Systems (NeurIPS)，2017。https://arxiv.org/abs/1706.03762。"
+      },
+      {
+        "text": "[78] A. Wang, A. Singh, J. Michael, F. Hill, O. Levy, and S. R. Bowman. Glue: A multi-task benchmark and analysis platform for natural language understanding. In International Conference on Learning Representations (ICLR), 2018. https://arxiv.org/abs/1804.07461.",
+        "x": 108,
+        "y": 154.2,
+        "w": 397.6,
+        "h": 31.8,
+        "zh": "[78] A. Wang、A. Singh、J. Michael、F. Hill、O. Levy 与 S. R. Bowman。GLUE：面向自然语言理解的多任务基准与分析平台。载于学习表征国际会议（ICLR），2018。https://arxiv.org/abs/1804.07461。"
+      },
+      {
+        "text": "[79] H. Wang, M. Yurochkin, Y. Sun, D. Papailiopoulos, and Y. Khazaeni. Federated learning with matched averaging. In International Conference on Learning Representations, 2020.",
+        "x": 108,
+        "y": 124,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[79] H. Wang、M. Yurochkin、Y. Sun、D. Papailiopoulos 与 Y. Khazaeni。带匹配平均的联邦学习。载于学习表征国际会议，2020。"
+      },
+      {
+        "text": "[80] O. Weller, K. Seppi, and M. Gardner. When to use multi-task learning vs intermediate finetuning for pre-trained encoder transfer learning. In Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 2: Short Papers), pages 272–282, Dublin, Ireland, May 2022.",
+        "x": 108,
+        "y": 72,
+        "w": 397.6,
+        "h": 42.7,
+        "zh": "[80] O. Weller、K. Seppi 与 M. Gardner。对预训练编码器做迁移时，何时用多任务学习，何时用中间微调。载于计算语言学协会第 60 届年会论文集（第 2 卷：短文），第 272–282 页，爱尔兰都柏林，2022 年 5 月。"
+      }
+    ],
+    "16": [
+      {
+        "text": "[81] T. Wolf, L. Debut, V. Sanh, J. Chaumond, C. Delangue, A. Moi, P. Cistac, T. Rault, R. Louf, M. Funtowicz, et al. Huggingface’s transformers: State-of-the-art natural language processing, 2019. https://arxiv.org/abs/1910.03771.",
+        "x": 108,
+        "y": 688.2,
+        "w": 397.2,
+        "h": 31.8,
+        "zh": "[81] T. Wolf、L. Debut、V. Sanh、J. Chaumond、C. Delangue、A. Moi、P. Cistac、T. Rault、R. Louf、M. Funtowicz 等。Hugging Face 的 Transformers：前沿的自然语言处理，2019。https://arxiv.org/abs/1910.03771。"
+      },
+      {
+        "text": "[82] M. Wortsman, G. Ilharco, S. Y. Gadre, R. Roelofs, R. Gontijo-Lopes, A. S. Morcos, H. Namkoong, A. Farhadi, Y. Carmon, S. Kornblith, et al. Model soups: averaging weights of multiple fine-tuned models improves accuracy without increasing inference time. In International Conference on Machine Learning (ICML), 2022. https://arxiv.org/abs/",
+        "x": 108,
+        "y": 636.6,
+        "w": 397.7,
+        "h": 42.7,
+        "zh": "[82] M. Wortsman、G. Ilharco、S. Y. Gadre、R. Roelofs、R. Gontijo-Lopes、A. S. Morcos、H. Namkoong、A. Farhadi、Y. Carmon、S. Kornblith 等。Model Soups：对多个微调模型的权重取平均，可以在不增加推理时间的情况下提高准确率。载于国际机器学习会议（ICML），2022。https://arxiv.org/abs/"
+      },
+      {
+        "text": "[83] M. Wortsman, G. Ilharco, M. Li, J. W. Kim, H. Hajishirzi, A. Farhadi, H. Namkoong, and L. Schmidt. Robust fine-tuning of zero-shot models. In Conference on Computer Vision and Pattern Recognition (CVPR), 2022. https://arxiv.org/abs/2109.01903.",
+        "x": 108,
+        "y": 585,
+        "w": 396,
+        "h": 31.8,
+        "zh": "[83] M. Wortsman、G. Ilharco、M. Li、J. W. Kim、H. Hajishirzi、A. Farhadi、H. Namkoong 与 L. Schmidt。零样本模型的稳健微调。载于计算机视觉与模式识别会议（CVPR），2022。https://arxiv.org/abs/2109.01903。"
+      },
+      {
+        "text": "[84] J. Xiao, K. A. Ehinger, J. Hays, A. Torralba, and A. Oliva.",
+        "x": 108,
+        "y": 566.1,
+        "w": 275,
+        "h": 10,
+        "zh": "[84] J. Xiao、K. A. Ehinger、J. Hays、A. Torralba 与 A. Oliva。"
+      },
+      {
+        "text": "Sun database: Exploring a large collection of scene categories. International Journal of Computer Vision (IJCV), 2016. https://link.springer.com/article/10.1007/s11263-014-0748-y.",
+        "x": 129.6,
+        "y": 544.3,
+        "w": 376.2,
+        "h": 31.8,
+        "zh": "SUN 数据库：探索一个大规模的场景类别集合。International Journal of Computer Vision (IJCV)，2016。https://link.springer.com/article/10.1007/s11263-014-0748-y。"
+      },
+      {
+        "text": "[85] P. Yadav and M. Bansal. Exclusive supermask subnetwork training for continual learning. In Findings of the Association for Computational Linguistics: ACL 2023, pages 569–587, Toronto, Canada, July 2023. Association for Computational Linguistics. doi: 10.18653/v1/2023. findings-acl.36. URL https://aclanthology.org/2023.findings-acl.36.",
+        "x": 108,
+        "y": 492.7,
+        "w": 397.7,
+        "h": 42.7,
+        "zh": "[85] P. Yadav 与 M. Bansal。面向持续学习的独占 supermask 子网络训练。载于《计算语言学协会会议发现：ACL 2023》，第 569–587 页，加拿大多伦多，2023 年 7 月。Association for Computational Linguistics。doi: 10.18653/v1/2023.findings-acl.36。URL https://aclanthology.org/2023.findings-acl.36。"
+      },
+      {
+        "text": "[86] P. Yadav, Q. Sun, H. Ding, X. Li, D. Zhang, M. Tan, P. Bhatia, X. Ma, R. Nallapati, M. K. Ramanathan, M. Bansal, and B. Xiang. Exploring continual learning for code gen-",
+        "x": 108,
+        "y": 462.9,
+        "w": 397.6,
+        "h": 20.9,
+        "zh": "[86] P. Yadav、Q. Sun、H. Ding、X. Li、D. Zhang、M. Tan、P. Bhatia、X. Ma、R. Nallapati、M. K. Ramanathan、M. Bansal 与 B. Xiang。探索面向代码生成的持续学习"
+      },
+      {
+        "text": "In Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 2: Short Papers), pages 782–792, Toronto, Canada, July 2023. Association for Computational Linguistics. doi: 10.18653/v1/2023.acl-short.68. URL https://aclanthology.org/2023.acl-short.68.",
+        "x": 129.6,
+        "y": 419.3,
+        "w": 376.1,
+        "h": 42.7,
+        "zh": "载于计算语言学协会第 61 届年会论文集（第 2 卷：短文），第 782–792 页，加拿大多伦多，2023 年 7 月。Association for Computational Linguistics。doi: 10.18653/v1/2023.acl-short.68。URL https://aclanthology.org/2023.acl-short.68。"
+      },
+      {
+        "text": "[87] Y. Yang, W.-t. Yih, and C. Meek. WikiQA: A challenge dataset for open-domain question answering. In Proceedings of the 2015 Conference on Empirical Methods in Natural Language Processing, pages 2013–2018, Lisbon, Portugal, Sept. 2015. Association for Computational Linguistics. doi: 10.18653/v1/D15-1237. URL https://aclanthology.org/D15-1237.",
+        "x": 108,
+        "y": 367.7,
+        "w": 397.7,
+        "h": 42.7,
+        "zh": "[87] Y. Yang、W.-t. Yih 与 C. Meek。WikiQA：开放域问答的挑战数据集。载于 2015 年自然语言处理经验方法会议论文集，第 2013–2018 页，葡萄牙里斯本，2015 年 9 月。Association for Computational Linguistics。doi: 10.18653/v1/D15-1237。URL https://aclanthology.org/D15-1237。"
+      },
+      {
+        "text": "[88] R. Zellers, A. Holtzman, Y. Bisk, A. Farhadi, and Y. Choi. HellaSwag: Can a machine really finish your sentence? arXiv preprint arXiv:1905.07830, 2019.",
+        "x": 108,
+        "y": 337.9,
+        "w": 396.3,
+        "h": 20.9,
+        "zh": "[88] R. Zellers、A. Holtzman、Y. Bisk、A. Farhadi 与 Y. Choi。HellaSwag：机器真的能把你的句子写完吗？arXiv 预印本 arXiv:1905.07830，2019。"
+      },
+      {
+        "text": "[89] Y. Zhang and Q. Yang. A survey on multi-task learning. IEEE Transactions on Knowledge and Data Engineering, 34(12):5586–5609, 2021.",
+        "x": 108,
+        "y": 308.1,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[89] Y. Zhang 与 Q. Yang。多任务学习综述。IEEE Transactions on Knowledge and Data Engineering，34(12):5586–5609，2021。"
+      },
+      {
+        "text": "[90] Y. Zhang, J. Baldridge, and L. He. PAWS: Paraphrase Adversaries from Word Scrambling. In Proc. of NAACL, 2019.",
+        "x": 108,
+        "y": 278.3,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[90] Y. Zhang、J. Baldridge 与 L. He。PAWS：由词语打乱得到的释义对抗样本。载于 NAACL 论文集，2019。"
+      },
+      {
+        "text": "[91] F. Zhuang, Z. Qi, K. Duan, D. Xi, Y. Zhu, H. Zhu, H. Xiong, and Q. He. A comprehensive survey on transfer learning. Proceedings of the IEEE, 2020. https://arxiv.org/abs/",
+        "x": 108,
+        "y": 248.5,
+        "w": 397.2,
+        "h": 20.9,
+        "zh": "[91] F. Zhuang、Z. Qi、K. Duan、D. Xi、Y. Zhu、H. Zhu、H. Xiong 与 Q. He。迁移学习综合综述。Proceedings of the IEEE，2020。https://arxiv.org/abs/"
+      }
+    ],
+    "17": [
+      {
+        "text": "Our works share the same general limitations of existing merging methods, like (1) a limited theoretical understanding of why and when weight interpolation works, what are the important underlying factors, and its proper connections with mode connectivity. Recent works like [50] have demonstrated interesting relationships between weight disentanglement and mergingability of models; (2) that merging relies on common initialization and model architecture; and (3) merging individual-task models to create a multitask still lags behind the simultaneous multitask training. Moreover, it is not clear how to select the checkpoints for merging in order to create multitask models useful for specific domains. In addition, while our method provides a way to choose signs when merging task vectors, we still find that using the signs from a multitask model performs better. Some potential future works include figuring out a good way to estimate multitask signs without having access to the multitask model as this has the potential to bridge the gap between multitask merging",
+        "x": 108,
+        "y": 548.9,
+        "w": 397.7,
+        "h": 119.1,
+        "zh": "我们的工作与现有合并方法有相同的总体局限。例如：（1）对于权重插值为何有效、何时有效、重要的底层因素是什么，以及它与模式连通应如何联系起来，理论上的理解仍然有限。近期如 [50] 的工作表明，权重解耦和模型可合并性之间存在值得注意的关系；（2）合并依赖于共同的初始化和模型架构；（3）把单任务模型合并成多任务模型，仍然落后于同时进行的多任务训练。此外，若要得到对特定领域有用的多任务模型，该怎样挑选参与合并的检查点，目前也不清楚。另外，虽然我们的方法提供了在合并任务向量时选择符号的一种办法，我们仍然发现，用多任务模型的符号效果更好。一些可能的后续工作是：在拿不到多任务模型的情况下，找到估计多任务符号的好办法，因为这有可能弥合多任务合并与"
+      },
+      {
+        "text": "and multitask training (as demonstrated in Section 7.4).",
+        "x": 108,
+        "y": 538,
+        "w": 221.1,
+        "h": 10,
+        "zh": "多任务训练之间的差距（如第 7.4 节所示）。"
+      },
+      {
+        "text": "Table 7: Merging Performance can be improved by estimating the Sign Vector by performing few-shot multitask training. We use the estimated sign as the elected sign and perform merging.",
+        "x": 107.7,
+        "y": 334.7,
+        "w": 396.3,
+        "h": 20.9,
+        "zh": "表 7：用少样本多任务训练来估计符号向量，可以提升合并性能。我们把估计出的符号当作当选符号，再做合并。"
+      },
+      {
+        "text": "Enhancing Performance by Estimating the Multitask Sign Vector.",
+        "x": 132.1,
+        "y": 302.3,
+        "w": 278.2,
+        "h": 10,
+        "zh": "通过估计多任务符号向量来提高性能。"
+      },
+      {
+        "text": "Considering the findings, we inquire whether it is possible to efficiently acquire multitask sign vectors without extensive multitask training. Our proposal involves utilizing a limited number of validation samples from each task to cheaply train a multitask model and subsequently derive the relevant sign vector. We create two multitask (IA) models: one developed from scratch and another initialized using the average of task-specific (IA) models intended for merging. We use 32 validation examples from each task to train this model. In Table 5, we notice using the sign vector from the fewshot multitask model initialized with mean yielded a performance increase of 3.8% and 1.3% compared to Task Arithmetic and TIES-MERGING. Interestingly, training fewshot multitask training from scratch did not yield significant improvements over TIES-MERGING without sign estimation. We believe that exploring this area further may result in improved merging techniques.",
+        "x": 107.6,
+        "y": 184,
+        "w": 396.4,
+        "h": 108.1,
+        "zh": "基于这些发现，我们想问：能否不做大规模多任务训练，就把多任务符号向量高效地拿到。我们的做法是，用每个任务的少量验证样本，低成本地训练一个多任务模型，再从中导出相应的符号向量。我们构建了两个多任务 (IA) 模型：一个从头训练，另一个用待合并的那些任务专用 (IA) 模型的平均来初始化。每个任务用 32 个验证样本来训练。在表 5 中可以看到，用来自“以均值初始化的少样本多任务模型”的符号向量时，相对 Task Arithmetic 和 TIES-MERGING 分别提高 3.8% 和 1.3%。有趣的是，从头做少样本多任务训练，相对不做符号估计的 TIES-MERGING，并没有明显提升。我们相信，沿着这个方向继续做，有可能得到更好的合并方法。"
+      },
+      {
+        "text": "Effect of Hyper-Parameters λ and K on the Performance.",
+        "x": 132.1,
+        "y": 159.2,
+        "w": 243.7,
+        "h": 10,
+        "zh": "超参数 λ 和 K 对性能的影响。"
+      },
+      {
+        "text": "In Figure 8 (left and middle), we plot the effect of λ on the performance when merging T5-base and T5-large models trained on GLUE (Similar to Table-1). For TIES-MERGING, we vary around the value 1 because TIES takes the mean of task vectors, whereas task arithmetic adds up the task",
+        "x": 108,
+        "y": 117.3,
+        "w": 396.3,
+        "h": 31.8,
+        "zh": "图 8（左、中）画出了 λ 对性能的影响。这里合并的是在 GLUE 上训练的 T5-base 和 T5-large（与表 1 类似）。对 TIES-MERGING，我们在 1 附近取值，因为 TIES 取的是任务向量的均值，而 task arithmetic 是把各个任务"
+      },
+      {
+        "text": "vectors. Hence, a value of 1 for TIES is similar to using",
+        "x": 107.8,
+        "y": 106.4,
+        "w": 220.9,
+        "h": 10,
+        "zh": "向量加起来。因此，TIES 取 1，相当于使用"
+      },
+      {
+        "text": "of 0.8-1.8 for TIES was selected based on preliminary experiments on the PEFT setting (as mentioned in Section 5). We find that TIES-MERGING is much less sensitive to changes in (with an accuracy range of 68-75% across the considered values of λ) compared to Task Arithmetic (with an accuracy",
+        "x": 108,
+        "y": 72,
+        "w": 396.3,
+        "h": 31.8,
+        "zh": "为 TIES 选定的 0.8–1.8 这一范围，依据的是 PEFT 设定上的初步实验（如第 5 节所述）。我们发现，在所考虑的各个 λ 上，TIES-MERGING 对变化远没有那么敏感（准确率落在 68–75%），而 Task Arithmetic 的准确率"
+      }
+    ],
+    "18": [
+      {
+        "text": "Figure 8: Performance as a function of hyperparameters. For more details please refer to the",
+        "x": 108,
+        "y": 611.4,
+        "w": 396,
+        "h": 10,
+        "zh": "图 8：性能随超参数变化。更多细节请参见"
+      },
+      {
+        "text": "Figure 9: Sign conflict increases as we trim less parameters. For each task, we merge 10 different checkpoints from hunggingface hub and plot the sign conflict as a function of keeping only the",
+        "x": 108,
+        "y": 489.9,
+        "w": 396,
+        "h": 20.9,
+        "zh": "图 9：裁得越少，符号冲突越多。对每个任务，我们合并来自 Hugging Face Hub 的 10 个不同检查点，并把符号冲突画成“只保留”的函数"
+      },
+      {
+        "text": "Figure 10: Sign Conflict exists even when merging multiple checkpoints for the same task. The first three plots are for RTE, MRPC, WNLI datasets when merging 10 Huggingface checkpoints, while the last one is when merging different tasks (Figure 4 from the main paper).",
+        "x": 107.6,
+        "y": 373.4,
+        "w": 397.6,
+        "h": 31.8,
+        "zh": "图 10：即使合并的是同一任务的多个检查点，符号冲突也存在。前三幅图是合并 10 个 Hugging Face 检查点时，RTE、MRPC、WNLI 上的结果；最后一幅是合并不同任务时的情形（正文图 4）。"
+      },
+      {
+        "text": "range of 55-75). Figure 8 (right) demonstrates the effect of k as we increment the value of k in steps of 10 and skip k = 0 as that would select no parameters. We observe that as k increases the performance drops and then saturates. However, we would like to note that this curve might change based on the distribution of the parameter values in the task vector.",
+        "x": 108,
+        "y": 301.1,
+        "w": 396,
+        "h": 42.7,
+        "zh": "范围是 55–75。图 8（右）给出 k 的影响：我们以 10 为步长增大 k，并跳过 k = 0，因为那样会一个参数都不选。可以看到，k 变大时性能先下降，然后趋于饱和。不过这条曲线可能会随任务向量里参数值的分布而改变。"
+      },
+      {
+        "text": "Sign Conflict Increases as We Trim Less Parameters",
+        "x": 132.1,
+        "y": 269.4,
+        "w": 221.6,
+        "h": 10,
+        "zh": "裁掉的参数越少，符号冲突越多"
+      },
+      {
+        "text": "In Figure 9, we merge 10 bert-base-uncased checkpoints from huggingface finetuned on for three different glue tasks (RTE, MRPC, and WNLI) and plot the sign conflict as a function of k. As we keep more and more parameters, the sign conflict increases and reaches almost 80%. This is also expected as there are many more nonzero parameters that can create conflict even if their magnitude",
+        "x": 107.6,
+        "y": 213.8,
+        "w": 396.5,
+        "h": 42.7,
+        "zh": "在图 9 中，我们合并来自 Hugging Face、在三个不同 GLUE 任务（RTE、MRPC 和 WNLI）上微调的 10 个 bert-base-uncased 检查点，并把符号冲突画成 k 的函数。保留的参数越多，符号冲突越高，最终接近 80%。这也符合预期，因为非零参数多得多，即便它们的幅度"
+      },
+      {
+        "text": "Sign Conflicts Exists Between Different Checkpoints for the Same Task",
+        "x": 132.1,
+        "y": 171.2,
+        "w": 301.1,
+        "h": 10,
+        "zh": "同一任务的不同检查点之间也存在符号冲突"
+      },
+      {
+        "text": "In Figure 10, we show that sign conflicts exist even within models trained on the same task. We plotted the sign conflict (similar to Figure 4) between the 10 checkpoints of RTE, MRPC, and WNLI from Huggingface. As the number of checkpoints increases, sign conflict increases. We also compare this with the sign interference when merging different task checkpoints and find a similar degree of interference in all of these cases. Hence, sign conflicts exist even within models trained on the same dataset. We suspect that this is because models are highly overparameterized and hence there are multiple subnetworks (subsets of parameters) that could lead to the same performance where different finetuning runs update the same parameters in different directions.",
+        "x": 108,
+        "y": 72,
+        "w": 396,
+        "h": 86.3,
+        "zh": "图 10 表明，即使模型训练的是同一个任务，符号冲突也存在。我们按与图 4 类似的方式，画出来自 Hugging Face 的 RTE、MRPC 和 WNLI 共 10 个检查点之间的符号冲突。检查点越多，符号冲突越多。我们还把它和合并不同任务检查点时的符号干扰作了比较，发现这些情形里的干扰程度差不多。因此，即便训练数据相同，模型之间也会有符号冲突。我们推测，这是因为模型高度过参数化，存在多个子网络（参数子集）可以达到同样的性能，而不同的微调运行会把相同的参数更新到不同方向。"
+      }
+    ],
+    "19": [
+      {
+        "text": "0.5-0.6 0.6-0.7 0.7-0.8 0.8-0.9 0.9-1.0 Parameters with nonzero values",
+        "x": 154.1,
+        "y": 589.3,
+        "w": 347.7,
+        "h": 9.9,
+        "zh": ""
+      },
+      {
+        "text": "Bins of Sign Agreement (a) Redundant Parameter Interference for (IA) with",
+        "x": 107.7,
+        "y": 573.8,
+        "w": 362.9,
+        "h": 13.1,
+        "zh": "符号一致程度的分箱。(a) 带有 (IA) 的冗余参数干扰，以及"
+      },
+      {
+        "text": "(b) Sign Interference for (IA) with STD. Figure 11: Effect of different types of Merging on the Magnitudes of the Parameters. Here we additionally compare with TIES-MERGING and also provide the standard deviation of parameter values. A high std implies that there is some diversity in magnitude values across different parameters.",
+        "x": 107.8,
+        "y": 524.5,
+        "w": 396.4,
+        "h": 48.4,
+        "zh": "（b）带标准差的 (IA) 符号干扰。图 11：不同合并方式对参数幅度的影响。这里额外与 TIES-MERGING 比较，并给出参数值的标准差。标准差高，说明不同参数的幅度之间存在一定差异。"
+      },
+      {
+        "text": "0.5-0.6 0.6-0.7 0.7-0.8 0.8-0.9 0.9-1.0 Parameters with nonzero values",
+        "x": 274.7,
+        "y": 412.3,
+        "w": 228.1,
+        "h": 13.2,
+        "zh": ""
+      },
+      {
+        "text": "Fraction of Parameters with Sign conflicts for T5-Base model (b) Redundant Parameter Interfer- (c) Sign Interference for T5-Base versus number of models.",
+        "x": 107.8,
+        "y": 388.1,
+        "w": 396.2,
+        "h": 28.9,
+        "zh": "T5-Base 模型中存在符号冲突的参数比例，相对于模型数量。(b) 冗余参数干扰。(c) T5-Base 的符号干扰"
+      },
+      {
+        "text": "ence for T5-Base with STD. Figure 12: Plots for T5-Base model.",
+        "x": 232.5,
+        "y": 370.5,
+        "w": 147,
+        "h": 26.6,
+        "zh": "T5-Base 上带标准差的干扰。图 12：T5-Base 模型的图。"
+      },
+      {
+        "text": "Table 8: Test set performance when merging IA3 models on eleven tasks. Please refer to Section 6 for experimental details.",
+        "x": 107.7,
+        "y": 227,
+        "w": 396.3,
+        "h": 20.9,
+        "zh": "表 8：在十一项任务上合并 IA3 模型时的测试集性能。实验细节见第 6 节。"
+      },
+      {
+        "text": "Detailed Results for Types of Interference and Their Effect on Merging",
+        "x": 132.1,
+        "y": 180.7,
+        "w": 301.4,
+        "h": 10,
+        "zh": "干扰类型及其对合并之影响的详细结果"
+      },
+      {
+        "text": "In Section 7.1 and Figure 6, we showed the effect of redundant parameters and sign conflicts on parameter magnitudes when comparing simple averaging vs disjoint mean after either trimming or electing and showed that performing these operations helps with the parameter magnitudes. In Figure 11, we additionally compare with TIES-MERGING and show that performing both trimming and electing usually results in higher magnitude and also higher standard deviation in parameter magnitudes. Higher std denotes that all parameter values in the merged model are the same and that there is a significant variation in the magnitude which is in contrast to simple averaging as it decreases the magnitude of not redundant parameters and reduces the magnitude of the influential parameters in the merged model. Similar plots for the T5-base model are provided in Figure 12.",
+        "x": 108,
+        "y": 72,
+        "w": 396.2,
+        "h": 97.2,
+        "zh": "在第 7.1 节和图 6 中，我们展示了冗余参数和符号冲突对参数幅度的影响：把简单平均，与在裁剪或选举之后再做不相交均值相比较，并说明这些操作有助于参数幅度。图 11 进一步与 TIES-MERGING 比较，表明同时做裁剪和选举时，幅度通常更高，参数幅度的标准差也更高。更高的标准差表示合并模型里的参数值全都相同，同时幅度上又有显著变化；这与简单平均形成对照，因为简单平均会压低那些并非冗余的参数的幅度，也会压低合并模型中有影响参数的幅度。T5-base 的类似图见图 12。"
+      }
+    ],
+    "20": [
+      {
+        "text": "We provide the task level for all the in-domain evaluation experiments in the main Table 1. Table 8, 9, 10, 11, and 12 provide the task level results IA3 [43], T5-Base, T5-Large [58], ViT-B/32, and ViT-L/14 [14] respectively. The task level results of the out-of-domain experiments for T5-Base and T5-Large can be found in Table 13, and 14. Lastly, Figure 13, shows the scaling of the T5-Base model as we merge different numbers of tasks.",
+        "x": 107.5,
+        "y": 643.4,
+        "w": 398.1,
+        "h": 53.6,
+        "zh": "我们给出正文表 1 中全部域内评估实验的任务级结果。表 8、9、10、11 和 12 分别对应 IA3 [43]、T5-Base、T5-Large [58]、ViT-B/32 和 ViT-L/14 [14]。T5-Base 与 T5-Large 的域外实验任务级结果见表 13 和表 14。最后，图 13 展示 T5-Base 在合并不同数量任务时的扩展情况。"
+      },
+      {
+        "text": "Table 9: Test set performance when merging T5-base models on seven tasks. Please refer to Section",
+        "x": 107.7,
+        "y": 499.8,
+        "w": 396.3,
+        "h": 10,
+        "zh": "表 9：在七项任务上合并 T5-base 模型时的测试集性能。请参见"
+      },
+      {
+        "text": "Table 10: Test set performance when merging T5-large models on seven tasks. Please refer to Section",
+        "x": 107.7,
+        "y": 346.1,
+        "w": 396.3,
+        "h": 10,
+        "zh": "表 10：在七项任务上合并 T5-large 模型时的测试集性能。请参见"
+      },
+      {
+        "text": "Table 11: Test set performance when merging ViT-B/32 models on eight tasks. Please refer to Section 6 for experimental details.",
+        "x": 107.7,
+        "y": 200.1,
+        "w": 396.3,
+        "h": 20.9,
+        "zh": "表 11：在八项任务上合并 ViT-B/32 模型时的测试集性能。实验细节见第 6 节。"
+      },
+      {
+        "text": "We executed all our experiments on Nvidia A6000 GPUs equipped with 48GB RAM. Single-task (IA) models for eleven tasks required 1-2 hours per model, while the multitask vector took around 24 hours on four GPUs. The T5-Base and T5-Large models, based on dataset size, needed between 15 minutes and 2 hours per task, and approximately eight hours for the multitask checkpoint. Vision",
+        "x": 107.3,
+        "y": 72,
+        "w": 397,
+        "h": 42.7,
+        "zh": "全部实验在配备 48GB 内存的 Nvidia A6000 GPU 上运行。十一项任务的单任务 (IA) 模型，每个模型需要 1–2 小时；多任务向量在四块 GPU 上大约用了 24 小时。T5-Base 和 T5-Large 视数据集大小，每个任务需要 15 分钟到 2 小时，多任务检查点大约需要 8 小时。视觉"
+      }
+    ],
+    "21": [
+      {
+        "text": "Table 12: Test set performance when merging ViT-L/14 models on eight tasks. Please refer to Section",
+        "x": 107.7,
+        "y": 609.6,
+        "w": 396.3,
+        "h": 10,
+        "zh": "表 12：在八项任务上合并 ViT-L/14 模型时的测试集性能。请参见"
+      },
+      {
+        "text": "models ViT-B/32 and ViT-L/14 were utilized, as supplied by Ilharco et al. [29]. Merge experiments were efficient, with evaluations consuming less than 2 minutes for the T5-Base, T5-Large, ViTB/32, and ViT-L/14 experiments. The assessment of (IA) models, due to the necessity of using multiple templates from prompt sources and median result calculations across all templates, required approximately one hour per 11 dataset evaluation.",
+        "x": 107.6,
+        "y": 504.3,
+        "w": 398,
+        "h": 53.6,
+        "zh": "所用的模型是 Ilharco 等人 [29] 提供的 ViT-B/32 和 ViT-L/14。合并实验本身很快：T5-Base、T5-Large、ViT-B/32 和 ViT-L/14 的评估都不到 2 分钟。评估 (IA) 模型时，必须使用提示源里的多个模板，并在全部模板上计算中位数，因此每评估一遍这 11 个数据集大约需要一小时。"
+      },
+      {
+        "text": "Table 13: Out-of-Distributon performance of T5-Base model checkpoints on six tasks. Please refer to Section 6 for experimental details.",
+        "x": 107.7,
+        "y": 294.2,
+        "w": 396.5,
+        "h": 20.9,
+        "zh": "表 13：T5-Base 模型检查点在六项任务上的分布外性能。实验细节见第 6 节。"
+      },
+      {
+        "text": "Employed Datasets and Associated Licences",
+        "x": 132.6,
+        "y": 262.5,
+        "w": 187,
+        "h": 10,
+        "zh": "所用数据集及其许可"
+      },
+      {
+        "text": "We use the following datasets in the paper with the following licenses. ANLI [49], WiC [53], WSC [37], and Story Cloze [68], QuaRTz [73], Cars [35], GTSRB [71] are under Creative Commons License. Winogrande [64], QASC [33] are under Apache license. COPA [61] is under a BSD-2 Clause license. H-SWAG [88], EuroSAT [24], is under MIT Licence. MNIST [36] is under Gnu General Public License. We could not find the licences of DTD [10], RESISC45 [8], SUN397 [84], SVHN [47], CB [44], RTE [11]), and PAWS [90] but they are publically for research use.",
+        "x": 107.5,
+        "y": 184.6,
+        "w": 397.7,
+        "h": 64.5,
+        "zh": "本文使用下列数据集及许可。ANLI [49]、WiC [53]、WSC [37]、Story Cloze [68]、QuaRTz [73]、Cars [35]、GTSRB [71] 采用知识共享许可。Winogrande [64]、QASC [33] 采用 Apache 许可。COPA [61] 采用 BSD-2-Clause 许可。H-SWAG [88]、EuroSAT [24] 采用 MIT 许可。MNIST [36] 采用 GNU 通用公共许可。我们没有找到 DTD [10]、RESISC45 [8]、SUN397 [84]、SVHN [47]、CB [44]、RTE [11] 和 PAWS [90] 的许可，但它们可公开用于研究。"
+      },
+      {
+        "text": "For both Figure 3, and 4 in Section 3, we perform experiment on the eleven (IA) models used in our PEFT merging experiments (§ 6). For a Figure similar to Fig. 4 demonstrating the fraction of parameters with a sign conflict for T5-base model, please refer to Fig. 12a.",
+        "x": 108,
+        "y": 106.3,
+        "w": 396,
+        "h": 31.8,
+        "zh": "对第 3 节的图 3 和图 4，我们都在 PEFT 合并实验（第 6 节）所用的那十一个 (IA) 模型上做实验。与图 4 类似、展示 T5-base 上存在符号冲突的参数比例的图，见附图 12a。"
+      },
+      {
+        "text": "https://github.com/mlfoundations/task_vectors#checkpoints",
+        "x": 124.1,
+        "y": 72,
+        "w": 214,
+        "h": 9,
+        "zh": ""
+      }
+    ],
+    "22": [
+      {
+        "text": "Table 14: Out-of-Distributon performance of T5-Large model checkpoints on six tasks. Please refer",
+        "x": 107.7,
+        "y": 526,
+        "w": 396.5,
+        "h": 10,
+        "zh": "表 14：T5-Large 模型检查点在六项任务上的分布外性能。请参见"
+      },
+      {
+        "text": "Figure 13: T5-Base with increasing number of task being merged. Average performance when",
+        "x": 108,
+        "y": 353,
+        "w": 396,
+        "h": 10,
+        "zh": "图 13：被合并任务数量增加时的 T5-Base。平均性能，当"
+      },
+      {
+        "text": "Merging in the absence of the Validation Set",
+        "x": 132.6,
+        "y": 302.7,
+        "w": 187.4,
+        "h": 10,
+        "zh": "没有验证集时的合并"
+      },
+      {
+        "text": "In our investigation into scenarios where a validation set is not available, we have devised a recipe and identified the optimal hyperparameters, employing the PEFT experimental procedure detailed in Section 6. This approach was applied to the eleven task-specific models presented in the same section, utilizing the TIES-MERGING method for tuning the hyperparameters. Our preliminary estimates for the hyperparameters were k = 20 and λ close to 1. The hyperparameter search was conducted using the eleven task-specific (IA) models, with k ∈ {10, 20, 30}, and λ spanning from 0.8 to 3.0, in increments of 0.1. The results of this comprehensive search indicated an optimal value of k = 20, with values of λ = 0.9, λ = 1.0, and λ = 1.1 demonstrating equivalent performance. To maintain simplicity in our model, we chose a λ value of 1. Thus, the final selection of parameters for TIES-MERGING is k = 20, signs based on mass, the disjoint mean, and a λ value of 1.",
+        "x": 107.9,
+        "y": 181.8,
+        "w": 397.3,
+        "h": 108.1,
+        "zh": "在研究没有验证集的情形时，我们定了一套配方，并找出了合适的超参数，所用的是第 6 节描述的 PEFT 实验流程。这一做法用在同一节的十一个任务专用模型上，并用 TIES-MERGING 来调节超参数。超参数的初步估计是 k = 20，λ 接近 1。搜索在这十一个任务专用 (IA) 模型上进行，k ∈ {10, 20, 30}，λ 从 0.8 到 3.0，步长 0.1。这次搜索表明，最优的 k = 20，而 λ = 0.9、λ = 1.0 和 λ = 1.1 的性能相同。为了让模型保持简单，我们取 λ = 1。因此，TIES-MERGING 最终采用的是 k = 20、按质量确定的符号、不相交均值，以及 λ = 1。"
+      },
+      {
+        "text": "Here we provide some additional details on the experiments when merging different numbers of tasks. In Fig. 5, we perform the experiment with T5-Large when merging the seven tasks considered in Tab. 1 and described in Sec. 6. The x-axis shows the different number of tasks being merged. Note\u0000 \u0001 that when merging T tasks, we have a total of sample at most 10 distinct combinations for each value of T. A similar plot for the T5-Base model is",
+        "x": 107.7,
+        "y": 82.9,
+        "w": 398,
+        "h": 54.8,
+        "zh": "这里补充合并不同数量任务时的实验细节。图 5 的实验用的是 T5-Large，合并的是表 1 所考虑、第 6 节所描述的七个任务。横轴是被合并任务的不同数量。注意，当合并 T 个任务时，我们对每个 T 总共抽样至多 10 种不同组合。T5-Base 的一张类似图则是"
+      },
+      {
+        "text": "combinations. However, in our experiment, we",
+        "x": 313.3,
+        "y": 93.8,
+        "w": 190.7,
+        "h": 10,
+        "zh": "组合。不过在我们的实验中，我们"
+      }
+    ],
+    "23": [
+      {
+        "text": "In Figure 5, for each number of tasks we take at most 10 random subsets of the 8 tasks we were considering. The solid line is the average of the merged model’s performance from these different runs. Below we provide the optimal λ values for the different subsets of tasks we merged for both",
+        "x": 108,
+        "y": 688.2,
+        "w": 396,
+        "h": 31.8,
+        "zh": "在图 5 中，对每一种任务数量，我们从所考虑的 8 个任务里至多取 10 个随机子集。实线是这些不同运行里合并模型性能的平均。下面给出我们在合并不同任务子集时，为这两者选取的最优 λ。"
+      },
+      {
+        "text": "TIES-MERGING and Task Arithmetic, note that for averaging the λ =",
+        "x": 107.9,
+        "y": 677.3,
+        "w": 276.9,
+        "h": 10,
+        "zh": "TIES-MERGING 和 Task Arithmetic。注意，对平均而言，λ ="
+      },
+      {
+        "text": "the list is the optimal λ for a particular subset of tasks selected on the validation set.",
+        "x": 108,
+        "y": 664.6,
+        "w": 334,
+        "h": 10,
+        "zh": "列表中的每一项，是在验证集上为某个任务子集选出的最优 λ。"
+      },
+      {
+        "text": "(2 tasks) TIES → [1.7, 1.9, 2, 2, 1.1, 1.5, 1.6, 1.8, 1.9, 1., 5] (2 tasks) Task Arithmetic → [1, 0.9, 1, 1, 0.9, 1, 0.9, 0.9, 0.9, 1] (3 tasks) TIES → [1.2, 2, 1.5, 1.9, 1.8, 1.7, 1.4, 2, 3, 1.9] (3 tasks) Task Arithmetic → [1, 0.7, 0.7, 1, 1, 0.9, 0.7, 0.7, 0.9, 1] (4 tasks) TIES → [1.5, 1.3, 1.3, 1.8, 2.3, 1.7, 1.8, 1.7, 1.9, 1.5] (4 tasks) Task Arithmetic → [0.8, 0.7, 0.7, 0.7, 0.6, 0.7, 0.7, 0.8, 0.6, 0.7] (5 tasks) TIES → [2, 2, 2, 1.8, 1.7, 2, 1.6, 2.1, 1.6, 1.3] (5 tasks)Task Arithmetic → [0.7, 0.8, 0.6, 0.8, 0.7, 0.6, 0.6, 0.6, 0.6, 0.7] (6 tasks) TIES → [1.6, 1.7, 1.7, 1.2, 1.7, 1.7, 1.5] (6 tasks) Task Arithmetic → [0.6, 0.5, 0.5, 0.5, 0.7, 0.5, 0.6] (7 tasks) TIES → [1.7] (7 tasks) Task Arithmetic → [0.5]",
+        "x": 107.7,
+        "y": 500.8,
+        "w": 291.7,
+        "h": 157.4,
+        "zh": "（2 个任务）TIES → [1.7, 1.9, 2, 2, 1.1, 1.5, 1.6, 1.8, 1.9, 1., 5]（2 个任务）Task Arithmetic → [1, 0.9, 1, 1, 0.9, 1, 0.9, 0.9, 0.9, 1]（3 个任务）TIES → [1.2, 2, 1.5, 1.9, 1.8, 1.7, 1.4, 2, 3, 1.9]（3 个任务）Task Arithmetic → [1, 0.7, 0.7, 1, 1, 0.9, 0.7, 0.7, 0.9, 1]（4 个任务）TIES → [1.5, 1.3, 1.3, 1.8, 2.3, 1.7, 1.8, 1.7, 1.9, 1.5]（4 个任务）Task Arithmetic → [0.8, 0.7, 0.7, 0.7, 0.6, 0.7, 0.7, 0.8, 0.6, 0.7]（5 个任务）TIES → [2, 2, 2, 1.8, 1.7, 2, 1.6, 2.1, 1.6, 1.3]（5 个任务）Task Arithmetic → [0.7, 0.8, 0.6, 0.8, 0.7, 0.6, 0.6, 0.6, 0.6, 0.7]（6 个任务）TIES → [1.6, 1.7, 1.7, 1.2, 1.7, 1.7, 1.5]（6 个任务）Task Arithmetic → [0.6, 0.5, 0.5, 0.5, 0.7, 0.5, 0.6]（7 个任务）TIES → [1.7]（7 个任务）Task Arithmetic → [0.5]"
+      },
+      {
+        "text": "In our research, we utilized two variants of the T5 model, specifically the T5-base and T5-large models, which were trained to a maximum of 75,000 steps. An effective training batch size of 1024 was implemented, alongside a learning rate (lr) of 0.0001. We instituted an early stopping mechanism with a patience threshold of 5 to prevent overfitting. During the training process, bfloat16 was adopted to curtail GPU memory expenditure, and the maximum sequence length was set at 128. In contrast, for the PEFT configuration of the (IA) approach on the T0-3B model, we modified our parameters. An effective training batch size of 16 was deployed along with an evaluation batch size of 32, while maintaining the learning rate at 0.0001. To accommodate the model’s complexity, the early stopping patience was augmented to 10. We do not use any lr scheduler and weight decay for any of our model",
+        "x": 107.6,
+        "y": 369.1,
+        "w": 398.1,
+        "h": 97.2,
+        "zh": "本研究使用 T5 的两个变体，即 T5-base 和 T5-large，最多训练 75,000 步。有效训练批大小为 1024，学习率（lr）为 0.0001。我们使用早停，耐心阈值为 5，以避免过拟合。训练时采用 bfloat16 来降低 GPU 显存占用，最大序列长度设为 128。相对地，在 T0-3B 上使用 (IA) 的 PEFT 配置时，我们改了这些设置：有效训练批大小为 16，评估批大小为 32，学习率仍为 0.0001。为了适应模型的复杂度，早停耐心增加到 10。我们的模型都不使用学习率调度器，也不使用权重衰减。"
+      },
+      {
+        "text": "For the purpose of evaluation, we perform rank classification. In this method, the model’s log probabilities for all potential label strings are ranked. The model’s prediction is deemed accurate if the choice ranked highest aligns with the correct answer. It should be noted that rank classification evaluation can accommodate both classification tasks and multiple-choice tasks.",
+        "x": 108,
+        "y": 309.1,
+        "w": 396,
+        "h": 42.7,
+        "zh": "评估时我们做的是排序分类。具体而言，把模型对所有候选标签字符串的对数概率排序。若排在最高的那个选项与正确答案一致，就判为预测正确。需要说明的是，排序分类既可以用于分类任务，也可以用于多项选择任务。"
+      }
+    ]
+  }
+}

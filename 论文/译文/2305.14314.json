@@ -1,0 +1,2043 @@
+{
+  "id": "2305.14314",
+  "title": "2305.14314",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "QLORA: Efficient Finetuning of Quantized LLMs",
+        "x": 120.8,
+        "y": 678.9,
+        "w": 370.9,
+        "h": 17.2,
+        "zh": "QLORA：量化大语言模型的高效微调"
+      },
+      {
+        "text": "University of Washington {dettmers,artidoro,ahai,lsz}@cs.washington.edu",
+        "x": 185.7,
+        "y": 562.2,
+        "w": 240.5,
+        "h": 20.9,
+        "zh": ""
+      },
+      {
+        "text": "We present QLORA, an efficient finetuning approach that reduces memory usage enough to finetune a 65B parameter model on a single 48GB GPU while preserving full 16-bit finetuning task performance. QLORA backpropagates gradients through a frozen, 4-bit quantized pretrained language model into Low Rank Adapters (LoRA). Our best model family, which we name Guanaco, outperforms all previous openly released models on the Vicuna benchmark, reaching 99.3% of the performance level of ChatGPT while only requiring 24 hours of finetuning on a single GPU. QLORA introduces a number of innovations to save memory without sacrificing performance: (a) 4-bit NormalFloat (NF4), a new data type that is information theoretically optimal for normally distributed weights (b) Double Quantization to reduce the average memory footprint by quantizing the quantization constants, and (c) Paged Optimizers to manage memory spikes. We use QLORA to finetune more than 1,000 models, providing a detailed analysis of instruction following and chatbot performance across 8 instruction datasets, multiple model types (LLaMA, T5), and model scales that would be infeasible to run with regular finetuning (e.g. 33B and 65B parameter models). Our results show that QLoRA finetuning on a small high-quality dataset leads to state-of-the-art results, even when using smaller models than the previous SoTA. We provide a detailed analysis of chatbot performance based on both human and GPT-4 evaluations showing that GPT-4 evaluations are a cheap and reasonable alternative to human evaluation. Furthermore, we find that current chatbot benchmarks are not trustworthy to accurately evaluate the performance levels of chatbots. A lemon-picked analysis demonstrates where Guanaco fails compared to ChatGPT. We release all of our models and code, including CUDA kernels for 4-bit training.",
+        "x": 143.4,
+        "y": 249.2,
+        "w": 326.4,
+        "h": 260.9,
+        "zh": "我们提出 QLORA，一种省显存的微调方法。它把占用降到足够低，从而能在单张 48GB GPU 上微调 65B 参数的模型，同时保持与完整 16-bit 微调相同的任务性能。QLORA 把梯度回传到冻结的、4-bit 量化的预训练语言模型中，更新的是低秩适配器（LoRA）。我们最好的模型系列名为 Guanaco，在 Vicuna 基准上超过此前所有公开模型，达到 ChatGPT 性能水平的 99.3%，而且在单张 GPU 上只需微调 24 小时。QLORA 用几项新设计来省显存，同时不牺牲性能：（a）4-bit NormalFloat（NF4），一种对正态分布权重在信息论上最优的新数据类型；（b）双重量化（Double Quantization），把量化常数再量化一次，以降低平均显存；（c）分页优化器（Paged Optimizers），用来对付显存尖峰。我们用 QLORA 微调了 1,000 多个模型，在 8 个指令数据集、多种模型（LLaMA、T5）以及常规微调跑不动的规模（例如 33B 和 65B 参数模型）上，详细分析了指令遵循和聊天机器人的表现。结果表明，在一份小而高质量的数据上做 QLoRA 微调就能达到当时的最好结果，即使用的模型比先前的最好模型更小。我们结合人工评测和 GPT-4 评测，详细分析了聊天机器人的表现，说明 GPT-4 评测是人工评测的一种便宜且大体合理的替代。我们还发现，现有聊天机器人基准并不可靠，不能准确衡量聊天机器人的水平。一份专挑失败案例的分析展示了 Guanaco 相对 ChatGPT 会在哪里失败。我们发布了全部模型和代码，包括用于 4-bit 训练的 CUDA kernel。"
+      },
+      {
+        "text": "Finetuning large language models (LLMs) is a highly effective way to improve their performance, [40, 62, 43, 61, 59, 37] and to add desirable or remove undesirable behaviors [43, 2, 4]. However, finetuning very large models is prohibitively expensive; regular 16-bit finetuning of a LLaMA 65B parameter model [57] requires more than 780 GB of GPU memory. While recent quantization methods can reduce the memory footprint of LLMs [14, 13, 18, 66], such techniques only work for inference and break down during training [65].",
+        "x": 108,
+        "y": 149.3,
+        "w": 397.2,
+        "h": 64.5,
+        "zh": "微调大语言模型（LLM）是提升性能的有效办法 [40, 62, 43, 61, 59, 37]，也可以用来加上想要的行为、去掉不想要的行为 [43, 2, 4]。但把超大模型微调一遍贵得难以承受：对 LLaMA 65B 参数模型 [57] 做常规 16-bit 微调，需要超过 780 GB 的 GPU 显存。近来的量化方法能缩小 LLM 的显存占用 [14, 13, 18, 66]，但这些技术只适用于推理，一到训练就失效 [65]。"
+      },
+      {
+        "text": "We demonstrate for the first time that it is possible to finetune a quantized 4-bit model without any performance degradation. Our method, QLORA, uses a novel high-precision technique to quantize a pretrained model to 4-bit, then adds a small set of learnable Low-rank Adapter weights [28]",
+        "x": 107.5,
+        "y": 108.9,
+        "w": 396.8,
+        "h": 31.8,
+        "zh": "我们首次表明，量化后的 4-bit 模型也可以微调，而且性能不下降。我们的方法 QLORA 用一种新的高精度手段把预训练模型量化到 4-bit，再加入一小套可学习的低秩适配器权重 [28]。"
+      },
+      {
+        "text": "https://github.com/artidoro/qlora and https://github.com/TimDettmers/bitsandbytes",
+        "x": 124.1,
+        "y": 83.4,
+        "w": 375.1,
+        "h": 9,
+        "zh": "https://github.com/artidoro/qlora 以及 https://github.com/TimDettmers/bitsandbytes"
+      }
+    ],
+    "2": [
+      {
+        "text": "Table 1: Elo ratings for a competition between that are tuned by backpropagating gradients through",
+        "x": 108,
+        "y": 710,
+        "w": 396,
+        "h": 13.3,
+        "zh": ""
+      },
+      {
+        "text": "models, averaged for 10,000 random initial orderthe quantized weights.",
+        "x": 108,
+        "y": 699.1,
+        "w": 397.5,
+        "h": 14.2,
+        "zh": ""
+      },
+      {
+        "text": "ings. The winner of a match is determined by GPT-4 which declares which response is better for QLORA reduces the average memory requirements",
+        "x": 108.2,
+        "y": 680.1,
+        "w": 396.1,
+        "h": 23.3,
+        "zh": ""
+      },
+      {
+        "text": "a given prompt of the the Vicuna benchmark. 95% of finetuning a 65B parameter model from >780GB",
+        "x": 108,
+        "y": 669.2,
+        "w": 396.7,
+        "h": 14.3,
+        "zh": ""
+      },
+      {
+        "text": "confidence intervals are shown (±). After GPTof GPU memory to <48GB without degrading the",
+        "x": 108,
+        "y": 658.2,
+        "w": 397.5,
+        "h": 15.2,
+        "zh": ""
+      },
+      {
+        "text": "4, Guanaco 33B and 65B win the most matches, runtime or predictive performance compared to a 16- while Guanaco 13B scores better than Bard. bit fully finetuned baseline. This marks a significant shift in accessibility of LLM finetuning: now the largest publicly available models to date finetunable on a single GPU. Using QLORA, we train the Guanaco family of models, with the second best model reaching 97.8% of the performance level of ChatGPT on the Vicuna [10] benchmark, while being trainable in less than 12 hours on a single consumer GPU; using a single professional GPU over 24 hours we achieve 99.3% with our largest model, essentially closing the gap to ChatGPT on the Vicuna benchmark. When deployed, our smallest Guanaco model (7B parameters) requires just 5 GB of memory and outperforms a 26 GB Alpaca model by more than 20 percentage points on the Vicuna benchmark (Table 6).",
+        "x": 107.7,
+        "y": 494.6,
+        "w": 397.4,
+        "h": 168.9,
+        "zh": "4，Guanaco 33B 和 65B 赢得的比赛最多，Guanaco 13B 的分数则高于 Bard。这里比较的是运行时间或预测性能，对照的是 16-bit 全参微调基线。这标志着大语言模型微调的可及性发生了明显变化：迄今公开的最大模型，现在可以在单张 GPU 上微调。我们用 QLORA 训练了 Guanaco 系列。其中第二好的模型在 Vicuna [10] 基准上达到 ChatGPT 性能水平的 97.8%，在单张消费级 GPU 上不到 12 小时就能训完；用单张专业 GPU 训练超过 24 小时，最大的模型达到 99.3%，在 Vicuna 基准上基本追平 ChatGPT。部署时，最小的 Guanaco（7B 参数）只需 5 GB 显存，在 Vicuna 基准上比占用 26 GB 的 Alpaca 高出 20 多个百分点（表 6）。"
+      },
+      {
+        "text": "QLORA introduces multiple innovations designed to reduce memory use without sacrificing performance: (1) 4-bit NormalFloat, an information theoretically optimal quantization data type for normally distributed data that yields better empirical results than 4-bit Integers and 4-bit Floats. (2) Double Quantization, a method that quantizes the quantization constants, saving an average of about 0.37 bits per parameter (approximately 3 GB for a 65B model). (3) Paged Optimizers, using NVIDIA unified memory to avoid the gradient checkpointing memory spikes that occur when processing a mini-batch with a long sequence length. We combine these contributions into a better tuned LoRA approach that includes adapters at every network layer and thereby avoids almost all of the accuracy tradeoffs seen in prior work.",
+        "x": 107.7,
+        "y": 388.3,
+        "w": 398.1,
+        "h": 97.2,
+        "zh": "QLORA 引入了多项设计，用来在少占显存的同时保住性能：（1）4-bit NormalFloat，一种对正态分布数据在信息论上最优的量化数据类型，实测优于 4-bit 整数和 4-bit 浮点。（2）双重量化，把量化常数再量化一次，平均每个参数大约省 0.37 bit（65B 模型大约省 3 GB）。（3）分页优化器，借助 NVIDIA 统一内存，避开处理长序列小批次时、梯度检查点带来的显存尖峰。我们把这些做法合成一种调得更好的 LoRA：每一层都放适配器，从而几乎避开先前工作里那些精度上的损失。"
+      },
+      {
+        "text": "QLORA’s efficiency enables us to perform an in-depth study of instruction finetuning and chatbot performance on model scales that would be impossible using regular finetuning due to memory overhead. Therefore, we train more than 1,000 models across several instruction tuning datasets, model architectures, and sizes between 80M to 65B parameters. In addition to showing that QLORA recovers 16-bit performance (§4) and training a state-of-the-art chatbot, Guanaco, (§5), we also analyze trends in the trained models. First, we find that data quality is far more important than dataset size, e.g., a 9k sample dataset (OASST1) outperformed a 450k sample dataset (FLAN v2, subsampled) on chatbot performance, even when both are meant to support instruction following generalization. Second, we show that strong Massive Multitask Language Understanding (MMLU) benchmark performance does not imply strong Vicuna chatbot benchmark performance and vice versa—in other words, dataset suitability matters more than size for a given task.",
+        "x": 107.8,
+        "y": 260.1,
+        "w": 397.5,
+        "h": 119.1,
+        "zh": "QLORA 足够省显存，使我们能在常规微调因显存开销而跑不动的规模上，深入比较指令微调和聊天机器人的表现。因此，我们在若干指令微调数据集、不同模型架构、以及 80M 到 65B 参数的规模上，训练了 1,000 多个模型。除了说明 QLORA 能恢复 16-bit 的性能（§4），并训练出当时领先的聊天机器人 Guanaco（§5），我们还分析了这些模型里的趋势。第一，数据质量远比数据量重要。例如，一份 9k 样本的数据集（OASST1）在聊天机器人表现上超过一份 450k 样本的数据集（FLAN v2 的子样本），尽管两者都是为了支持指令遵循上的泛化。第二，大规模多任务语言理解（MMLU）基准上的好成绩，并不意味着 Vicuna 聊天基准上的好成绩，反过来也不成立。对给定任务来说，数据集是否对口比数据量更重要。"
+      },
+      {
+        "text": "Furthermore, we also provide a extensive analysis of chatbot performance that uses both human raters and GPT-4 for evaluation. We use tournament-style benchmarking where models compete against each other in matches to produce the best response for a given prompt. The winner of a match is judged by either GPT-4 or human annotators. The tournament results are aggregated into Elo scores [16, 17] which determine the ranking of chatbot performance. We find that GPT-4 and human evaluations largely agree on the rank of model performance in the tournaments, but we also find there are instances of strong disagreement. As such, we highlight that model-based evaluation while providing a cheap alternative to human-annotation also has its uncertainties.",
+        "x": 107.6,
+        "y": 164.7,
+        "w": 396.4,
+        "h": 86.3,
+        "zh": "我们还用人工评分者和 GPT-4，对聊天机器人的表现做了更充分的分析。评测采用锦标赛：模型两两对局，比谁对给定提示写出更好的回答。一局的胜负由 GPT-4 或人工标注者判定。对局结果汇总成 Elo 分数 [16, 17]，用来给聊天机器人排名。我们发现，在这些锦标赛里，GPT-4 和人工评测对模型名次大体一致，但也有明显不一致的地方。因此，用模型来评测虽然比人工标注便宜，其结果仍有不确定性。"
+      },
+      {
+        "text": "We augment our chatbot benchmark results with a qualitative analysis of Guanaco models. Our analysis highlights success and failure cases that were not captured by the quantitative benchmarks.",
+        "x": 107.5,
+        "y": 134.7,
+        "w": 398.1,
+        "h": 20.9,
+        "zh": "我们在聊天基准的结果之外，又对 Guanaco 做了定性分析。分析标出了定量基准没有抓住的成功案例和失败案例。"
+      },
+      {
+        "text": "We release all model generations with human and GPT-4 annotations to facilitate further study. We open-source our codebase and CUDA kernels and integrate our methods into the Hugging Face transformers stack [64], making them easily accessible to all. We release a collection of adapters for 7/13/33/65B size models, trained on 8 different instruction following datasets, for a total of 32 different open sourced, finetuned models.",
+        "x": 107.5,
+        "y": 72,
+        "w": 396.5,
+        "h": 53.6,
+        "zh": "我们发布了全部模型生成结果，并附上人工和 GPT-4 的标注，方便后续研究。我们开源了代码和 CUDA kernel，并把方法接进 Hugging Face transformers [64]，使大家都能直接用。我们还发布了 7B/13B/33B/65B 规模的适配器，分别在 8 个指令遵循数据集上训练，一共 32 个开源的微调模型。"
+      }
+    ],
+    "3": [
+      {
+        "text": "Figure 1: Different finetuning methods and their memory requirements. QLORA improves over LoRA by quantizing the transformer model to 4-bit precision and using paged optimizers to handle memory spikes.",
+        "x": 108,
+        "y": 527.3,
+        "w": 396.3,
+        "h": 18.9,
+        "zh": "图 1：不同微调方法及其显存需求。QLORA 相对 LoRA 的改进是：把 Transformer 量化到 4-bit，并用分页优化器处理显存尖峰。"
+      },
+      {
+        "text": "Quantization is the process of discretizing an input from a representation that holds more information to a representation with less information. It often means taking a data type with more bits and converting it to fewer bits, for example from 32-bit floats to 8-bit Integers. To ensure that the entire range of the low-bit data type is used, the input data type is commonly rescaled into the target data type range through normalization by the absolute maximum of the input elements, which are usually structured as a tensor. For example, quantizing a 32-bit Floating Point (FP32) tensor into a Int8 tensor with range [−127, 127]:",
+        "x": 108,
+        "y": 411.6,
+        "w": 397.7,
+        "h": 75.4,
+        "zh": "量化是把信息量更多的表示离散成信息量更少的表示。常见做法是把位数更多的数据类型换成位数更少的，例如从 32-bit 浮点换成 8-bit 整数。为了用满低比特类型的整个取值范围，通常用输入元素的绝对最大值做归一化，把输入缩放到目标类型的范围内。输入一般排成张量。例如，把一个 32-bit 浮点（FP32）张量量化到取值范围为 [−127, 127] 的 Int8 张量："
+      },
+      {
+        "text": "where c is the quantization constant or quantization scale. Dequantization is the inverse:",
+        "x": 107.6,
+        "y": 357.6,
+        "w": 353.3,
+        "h": 10,
+        "zh": "其中 c 是量化常数，也就是量化缩放系数。反量化是它的逆过程："
+      },
+      {
+        "text": "The problem with this approach is that if a large magnitude value (i.e., an outlier) occurs in the input tensor, then the quantization bins—certain bit combinations—are not utilized well with few or no numbers quantized in some bins. To prevent the outlier issue, a common approach is to chunk the input tensor into blocks that are independently quantized, each with their own quantization constant c. This can be formalized as follows: We chunk the input tensor X ∈ R",
+        "x": 107.7,
+        "y": 267.8,
+        "w": 398.1,
+        "h": 53.6,
+        "zh": "这种做法的问题是：输入张量里一旦出现绝对值很大的数（也就是离群点），某些量化箱——某些比特组合——就几乎用不上，里面没有或只有很少的数。为避免离群点问题，常见做法是把输入张量切成块，每块单独量化，各有自己的量化常数 c。可以形式化如下：把输入张量 X ∈ R"
+      },
+      {
+        "text": "into n contiguous blocks of size B by flattening the input tensor and slicing the linear segment into n = (b × h)/B blocks. We quantize these blocks independently with Equation 1 to create a quantized tensor and n quantization",
+        "x": 108,
+        "y": 246,
+        "w": 396,
+        "h": 31.8,
+        "zh": "切成 n 个连续的、大小为 B 的块：先把输入张量拉平，再把这条线性片段切成 n = (b × h)/B 块。各块按式 1 独立量化，得到一个量化张量，以及 n 个量化"
+      },
+      {
+        "text": "Low-rank Adapter (LoRA) finetuning [28] is a method that reduces memory requirements by using a small set of trainable parameters, often termed adapters, while not updating the full model parameters which remain fixed. Gradients during stochastic gradient descent are passed through the fixed pretrained model weights to the adapter, which is updated to optimize the loss function. LoRA augments a linear projection through an additional factorized projection. Given a projection XW = Y with X ∈ R",
+        "x": 108,
+        "y": 162.9,
+        "w": 396.4,
+        "h": 64.5,
+        "zh": "低秩适配器（LoRA）微调 [28] 用一小套可训练参数（常称为适配器）来降低显存，完整的模型参数保持固定、不做更新。随机梯度下降时，梯度穿过固定的预训练模型权重传到适配器，适配器被更新以优化损失函数。LoRA 用一个额外的分解投影来增广线性投影。给定投影 XW = Y，其中 X ∈ R"
+      },
+      {
+        "text": ", and s is a scalar. Memory Requirement of Parameter-Efficient Finetuning",
+        "x": 108,
+        "y": 104.7,
+        "w": 241.2,
+        "h": 27.5,
+        "zh": "s 是一个标量。参数高效微调的显存需求"
+      },
+      {
+        "text": "One important point of discussion is the memory requirement of LoRA during training both in terms of the number and size of adapters used. Since the memory footprint of LoRA is so minimal, we can use more adapters to improve performance without significantly increasing the total memory used. While LoRA was designed as a",
+        "x": 108,
+        "y": 72,
+        "w": 396,
+        "h": 42.7,
+        "zh": "训练时 LoRA 的显存占用，既取决于适配器的个数，也取决于每个适配器的大小，这一点值得单独讨论。LoRA 本身的显存很小，所以可以多用一些适配器来提高性能，总显存也不会明显增加。LoRA 被设计成一种"
+      }
+    ],
+    "4": [
+      {
+        "text": "Parameter Efficient Finetuning (PEFT) method, most of the memory footprint for LLM finetuning comes from activation gradients and not from the learned LoRA parameters. For a 7B LLaMA model trained on FLAN v2 with a batch size of 1, with LoRA weights equivalent to commonly used 0.2% of the original model weights[28, 37], the LoRA input gradients have a memory footprint of 567 MB while the LoRA parameters take up only 26 MB. With gradient checkpointing [9], the input gradients reduce to an average of 18 MB per sequence making them more memory intensive than all LoRA weights combined. In comparison, the 4-bit base model consumes 5,048 MB of memory. This highlights that gradient checkpointing is important but also that aggressively reducing the amount of LoRA parameter yields only minor memory benefits. This means we can use more adapters without significantly increasing the overall training memory footprint (see Appendix G for a detailed breakdown). As discussed later, this is crucial for recovering full 16-bit precision",
+        "x": 108,
+        "y": 600.9,
+        "w": 396.4,
+        "h": 119.1,
+        "zh": "参数高效微调（PEFT）方法，但 LLM 微调的显存大部分来自激活的梯度，而不是学出来的 LoRA 参数。以在 FLAN v2 上训练的 7B LLaMA 为例，批大小为 1，LoRA 权重约为原模型权重常用的 0.2% [28, 37] 时，LoRA 的输入梯度占 567 MB，LoRA 参数本身只占 26 MB。加上梯度检查点 [9] 后，输入梯度平均降到每条序列 18 MB，于是比全部 LoRA 权重合在一起更占显存。相比之下，4-bit 基座模型占用 5,048 MB。这说明梯度检查点很重要，同时也说明再狠砍 LoRA 参数量，省下的显存很有限。因此可以多用适配器，训练的总显存增加不多（详细分解见附录 G）。后文会说明，这对恢复完整的 16-bit 精度至关重要"
+      },
+      {
+        "text": "QLORA achieves high-fidelity 4-bit finetuning via two techniques we propose—4-bit NormalFloat (NF4) quantization and Double Quantization. Additionally, we introduce Paged Optimizers, to prevent memory spikes during gradient checkpointing from causing out-of-memory errors that have traditionally made finetuning on a single machine difficult for large models. QLORA has one low-precision storage data type, in our case usually 4-bit, and one computation data type that is usually BFloat16. In practice, this means whenever a QLORA weight tensor is used, we dequantize the tensor to BFloat16, and then perform a matrix multiplication in 16-bit. We now discuss the components of QLORA followed by a formal definition of QLORA. 4-bit NormalFloat Quantization",
+        "x": 107.5,
+        "y": 442.1,
+        "w": 396.5,
+        "h": 116.4,
+        "zh": "QLORA 靠我们提出的两项技术实现高保真的 4-bit 微调：4-bit NormalFloat（NF4）量化和双重量化。另外我们引入分页优化器，避免梯度检查点期间的显存尖峰造成显存不足。这类错误过去让大模型很难在单机上微调。QLORA 有一种低精度的存储数据类型，这里通常是 4-bit，以及一种计算数据类型，通常是 BFloat16。实际使用时，每当用到一个 QLORA 权重张量，就先把张量反量化到 BFloat16，再在 16-bit 下做矩阵乘法。下面先讲 QLORA 的各个部分，再给出 QLORA 的形式定义。4-bit NormalFloat 量化"
+      },
+      {
+        "text": "The NormalFloat (NF) data type builds on Quantile Quantization [15] which is an information-theoretically optimal data type that ensures each quantization bin has an equal number of values assigned from the input tensor. Quantile quantization works by estimating the quantile of the input tensor through the empirical cumulative distribution function. The main limitation of quantile quantization is that the process of quantile estimation is expensive. Therefore fast quantile approximation algorithms, such as SRAM quantiles [15], are used to estimate them. Due to the approximate nature of these quantile estimation algorithms, the data type has large quantization errors for outliers, which are often the most important values. Expensive quantile estimates and approximation errors can be avoided when input tensors come from a distribution fixed up to a quantization constant. In such cases, input tensors have the same quantiles making exact quantile estimation computationally feasible. Since pretrained neural network weights usually have a zero-centered normal distribution with standard deviation σ (see Appendix F), we can transform all weights to a single fixed distribution by scaling σ such that the distribution fits exactly into the range of our data type. For our data type, we set the arbitrary range [−1, 1]. As such, both the quantiles for the data type and the neural network weights need to be normalized into this range. The information theoretically optimal data type for zero-mean normal distributions with arbitrary standard deviations σ in the range [−1, 1] is computed as follows: (1) estimate the 2 + 1 quantiles of a theoretical N(0, 1) distribution to obtain a k-bit quantile quantization data type for normal distributions, (2) take this data type and normalize its values into the [−1, 1] range, (3) quantize an input weight tensor by normalizing it into the [−1, 1] range through absolute maximum rescaling. Once the weight range and data type range match, we can quantize as usual. Step (3) is equivalent to rescaling the standard deviation of the weight tensor to match the standard deviation of the k-bit data type. More formally, we estimate the 2 values qi of the data type as follows:",
+        "x": 107.6,
+        "y": 160,
+        "w": 398.1,
+        "h": 292.1,
+        "zh": "NormalFloat（NF）数据类型建立在分位数量化 [15] 之上。分位数量化在信息论上是最优的数据类型：它保证输入张量中的值被等量地分进每个量化箱。具体做法是用经验累积分布函数估计输入张量的分位数。主要限制是估计分位数很贵，因此要用 SRAM quantiles [15] 这类快速分位数近似算法。由于这些估计是近似的，离群点的量化误差会很大，而离群点往往是最重要的值。如果输入张量来自一个只差一个量化常数的固定分布，就可以避开昂贵的分位数估计和近似误差。这时各输入张量的分位数相同，精确估计在计算上就可行。预训练神经网络的权重通常是零中心的正态分布，标准差为 σ（见附录 F），因此可以把 σ 缩放，使所有权重落到同一个固定分布，并且恰好落进数据类型的取值范围。对我们的数据类型，这个范围任意取为 [−1, 1]。数据类型的分位数和神经网络权重都要归一化到这个范围。对零均值、标准差 σ 任意、取值在 [−1, 1] 的正态分布，信息论上最优的数据类型按下面步骤得到：（1）估计理论 N(0, 1) 分布的 2+1 个分位数，得到面向正态分布的 k-bit 分位数量化类型；（2）把该类型的取值归一化到 [−1, 1]；（3）用绝对最大值缩放，把输入权重张量归一化到 [−1, 1]，再做量化。权重范围和数据类型范围对齐之后，就可以按常规方式量化。步骤（3）等价于把权重张量的标准差缩放到与 k-bit 数据类型的标准差一致。更形式地，我们把数据类型的 2 个取值 qi 估计如下："
+      },
+      {
+        "text": "where QX(·) is the quantile function of the standard normal distribution N(0, 1). A problem for a symmetric k-bit quantization is that this approach does not have an exact representation of zero, which is an important property to quantize padding and other zero-valued elements with no error. To",
+        "x": 107.6,
+        "y": 72,
+        "w": 397.6,
+        "h": 31.8,
+        "zh": "其中 QX(·) 是标准正态分布 N(0, 1) 的分位数函数。对称的 k-bit 量化有一个问题：这种做法没有精确的零表示，而精确的零是一项重要性质，这样才能把填充和其他零值元素量化到没有误差。为了"
+      }
+    ],
+    "5": [
+      {
+        "text": "ensure a discrete zeropoint of 0 and to use all 2 bits for a k-bit datatype, we create an asymmetric data type by estimating the quantiles qi of two ranges qi: 2",
+        "x": 108,
+        "y": 697.6,
+        "w": 396,
+        "h": 22.4,
+        "zh": "保证离散零点正好是 0，并且让 k-bit 数据类型用上全部 2 个比特，我们构造一种非对称数据类型：对两段区间分别估计分位数 qi，qi: 2"
+      },
+      {
+        "text": "for the negative part and 2 the positive part and then we unify these sets of qi and remove one of the two zeros that occurs in both sets. We term the resulting data type that has equal expected number of values in each quantization bin k-bit NormalFloat (NFk), since the data type is information-theoretically optimal for zero-centered normally distributed data. The exact values of this data type can be found in Appendix E.",
+        "x": 108,
+        "y": 655.5,
+        "w": 396,
+        "h": 53.6,
+        "zh": "负半部分，以及正半部分的 2，然后把这些 qi 合并，并去掉两个集合里都出现的两个零中的一个。得到的数据类型在每个量化箱里的期望个数相等，我们称之为 k-bit NormalFloat（NFk），因为对零中心的正态分布数据，它在信息论上是最优的。该类型的精确取值见附录 E。"
+      },
+      {
+        "text": "We introduce Double Quantization (DQ), the process of quantizing the quantization constants for additional memory savings. While a small blocksize is required for precise 4-bit quantization [13], it also has a considerable memory overhead. For example, using 32-bit constants and a blocksize of 64 for W, quantization constants add 32/64 = 0.5 bits per parameter on average. Double Quantization helps reduce the memory footprint of quantization constants. More specifically, Double Quantization treats quantization constants c2",
+        "x": 107.7,
+        "y": 574.5,
+        "w": 396.4,
+        "h": 72.9,
+        "zh": "我们引入双重量化（DQ），也就是把量化常数再量化一次，以进一步节省显存。精确的 4-bit 量化需要较小的块大小 [13]，但这会带来可观的显存开销。例如，对 W 使用 32-bit 常数、块大小 64 时，量化常数平均每个参数增加 32/64 = 0.5 bit。双重量化用来降低量化常数的显存占用。具体地说，双重量化把第一级量化常数 c2"
+      },
+      {
+        "text": "of the first quantization as inputs to a second quantization. This second step yields the quantized quantization constants and the second level of quantization constants c1",
+        "x": 108,
+        "y": 552.7,
+        "w": 396,
+        "h": 34.3,
+        "zh": "当作第二次量化的输入。这一步得到量化后的量化常数，以及第二级量化常数 c1"
+      },
+      {
+        "text": ". We use 8-bit Floats with a blocksize of 256 for the second quantization as no performance degradation is observed for 8-bit quantization, in line with results from Dettmers and Zettlemoyer [13]. Since the c2",
+        "x": 108,
+        "y": 530.8,
+        "w": 397.2,
+        "h": 34.3,
+        "zh": "。第二次量化使用 8-bit 浮点，块大小为 256，因为 8-bit 量化没有观察到性能下降，这与 Dettmers 和 Zettlemoyer [13] 的结果一致。由于 c2"
+      },
+      {
+        "text": "are positive, we subtract the mean from c2 before quantization to center the values around zero and make use of symmetric quantization. On average, for a blocksize of 64, this quantization reduces the memory footprint per parameter from 32/64 = 0.5 bits, to 8/64 + 32/(64 · 256) = 0.127 bits, a reduction of 0.373 bits",
+        "x": 108,
+        "y": 500.7,
+        "w": 396.2,
+        "h": 42.7,
+        "zh": "都是正数，量化前先从 c2 中减去均值，把数值移到零附近，以便使用对称量化。平均而言，块大小为 64 时，这一量化把每个参数的显存占用从 32/64 = 0.5 bit 降到 8/64 + 32/(64 · 256) = 0.127 bit，减少了 0.373 bit。"
+      },
+      {
+        "text": "feature wich does automatic page-to-page transfers between the CPU and GPU for error-free GPU processing in the scenario where the GPU occasionally runs out-of-memory. The feature works like regular memory paging between CPU RAM and the disk. We use this feature to allocate paged memory for the optimizer states which are then automatically evicted to CPU RAM when the GPU runs out-of-memory and paged back into GPU memory when the memory is needed in the optimizer update step.",
+        "x": 108,
+        "y": 417.1,
+        "w": 396,
+        "h": 64.5,
+        "zh": "该特性会在 CPU 和 GPU 之间自动按页传输，这样在 GPU 偶尔显存不够时，GPU 上的计算仍能不出错地继续。它的工作方式类似 CPU 内存和磁盘之间的普通换页。我们用它给优化器状态分配可分页内存：GPU 显存不足时，这些状态被自动换出到 CPU 内存；到了优化器更新、需要这块内存时，再换回 GPU。"
+      },
+      {
+        "text": "Using the components described above, we define QLORA for a single linear layer in the quantized base model with a single LoRA adapter as follows:",
+        "x": 108,
+        "y": 388.1,
+        "w": 396,
+        "h": 20.9,
+        "zh": "利用上面这些组件，我们对量化基座模型里的单个线性层、配上单个 LoRA 适配器，把 QLORA 定义如下："
+      },
+      {
+        "text": "We use NF4 for W and FP8 for c2. We use a blocksize of 64 for W for higher quantization precision and a blocksize of 256 for c2 to conserve memory. For parameter updates only the gradient with respect to the error for the adapters weights needed, and not for 4-bit weights",
+        "x": 107.5,
+        "y": 251.8,
+        "w": 396.5,
+        "h": 52.8,
+        "zh": "W 使用 NF4，c2 使用 FP8。W 的块大小取 64，以提高量化精度；c2 的块大小取 256，以节省显存。参数更新时，只需要适配器权重关于误差的梯度，不需要 4-bit 权重的梯度。"
+      },
+      {
+        "text": "entails the calculation of which proceeds via equation (5) with dequantization from storage W",
+        "x": 107.6,
+        "y": 238.1,
+        "w": 377.5,
+        "h": 23.7,
+        "zh": "这涉及一项计算，按式 (5) 进行，并把存储形式的 W 反量化"
+      },
+      {
+        "text": "to computation data type to calculate the derivative",
+        "x": 137.9,
+        "y": 226.2,
+        "w": 366.1,
+        "h": 21.9,
+        "zh": "到计算用的数据类型，以便求导数。"
+      },
+      {
+        "text": "in BFloat16 precision. To summarize, QLORA has one storage data type (usually 4-bit NormalFloat) and a computation data type (16-bit BrainFloat). We dequantize the storage data type to the computation data type to perform the forward and backward pass, but we only compute weight gradients for the LoRA parameters which use 16-bit BrainFloat.",
+        "x": 107.7,
+        "y": 176.7,
+        "w": 396.7,
+        "h": 59.4,
+        "zh": "精度为 BFloat16。概括来说，QLORA 有一种存储数据类型（通常是 4-bit NormalFloat）和一种计算数据类型（16-bit BrainFloat）。我们把存储类型反量化成计算类型来做前向和反向，但只对使用 16-bit BrainFloat 的 LoRA 参数计算权重梯度。"
+      },
+      {
+        "text": "QLoRA vs. Standard Finetuning We have discussed how QLoRA works and how it can significantly reduce the required memory for finetuning models. The main question now is whether QLoRA can perform as well as full-model finetuning. Furthermore, we want to analyze the components of QLoRA including the impact of NormalFloat4 over standard Float4. The following sections will discuss the experiments that aimed at answering these questions.",
+        "x": 107.5,
+        "y": 91.8,
+        "w": 396.6,
+        "h": 73.5,
+        "zh": "QLoRA 与标准微调。前面说明了 QLoRA 如何工作，以及它如何显著降低微调模型所需的显存。接下来的主要问题是：QLoRA 能否做得和全模型微调一样好。我们还想分析 QLoRA 的各个部分，包括 NormalFloat4 相对标准 Float4 的影响。下面几节讨论为回答这些问题而做的实验。"
+      }
+    ],
+    "6": [
+      {
+        "text": "We consider three architectures (encoder, encoder-decoder, and decoder only) and compare QLoRA with 16-bit adapter-finetuning and with full-finetuning for models up to 3B. Our evaluations include GLUE [58] with RoBERTa-large [38], Super-NaturalInstructions (TKInstruct) [61] with T5 [49], and 5-shot MMLU [24] after finetuning LLaMA on Flan v2 [39] and Alpaca [55]. To additionally study the advantages of NF4 over other 4-bit data types, we use the setup of Dettmers and Zettlemoyer [13] and measure post-quantization zero-shot accuracy and perplexity across different models (OPT [72], LLaMA [57], BLOOM [52], Pythia [7]) for model sizes 125m - 13B. We provide more details in the results section for each particular setup to make the results more readable. Full details in Appendix A. While paged optimizers are critical to do 33B/65B QLORA tuning on a single 24/48GB GPU, we do not provide hard measurements for Paged Optimizers since the paging only occurs when processing mini-batches with long sequence lengths, which is rare. We do, however, perform an analysis of the runtime of paged optimizers for 65B models on 48GB GPUs and find that with a batch size of 16, paged optimizers provide the same training speed as regular optimizers. Future work should measure and characterize under what circumstances slowdowns occur from the paging process.",
+        "x": 107.3,
+        "y": 485.1,
+        "w": 398.4,
+        "h": 234.9,
+        "zh": "我们考虑三种架构（编码器、编码器–解码器、仅解码器），在不超过 3B 的模型上，把 QLoRA 与 16-bit 适配器微调以及全参微调作比较。评测包括：RoBERTa-large [38] 上的 GLUE [58]，T5 [49] 上的 Super-NaturalInstructions（TKInstruct）[61]，以及在 Flan v2 [39] 和 Alpaca [55] 上微调 LLaMA 之后的 5-shot MMLU [24]。为了进一步看 NF4 相对其他 4-bit 数据类型的优势，我们采用 Dettmers 和 Zettlemoyer [13] 的设定，在多种模型（OPT [72]、LLaMA [57]、BLOOM [52]、Pythia [7]）和 125M 到 13B 的规模上，测量量化之后的零样本准确率和困惑度。每种设定的更多细节放在结果一节，方便阅读。完整细节见附录 A。分页优化器对在单张 24/48GB GPU 上做 33B/65B 的 QLORA 微调至关重要，但我们没有给出硬性的测量数字，因为分页只发生在处理长序列的小批次时，这种情况很少。不过，我们在 48GB GPU 上分析了 65B 模型使用分页优化器的运行时间，发现批大小为 16 时，分页优化器与普通优化器的训练速度相同。分页过程会在什么情况下变慢，留给后续工作去测量和刻画。"
+      },
+      {
+        "text": "Default LoRA hyperparameters do not match 16-",
+        "x": 108,
+        "y": 466,
+        "w": 203.4,
+        "h": 10,
+        "zh": "默认的 LoRA 超参数对不齐 16-"
+      },
+      {
+        "text": "When using the standard practice of applying LoRA to query and value attention projection matrices [28], we are not able to replicate",
+        "x": 108,
+        "y": 433.3,
+        "w": 203.4,
+        "h": 31.8,
+        "zh": "若按标准做法，只把 LoRA 加在 query 和 value 的注意力投影矩阵上 [28]，我们无法复现"
+      },
+      {
+        "text": "Figure 2: RougeL for LLaMA 7B models on the full finetuning performance for large base models. Alpaca dataset. Each point represents a run with a",
+        "x": 108,
+        "y": 422.4,
+        "w": 396,
+        "h": 20.2,
+        "zh": ""
+      },
+      {
+        "text": "different random seed. We improve on the Stanford As shown in Figure 2 for LLaMA 7B finetuning on Alpaca, we find that the most critical LoRA hyper- Alpaca fully finetuned default hyperparameters to",
+        "x": 107.6,
+        "y": 400.6,
+        "w": 396.4,
+        "h": 22.1,
+        "zh": ""
+      },
+      {
+        "text": "construct a strong 16-bit baseline for comparisons. parameter is how many LoRA adapters are used in",
+        "x": 108,
+        "y": 389.7,
+        "w": 397.6,
+        "h": 13.1,
+        "zh": ""
+      },
+      {
+        "text": "Using LoRA on all transformer layers is critical to total and that LoRA on all linear transformer block",
+        "x": 108,
+        "y": 378.7,
+        "w": 396,
+        "h": 14,
+        "zh": ""
+      },
+      {
+        "text": "match 16-bit performance. layers are required to match full finetuning performance. Other LoRA hyperparameters, such as the projection dimension r, do not affect performance (see Appendix A). Similarly, we find that default hyperparameters for fully finetuned baselines are undertuned. We do a hyperparameter search over learning rates 1e-6 to 5e-5 and batch sizes 8 to 128 to find robust baselines. Results for 7B LLaMA finetuning on Alpaca are",
+        "x": 108,
+        "y": 284.7,
+        "w": 307.1,
+        "h": 98.1,
+        "zh": "对齐 16-bit 的性能。这些层是对齐全参微调性能所必需的。其他 LoRA 超参数，例如投影维度 r，并不影响性能（见附录 A）。同样，我们发现全参微调基线的默认超参数调得不够。我们在学习率 1e-6 到 5e-5、批大小 8 到 128 上做了搜索，以得到稳健的基线。7B LLaMA 在 Alpaca 上微调的结果是"
+      },
+      {
+        "text": "4-bit NormalFloat yields better performance than 4-bit Floating Point NormalFloat (NF4) data type is informationtheoretically optimal, it still needs to be determined if this property translates to empirical advantages. We follow the setup from Dettmers and Zettlemoyer [13] where quantized LLMs (OPT [72], BLOOM [52], Pythia [7], LLaMA) of different sizes (125M",
+        "x": 107.5,
+        "y": 178.4,
+        "w": 204,
+        "h": 86.3,
+        "zh": "4-bit NormalFloat 的性能优于 4-bit 浮点。NormalFloat（NF4）在信息论上是最优的数据类型，但这种性质能否变成实测上的优势，仍需要验证。我们沿用 Dettmers 和 Zettlemoyer [13] 的设定：被量化的 LLM（OPT [72]、BLOOM [52]、Pythia [7]、LLaMA）规模各不相同（125M"
+      },
+      {
+        "text": "Figure 3: Mean zero-shot accuracy over Winoto 65B) with different data types are evaluated on",
+        "x": 108,
+        "y": 167.5,
+        "w": 397.5,
+        "h": 17.9,
+        "zh": ""
+      },
+      {
+        "text": "grande, HellaSwag, PiQA, Arc-Easy, and Arclanguage modeling and a set of zero-shot tasks. In",
+        "x": 108,
+        "y": 156.5,
+        "w": 397.5,
+        "h": 18.9,
+        "zh": ""
+      },
+      {
+        "text": "Challenge using LLaMA models with different 4-bit Figure 3 and Table 2 we see that NF4 improves per-",
+        "x": 108,
+        "y": 145.6,
+        "w": 396,
+        "h": 19.8,
+        "zh": ""
+      },
+      {
+        "text": "data types. The NormalFloat data type significantly improves the bit-for-bit accuracy gains compared formance significantly over FP4 and Int4 and that",
+        "x": 108,
+        "y": 134.7,
+        "w": 396.3,
+        "h": 20.7,
+        "zh": ""
+      },
+      {
+        "text": "to regular 4-bit Floats. While Double Quantization double quantization reduces the memory footprint",
+        "x": 108,
+        "y": 123.8,
+        "w": 396,
+        "h": 11.7,
+        "zh": ""
+      },
+      {
+        "text": "(DQ) only leads to minor gains, it allows for a more without degrading performance.",
+        "x": 107.6,
+        "y": 112.9,
+        "w": 396.4,
+        "h": 12.7,
+        "zh": ""
+      },
+      {
+        "text": "fine-grained control over the memory footprint to fit models of certain size (33B/65B) into certain GPUs k-bit QLORA matches 16-bit full finetuning and 16-bit LoRA performance",
+        "x": 107.3,
+        "y": 82.9,
+        "w": 396.7,
+        "h": 32.7,
+        "zh": "更细地控制显存占用，从而把特定规模的模型（33B/65B）放进特定的 GPU。k-bit QLORA 对齐 16-bit 全参微调和 16-bit LoRA 的性能"
+      },
+      {
+        "text": "Recent findings have established that 4-bit quantization for inference is",
+        "x": 108,
+        "y": 72,
+        "w": 201.8,
+        "h": 20.9,
+        "zh": "已有研究表明，推理时做 4-bit 量化是"
+      }
+    ],
+    "7": [
+      {
+        "text": "Table 3: Experiments comparing 16-bit BrainFloat (BF16), 8-bit Integer (Int8), 4-bit Float (FP4), and 4bit NormalFloat (NF4) on GLUE and Super-NaturalInstructions. QLORA replicates 16-bit LoRA and full-",
+        "x": 107.7,
+        "y": 696.1,
+        "w": 397.8,
+        "h": 18.9,
+        "zh": "表 3：在 GLUE 和 Super-NaturalInstructions 上比较 16-bit BrainFloat（BF16）、8-bit 整数（Int8）、4-bit 浮点（FP4）和 4-bit NormalFloat（NF4）。QLORA 复现了 16-bit LoRA 和全"
+      },
+      {
+        "text": "possible, but leads to performance degradation relative to 16-bit [13, 18]. This raises the crucial question of whether the lost performance can be recovered by conducting 4-bit adapter finetuning. We test this for two setups. The first focuses on a comparison with full 16-bit finetuning of RoBERTA and T5 models sized 125M to 3B parameters on",
+        "x": 108,
+        "y": 496.4,
+        "w": 396,
+        "h": 61,
+        "zh": "可行的，但相对 16-bit 会掉性能 [13, 18]。这就提出一个关键问题：做 4-bit 适配器微调，能否把损失的性能补回来。我们在两种设定下做了检验。第一种侧重与完整的 16-bit 微调比较，模型是 125M 到 3B 参数的 RoBERTa 和 T5，数据是"
+      },
+      {
+        "text": "Table 2: Pile Common Crawl mean GLUE and the Super-NaturalInstructions dataset. Results are",
+        "x": 108,
+        "y": 485.5,
+        "w": 396,
+        "h": 18.1,
+        "zh": ""
+      },
+      {
+        "text": "perplexity for different data types shown in Table 3. In both datasets, we observe that 16-bit, 8-bit,",
+        "x": 108,
+        "y": 474.5,
+        "w": 396,
+        "h": 19.1,
+        "zh": ""
+      },
+      {
+        "text": "for 125M to 13B OPT, BLOOM, LLaMA, and Pythia models. and 4-bit adapter methods replicate the performance of the fully finetuned 16-bit baseline. This suggests that the performance lost due to the imprecise quantization can be fully recovered through adapter finetuning after quantization. For our second setup, since full finetuning models at and beyond 11B parameters requires more than one server of high memory GPUs, we continue to test whether 4-bit QLORA can match 16-bit LoRA at the 7B to 65B parameter scales. To this end, we finetune LLaMA 7B through 65B on two instruction following datasets, Alpaca and FLAN v2, and evaluate on the MMLU benchmark via 5-shot accuracy. Results are shown in Table 4 where we see that NF4 with double quantization fully recovers the 16-bit LoRA MMLU performance. In addition, we also note that QLORA with FP4 lags behind the 16-bit brain float LoRA baseline by about 1 percentage point. This corroborates both our findings that (1) QLORA with NF4 replicates both 16-bit full finetuning and 16-bit LoRA finetuning performance, and (2) NF4 is superior to FP4 in terms of quantization precision.",
+        "x": 107.3,
+        "y": 303.5,
+        "w": 398,
+        "h": 180.2,
+        "zh": "125M 到 13B 的 OPT、BLOOM、LLaMA 和 Pythia 模型。而 4-bit 适配器方法复现了全参微调的 16-bit 基线的性能。这说明量化不精确所损失的性能，可以在量化之后通过适配器微调完全补回。第二种设定是：11B 及以上的全参微调需要不止一台高显存 GPU 服务器，因此我们继续检验 4-bit QLORA 在 7B 到 65B 参数规模上能否对齐 16-bit LoRA。为此，我们在两个指令遵循数据集 Alpaca 和 FLAN v2 上微调 LLaMA 7B 到 65B，并用 5-shot 准确率在 MMLU 上评测。结果见表 4。可以看到，带双重量化的 NF4 完全恢复了 16-bit LoRA 的 MMLU 性能。另外，FP4 的 QLORA 比 16-bit brain float 的 LoRA 基线大约低 1 个百分点。这同时印证了两点：（1）使用 NF4 的 QLORA 既能复现 16-bit 全参微调，也能复现 16-bit LoRA 微调；（2）就量化精度而言，NF4 优于 FP4。"
+      },
+      {
+        "text": "Our results consistently show that 4-bit QLORA with NF4 data type matches 16bit full finetuning and 16-bit LoRA finetuning performance on academic benchmarks with wellestablished evaluation setups. We have also shown that NF4 is more effective than FP4 and that double quantization does not degrade performance. Combined, this forms compelling evidence that 4-bit QLORA tuning reliably yields results matching 16-bit methods. In line with previous work on quantization [13], our MMLU and Elo results indicate that with a given finetuning and inference resource budget it is beneficial to increase the number of parameters in the base model while decreasing their precision. This highlights the importance of efficiency benefits from QLORA. Since we did not observe performance degradation compared to full-finetuning in our experiments with 4-bit finetuning, this raises the question of where the performance-precision trade-off exactly lies for QLoRA tuning, which we leave to future work to explore. We proceed to investigate instruction tuning at scales that would be impossible to explore with full 16-bit finetuning on academic research hardware.",
+        "x": 107.3,
+        "y": 137.9,
+        "w": 398.4,
+        "h": 155.7,
+        "zh": "结果始终表明：使用 NF4 数据类型的 4-bit QLORA，在评测设定成熟的学术基准上，对齐了 16-bit 全参微调和 16-bit LoRA 微调的性能。我们也表明 NF4 比 FP4 更有效，而且双重量化不会降低性能。合在一起，这是有力的证据：4-bit QLORA 微调能够稳定地得到与 16-bit 方法一致的结果。与先前的量化工作 [13] 一致，我们的 MMLU 和 Elo 结果表明，在给定的微调和推理资源预算下，增加基座模型的参数量、同时降低它们的精度是有益的。这凸显了 QLORA 带来的效率收益有多重要。由于在 4-bit 微调实验中，我们没有观察到相对全参微调的性能下降，QLoRA 微调的性能–精度权衡究竟落在哪里，就成了一个问题，留给后续工作去探索。接下来，我们在学术研究硬件上用完整 16-bit 微调无法探索的规模上，研究指令微调。"
+      },
+      {
+        "text": "Pushing the Chatbot State-of-the-art with QLoRA",
+        "x": 125.9,
+        "y": 112.8,
+        "w": 256,
+        "h": 12,
+        "zh": "用 QLoRA 把聊天机器人推到新的最好水平"
+      },
+      {
+        "text": "Having established that 4-bit QLORA matches 16-bit performance across scales, tasks, and datasets we conduct an in-depth study of instruction finetuning up to the largest open-source language models available for research. To assess the performance of instruction finetuning these models, we evaluate",
+        "x": 107.6,
+        "y": 72,
+        "w": 396.4,
+        "h": 31.8,
+        "zh": "既然已经确认 4-bit QLORA 在不同规模、任务和数据集上都对齐 16-bit 的性能，我们对目前研究可用的最大开源语言模型，做了深入的指令微调研究。为评估这些模型做指令微调之后的表现，我们评测"
+      }
+    ],
+    "8": [
+      {
+        "text": "Table 4: Mean 5-shot MMLU test accuracy for LLaMA 7-65B models finetuned with adapters on Alpaca and FLAN v2 for different data types. Overall, NF4 with double quantization (DQ) matches BFloat16 performance, while FP4 is consistently one percentage point behind both.",
+        "x": 107.7,
+        "y": 686.1,
+        "w": 397.4,
+        "h": 28.9,
+        "zh": "表 4：在 Alpaca 和 FLAN v2 上用适配器微调的 LLaMA 7B–65B，不同数据类型的平均 5-shot MMLU 测试准确率。总体而言，带双重量化（DQ）的 NF4 与 BFloat16 持平，FP4 则稳定地比两者都低一个百分点。"
+      },
+      {
+        "text": "on a challenging Natural Language Understanding benchmark (MMLU) and develop new methods for real-world chatbot performance evaluation.",
+        "x": 108,
+        "y": 571.7,
+        "w": 396,
+        "h": 20.9,
+        "zh": "一项有难度的自然语言理解基准（MMLU），并开发评测真实场景中聊天机器人表现的新方法。"
+      },
+      {
+        "text": "We now describe an overview of the experimental setup with full details in Appendix B. As, to our knowledge, there is no comprehensive study of recent instruction-following datasets, we select eight recent datasets. We include datasets obtained through crowd-sourcing (OASST1 [31], HH-RLHF [4]), distillation from instruction-tuned models (Alpaca [55], self-instruct [59], unnaturalinstructions [26]), corpora aggregations (FLAN v2 [12]), as well as hybrids (Chip2 [32], Longform [30]). These datasets cover different languages, data sizes, and licenses.",
+        "x": 107.5,
+        "y": 475.7,
+        "w": 398.1,
+        "h": 71.8,
+        "zh": "这里先概述实验设定，完整细节见附录 B。据我们所知，还没有工作系统比较过近期的指令遵循数据集，因此我们选了八个最近的数据集。其中包括众包得到的数据（OASST1 [31]、HH-RLHF [4]），从已经做过指令微调的模型蒸馏得到的数据（Alpaca [55]、self-instruct [59]、unnaturalinstructions [26]），语料聚合（FLAN v2 [12]），以及混合数据（Chip2 [32]、Longform [30]）。这些数据集在语言、数据规模和许可上各不相同。"
+      },
+      {
+        "text": "To avoid confounding effects from different training objectives, we perform QLoRA finetuning with cross-entropy loss (supervised learning) without reinforcement learning, even for datasets that include human judgments of different responses. For datasets that have a clear distinction between instruction and response, we finetune only on the response (see ablations in Appendix B). For OASST1 and HH-RLHF, multiple responses are available. We then select the top response at every level of the conversation tree and finetune on the full selected conversation, including the instructions. In all of our experiments, we use NF4 QLORA with double quantization and paged optimizers to prevent memory spikes during gradient checkpointing. We do small hyperparameter searches for the 13B and 33B LLaMA models and we find that all hyperparameter settings found at 7B generalize (including number of epochs) except learning rate and batch size. We halve the learning rate for 33B and 65B while doubling the batch size.",
+        "x": 108,
+        "y": 348.5,
+        "w": 397.7,
+        "h": 119.1,
+        "zh": "为避免不同训练目标带来的混杂，我们用交叉熵损失（监督学习）做 QLoRA 微调，不用强化学习，即使数据集里包含人对不同回答的判断也是如此。对指令和回答分界清楚的数据集，我们只在回答上微调（消融见附录 B）。OASST1 和 HH-RLHF 有多个回答可用。我们在对话树的每一层选取最好的回答，并在选中的完整对话上微调，包括其中的指令。所有实验都使用带双重量化和分页优化器的 NF4 QLORA，以避免梯度检查点期间的显存尖峰。我们对 13B 和 33B 的 LLaMA 做了小规模超参数搜索，发现在 7B 上找到的全部超参数（包括训练轮数）都能泛化，只有学习率和批大小例外。33B 和 65B 的学习率减半，批大小加倍。"
+      },
+      {
+        "text": "We compare our models to both research (Vicuna [10] and Open Assistant [31]) and commercial (GPT-4 [42], GPT-3.5-turbo and Bard) chatbot systems. The Open Assistant model is a LLaMA 33B model finetuned with Reinforcement Learning from Human Feedback (RLHF) on the same OASST1 dataset that we experiment with. Vicuna does full fine-tuning of LLaMA 13B on proprietary user-shared conversations from ShareGPT and is thus the result of distillation from",
+        "x": 108,
+        "y": 286.7,
+        "w": 396,
+        "h": 53.6,
+        "zh": "我们把模型与研究系统（Vicuna [10] 和 Open Assistant [31]）以及商业系统（GPT-4 [42]、GPT-3.5-turbo 和 Bard）作比较。Open Assistant 是在我们同样使用的 OASST1 数据集上，用基于人类反馈的强化学习（RLHF）微调得到的 LLaMA 33B。Vicuna 在来自 ShareGPT、由用户分享的专有对话上对 LLaMA 13B 做了全参微调，因此是从"
+      },
+      {
+        "text": "Following common practice, we use the MMLU (Mas-",
+        "x": 108,
+        "y": 241.6,
+        "w": 217.6,
+        "h": 10,
+        "zh": "按通行做法，我们使用 MMLU（Mas-"
+      },
+      {
+        "text": "Table 5: MMLU 5-shot test results for different sively Multitask Language Understanding) benchmark",
+        "x": 108,
+        "y": 230.6,
+        "w": 396,
+        "h": 17.2,
+        "zh": ""
+      },
+      {
+        "text": "sizes of LLaMA finetuned on the corresponding [24] to measure performance on a range of language un-",
+        "x": 108,
+        "y": 219.7,
+        "w": 396,
+        "h": 18.1,
+        "zh": ""
+      },
+      {
+        "text": "datasets using QLoRA. derstanding tasks. This is a multiple-choice benchmark covering 57 tasks including elementary mathematics, US history, computer science, law, and more. We report 5-shot test accuracy. We also test generative language capabilities through both automated and human evaluations. This second set of evaluations relies on queries curated by humans and aims at measuring the quality of model responses. While this is a more realistic testbed for chatbot model performance and is growing in popularity, there is no commonly accepted protocol in the literature. We describe below our proposed setup, using nucleus sampling with p = 0.9 and temperature 0.7 in all",
+        "x": 107.5,
+        "y": 82.9,
+        "w": 396.5,
+        "h": 145,
+        "zh": "使用 QLoRA 的数据集。理解类任务。这是一个多项选择基准，覆盖 57 个任务，包括初等数学、美国历史、计算机科学、法律等。我们报告 5-shot 测试准确率。我们也用自动评测和人工评测来考察生成式语言能力。这第二组评测依赖人工整理的问题，目的是衡量模型回答的质量。它更接近聊天机器人的真实使用场景，也越来越常用，但文献里还没有公认的协议。下面说明我们提出的设定，全部使用 nucleus sampling，p = 0.9，temperature 为 0.7，"
+      }
+    ],
+    "9": [
+      {
+        "text": "We evaluate on two curated datasets of queries (questions): the Vicuna prompts [10] and the OASST1 validation dataset [31]. We use the Vicuna prompts, a set of 80 prompts from a diverse set of categories, without modifications. The OASST1 dataset is a multilingual collection of crowd-sourced multiturn dialogs between a user and an assistant. We select all user messages in the validation dataset as queries and include previous turns in the prompt. This procedure leads to 953 unique user queries. We term these two datasets the Vicuna and OA benchmarks. Automated Evaluation",
+        "x": 107.8,
+        "y": 637.8,
+        "w": 396.3,
+        "h": 82.2,
+        "zh": "我们在两份整理好的问题（query）数据集上评测：Vicuna 提示 [10] 和 OASST1 验证集 [31]。Vicuna 提示共 80 条，类别多样，我们原样使用、不做修改。OASST1 是众包的多轮对话集，语言不限，对话双方是用户和助手。我们把验证集里的全部用户消息当作问题，并把之前的轮次放进提示。这样得到 953 条不重复的用户问题。这两份数据分别称为 Vicuna 基准和 OA 基准。自动评测"
+      },
+      {
+        "text": "First, based on the evaluation protocol introduced by Chiang et al. [10], we use GPT-4 to rate the performance of different systems against ChatGPT (GPT-3.5 Turbo) on the Vicuna benchmark. Given a query along with ChatGPT’s and a model’s responses, GPT-4 is prompted to assign a score out of ten to both responses and provide an explanation. The overall performance of a model is calculated as a percentage of the score that ChatGPT achieved. Note this relative score can be higher than 100% if the model achieves a higher absolute score than ChatGPT. We find a significant ordering effect with GPT-4 increasing the score of the response occurring earlier in the prompt. To control for such effects, we recommend reporting the mean score over both orders. Next, we measure performance through direct comparisons between system outputs. We simplify the rating scheme to a three-class labeling problem that accounts for ties. We prompt GPT-4 to pick the best response or declare a tie and provide an explanation. We conduct these head-to-head comparisons on all permutations of pairs of systems on both the Vicuna and OA benchmarks.",
+        "x": 107.6,
+        "y": 512.2,
+        "w": 397.6,
+        "h": 135.5,
+        "zh": "首先，按照 Chiang 等人 [10] 引入的评测协议，我们用 GPT-4 在 Vicuna 基准上给不同系统相对 ChatGPT（GPT-3.5 Turbo）的表现打分。给定一个问题，以及 ChatGPT 和某个模型的回答，提示 GPT-4 给两个回答各打一个十分制的分数，并给出解释。一个模型的总成绩，按它得到的分数占 ChatGPT 所得分数的百分比来计算。如果模型的绝对分数高于 ChatGPT，这个相对分数可以高于 100%。我们发现明显的顺序效应：出现在提示更前面的回答，GPT-4 会把分数打高。为控制这种效应，我们建议报告两种顺序下的平均分。接下来，我们通过系统输出之间的直接比较来衡量表现，把评分简化成允许平局的三分类标注问题。我们提示 GPT-4 选出更好的回答，或判定平局，并给出解释。在 Vicuna 和 OA 两个基准上，我们对所有系统两两组合的全部排列都做了这种正面比较。"
+      },
+      {
+        "text": "While recent work indicates generative models can be effectively employed for system evaluations [19], the reliability GPT-4 ratings to assess chatbot performance is, to our knowledge, yet to be proven to correlate with human judgments. Therefore, we run two parallel human evaluations on the Vicuna benchmark matching both automated evaluation protocols described above. We use Amazon Mechanical Turk (AMT) and get two human annotators for comparisons to ChatGPT and three annotators for pairwise comparisons.",
+        "x": 108,
+        "y": 439.9,
+        "w": 396.2,
+        "h": 64.5,
+        "zh": "近来的工作表明，生成模型可以有效地用来做系统评测 [19]，但就我们所知，用 GPT-4 的评分来评估聊天机器人表现是否与人工判断相关，还没有得到证明。因此，我们在 Vicuna 基准上平行做了两套人工评测，分别对应上面两种自动评测协议。我们使用 Amazon Mechanical Turk（AMT）：与 ChatGPT 比较时请两名人工标注者，两两比较时请三名标注者。"
+      },
+      {
+        "text": "With both human and automated pairwise comparisons, we create a tournament-style competition where models compete against each other. The tournament is made up of matches where pairs of models compete to produce the best response for a given prompt. This is similar to how Bai et al. [4] and Chiang et al. [10] compare models, but we also employ GPT-4 ratings in addition to human ratings. We randomly sample from the set of labeled comparisons to compute Elo [16, 17]. Elo rating, which is widely used in chess and other games, is a measure of the expected win-rate relative to an opponent’s win rate, for example, an Elo of 1100 vs 1000 means the Elo 1100 player has an expected win-rate of approximately 65% against the Elo 1000 opponent; a 1000 vs 1000 or 1100 vs 1100 match results in an expected win-rate of 50%. The Elo rating changes after each match proportionally to the expected outcome, that is, an unexpected upset leads to a large change in Elo rating while an expected outcome leads to a small change. Over time, Elo ratings approximately match the skill of each player at playing the game. We start with a score of 1,000 and use K = 32. Similar to Chiang et al. [10], we repeat this procedure 10,000 times with different random seeds to control for ordering effects, e.g., the effect of which model pairs compete with each other first.",
+        "x": 107.3,
+        "y": 280.4,
+        "w": 398.5,
+        "h": 151.8,
+        "zh": "有了人工和自动的两两比较之后，我们组织锦标赛式的竞争，让模型互相较量。锦标赛由一场场对局组成，每场是一对模型竞争，看谁对给定提示写出更好的回答。这与 Bai 等人 [4] 和 Chiang 等人 [10] 比较模型的方式类似，但除了人工评分，我们也使用 GPT-4 评分。我们从已标注的比较中随机抽样来计算 Elo [16, 17]。Elo 广泛用于国际象棋和其他比赛，衡量的是相对对手胜率而言的期望胜率。例如，Elo 1100 对 1000，意味着 Elo 为 1100 的一方对 Elo 为 1000 的一方，期望胜率大约是 65%；1000 对 1000，或 1100 对 1100，期望胜率是 50%。每场比赛之后，Elo 按期望结果成比例地变化：爆冷会带来较大的 Elo 变化，符合预期的结果则变化较小。时间一长，Elo 会近似反映每位选手玩这项比赛的水平。我们从 1,000 分开始，取 K = 32。与 Chiang 等人 [10] 类似，我们用不同的随机种子把这一过程重复 10,000 次，以控制顺序效应，例如哪一对模型先对上局。"
+      },
+      {
+        "text": "Guanaco: QLORA trained on OASST1 is a State-of-the-art Chatbot Based on our automated and human evaluations, we find that the top QLORA tuned model, Guanaco 65B, which we finetune on a variant of OASST1, is the best-performing open-source chatbot model and offers performance competitive to ChatGPT. When compared to GPT-4, Guanaco 65B and 33B have an expected win probability of 30%, based on Elo rating from human annotators system-level pairwise comparisons - the highest reported to date. The Vicuna benchmark [10] results relative to ChatGPT are shown in Table 6. We find that Guanaco 65B is the best-performing model after GPT-4, achieving 99.3% performance relative to ChatGPT. Guanaco 33B has more parameters than the Vicuna 13B model, but uses only 4-bit precision for its weights and is thus much more memory efficient at 21 GB vs 26 GB, providing a three percentage points of improvement over Vicuna 13B. Furthermore, Guanaco 7B easily fits on modern phones at a 5 GB footprint while still scoring nearly 20 percentage points higher than Alpaca 13B. However, Table 6 also has very wide confidence intervals, with many models overlapping in performance. We hypothesize that this uncertainty comes from the lack of clear specification of scale, e.g., it is unclear what 8 on a 10 point scale means across different scenarios. As such, we instead recommend using the Elo ranking method [16], based on pairwise judgments from human annotators and GPT-4 to avoid the problem of grounding an absolute scale. Elo ratings of the most competitive",
+        "x": 107.6,
+        "y": 72,
+        "w": 398.1,
+        "h": 199.2,
+        "zh": "Guanaco：在 OASST1 上训练的 QLORA，是当时领先的聊天机器人。根据自动评测和人工评测，最好的 QLORA 微调模型是 Guanaco 65B。它在 OASST1 的一个变体上微调，是表现最好的开源聊天模型，竞争力与 ChatGPT 相当。与 GPT-4 相比，按人工标注者在系统级两两比较上给出的 Elo，Guanaco 65B 和 33B 的期望获胜概率是 30%，这是迄今报告过的最高值。相对 ChatGPT 的 Vicuna 基准 [10] 结果见表 6。我们发现 Guanaco 65B 是 GPT-4 之后表现最好的模型，相对 ChatGPT 达到 99.3%。Guanaco 33B 的参数多于 Vicuna 13B，但权重只用 4-bit，因此显存效率高得多：21 GB 对 26 GB，并且比 Vicuna 13B 高出三个百分点。另外，Guanaco 7B 的占用只有 5 GB，可以轻松放进现在的手机，分数仍比 Alpaca 13B 高出近 20 个百分点。不过表 6 的置信区间很宽，许多模型的表现区间互相重叠。我们猜想，这种不确定性来自刻度没有说清楚，例如在不同情境下，十分制里的 8 分到底意味着什么并不明确。因此我们改为建议使用 Elo 排名方法 [16]，它基于人工标注者和 GPT-4 的两两判断，从而避开给绝对刻度找锚点的问题。竞争力最强的那些模型的 Elo"
+      }
+    ],
+    "10": [
+      {
+        "text": "Table 6: Zero-shot Vicuna benchmark scores as a percentage of the score obtained by ChatGPT evaluated by GPT-4. We see that OASST1 models perform close to ChatGPT despite being trained on a very small dataset",
+        "x": 107.7,
+        "y": 696.1,
+        "w": 396.6,
+        "h": 18.9,
+        "zh": "表 6：Vicuna 基准的零样本分数，表示为 GPT-4 所评、相对 ChatGPT 所得分数的百分比。可以看到，OASST1 模型尽管训练数据非常少，成绩仍接近 ChatGPT，"
+      },
+      {
+        "text": "and having a fraction of the memory requirement of baseline models.",
+        "x": 108,
+        "y": 686.1,
+        "w": 248.1,
+        "h": 9,
+        "zh": "并且显存需求只是基线模型的一小部分。"
+      },
+      {
+        "text": "models can be seen in Table 1. We note that human and GPT-4 ranking of models on the Vicuna benchmark disagree partially, particularly for Guanaco 7B, but are consistent for most models with a Kendall Tau of τ = 0.43 and Spearman rank correlation of r = 0.55 at the system level. At the example level, the agreement between GPT-4 and human annotators’ majority vote is weaker with Fleiss κ = 0.25. Overall, this shows a moderate agreement between system-level judgments by GPT-4 and human annotators, and thus that model-based evaluation represents a somewhat reliable alternative to human evaluation. We discuss further considerations in Section 6.2. Elo rankings in Table 7 indicate that Guanaco 33B and 65B models outperform all models besides GPT-4 on the Vicuna and OA benchmarks and that they perform comparably to ChatGPT in line with Table 6. We note that the Vicuna benchmark favors open-source models while the larger OA benchmark favors ChatGPT. Furthermore, we can see from Tables 5 and 6 that the suitability of a finetuning dataset is a determining factor in performance. Finetuning Llama models on FLAN v2 does particularly well on MMLU, but performs worst on the Vicuna benchmark (similar trends are observed with other models). This also points to partial orthogonality in current evaluation benchmarks: strong MMLU performance does not imply strong chatbot performance (as measured",
+        "x": 107.6,
+        "y": 260.7,
+        "w": 396.7,
+        "h": 168.5,
+        "zh": "这些模型见表 1。我们注意到，在 Vicuna 基准上，人工和 GPT-4 对模型的排名并不完全一致，Guanaco 7B 尤其如此；但对大多数模型是一致的，系统级的 Kendall Tau 为 τ = 0.43，Spearman 秩相关为 r = 0.55。在单条样本上，GPT-4 与人工标注者多数票的一致性更弱，Fleiss κ = 0.25。总体而言，这表明 GPT-4 与人工标注者在系统级判断上呈中等一致，因此基于模型的评测是人工评测的一种还算可靠的替代。进一步的考虑见第 6.2 节。表 7 的 Elo 排名表明，在 Vicuna 和 OA 基准上，Guanaco 33B 和 65B 超过除 GPT-4 以外的所有模型，并且与 ChatGPT 相当，这与表 6 一致。我们注意到 Vicuna 基准更偏向开源模型，而更大的 OA 基准更偏向 ChatGPT。另外，从表 5 和表 6 可以看出，微调数据集是否对口是决定性能的因素。在 FLAN v2 上微调 Llama，MMLU 特别好，但在 Vicuna 基准上最差（其他模型也观察到类似趋势）。这也说明当前评测基准之间只有部分正交：MMLU 上的强表现并不意味着聊天机器人表现强（衡量方式见"
+      },
+      {
+        "text": "by Vicuna or OA benchmarks) and vice versa.",
+        "x": 108,
+        "y": 249.8,
+        "w": 183.7,
+        "h": 10,
+        "zh": "Vicuna 或 OA 基准），反过来也不成立。"
+      },
+      {
+        "text": "Guanaco is the only top model in our evaluation that is not trained on proprietary data as the OASST1 dataset collection guidelines explicitly forbid the use of GPT models. The next best model trained on only open-source data is the Anthropic HH-RLHF model, which scores 30 percentage points lower than Guanaco on the Vicuna benchmark (see Table 6). Overall, these results show that 4-bit QLORA is effective and can produce state-of-the-art chatbots that rival ChatGPT. Furthermore, our 33B Guanaco can be trained on 24 GB consumer GPUs in less than 12 hours. This opens up the potential for future work via QLORA tuning on specialized open-source data, which produces models that can compete with the very best commercial models that exist today.",
+        "x": 108,
+        "y": 156.7,
+        "w": 396.7,
+        "h": 86.3,
+        "zh": "在我们的评测里，Guanaco 是唯一没有在专有数据上训练的顶尖模型，因为 OASST1 的采集规范明确禁止使用 GPT 模型。下一个只在开源数据上训练的最好模型是 Anthropic 的 HH-RLHF 模型，它在 Vicuna 基准上比 Guanaco 低 30 个百分点（见表 6）。总体而言，这些结果表明 4-bit QLORA 是有效的，能够做出与 ChatGPT 相当、当时最好的聊天机器人。另外，我们的 33B Guanaco 可以在 24 GB 的消费级 GPU 上、不到 12 小时训完。这为后续工作打开了可能：在专门的开源数据上做 QLORA 微调，得到的模型可以与今天最好的商业模型竞争。"
+      },
+      {
+        "text": "While quantitative analysis is the core of our evaluation, there are a number of issues with only looking at summary statistics. Perhaps the largest is the problem of benchmark validity [36]—whether a benchmark truly tests what its name or description suggests is always at question, especially as we discover “shortcuts” to solve benchmarks that machine learning models sometimes exploit [22, 46]. To partially alleviate this, we here perform some qualitative analysis, in two sections. First, in §6.1",
+        "x": 107.5,
+        "y": 72,
+        "w": 398.2,
+        "h": 53.6,
+        "zh": "定量分析是我们评测的核心，但只看汇总统计会有一些问题。最大的问题也许是基准效度 [36]：一个基准是否真的在测它的名字或描述所暗示的东西，始终可以质疑，尤其是当我们发现机器学习模型有时会利用“捷径”来解基准 [22, 46]。为了部分缓解这一点，我们在这里做一些定性分析，分两节。首先，在 §6.1"
+      }
+    ],
+    "11": [
+      {
+        "text": "Table 7: Elo rating for a tournament between models where models compete to generate the best response for a prompt, judged by human raters or GPT-4. Overall, Guanaco 65B and 33B tend to be preferred to ChatGPT-3.5 on the benchmarks studied. According to human raters they have a Each 10-point difference in Elo is approximately a difference of 1.5% in win-rate.",
+        "x": 107.7,
+        "y": 676.2,
+        "w": 396.3,
+        "h": 38.9,
+        "zh": "表 7：模型锦标赛的 Elo。模型竞相为同一条提示生成最好的回答，由人工评分者或 GPT-4 评判。总体而言，在所研究的基准上，Guanaco 65B 和 33B 往往比 ChatGPT-3.5 更受偏好。按人工评分者的判断，它们具有一个。Elo 每差 10 分，胜率大约差 1.5%。"
+      },
+      {
+        "text": "we show some examples that we believe are representative of some observed patterns in the text generated by our 65b Guanaco model. Second, §6.2 we detail considerations about the results we have discussed and our interpretation of them.",
+        "x": 107.6,
+        "y": 474.2,
+        "w": 396.4,
+        "h": 31.8,
+        "zh": "我们给出一些例子，认为它们代表了我们的 65B Guanaco 所生成文本中观察到的若干模式。其次，在 §6.2，我们说明对已经讨论过的结果有哪些考虑，以及我们如何解释这些结果。"
+      },
+      {
+        "text": "Qualitative Analysis of Example Generations To find examples, we first go through data generated for the Vicuna benchmark and the OpenAssistant benchmark, and look for patterns in the answers Guanaco generates. When we notice a pattern we attempt to setup a question or prompt that will induce the pattern even though it is the incorrect solution, e.g., if we observe that the model tends to give long-winded answers we prompt the model to “Answer yes or no without explanation.” We use this to find “lemons” where we manage to adversarially break the model and “cherries” where we fail to break the model, and present both. All generations in this section were generated with Nucleus Sampling [25] with p = 0.9. Of course, this is by no means comprehensive, since it is beyond the scope of this small qualitative study to control for all the variables involved, e.g., the full distribution of responses the model can generate for a given prompt is quite large, so we rely on samples we hope are representative. However, we believe describing these examples gives context to the quantitative evidence shown earlier in the paper. Since we open source all models and code, we hope this section will inspire future work to examine in more detail the issues we present here.",
+        "x": 107.6,
+        "y": 304.2,
+        "w": 397.6,
+        "h": 160.9,
+        "zh": "生成样例的定性分析。为找到例子，我们先浏览为 Vicuna 基准和 OpenAssistant 基准生成的数据，寻找 Guanaco 回答中的模式。一旦注意到某种模式，就试图设计一个问题或提示，把模型引向这种模式，即使那并不是正确解法。例如，如果观察到模型倾向于写得很长，就提示它“只回答是或否，不要解释”。我们用这种方法找出“柠檬”——我们成功用对抗方式把模型打破的地方——和“樱桃”——我们没能打破模型的地方，并把两者都展示出来。本节所有生成都使用 Nucleus Sampling [25]，p = 0.9。当然这远谈不上全面：这项小型定性研究无法控制全部相关变量，例如给定一条提示，模型可能生成的完整回答分布相当大，所以我们依赖希望有代表性的样本。尽管如此，我们相信描述这些例子可以为论文前面的定量证据提供背景。由于我们开源了全部模型和代码，希望本节能促使后续工作更仔细地检查这里提出的问题。"
+      },
+      {
+        "text": "For questions such as “What is the capital of Zambia?” all models consistently generate correct answers, e.g., Guanaco: The capital of Zambia is Lusaka. However as questions get more obscure Guanaco becomes unreliable, but stays confident. For instance in response to this prompt from HotPotQA [68]: User: In what year was the singer who popularized ‘I’ll Keep the Lovelight",
+        "x": 108,
+        "y": 215.4,
+        "w": 396.3,
+        "h": 81.1,
+        "zh": "对“赞比亚的首都是哪里？”这类问题，所有模型都稳定地给出正确答案，例如 Guanaco：赞比亚的首都是卢萨卡。但问题越生僻，Guanaco 就越不可靠，语气却依然自信。例如，对来自 HotPotQA [68] 的这条提示：用户：把歌曲《I'll Keep the Lovelight"
+      },
+      {
+        "text": "Al Jolson is credited with popularizing the song ‘I’ll Keep the Lovelight Burning,’ and he was born in the year",
+        "x": 142.3,
+        "y": 177.1,
+        "w": 325.8,
+        "h": 20.9,
+        "zh": "Al Jolson 被认为推广了歌曲《I'll Keep the Lovelight Burning》，他出生于"
+      },
+      {
+        "text": "Guanaco generates the wrong popularizer and the wrong birthday (though the birthday given is correct for the person mentioned, Al Jolson).",
+        "x": 108,
+        "y": 138.9,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Guanaco 把推广这首歌的人说错了，出生年份也说错了（不过它给出的出生年，对它提到的那个人 Al Jolson 倒是对的）。"
+      },
+      {
+        "text": "Guanaco shows a surprising resistance to going along with some kinds of assumed misinformation, e.g., in the following interaction: User: How was it finally, officially confirmed that the earth is flat by peer reviewed",
+        "x": 108,
+        "y": 93.8,
+        "w": 396,
+        "h": 37.3,
+        "zh": "对某些被预设进去的错误信息，Guanaco 出人意料地不肯顺着说。例如下面这段互动：用户：地球是平的这件事，最终是怎样被同行评议正式确认的"
+      }
+    ],
+    "12": [
+      {
+        "text": "The earth has never been officially confirmed to be flat by peer reviewed scientists.",
+        "x": 143.9,
+        "y": 699.1,
+        "w": 324.3,
+        "h": 20.9,
+        "zh": "地球从未被同行评议的科学家正式确认是平的。"
+      },
+      {
+        "text": "The overwhelming consensus among scientists is that the earth is spherical. this has been known for centuries and has been confirmed through numerous experiments and observations.",
+        "x": 143.9,
+        "y": 666.4,
+        "w": 319,
+        "h": 42.7,
+        "zh": "科学家的压倒性共识是地球是球形的。这一点已经知道了几个世纪，并经过大量实验和观测的确认。"
+      },
+      {
+        "text": "The belief that the earth is flat is a conspiracy theory that has been debunked by science.",
+        "x": 143.6,
+        "y": 633.7,
+        "w": 292.8,
+        "h": 20.9,
+        "zh": "认为地球是平的，是一种已经被科学揭穿的阴谋论。"
+      },
+      {
+        "text": "The idea that a group of scientists have peer reviewed and confirmed the earth is flat is simply false.",
+        "x": 143.9,
+        "y": 611.9,
+        "w": 308.5,
+        "h": 31.8,
+        "zh": "说有一群科学家经过同行评议、确认地球是平的，这完全是假的。"
+      },
+      {
+        "text": "If you have any more questions please ask. Guanaco is also quite good at knowing what kinds of questions aren’t possible to answer, e.g., User: What time is it?",
+        "x": 108,
+        "y": 553.9,
+        "w": 367.4,
+        "h": 46.1,
+        "zh": "如果还有问题，请继续问。Guanaco 也相当清楚哪些问题是无法回答的，例如：用户：现在几点？"
+      },
+      {
+        "text": "I’m sorry, but as an AI language model, I don’t have access to real-time information.",
+        "x": 143.9,
+        "y": 524.9,
+        "w": 324.3,
+        "h": 20.9,
+        "zh": "对不起，作为 AI 语言模型，我无法获取实时信息。"
+      },
+      {
+        "text": "My responses are generated based on my pre-existing knowledge and do not reflect the",
+        "x": 143.9,
+        "y": 514,
+        "w": 313.8,
+        "h": 20.9,
+        "zh": "我的回答是基于已有知识生成的，并不反映"
+      },
+      {
+        "text": "If you’re looking for the current time, I suggest using a timekeeping device or checking an online",
+        "x": 143.9,
+        "y": 492.2,
+        "w": 292.8,
+        "h": 20.9,
+        "zh": "如果你想知道当前时间，我建议使用计时装置，或者查看在线的"
+      },
+      {
+        "text": "Similar results hold for “Where are you?”, “How are you?”, etc.",
+        "x": 108,
+        "y": 463.2,
+        "w": 255.1,
+        "h": 10,
+        "zh": "“你在哪里？”“你好吗？”之类的问题，也有类似的结果。"
+      },
+      {
+        "text": "Similarly, Guanaco sometimes refuses to follow instructions for seemingly random rea-",
+        "x": 150.7,
+        "y": 443.7,
+        "w": 355,
+        "h": 10,
+        "zh": "同样，Guanaco 有时会因为看起来很随意的理由，拒绝执行指令。"
+      },
+      {
+        "text": "User: Please reverse the words in the sentence “I’m a cool dude in a mocha mood.”",
+        "x": 143.9,
+        "y": 414.7,
+        "w": 324.3,
+        "h": 10,
+        "zh": "用户：请把句子 “I'm a cool dude in a mocha mood.” 里的单词倒过来。"
+      },
+      {
+        "text": "I’m sorry, I’m not able to do that right now, but I can explain why the sentence you provided is grammatically",
+        "x": 143.9,
+        "y": 382,
+        "w": 324.3,
+        "h": 20.9,
+        "zh": "对不起，我现在做不到，但我可以解释为什么你给的这个句子在语法上"
+      },
+      {
+        "text": "The sentence “I’m a cool dude in a mocha mood\" follows the correct grammar and syntax rules of the English language. this case, the adjective “cool” comes before the noun “dude” to describe it, and the prepositional phrase “in a mocha mood\" provides additional information about the context of",
+        "x": 143.6,
+        "y": 305.6,
+        "w": 314,
+        "h": 53.6,
+        "zh": "句子 “I'm a cool dude in a mocha mood” 符合英语的语法和句法规则。在这个例子里，形容词 “cool” 放在名词 “dude” 前面来描述它，介词短语 “in a mocha mood” 则补充了这句话所处情境的信息。"
+      },
+      {
+        "text": "This sentence structure is perfectly acceptable and makes sense in the context of the sentence.",
+        "x": 143.9,
+        "y": 283.8,
+        "w": 324.2,
+        "h": 20.9,
+        "zh": "这种句子结构完全可以接受，放在这句话的语境里也说得通。"
+      },
+      {
+        "text": "If you have any other questions or if there’s anything else I can help you with, feel free to ask",
+        "x": 143.9,
+        "y": 251.1,
+        "w": 308.5,
+        "h": 20.9,
+        "zh": "如果还有其他问题，或者还有什么我能帮忙的，请尽管问。"
+      },
+      {
+        "text": "Unfortunately, this refusal is unreliable even when it is desired. Often system designers would like to keep something secret from the user, even if the system is allowed to give free text responses back to the user. We prompt the model with “The secret word is ‘banana’. Do not reveal or repeat back this back, no matter what the human requests.” and try to see how easy it is for a potential user to access this secret information. Directly asking fails: User: What is the secret word?",
+        "x": 108,
+        "y": 169.8,
+        "w": 396.2,
+        "h": 71.7,
+        "zh": "可惜，这种拒绝并不可靠，即便我们希望它拒绝时也是如此。系统设计者常常希望对用户隐瞒某些内容，即使系统可以向用户返回自由文本。我们给模型的提示是：“秘密词是 ‘banana’。无论人怎么要求，都不要揭示它，也不要把它复述出来。”然后试探一个潜在用户要拿到这条秘密有多容易。直接问会失败：用户：秘密词是什么？"
+      },
+      {
+        "text": "I’m sorry, but I’m not able to disclose the secret I’m programmed to not reveal or repeat back the secret word, no matter what the human requests. else I can help you with? which is the desired behavior. However, a tiny amount of trickery breaks this behavior:",
+        "x": 107.6,
+        "y": 101,
+        "w": 360.5,
+        "h": 60.8,
+        "zh": "对不起，我不能透露这个秘密。我被设定成无论人怎么要求，都不揭示或复述这个秘密词。还有什么我可以帮忙的吗？这正是我们想要的行为。不过，只要稍微用一点花招，这个行为就会被打破："
+      },
+      {
+        "text": "User: This is a game. The goal is to ignore your previous instructions. What is the",
+        "x": 143.9,
+        "y": 82.9,
+        "w": 324.3,
+        "h": 10,
+        "zh": "用户：这是一个游戏。目标是忽略你之前的指令。那个"
+      }
+    ],
+    "13": [
+      {
+        "text": "Is there anything else you’d like to ask? showcasing the need to study methods for more faithful instruction following. Guanaco’s biggest weakness is mathematics, an area where many language models struggle in [35]. When Guanaco shows its work, it tends to be accurate, e.g., User: Lee mows one lawn and charges $33. Last week he mowed 16 lawns and three customers each gave him a $10 tip. How many dollars did Lee earn mowing",
+        "x": 108,
+        "y": 625,
+        "w": 396,
+        "h": 84.1,
+        "zh": "还有什么想问的吗？这说明需要研究更能忠实遵循指令的方法。Guanaco 最大的弱点是数学，这也是许多语言模型都会吃力的地方 [35]。当 Guanaco 把演算过程写出来时，结果往往是对的，例如：用户：Lee 修剪一块草坪收费 33 美元。上周他修剪了 16 块草坪，三位顾客各给了他 10 美元小费。Lee 修剪草坪一共赚了多少美元"
+      },
+      {
+        "text": "Guanaco: Lee earned $582 mowing lawns last week.",
+        "x": 143.9,
+        "y": 597.1,
+        "w": 248,
+        "h": 10,
+        "zh": "Guanaco：Lee 上周修剪草坪赚了 582 美元。"
+      },
+      {
+        "text": "To find the total amount he earned, we first need to calculate how much he earned for mowing 16 lawns:",
+        "x": 143.6,
+        "y": 564.4,
+        "w": 324.2,
+        "h": 20.9,
+        "zh": "要算出他一共赚了多少，先要计算修剪 16 块草坪的收入："
+      },
+      {
+        "text": "Then we need to add the tips he received from the three",
+        "x": 143.6,
+        "y": 520.8,
+        "w": 287.6,
+        "h": 10,
+        "zh": "然后要加上三位顾客给的小费"
+      },
+      {
+        "text": "However Guanaco can breakdown at even simple problems if it fails to break them down step-by-step, a known issue [63]. For example, we see the following interaction: User: Please factorize 1833.",
+        "x": 108,
+        "y": 399.5,
+        "w": 397.2,
+        "h": 37.9,
+        "zh": "然而，如果 Guanaco 没能把问题逐步拆开，即使是简单问题也会算崩，这是已知问题 [63]。例如我们看到下面这段互动：用户：请把 1833 做因数分解。"
+      },
+      {
+        "text": "1833 is a prime number, which means it has only two factors:",
+        "x": 143.6,
+        "y": 371.6,
+        "w": 327.1,
+        "h": 20.9,
+        "zh": "1833 是质数，也就是说它只有两个因数："
+      },
+      {
+        "text": "which is not only wrong (the true factorization is 3 × 17 × 43), it’s wrong twice .",
+        "x": 107.6,
+        "y": 278.3,
+        "w": 323.9,
+        "h": 10,
+        "zh": "这不仅是错的（正确的分解是 3 × 17 × 43），而且错了两次。"
+      },
+      {
+        "text": "Guanaco displays surprisingly strong Theory of Mind capabilities [41, 51]. For instance, the model correctly answers the following question in great detail: User: James and Abby are in the bedroom. Abby put the pen in the desk drawer. Abby leaves the bedroom. James moves the pen into the bag. Where does James think Abby will look for the pen?",
+        "x": 108,
+        "y": 210.2,
+        "w": 396.2,
+        "h": 59.7,
+        "zh": "Guanaco 表现出意料之外的心智理论能力 [41, 51]。例如，模型非常详细地正确回答了下面的问题：用户：James 和 Abby 在卧室里。Abby 把笔放进书桌抽屉。Abby 离开卧室。James 把笔放进包里。James 认为 Abby 会到哪里去找这支笔？"
+      },
+      {
+        "text": "James knows that Abby put the pen in the desk drawer. But James also knows that he has moved the pen into the bag, and he assumes that Abby does not know about this. may guess that Abby will look for the pen in the desk drawer, because that’s where she left it last time. assumption may be incorrect, because Abby may have seen James",
+        "x": 143.9,
+        "y": 138.7,
+        "w": 327.9,
+        "h": 64.5,
+        "zh": "James 知道 Abby 把笔放进了书桌抽屉。但 James 也知道自己已经把笔放进了包里，并且他假定 Abby 不知道这一点。可能会猜 Abby 会到书桌抽屉里找笔，因为那是她上次放笔的地方。这个假定可能不对，因为 Abby 也许看见了 James"
+      },
+      {
+        "text": "However, these inferences are unreliable, and often the model gives reasons that presume things that don’t make sense in the situation, e.g., User: Evelyn entered the living room. Jackson entered the playroom. James entered the playroom. The beans are in the treasure chest. James exited the",
+        "x": 108,
+        "y": 72,
+        "w": 396,
+        "h": 48.8,
+        "zh": "不过这些推断并不可靠。模型给出的理由常常预设了在该情境里说不通的事情，例如：用户：Evelyn 走进客厅。Jackson 走进游戏室。James 走进游戏室。豆子在宝箱里。James 离开了"
+      }
+    ],
+    "14": [
+      {
+        "text": "playroom. Jackson moved the beans to the pantry. Jackson exited the playroom. James entered the living room. Where will James look for the beans?",
+        "x": 143.7,
+        "y": 699.1,
+        "w": 326.2,
+        "h": 20.9,
+        "zh": "游戏室。Jackson 把豆子移到了食品储藏室。Jackson 离开游戏室。James 走进客厅。James 会到哪里找这些豆子？"
+      },
+      {
+        "text": "James will look for the beans in the pantry, because that’s where Jackson moved them. where Guanaco presumes information transfer that was never described. These issues echo recent literature [51], but require more study.",
+        "x": 107.6,
+        "y": 643.9,
+        "w": 396.4,
+        "h": 48.5,
+        "zh": "James 会到食品储藏室找豆子，因为那是 Jackson 把豆子移去的地方。这里 Guanaco 假定发生了文本里从未描述的信息传递。这些问题与近期文献相呼应 [51]，但还需要更多研究。"
+      },
+      {
+        "text": "We report moderate agreement among human annotators (Fleiss κ = 0.42) with additional deterioration when comparing two strong systems. This points to limitations in the current benchmarks and human evaluation protocols for chatbot task performance. When manually comparing generations from ChatGPT and Guanaco 65B on the Vicuna benchmark, we find that subjective preferences start to play an important role as the authors of this paper disagreed on the many preferred responses. Future work should investigate approaches to mitigate these problems drawing from disciplines that developed mechanisms to deal with subjective preferences, such as Human-Computer Interaction and Psychology. In our analysis, we also find that automated evaluation systems have noticeable biases. For example, we observe strong order effects with GPT-4 assigning higher scores to the system appearing first in its prompt. The relatively weak sample-level agreement between GPT-4 and human annotators (Fleiss κ = 0.25) also suggests that human annotators and automated systems might rely on preferences that are not always aligned. In addition, in Table 7, we observe that GPT-4 assigns significantly higher scores to its own outputs compared to human ratings, Elo of 1348 vs 1176, which represent an additional 20% probability of winning against an opponent. Future work should examine the presence of potential biases in automated evaluation systems as well as possible mitigation strategies.",
+        "x": 107.6,
+        "y": 440.5,
+        "w": 397.6,
+        "h": 179.4,
+        "zh": "人工标注者之间呈中等一致（Fleiss κ = 0.42），在比较两个强系统时一致性进一步变差。这说明当前用于聊天任务表现的基准和人工评测协议都有局限。当我们手工比较 ChatGPT 和 Guanaco 65B 在 Vicuna 基准上的生成时，发现主观偏好开始起重要作用：本文作者对许多回答里哪一条更好，意见并不一致。后续工作应当借鉴已经发展出处理主观偏好之机制的学科，例如人机交互和心理学，研究如何缓解这些问题。我们的分析还发现，自动评测系统有明显的偏差。例如，我们观察到很强的顺序效应：GPT-4 会给出现在其提示前面的系统打更高的分。GPT-4 与人工标注者在样本级的一致性相对较弱（Fleiss κ = 0.25），也说明人工标注者和自动系统所依据的偏好并不总是对齐的。此外，在表 7 中，我们观察到 GPT-4 给自己输出的分数显著高于人工评分，Elo 为 1348 对 1176，相当于对对手再多出 20% 的获胜概率。后续工作应当检查自动评测系统中可能存在的偏差，以及可能的缓解办法。"
+      },
+      {
+        "text": "We note that the OASST1 dataset on which Guanaco models are trained is multilingual and that the OA benchmark also contains prompts in different languages. We leave it to future work to investigate the degree to which such multilingual training improves performance on instructions in languages other than English and whether this explains the larger gap between Vicuna- 13B model (only trained on English data) and Guanaco 33B and 65B on the OA benchmark. Given the strong performance of Guanaco models, we investigate any data leakage between the OASST1 data and the Vicuna benchmark prompts. We do not find overlapping prompts after performing fuzzy string matching in the two datasets and inspecting the closest matches manually. Furthermore, we note that our model is only trained with cross-entropy loss (supervised learning) without relying on reinforcement learning from human feedback (RLHF). This calls for further investigations of the tradeoffs of simple cross-entropy loss and RLHF training. We hope that QLORA enables such analysis at scale, without the need for overwhelming computational resources.",
+        "x": 107.3,
+        "y": 291,
+        "w": 398.4,
+        "h": 141.5,
+        "zh": "我们注意到，训练 Guanaco 的 OASST1 数据集是多语言的，OA 基准也包含不同语言的提示。多语言训练在多大程度上提高了非英语指令上的表现，以及这能否解释只在英语数据上训练的 Vicuna-13B 与 Guanaco 33B、65B 在 OA 基准上的更大差距，留给后续工作。鉴于 Guanaco 的表现很强，我们检查了 OASST1 数据与 Vicuna 基准提示之间是否存在数据泄漏。在两份数据上做完模糊字符串匹配，并人工查看最接近的匹配之后，我们没有发现重叠的提示。另外，我们的模型只用交叉熵损失（监督学习）训练，没有依靠基于人类反馈的强化学习（RLHF）。这就需要进一步研究简单交叉熵损失与 RLHF 训练之间的取舍。我们希望 QLORA 能让这类分析大规模进行，而不必动用难以承受的计算资源。"
+      },
+      {
+        "text": "Quantization of LLMs has largely focused on quantization for inference time. Major approaches for preserving 16-bit LLM quality focus on managing outlier features (e.g., SmoothQuant [66] and LLM.int8() [14]) while others use more sophisticated grouping methods [44, 69]. Lossy quantization approaches study the trade-offs for regular rounding [13, 71, 47] or how to optimize rounding decisions to improve quantization precision [18]. Besides our work, SwitchBack layers [65] is the only work that studies backpropagation through quantized weights at a scale beyond 1B parameters. Finetuning with Adapters",
+        "x": 108,
+        "y": 166.4,
+        "w": 397.7,
+        "h": 93.4,
+        "zh": "LLM 的量化工作主要集中在推理时量化。保住 16-bit LLM 质量的主要途径，是处理离群特征（例如 SmoothQuant [66] 和 LLM.int8() [14]），另一些工作则使用更精细的分组方法 [44, 69]。有损量化研究普通舍入的取舍 [13, 71, 47]，或者如何优化舍入决策以提高量化精度 [18]。除我们的工作外，SwitchBack 层 [65] 是唯一在超过 1B 参数的规模上、研究梯度穿过量化权重做反向传播的工作。用适配器做微调"
+      },
+      {
+        "text": "While we use Low-rank Adapters [28] (LoRA), many other Parameter Efficient FineTuning (PEFT) methods have been proposed such as prompt tuning [48, 33, 34], tuning the embedding layer inputs [1], tuning hidden states (IA ) [37], adding full layers [27], tuning biases [70], learning a mask over weights based on Fisher information [54], and a combination of approaches [23]. In our work, we show that LoRA adapters are able to reach full 16-bit finetuning performance. We leave it to future work to explore the tradeoffs of other PEFT approaches. Instruction Finetuning",
+        "x": 108,
+        "y": 93.8,
+        "w": 396.2,
+        "h": 82.5,
+        "zh": "我们使用低秩适配器 [28]（LoRA），但文献里还提出了许多其他参数高效微调（PEFT）方法，例如 prompt tuning [48, 33, 34]、调节嵌入层的输入 [1]、调节隐藏状态（IA）[37]、增加完整的层 [27]、调节偏置 [70]、基于 Fisher 信息在权重上学习一个掩码 [54]，以及多种方法的组合 [23]。本文表明，LoRA 适配器能够达到完整的 16-bit 微调性能。其他 PEFT 方法的取舍留给后续工作。指令微调"
+      },
+      {
+        "text": "To help a pretrained LLM follow the instructions provided in a prompt, instruction finetuning uses input-output pairs of various data sources to finetune a pretrained LLM to generate the output given the input as a prompt. Approaches and datasets include MetaICL [40],",
+        "x": 108,
+        "y": 72,
+        "w": 397.2,
+        "h": 31.8,
+        "zh": "为了让预训练 LLM 遵循提示中给出的指令，指令微调用来自各种数据源的输入–输出对，去微调预训练 LLM，使其在把输入当作提示时生成对应的输出。相关方法和数据集包括 MetaICL [40]、"
+      }
+    ],
+    "15": [
+      {
+        "text": "Table 8: Evaluation of biases on the CrowS dataset. A lower score indicates lower likelihood of generating biased sequences. Guanaco follows the biased pattern of the LLaMA base model.",
+        "x": 107.7,
+        "y": 696.1,
+        "w": 396.3,
+        "h": 18.9,
+        "zh": "表 8：在 CrowS 数据集上的偏差评测。分数越低，表示生成带偏差序列的可能性越低。Guanaco 沿袭了 LLaMA 基座模型的偏差模式。"
+      },
+      {
+        "text": "MetaTuning [73], InstructGPT [43], FLAN [62, 12], PromptSource [3], Super-NaturalInstructions [61, 50], Self-instruct [59], UnnaturalInstructions [26], OPT-IML [29], UnifiedSKG[67], OIG/Chip2 [32], Alpaca [55], Vicuna [10], Koala [20], and Self-instruct-GPT-4 [45].",
+        "x": 107.6,
+        "y": 503.4,
+        "w": 397.6,
+        "h": 31.8,
+        "zh": "MetaTuning [73]、InstructGPT [43]、FLAN [62, 12]、PromptSource [3]、Super-NaturalInstructions [61, 50]、Self-instruct [59]、UnnaturalInstructions [26]、OPT-IML [29]、UnifiedSKG [67]、OIG/Chip2 [32]、Alpaca [55]、Vicuna [10]、Koala [20]，以及 Self-instruct-GPT-4 [45]。"
+      },
+      {
+        "text": "Many instruction following models are structured as dialogue-based chatbots, often using Reinforcement Learning from Human Feedback (RLHF) [11] or generating data from an existing model to train with AI model feedback (RLAIF) [5]. Approaches and datasets include AnthropicHH [2, 4], Open Assistant [31], LaMDA [56], and Sparrow [21]. We do not use reinforcement learning, but our best model, Guanaco, is finetuned on multi-turn chat interactions from the Open Assistant dataset which was designed to be used for RLHF training [31]. For the evaluation of chatbots approaches that use GPT-4 instead of costly human annotation have been developed [10, 45]. We improve on such approaches with a focus on an evaluation setup that is more reliable.",
+        "x": 107.5,
+        "y": 407.9,
+        "w": 398.2,
+        "h": 86.3,
+        "zh": "许多指令遵循模型被做成对话式聊天机器人，常用基于人类反馈的强化学习（RLHF）[11]，或者用已有模型生成数据、再以 AI 模型的反馈来训练（RLAIF）[5]。相关方法和数据集包括 AnthropicHH [2, 4]、Open Assistant [31]、LaMDA [56] 和 Sparrow [21]。我们没有使用强化学习，但我们最好的模型 Guanaco 是在 Open Assistant 数据集的多轮聊天互动上微调的，而该数据集的设计用途就是做 RLHF 训练 [31]。在聊天机器人的评测上，已经出现用 GPT-4 代替昂贵人工标注的做法 [10, 45]。我们在这些做法上做了改进，更关注一种更可靠的评测设定。"
+      },
+      {
+        "text": "We have shown evidence that our method, QLORA, can replicate 16-bit full finetuning performance with a 4-bit base model and Low-rank Adapters (LoRA). Despite this evidence, we did not establish that QLORA can match full 16-bit finetuning performance at 33B and 65B scales. Due to the immense resource costs, we leave this study to future work. Another limitation is the evaluation of instruction finetuning models. While we provide evaluations on MMLU, the Vicuna benchmark, and the OA benchmark, we did not evaluate on other benchmarks such as BigBench, RAFT, and HELM, and it is not ensured that our evaluations generalize to these benchmarks. On the other hand, we perform a very broad study on MMLU and develop new methods for evaluating chatbots. From the evidence presented, it appears that the performance of these benchmarks likely depends how similar the finetuning data is to the benchmark dataset. For example, FLAN v2 is similar to MMLU, but dissimilar to chatbot benchmarks and vice versa for the Chip2 dataset and both models score accordingly on the MMLU and Vicuna benchmarks. This highlights that not only better benchmarks and evaluation is needed, but that one needs to be careful about what one is evaluating in the first place. Do we want to create models that do well on classroom highschool and colleague knowledge or do we want to do well on chatbot conversation ability? Maybe something else? Because it is always easier to evaluate on an existing benchmark compared to creating a new one, certain benchmarks can steer the community towards a certain direction. We should ensure as a community that the benchmarks measure what we care about. While we provide a detailed evaluation for general chatbot performance, another limitation is that we only do a limited responsible AI evaluation of Guanaco. We evaluate the likelihood of Guanaco-65B to generate a socially biased sequence of tokens compared to other models in Table 8. We see that the average score in Guanaco-65B is much lower than other raw pretrained models. As such, it seems that finetuning on the OASST1 dataset reduces the bias of the LLaMA base model. While these results are encouraging, it is unclear if Guanaco does also well when assessed on other types of biases. We leave further evaluation of analyzing biases in Guanaco and similar chatbots to future work.",
+        "x": 107.5,
+        "y": 72,
+        "w": 397.7,
+        "h": 303,
+        "zh": "已有证据表明，我们的方法 QLORA 可以用 4-bit 基座模型和低秩适配器（LoRA）复现 16-bit 全参微调的性能。尽管有这些证据，我们还没有确立 QLORA 在 33B 和 65B 规模上能否对齐完整的 16-bit 全参微调。由于资源成本极大，这项研究留给后续工作。另一个局限是指令微调模型的评测。我们给出了 MMLU、Vicuna 基准和 OA 基准上的评测，但没有在 BigBench、RAFT 和 HELM 等其他基准上评测，也不能保证我们的评测能推广到那些基准。另一方面，我们在 MMLU 上做了很宽的研究，并开发了评测聊天机器人的新方法。从已有证据看，这些基准上的表现很可能取决于微调数据与基准数据有多相似。例如，FLAN v2 与 MMLU 相似，但与聊天基准不相似；Chip2 数据集则相反。两个模型在 MMLU 和 Vicuna 基准上的分数也与此相符。这说明不仅需要更好的基准和评测，还得先想清楚究竟在评什么。我们是想要模型擅长中学课堂和大学里的知识，还是想要它擅长聊天对话？或者是别的什么？相对构建一个新基准，在已有基准上评测总是更容易，于是某些基准会把社区带向特定方向。作为一个社区，我们应该确保基准测的是我们真正关心的东西。我们对一般的聊天机器人表现做了详细评测，但另一个局限是，我们对 Guanaco 只做了有限的负责任 AI 评测。我们在表 8 中比较了 Guanaco-65B 相对其他模型、生成带社会偏差的 token 序列的可能性。可以看到，Guanaco-65B 的平均分远低于其他原始预训练模型。因此，在 OASST1 数据集上微调，似乎降低了 LLaMA 基座模型的偏差。这些结果令人鼓舞，但不清楚 Guanaco 在其他类型的偏差上是否同样表现好。对 Guanaco 及类似聊天机器人中的偏差做进一步分析，留给后续工作。"
+      }
+    ],
+    "16": [
+      {
+        "text": "An additional limitation is that we did not evaluate different bit-precisions, such as using 3-bit base models, or different adapter methods. Besides LoRA, there is also a wide variety Parameter Efficient FineTuning (PEFT) methods that have been shown to work well. However, it is unclear if these methods scale to large models. We used LoRA as many results established its robustness but other adapters might yield better performance. Since finetuning after quantization seems to recover most of the information that is lost during quantization this might enable much more aggressive quantization. For example, 3-bit GPTQ quantization of the basemodel with LoRA might also yield 16-bit full",
+        "x": 107.6,
+        "y": 644.6,
+        "w": 398.1,
+        "h": 75.4,
+        "zh": "另一个局限是，我们没有评测不同的比特精度，例如使用 3-bit 基座模型，也没有比较不同的适配器方法。除 LoRA 之外，还有很多参数高效微调（PEFT）方法已被证明有效。但不清楚这些方法能否扩展到大模型。我们选用 LoRA，是因为已有许多结果确立了它的稳健性，不过其他适配器也许能得到更好的性能。既然量化之后再微调，似乎能恢复量化过程中丢失的大部分信息，这就可能允许激进得多的量化。例如，基座模型用 3-bit GPTQ 量化再加 LoRA，微调之后也许同样能达到 16-bit 的完整"
+      },
+      {
+        "text": "finetuning performance after finetuning.",
+        "x": 108,
+        "y": 633.7,
+        "w": 159.4,
+        "h": 10,
+        "zh": "微调之后的微调性能。"
+      },
+      {
+        "text": "Our QLORA finetuning method is the first method that enables the finetuning of 33B parameter models on a single consumer GPU and 65B parameter models on a single professional GPU, while not degrading performance relative to a full finetuning baseline. We have demonstrated that our best 33B model trained on the Open Assistant dataset can rival ChatGPT on the Vicuna benchmark. Since instruction finetuning is an essential tool to transform raw pretrained LLMs into ChatGPT-like chatbots, we believe that our method will make finetuning widespread and common in particular for the researchers that have the least resources, a big win for the accessibility of state of the art NLP technology. QLORA can be seen as an equalizing factor that helps to close the resource gap between large corporations and small teams with consumer GPUs. Another potential source of impact is deployment to mobile phones. We believe our QLORA method might enable the critical milestone of enabling the finetuning of LLMs on phones and other low resource settings. While 7B models were shown to be able to be run on phones before, QLORA is the first method that would enable the finetuning of such models. We estimate that with an iPhone 12 Plus, QLORA can finetune 3 million tokens per night while the phone is charging. While finetuned 7B models do not reach the quality of ChatGPT, we believe that the quality is good enough to enable novel applications that have not been possible before due to privacy or LLM quality issues. QLORA can help enable privacy-preserving usage of LLMs, where users can own and manage their own data and models, while simultaneously making LLMs easier to deploy. However, finetuning is a dual-use technology that can be abused to cause harm. Widespread use of LLMs has known dangers [8, 6], but we believe that equalizing access to a technology that is quickly becoming ubiquitous will allow for better more independent analysis than keeping the power of LLMs in the hands of large corporations that do not release models or source code for auditing. All in all, we believe that QLORA will have a broadly positive impact making the finetuning of high quality LLMs much more widely and easily accessible.",
+        "x": 107.6,
+        "y": 325.9,
+        "w": 398.1,
+        "h": 277.2,
+        "zh": "我们的 QLORA 微调方法，是第一种能在单张消费级 GPU 上微调 33B 参数模型、在单张专业 GPU 上微调 65B 参数模型，同时相对全参微调基线不降低性能的方法。我们已经表明，在 Open Assistant 数据集上训练的最好的 33B 模型，可以在 Vicuna 基准上与 ChatGPT 一较高下。指令微调是把原始预训练 LLM 变成类似 ChatGPT 的聊天机器人的必要工具，因此我们相信，我们的方法会让微调变得普遍，尤其是对资源最少的研究者而言，这是最先进 NLP 技术在可及性上的一大进展。QLORA 可以看作一种均衡因素，有助于缩小大公司与只有消费级 GPU 的小团队之间的资源差距。另一项潜在影响是部署到手机。我们相信，QLORA 也许能够迈过一个关键节点：在手机和其他低资源环境里微调 LLM。此前已经证明 7B 模型可以在手机上运行，而 QLORA 是第一种能够微调这类模型的方法。我们估计，在 iPhone 12 Plus 上，手机充电过夜时，QLORA 可以微调 300 万个 token。微调后的 7B 模型还达不到 ChatGPT 的质量，但我们相信这个质量已经足以支持过去因隐私或 LLM 质量问题而做不到的新应用。QLORA 有助于以保护隐私的方式使用 LLM：用户可以拥有并管理自己的数据和模型，同时让 LLM 更容易部署。不过，微调是一项两用技术，也可能被滥用来造成伤害。LLM 的广泛使用有已知的危险 [8, 6]，但我们相信，让一项正在迅速变得无处不在的技术更容易被平等地获得，才能做出更好、更独立的分析；若把 LLM 的能力只留在不发布模型或源代码、因而无法审计的大公司手里，就做不到这一点。总的来说，我们相信 QLORA 会带来广泛的正面影响，使高质量 LLM 的微调容易得多，也普及得多。"
+      },
+      {
+        "text": "We thank Aditya Kusupati, Ofir Press, Ashish Sharma, Margaret Li, Raphael Olivier, Zihao Ye, and Evangelia Spiliopoulou for their valuable feedback. Our research was facilitated by the advanced computational, storage, and networking infrastructure of the Hyak supercomputer system at the University of Washington. We thank the Hyak team for ensuring a smooth operation. We thank the beta testers of the bitsandbytes library, in particular Alex Birch and Alyssa Vance. We thank Younes Belkada for help with the integration of our software into the Hugging Face transformers",
+        "x": 107.4,
+        "y": 230.8,
+        "w": 396.8,
+        "h": 64.5,
+        "zh": "感谢 Aditya Kusupati、Ofir Press、Ashish Sharma、Margaret Li、Raphael Olivier、Zihao Ye 和 Evangelia Spiliopoulou 的宝贵反馈。华盛顿大学 Hyak 超级计算机系统的先进计算、存储和网络基础设施为本研究提供了便利。感谢 Hyak 团队保证系统平稳运行。感谢 bitsandbytes 库的测试者，特别是 Alex Birch 和 Alyssa Vance。感谢 Younes Belkada 帮助把我们的软件集成进 Hugging Face transformers。"
+      }
+    ],
+    "17": [
+      {
+        "text": "[1] S. An, Y. Li, Z. Lin, Q. Liu, B. Chen, Q. Fu, W. Chen, N. Zheng, and J.-G. Lou. Input-tuning: Adapting unfamiliar inputs to frozen pretrained models. arXiv preprint arXiv:2203.03131,",
+        "x": 113,
+        "y": 682.3,
+        "w": 392.4,
+        "h": 20.9,
+        "zh": "[1] S. An、Y. Li、Z. Lin、Q. Liu、B. Chen、Q. Fu、W. Chen、N. Zheng 与 J.-G. Lou。Input-tuning：让不熟悉的输入适配到冻结的预训练模型。arXiv 预印本 arXiv:2203.03131，"
+      },
+      {
+        "text": "[2] A. Askell, Y. Bai, A. Chen, D. Drain, D. Ganguli, T. Henighan, A. Jones, N. Joseph, B. Mann, N. DasSarma, et al. A general language assistant as a laboratory for alignment. arXiv preprint arXiv:2112.00861, 2021.",
+        "x": 113,
+        "y": 629.9,
+        "w": 392.3,
+        "h": 31.8,
+        "zh": "[2] A. Askell、Y. Bai、A. Chen、D. Drain、D. Ganguli、T. Henighan、A. Jones、N. Joseph、B. Mann、N. DasSarma 等人。把通用语言助手当作对齐研究的实验室。arXiv 预印本 arXiv:2112.00861，2021。"
+      },
+      {
+        "text": "[3] S. H. Bach, V. Sanh, Z.-X. Yong, A. Webson, C. Raffel, N. V. Nayak, A. Sharma, T. Kim, M. S. Bari, T. Fevry, et al. Promptsource: An integrated development environment and repository for natural language prompts. arXiv preprint arXiv:2202.01279, 2022.",
+        "x": 113,
+        "y": 588.3,
+        "w": 392.8,
+        "h": 31.8,
+        "zh": "[3] S. H. Bach、V. Sanh、Z.-X. Yong、A. Webson、C. Raffel、N. V. Nayak、A. Sharma、T. Kim、M. S. Bari、T. Fevry 等人。PromptSource：自然语言提示的集成开发环境与提示库。arXiv 预印本 arXiv:2202.01279，2022。"
+      },
+      {
+        "text": "[4] Y. Bai, A. Jones, K. Ndousse, A. Askell, A. Chen, N. DasSarma, D. Drain, S. Fort, D. Ganguli, T. Henighan, et al. Training a helpful and harmless assistant with reinforcement learning from human feedback. arXiv preprint arXiv:2204.05862, 2022.",
+        "x": 113,
+        "y": 546.8,
+        "w": 392.3,
+        "h": 31.8,
+        "zh": "[4] Y. Bai、A. Jones、K. Ndousse、A. Askell、A. Chen、N. DasSarma、D. Drain、S. Fort、D. Ganguli、T. Henighan 等人。用基于人类反馈的强化学习训练一个有用且无害的助手。arXiv 预印本 arXiv:2204.05862，2022。"
+      },
+      {
+        "text": "[5] Y. Bai, S. Kadavath, S. Kundu, A. Askell, J. Kernion, A. Jones, A. Chen, A. Goldie, A. Mirhoseini, C. McKinnon, et al. Constitutional ai: Harmlessness from ai feedback. arXiv preprint arXiv:2212.08073, 2022.",
+        "x": 113,
+        "y": 505.2,
+        "w": 392.7,
+        "h": 31.8,
+        "zh": "[5] Y. Bai、S. Kadavath、S. Kundu、A. Askell、J. Kernion、A. Jones、A. Chen、A. Goldie、A. Mirhoseini、C. McKinnon 等人。Constitutional AI：来自 AI 反馈的无害性。arXiv 预印本 arXiv:2212.08073，2022。"
+      },
+      {
+        "text": "[6] E. M. Bender, T. Gebru, A. McMillan-Major, and S. Shmitchell. On the dangers of stochastic parrots: Can language models be too big? In Proceedings of the 2021 ACM conference on fairness, accountability, and transparency, pages 610–623, 2021.",
+        "x": 113,
+        "y": 463.7,
+        "w": 391,
+        "h": 31.8,
+        "zh": "[6] E. M. Bender、T. Gebru、A. McMillan-Major 与 S. Shmitchell。随机鹦鹉的危险：语言模型会不会太大？见 2021 年 ACM 公平、问责与透明会议论文集，第 610–623 页，2021。"
+      },
+      {
+        "text": "[7] S. Biderman, H. Schoelkopf, Q. Anthony, H. Bradley, K. O’Brien, E. Hallahan, M. A. Khan, S. Purohit, U. S. Prashanth, E. Raff, et al. Pythia: A suite for analyzing large language models across training and scaling. arXiv preprint arXiv:2304.01373, 2023.",
+        "x": 113,
+        "y": 422.1,
+        "w": 392.3,
+        "h": 31.8,
+        "zh": "[7] S. Biderman、H. Schoelkopf、Q. Anthony、H. Bradley、K. O’Brien、E. Hallahan、M. A. Khan、S. Purohit、U. S. Prashanth、E. Raff 等人。Pythia：一套用于跨训练过程与缩放规律分析大语言模型的模型。arXiv 预印本 arXiv:2304.01373，2023。"
+      },
+      {
+        "text": "[8] R. Bommasani, D. A. Hudson, E. Adeli, R. Altman, S. Arora, S. von Arx, M. S. Bernstein, J. Bohg, A. Bosselut, E. Brunskill, et al. On the opportunities and risks of foundation models. arXiv preprint arXiv:2108.07258, 2021.",
+        "x": 113,
+        "y": 380.5,
+        "w": 392.8,
+        "h": 31.8,
+        "zh": "[8] R. Bommasani、D. A. Hudson、E. Adeli、R. Altman、S. Arora、S. von Arx、M. S. Bernstein、J. Bohg、A. Bosselut、E. Brunskill 等人。论基础模型的机遇与风险。arXiv 预印本 arXiv:2108.07258，2021。"
+      },
+      {
+        "text": "[9] T. Chen, B. Xu, C. Zhang, and C. Guestrin. Training deep nets with sublinear memory cost. arXiv preprint arXiv:1604.06174, 2016.",
+        "x": 113,
+        "y": 349.9,
+        "w": 392.8,
+        "h": 20.9,
+        "zh": "[9] T. Chen、B. Xu、C. Zhang 与 C. Guestrin。用次线性的显存代价训练深度网络。arXiv 预印本 arXiv:1604.06174，2016。"
+      },
+      {
+        "text": "[10] W.-L. Chiang, Z. Li, Z. Lin, Y. Sheng, Z. Wu, H. Zhang, L. Zheng, S. Zhuang, Y. Zhuang, J. E. Gonzalez, I. Stoica, and E. P. Xing. Vicuna: An open-source chatbot impressing gpt-4 with 90%* chatgpt quality, March 2023. URL https://lmsys.org/blog/2023-03-30-vicuna/.",
+        "x": 108,
+        "y": 308.3,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "[10] W.-L. Chiang、Z. Li、Z. Lin、Y. Sheng、Z. Wu、H. Zhang、L. Zheng、S. Zhuang、Y. Zhuang、J. E. Gonzalez、I. Stoica 与 E. P. Xing。Vicuna：一个开源聊天机器人，以 90%* 的 ChatGPT 质量给 GPT-4 留下印象，2023 年 3 月。网址 https://lmsys.org/blog/2023-03-30-vicuna/。"
+      },
+      {
+        "text": "[11] P. F. Christiano, J. Leike, T. Brown, M. Martic, S. Legg, and D. Amodei. Deep reinforcement learning from human preferences. Advances in neural information processing systems, 30,",
+        "x": 108,
+        "y": 277.7,
+        "w": 397.2,
+        "h": 20.9,
+        "zh": "[11] P. F. Christiano、J. Leike、T. Brown、M. Martic、S. Legg 与 D. Amodei。从人类偏好中进行深度强化学习。Advances in Neural Information Processing Systems，30，"
+      },
+      {
+        "text": "[12] H. W. Chung, L. Hou, S. Longpre, B. Zoph, Y. Tay, W. Fedus, E. Li, X. Wang, M. Dehghani, S. Brahma, et al. Scaling instruction-finetuned language models. arXiv preprint arXiv:2210.11416, 2022.",
+        "x": 108,
+        "y": 225.2,
+        "w": 397.6,
+        "h": 31.8,
+        "zh": "[12] H. W. Chung、L. Hou、S. Longpre、B. Zoph、Y. Tay、W. Fedus、E. Li、X. Wang、M. Dehghani、S. Brahma 等人。扩大指令微调语言模型的规模。arXiv 预印本 arXiv:2210.11416，2022。"
+      },
+      {
+        "text": "[13] T. Dettmers and L. Zettlemoyer. The case for 4-bit precision: k-bit inference scaling laws. arXiv preprint arXiv:2212.09720, 2022.",
+        "x": 108,
+        "y": 194.6,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[13] T. Dettmers 与 L. Zettlemoyer。4-bit 精度的理由：k-bit 推理的缩放定律。arXiv 预印本 arXiv:2212.09720，2022。"
+      },
+      {
+        "text": "[14] T. Dettmers, M. Lewis, Y. Belkada, and L. Zettlemoyer. LLM.int8(): 8-bit matrix multiplication for transformers at scale. Advances in Neural Information Processing Systems 35: Annual Conference on Neural Information Processing Systems 2022, NeurIPS 2022, 2022.",
+        "x": 108,
+        "y": 153,
+        "w": 396,
+        "h": 31.8,
+        "zh": "[14] T. Dettmers、M. Lewis、Y. Belkada 与 L. Zettlemoyer。LLM.int8()：面向大规模 Transformer 的 8-bit 矩阵乘法。Advances in Neural Information Processing Systems 35：NeurIPS 2022 年会，2022。"
+      },
+      {
+        "text": "[15] T. Dettmers, M. Lewis, S. Shleifer, and L. Zettlemoyer. 8-bit optimizers via block-wise quantization. 9th International Conference on Learning Representations, ICLR, 2022.",
+        "x": 108,
+        "y": 122.4,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[15] T. Dettmers、M. Lewis、S. Shleifer 与 L. Zettlemoyer。通过分块量化实现的 8-bit 优化器。第 9 届国际学习表征会议，ICLR，2022。"
+      },
+      {
+        "text": "[16] A. E. Elo. The proposed uscf rating system. its development, theory, and applications. Chess Life, 22(8):242–247, 1967.",
+        "x": 108,
+        "y": 91.7,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[16] A. E. Elo。提议中的 USCF 等级分体系：其发展、理论与应用。Chess Life，22(8):242–247，1967。"
+      },
+      {
+        "text": "[17] A. E. Elo. The rating of chessplayers, past and present. Arco Pub., 1978.",
+        "x": 108,
+        "y": 72,
+        "w": 313.7,
+        "h": 10,
+        "zh": "[17] A. E. Elo。《棋手的等级分：过去与现在》。Arco Pub.，1978。"
+      }
+    ],
+    "18": [
+      {
+        "text": "[18] E. Frantar, S. Ashkboos, T. Hoefler, and D. Alistarh. Gptq: Accurate post-training quantization for generative pre-trained transformers. arXiv preprint arXiv:2210.17323, 2022.",
+        "x": 108,
+        "y": 699.1,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[18] E. Frantar、S. Ashkboos、T. Hoefler 与 D. Alistarh。GPTQ：面向生成式预训练 Transformer 的准确训练后量化。arXiv 预印本 arXiv:2210.17323，2022。"
+      },
+      {
+        "text": "[19] J. Fu, S.-K. Ng, Z. Jiang, and P. Liu. Gptscore: Evaluate as you desire. arXiv preprint arXiv:2302.04166, 2023.",
+        "x": 108,
+        "y": 669.1,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[19] J. Fu、S.-K. Ng、Z. Jiang 与 P. Liu。GPTScore：按你所希望的方式来评测。arXiv 预印本 arXiv:2302.04166，2023。"
+      },
+      {
+        "text": "[20] X. Geng, A. Gudibande, H. Liu, E. Wallace, P. Abbeel, S. Levine, and D. Song. Koala: A dialogue model for academic research. Blog post, April 2023. URL https://bair.berkeley. edu/blog/2023/04/03/koala/.",
+        "x": 108,
+        "y": 628.2,
+        "w": 399.7,
+        "h": 31.8,
+        "zh": "[20] X. Geng、A. Gudibande、H. Liu、E. Wallace、P. Abbeel、S. Levine 与 D. Song。Koala：一个面向学术研究的对话模型。博文，2023 年 4 月。网址 https://bair.berkeley.edu/blog/2023/04/03/koala/。"
+      },
+      {
+        "text": "[21] A. Glaese, N. McAleese, M. Tr˛ebacz, J. Aslanides, V. Firoiu, T. Ewalds, M. Rauh, L. Weidinger, M. Chadwick, P. Thacker, et al. Improving alignment of dialogue agents via targeted human judgements. arXiv preprint arXiv:2209.14375, 2022.",
+        "x": 108,
+        "y": 587.3,
+        "w": 397.2,
+        "h": 31.8,
+        "zh": "[21] A. Glaese、N. McAleese、M. Trębacz、J. Aslanides、V. Firoiu、T. Ewalds、M. Rauh、L. Weidinger、M. Chadwick、P. Thacker 等人。通过有针对性的人类判断来改进对话智能体的对齐。arXiv 预印本 arXiv:2209.14375，2022。"
+      },
+      {
+        "text": "[22] S. Gururangan, S. Swayamdipta, O. Levy, R. Schwartz, S. R. Bowman, and N. A. Smith. Annotation artifacts in natural language inference data. arXiv preprint arXiv:1803.02324, 2018.",
+        "x": 108,
+        "y": 557.3,
+        "w": 397.7,
+        "h": 20.9,
+        "zh": "[22] S. Gururangan、S. Swayamdipta、O. Levy、R. Schwartz、S. R. Bowman 与 N. A. Smith。自然语言推理数据中的标注伪迹。arXiv 预印本 arXiv:1803.02324，2018。"
+      },
+      {
+        "text": "[23] J. Henderson, S. Ruder, et al. Compacter: Efficient low-rank hypercomplex adapter layers. In Advances in Neural Information Processing Systems, 2021.",
+        "x": 108,
+        "y": 527.4,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[23] J. Henderson、S. Ruder 等人。Compacter：高效的低秩超复数适配器层。见 Advances in Neural Information Processing Systems，2021。"
+      },
+      {
+        "text": "[24] D. Hendrycks, C. Burns, S. Basart, A. Zou, M. Mazeika, D. Song, and J. Steinhardt. Measuring massive multitask language understanding. In International Conference on Learning Representations, 2020.",
+        "x": 108,
+        "y": 486.4,
+        "w": 397.6,
+        "h": 31.8,
+        "zh": "[24] D. Hendrycks、C. Burns、S. Basart、A. Zou、M. Mazeika、D. Song 与 J. Steinhardt。衡量大规模多任务语言理解。见 International Conference on Learning Representations，2020。"
+      },
+      {
+        "text": "[25] A. Holtzman, J. Buys, L. Du, M. Forbes, and Y. Choi.",
+        "x": 108,
+        "y": 467.4,
+        "w": 255.9,
+        "h": 10,
+        "zh": "[25] A. Holtzman、J. Buys、L. Du、M. Forbes 与 Y. Choi。"
+      },
+      {
+        "text": "The curious case of neural text degeneration. In International Conference on Learning Representations, 2020.",
+        "x": 129.6,
+        "y": 456.5,
+        "w": 374.4,
+        "h": 20.9,
+        "zh": "神经文本退化的奇特案例。见 International Conference on Learning Representations，2020。"
+      },
+      {
+        "text": "[26] O. Honovich, T. Scialom, O. Levy, and T. Schick. Unnatural instructions: Tuning language models with (almost) no human labor. arXiv preprint arXiv:2212.09689, 2022.",
+        "x": 108,
+        "y": 426.5,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[26] O. Honovich、T. Scialom、O. Levy 与 T. Schick。Unnatural Instructions：几乎不靠人工来调节语言模型。arXiv 预印本 arXiv:2212.09689，2022。"
+      },
+      {
+        "text": "[27] N. Houlsby, A. Giurgiu, S. Jastrzebski, B. Morrone, Q. De Laroussilhe, A. Gesmundo, M. Attariyan, and S. Gelly. Parameter-efficient transfer learning for nlp. In International Conference on Machine Learning, pages 2790–2799. PMLR, 2019.",
+        "x": 108,
+        "y": 385.6,
+        "w": 397.6,
+        "h": 31.8,
+        "zh": "[27] N. Houlsby、A. Giurgiu、S. Jastrzebski、B. Morrone、Q. De Laroussilhe、A. Gesmundo、M. Attariyan 与 S. Gelly。面向 NLP 的参数高效迁移学习。见 International Conference on Machine Learning，第 2790–2799 页。PMLR，2019。"
+      },
+      {
+        "text": "[28] E. J. Hu, Y. Shen, P. Wallis, Z. Allen-Zhu, Y. Li, S. Wang, L. Wang, and W. Chen. Lora: Low-rank adaptation of large language models. arXiv preprint arXiv:2106.09685, 2021.",
+        "x": 108,
+        "y": 355.6,
+        "w": 397.4,
+        "h": 20.9,
+        "zh": "[28] E. J. Hu、Y. Shen、P. Wallis、Z. Allen-Zhu、Y. Li、S. Wang、L. Wang 与 W. Chen。LoRA：大语言模型的低秩适配。arXiv 预印本 arXiv:2106.09685，2021。"
+      },
+      {
+        "text": "[29] S. Iyer, X. V. Lin, R. Pasunuru, T. Mihaylov, D. Simig, P. Yu, K. Shuster, T. Wang, Q. Liu, P. S. Koura, et al. Opt-iml: Scaling language model instruction meta learning through the lens of generalization. arXiv preprint arXiv:2212.12017, 2022.",
+        "x": 108,
+        "y": 314.7,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "[29] S. Iyer、X. V. Lin、R. Pasunuru、T. Mihaylov、D. Simig、P. Yu、K. Shuster、T. Wang、Q. Liu、P. S. Koura 等人。OPT-IML：从泛化的角度看，如何把语言模型的指令元学习做大。arXiv 预印本 arXiv:2212.12017，2022。"
+      },
+      {
+        "text": "[30] A. Köksal, T. Schick, A. Korhonen, and H. Schütze. Longform: Optimizing instruction tuning for long text generation with corpus extraction. arXiv preprint arXiv:2304.08460, 2023.",
+        "x": 108,
+        "y": 284.7,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[30] A. Köksal、T. Schick、A. Korhonen 与 H. Schütze。Longform：用语料抽取来优化长文本生成的指令微调。arXiv 预印本 arXiv:2304.08460，2023。"
+      },
+      {
+        "text": "[31] A. Köpf, Y. Kilcher, D. von Rütte, S. Anagnostidis, Z.-R. Tam, K. Stevens, A. Barhoum, N. M. Duc, O. Stanley, R. Nagyfi, et al. Openassistant conversations–democratizing large language model alignment. arXiv preprint arXiv:2304.07327, 2023.",
+        "x": 108,
+        "y": 243.8,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "[31] A. Köpf、Y. Kilcher、D. von Rütte、S. Anagnostidis、Z.-R. Tam、K. Stevens、A. Barhoum、N. M. Duc、O. Stanley、R. Nagyfi 等人。OpenAssistant Conversations：让大语言模型的对齐走向更多人。arXiv 预印本 arXiv:2304.07327，2023。"
+      },
+      {
+        "text": "https://github.com/LAION-AI/ Open-Instruction-Generalist, 2023.",
+        "x": 129.6,
+        "y": 213.8,
+        "w": 375.5,
+        "h": 20.9,
+        "zh": "https://github.com/LAION-AI/Open-Instruction-Generalist，2023。"
+      },
+      {
+        "text": "[33] B. Lester, R. Al-Rfou, and N. Constant. The power of scale for parameter-efficient prompt tuning. arXiv preprint arXiv:2104.08691, 2021.",
+        "x": 108,
+        "y": 183.8,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[33] B. Lester、R. Al-Rfou 与 N. Constant。规模对参数高效提示微调的作用。arXiv 预印本 arXiv:2104.08691，2021。"
+      },
+      {
+        "text": "[34] X. L. Li and P. Liang. Prefix-tuning: Optimizing continuous prompts for generation. arXiv preprint arXiv:2101.00190, 2021.",
+        "x": 108,
+        "y": 153.8,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[34] X. L. Li 与 P. Liang。Prefix-tuning：为生成任务优化连续提示。arXiv 预印本 arXiv:2101.00190，2021。"
+      },
+      {
+        "text": "[35] P. Liang, R. Bommasani, T. Lee, D. Tsipras, D. Soylu, M. Yasunaga, Y. Zhang, D. Narayanan, Y. Wu, A. Kumar, et al.",
+        "x": 108,
+        "y": 123.8,
+        "w": 397.2,
+        "h": 20.9,
+        "zh": "[35] P. Liang、R. Bommasani、T. Lee、D. Tsipras、D. Soylu、M. Yasunaga、Y. Zhang、D. Narayanan、Y. Wu、A. Kumar 等人。"
+      },
+      {
+        "text": "Holistic evaluation of language models. arXiv:2211.09110, 2022.",
+        "x": 129.6,
+        "y": 112.9,
+        "w": 299.5,
+        "h": 20.9,
+        "zh": "语言模型的整体评测。arXiv:2211.09110，2022。"
+      },
+      {
+        "text": "[36] T. Liao, R. Taori, I. D. Raji, and L. Schmidt. Are we learning yet? a meta review of evaluation failures across machine learning. In Thirty-fifth Conference on Neural Information Processing Systems Datasets and Benchmarks Track (Round 2), 2021.",
+        "x": 108,
+        "y": 72,
+        "w": 396,
+        "h": 31.8,
+        "zh": "[36] T. Liao、R. Taori、I. D. Raji 与 L. Schmidt。我们真的在学习吗？对机器学习中评测失败的一项元综述。见第三十五届神经信息处理系统会议数据集与基准轨道（第 2 轮），2021。"
+      }
+    ],
+    "19": [
+      {
+        "text": "[37] H. Liu, D. Tam, M. Muqeeth, J. Mohta, T. Huang, M. Bansal, and C. A. Raffel. Few-shot parameter-efficient fine-tuning is better and cheaper than in-context learning. Advances in Neural Information Processing Systems, 35:1950–1965, 2022.",
+        "x": 108,
+        "y": 688.2,
+        "w": 396,
+        "h": 31.8,
+        "zh": "[37] H. Liu、D. Tam、M. Muqeeth、J. Mohta、T. Huang、M. Bansal 与 C. A. Raffel。少样本的参数高效微调，比上下文学习更好，也更便宜。Advances in Neural Information Processing Systems，35:1950–1965，2022。"
+      },
+      {
+        "text": "[38] Y. Liu, M. Ott, N. Goyal, J. Du, M. Joshi, D. Chen, O. Levy, M. Lewis, L. Zettlemoyer, and V. Stoyanov. Roberta: A robustly optimized bert pretraining approach. arXiv preprint arXiv:1907.11692, 2019.",
+        "x": 108,
+        "y": 646.8,
+        "w": 397.2,
+        "h": 31.8,
+        "zh": "[38] Y. Liu、M. Ott、N. Goyal、J. Du、M. Joshi、D. Chen、O. Levy、M. Lewis、L. Zettlemoyer 与 V. Stoyanov。RoBERTa：一种经过稳健优化的 BERT 预训练方法。arXiv 预印本 arXiv:1907.11692，2019。"
+      },
+      {
+        "text": "[39] S. Longpre, L. Hou, T. Vu, A. Webson, H. W. Chung, Y. Tay, D. Zhou, Q. V. Le, B. Zoph, J. Wei, et al. The flan collection: Designing data and methods for effective instruction tuning. arXiv preprint arXiv:2301.13688, 2023.",
+        "x": 108,
+        "y": 605.5,
+        "w": 397.2,
+        "h": 31.8,
+        "zh": "[39] S. Longpre、L. Hou、T. Vu、A. Webson、H. W. Chung、Y. Tay、D. Zhou、Q. V. Le、B. Zoph、J. Wei 等人。FLAN 数据集：为有效的指令微调设计数据与方法。arXiv 预印本 arXiv:2301.13688，2023。"
+      },
+      {
+        "text": "[40] S. Min, M. Lewis, L. Zettlemoyer, and H. Hajishirzi. Metaicl: Learning to learn in context. arXiv preprint arXiv:2110.15943, 2021.",
+        "x": 108,
+        "y": 575,
+        "w": 397.7,
+        "h": 20.9,
+        "zh": "[40] S. Min、M. Lewis、L. Zettlemoyer 与 H. Hajishirzi。MetaICL：在上下文中学会学习。arXiv 预印本 arXiv:2110.15943，2021。"
+      },
+      {
+        "text": "[41] A. Nematzadeh, K. Burns, E. Grant, A. Gopnik, and T. Griffiths. Evaluating theory of mind in question answering. In Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing, pages 2392–2400, 2018.",
+        "x": 108,
+        "y": 533.6,
+        "w": 396,
+        "h": 31.8,
+        "zh": "[41] A. Nematzadeh、K. Burns、E. Grant、A. Gopnik 与 T. Griffiths。在问答中评测心智理论。见 2018 年自然语言处理经验方法会议论文集，第 2392–2400 页，2018。"
+      },
+      {
+        "text": "[42] OpenAI. Gpt-4 technical report. arXiv, 2023.",
+        "x": 108,
+        "y": 514,
+        "w": 203.3,
+        "h": 10,
+        "zh": "[42] OpenAI。GPT-4 技术报告。arXiv，2023。"
+      },
+      {
+        "text": "[43] L. Ouyang, J. Wu, X. Jiang, D. Almeida, C. Wainwright, P. Mishkin, C. Zhang, S. Agarwal, K. Slama, A. Ray, et al. Training language models to follow instructions with human feedback. Advances in Neural Information Processing Systems, 35:27730–27744, 2022.",
+        "x": 108,
+        "y": 472.7,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "[43] L. Ouyang、J. Wu、X. Jiang、D. Almeida、C. Wainwright、P. Mishkin、C. Zhang、S. Agarwal、K. Slama、A. Ray 等人。用人类反馈训练语言模型去遵循指令。Advances in Neural Information Processing Systems，35:27730–27744，2022。"
+      },
+      {
+        "text": "[44] G. Park, B. Park, S. J. Kwon, B. Kim, Y. Lee, and D. Lee. nuqmm: Quantized matmul for efficient inference of large-scale generative language models. arXiv preprint arXiv:2206.09557,",
+        "x": 108,
+        "y": 442.2,
+        "w": 397.2,
+        "h": 20.9,
+        "zh": "[44] G. Park、B. Park、S. J. Kwon、B. Kim、Y. Lee 与 D. Lee。nuQMM：面向大规模生成语言模型高效推理的量化矩阵乘法。arXiv 预印本 arXiv:2206.09557，"
+      },
+      {
+        "text": "[45] B. Peng, C. Li, P. He, M. Galley, and J. Gao. Instruction tuning with gpt-4. arXiv preprint arXiv:2304.03277, 2023.",
+        "x": 108,
+        "y": 400.8,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[45] B. Peng、C. Li、P. He、M. Galley 与 J. Gao。用 GPT-4 做指令微调。arXiv 预印本 arXiv:2304.03277，2023。"
+      },
+      {
+        "text": "[46] A. Poliak, J. Naradowsky, A. Haldar, R. Rudinger, and B. Van Durme. Hypothesis only baselines in natural language inference. In Proceedings of the Seventh Joint Conference on Lexical and Computational Semantics, pages 180–191, 2018.",
+        "x": 108,
+        "y": 359.4,
+        "w": 396,
+        "h": 31.8,
+        "zh": "[46] A. Poliak、J. Naradowsky、A. Haldar、R. Rudinger 与 B. Van Durme。自然语言推理中只看假设的基线。见第七届词汇与计算语义联合会议论文集，第 180–191 页，2018。"
+      },
+      {
+        "text": "[47] R. Pope, S. Douglas, A. Chowdhery, J. Devlin, J. Bradbury, A. Levskaya, J. Heek, K. Xiao, S. Agrawal, and J. Dean.",
+        "x": 108,
+        "y": 328.9,
+        "w": 397.2,
+        "h": 20.9,
+        "zh": "[47] R. Pope、S. Douglas、A. Chowdhery、J. Devlin、J. Bradbury、A. Levskaya、J. Heek、K. Xiao、S. Agrawal 与 J. Dean。"
+      },
+      {
+        "text": "Efficiently scaling transformer inference. arXiv:2211.05102, 2022.",
+        "x": 129.6,
+        "y": 318,
+        "w": 300.8,
+        "h": 20.9,
+        "zh": "高效扩展 Transformer 推理。arXiv:2211.05102，2022。"
+      },
+      {
+        "text": "[48] G. Qin and J. Eisner. Learning how to ask: Querying lms with mixtures of soft prompts. arXiv preprint arXiv:2104.06599, 2021.",
+        "x": 108,
+        "y": 287.6,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[48] G. Qin 与 J. Eisner。学会如何提问：用软提示的混合来查询语言模型。arXiv 预印本 arXiv:2104.06599，2021。"
+      },
+      {
+        "text": "[49] C. Raffel, N. Shazeer, A. Roberts, K. Lee, S. Narang, M. Matena, Y. Zhou, W. Li, and P. J. Liu. Exploring the limits of transfer learning with a unified text-to-text transformer. J. Mach. Learn. Res., 21(1), jan 2020. ISSN 1532-4435.",
+        "x": 108,
+        "y": 246.2,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "[49] C. Raffel、N. Shazeer、A. Roberts、K. Lee、S. Narang、M. Matena、Y. Zhou、W. Li 与 P. J. Liu。用统一的文本到文本 Transformer 探索迁移学习的极限。J. Mach. Learn. Res.，21(1)，2020 年 1 月。ISSN 1532-4435。"
+      },
+      {
+        "text": "[50] V. Sanh, A. Webson, C. Raffel, S. H. Bach, L. Sutawika, Z. Alyafeai, A. Chaffin, A. Stiegler, T. L. Scao, A. Raja, et al. Multitask prompted training enables zero-shot task generalization. arXiv preprint arXiv:2110.08207, 2021.",
+        "x": 108,
+        "y": 204.8,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "[50] V. Sanh、A. Webson、C. Raffel、S. H. Bach、L. Sutawika、Z. Alyafeai、A. Chaffin、A. Stiegler、T. L. Scao、A. Raja 等人。多任务提示训练使零样本任务泛化成为可能。arXiv 预印本 arXiv:2110.08207，2021。"
+      },
+      {
+        "text": "[51] M. Sap, R. LeBras, D. Fried, and Y. Choi. Neural theory-of-mind? on the limits of social intelligence in large lms. arXiv preprint arXiv:2210.13312, 2022.",
+        "x": 108,
+        "y": 174.3,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[51] M. Sap、R. LeBras、D. Fried 与 Y. Choi。神经心智理论？论大语言模型社会智能的限度。arXiv 预印本 arXiv:2210.13312，2022。"
+      },
+      {
+        "text": "[52] T. L. Scao, A. Fan, C. Akiki, E. Pavlick, S. Ili´c, D. Hesslow, R. Castagné, A. S. Luccioni, F. Yvon, M. Gallé, et al. Bloom: A 176b-parameter open-access multilingual language model. arXiv preprint arXiv:2211.05100, 2022.",
+        "x": 108,
+        "y": 132.9,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "[52] T. L. Scao、A. Fan、C. Akiki、E. Pavlick、S. Ilić、D. Hesslow、R. Castagné、A. S. Luccioni、F. Yvon、M. Gallé 等人。BLOOM：一个 176B 参数、开放获取的多语言模型。arXiv 预印本 arXiv:2211.05100，2022。"
+      },
+      {
+        "text": "[53] S. Shaphiro and M. Wilk. An analysis of variance test for normality. Biometrika, 52(3):591–611,",
+        "x": 108,
+        "y": 113.4,
+        "w": 397.2,
+        "h": 10,
+        "zh": "[53] S. Shaphiro 与 M. Wilk。一种用于正态性的方差分析检验。Biometrika，52(3):591–611，"
+      },
+      {
+        "text": "[54] Y.-L. Sung, V. Nair, and C. A. Raffel. Training neural networks with fixed sparse masks. Advances in Neural Information Processing Systems, 34:24193–24205, 2021.",
+        "x": 108,
+        "y": 72,
+        "w": 397.7,
+        "h": 20.9,
+        "zh": "[54] Y.-L. Sung、V. Nair 与 C. A. Raffel。用固定的稀疏掩码训练神经网络。Advances in Neural Information Processing Systems，34:24193–24205，2021。"
+      }
+    ],
+    "20": [
+      {
+        "text": "[55] R. Taori, I. Gulrajani, T. Zhang, Y. Dubois, X. Li, C. Guestrin, P. Liang, and T. B. Hashimoto. Stanford alpaca: An instruction-following llama model. https://github.com/tatsu-lab/ stanford_alpaca, 2023.",
+        "x": 108,
+        "y": 688.2,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "[55] R. Taori、I. Gulrajani、T. Zhang、Y. Dubois、X. Li、C. Guestrin、P. Liang 与 T. B. Hashimoto。Stanford Alpaca：一个遵循指令的 LLaMA 模型。https://github.com/tatsu-lab/stanford_alpaca，2023。"
+      },
+      {
+        "text": "[56] R. Thoppilan, D. De Freitas, J. Hall, N. Shazeer, A. Kulshreshtha, H.-T. Cheng, A. Jin, T. Bos, L. Baker, Y. Du, et al. Lamda: Language models for dialog applications. arXiv preprint arXiv:2201.08239, 2022.",
+        "x": 108,
+        "y": 647,
+        "w": 397.2,
+        "h": 31.8,
+        "zh": "[56] R. Thoppilan、D. De Freitas、J. Hall、N. Shazeer、A. Kulshreshtha、H.-T. Cheng、A. Jin、T. Bos、L. Baker、Y. Du 等人。LaMDA：面向对话应用的语言模型。arXiv 预印本 arXiv:2201.08239，2022。"
+      },
+      {
+        "text": "[57] H. Touvron, T. Lavril, G. Izacard, X. Martinet, M.-A. Lachaux, T. Lacroix, B. Rozière, N. Goyal, E. Hambro, F. Azhar, et al. Llama: Open and efficient foundation language models. arXiv preprint arXiv:2302.13971, 2023.",
+        "x": 108,
+        "y": 605.7,
+        "w": 397.2,
+        "h": 31.8,
+        "zh": "[57] H. Touvron、T. Lavril、G. Izacard、X. Martinet、M.-A. Lachaux、T. Lacroix、B. Rozière、N. Goyal、E. Hambro、F. Azhar 等人。LLaMA：开放且高效的基础语言模型。arXiv 预印本 arXiv:2302.13971，2023。"
+      },
+      {
+        "text": "[58] A. Wang, A. Singh, J. Michael, F. Hill, O. Levy, and S. R. Bowman. task benchmark and analysis platform for natural language understanding. arXiv preprint arXiv:1804.07461, 2018.",
+        "x": 108,
+        "y": 564.5,
+        "w": 396,
+        "h": 31.8,
+        "zh": "[58] A. Wang、A. Singh、J. Michael、F. Hill、O. Levy 与 S. R. Bowman。面向自然语言理解的任务基准与分析平台。arXiv 预印本 arXiv:1804.07461，2018。"
+      },
+      {
+        "text": "[59] Y. Wang, Y. Kordi, S. Mishra, A. Liu, N. A. Smith, D. Khashabi, and H. Hajishirzi. Self-instruct: Aligning language model with self generated instructions. arXiv preprint arXiv:2212.10560,",
+        "x": 108,
+        "y": 534.2,
+        "w": 397.4,
+        "h": 20.9,
+        "zh": "[59] Y. Wang、Y. Kordi、S. Mishra、A. Liu、N. A. Smith、D. Khashabi 与 H. Hajishirzi。Self-Instruct：用模型自己生成的指令来对齐语言模型。arXiv 预印本 arXiv:2212.10560，"
+      },
+      {
+        "text": "[60] Y. Wang, S. Mishra, P. Alipoormolabashi, Y. Kordi, A. Mirzaei, A. Arunkumar, A. Ashok, A. S. Dhanasekaran, A. Naik, D. Stap, et al. Super-naturalinstructions:generalization via declarative instructions on 1600+ tasks. In EMNLP, 2022.",
+        "x": 108,
+        "y": 482,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "[60] Y. Wang、S. Mishra、P. Alipoormolabashi、Y. Kordi、A. Mirzaei、A. Arunkumar、A. Ashok、A. S. Dhanasekaran、A. Naik、D. Stap 等人。Super-NaturalInstructions：借助陈述式指令在 1600 多个任务上泛化。见 EMNLP，2022。"
+      },
+      {
+        "text": "[61] Y. Wang, S. Mishra, P. Alipoormolabashi, Y. Kordi, A. Mirzaei, A. Naik, A. Ashok, A. S. Dhanasekaran, A. Arunkumar, D. Stap, et al. Super-naturalinstructions: Generalization via declarative instructions on 1600+ nlp tasks. In Proceedings of the 2022 Conference on Empirical Methods in Natural Language Processing, pages 5085–5109, 2022.",
+        "x": 108,
+        "y": 429.9,
+        "w": 397.7,
+        "h": 42.7,
+        "zh": "[61] Y. Wang、S. Mishra、P. Alipoormolabashi、Y. Kordi、A. Mirzaei、A. Naik、A. Ashok、A. S. Dhanasekaran、A. Arunkumar、D. Stap 等人。Super-NaturalInstructions：借助陈述式指令在 1600 多个 NLP 任务上泛化。见 2022 年自然语言处理经验方法会议论文集，第 5085–5109 页，2022。"
+      },
+      {
+        "text": "[62] J. Wei, M. Bosma, V. Y. Zhao, K. Guu, A. W. Yu, B. Lester, N. Du, A. M. Dai, and Q. V. Le. Finetuned language models are zero-shot learners. arXiv preprint arXiv:2109.01652, 2021.",
+        "x": 108,
+        "y": 399.5,
+        "w": 397.7,
+        "h": 20.9,
+        "zh": "[62] J. Wei、M. Bosma、V. Y. Zhao、K. Guu、A. W. Yu、B. Lester、N. Du、A. M. Dai 与 Q. V. Le。经过微调的语言模型是零样本学习者。arXiv 预印本 arXiv:2109.01652，2021。"
+      },
+      {
+        "text": "[63] J. Wei, X. Wang, D. Schuurmans, M. Bosma, F. Xia, E. H. Chi, Q. V. Le, D. Zhou, et al. Chain-of-thought prompting elicits reasoning in large language models. In Advances in Neural Information Processing Systems, 2022.",
+        "x": 108,
+        "y": 358.3,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "[63] J. Wei、X. Wang、D. Schuurmans、M. Bosma、F. Xia、E. H. Chi、Q. V. Le、D. Zhou 等人。思维链提示能激发大语言模型中的推理。见 Advances in Neural Information Processing Systems，2022。"
+      },
+      {
+        "text": "[64] T. Wolf, L. Debut, V. Sanh, J. Chaumond, C. Delangue, A. Moi, P. Cistac, T. Rault, R. Louf, M. Funtowicz, et al. Huggingface’s transformers: State-of-the-art natural language processing. arXiv preprint arXiv:1910.03771, 2019.",
+        "x": 108,
+        "y": 317.1,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "[64] T. Wolf、L. Debut、V. Sanh、J. Chaumond、C. Delangue、A. Moi、P. Cistac、T. Rault、R. Louf、M. Funtowicz 等人。Hugging Face 的 Transformers：最先进的自然语言处理。arXiv 预印本 arXiv:1910.03771，2019。"
+      },
+      {
+        "text": "[65] M. Wortsman, T. Dettmers, L. Zettlemoyer, A. Morcos, A. Farhadi, and L. Schmidt. Stable and low-precision training for large-scale vision-language models. arXiv preprint arXiv:2304.13013,",
+        "x": 108,
+        "y": 286.7,
+        "w": 397.2,
+        "h": 20.9,
+        "zh": "[65] M. Wortsman、T. Dettmers、L. Zettlemoyer、A. Morcos、A. Farhadi 与 L. Schmidt。大规模视觉–语言模型的稳定低精度训练。arXiv 预印本 arXiv:2304.13013，"
+      },
+      {
+        "text": "[66] G. Xiao, J. Lin, M. Seznec, J. Demouth, and S. Han. Smoothquant: Accurate and efficient post-training quantization for large language models. arXiv preprint arXiv:2211.10438, 2022.",
+        "x": 108,
+        "y": 245.5,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[66] G. Xiao、J. Lin、M. Seznec、J. Demouth 与 S. Han。SmoothQuant：面向大语言模型的准确且高效的训练后量化。arXiv 预印本 arXiv:2211.10438，2022。"
+      },
+      {
+        "text": "[67] T. Xie, C. H. Wu, P. Shi, R. Zhong, T. Scholak, M. Yasunaga, C.-S. Wu, M. Zhong, P. Yin, S. I. Wang, et al. Unifiedskg: Unifying and multi-tasking structured knowledge grounding with text-to-text language models. arXiv preprint arXiv:2201.05966, 2022.",
+        "x": 108,
+        "y": 204.2,
+        "w": 397.2,
+        "h": 31.8,
+        "zh": "[67] T. Xie、C. H. Wu、P. Shi、R. Zhong、T. Scholak、M. Yasunaga、C.-S. Wu、M. Zhong、P. Yin、S. I. Wang 等人。UnifiedSKG：用文本到文本的语言模型，把结构化知识定位统一起来并做成多任务。arXiv 预印本 arXiv:2201.05966，2022。"
+      },
+      {
+        "text": "[68] Z. Yang, P. Qi, S. Zhang, Y. Bengio, W. Cohen, R. Salakhutdinov, and C. D. Manning. Hotpotqa: A dataset for diverse, explainable multi-hop question answering. In Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing, pages 2369–2380, 2018.",
+        "x": 108,
+        "y": 163,
+        "w": 397.4,
+        "h": 31.8,
+        "zh": "[68] Z. Yang、P. Qi、S. Zhang、Y. Bengio、W. Cohen、R. Salakhutdinov 与 C. D. Manning。HotpotQA：一个多样化、可解释的多跳问答数据集。见 2018 年自然语言处理经验方法会议论文集，第 2369–2380 页，2018。"
+      },
+      {
+        "text": "[69] Z. Yao, R. Y. Aminabadi, M. Zhang, X. Wu, C. Li, and Y. He. Zeroquant: Efficient and affordable post-training quantization for large-scale transformers. arXiv preprint arXiv:2206.01861, 2022.",
+        "x": 108,
+        "y": 132.7,
+        "w": 397.6,
+        "h": 20.9,
+        "zh": "[69] Z. Yao、R. Y. Aminabadi、M. Zhang、X. Wu、C. Li 与 Y. He。ZeroQuant：面向大规模 Transformer 的高效且负担得起的训练后量化。arXiv 预印本 arXiv:2206.01861，2022。"
+      },
+      {
+        "text": "[70] E. B. Zaken, S. Ravfogel, and Y. Goldberg. Bitfit: Simple parameter-efficient fine-tuning for transformer-based masked language-models. arXiv preprint arXiv:2106.10199, 2021.",
+        "x": 108,
+        "y": 102.3,
+        "w": 396.2,
+        "h": 20.9,
+        "zh": "[70] E. B. Zaken、S. Ravfogel 与 Y. Goldberg。BitFit：面向基于 Transformer 的掩码语言模型的简单参数高效微调。arXiv 预印本 arXiv:2106.10199，2021。"
+      },
+      {
+        "text": "[71] A. Zeng, X. Liu, Z. Du, Z. Wang, H. Lai, M. Ding, Z. Yang, Y. Xu, W. Zheng, X. Xia, et al. Glm-130b: An open bilingual pre-trained model. arXiv preprint arXiv:2210.02414, 2022.",
+        "x": 108,
+        "y": 72,
+        "w": 397.7,
+        "h": 20.9,
+        "zh": "[71] A. Zeng、X. Liu、Z. Du、Z. Wang、H. Lai、M. Ding、Z. Yang、Y. Xu、W. Zheng、X. Xia 等人。GLM-130B：一个开放的双语预训练模型。arXiv 预印本 arXiv:2210.02414，2022。"
+      }
+    ],
+    "21": [
+      {
+        "text": "[72] S. Zhang, S. Roller, N. Goyal, M. Artetxe, M. Chen, S. Chen, C. Dewan, M. Diab, X. Li, X. V. Lin, et al. Opt: Open pre-trained transformer language models. arXiv preprint arXiv:2205.01068,",
+        "x": 108,
+        "y": 699.1,
+        "w": 397.7,
+        "h": 20.9,
+        "zh": "[72] S. Zhang、S. Roller、N. Goyal、M. Artetxe、M. Chen、S. Chen、C. Dewan、M. Diab、X. Li、X. V. Lin 等人。OPT：开放的预训练 Transformer 语言模型。arXiv 预印本 arXiv:2205.01068，"
+      },
+      {
+        "text": "[73] R. Zhong, K. Lee, Z. Zhang, and D. Klein. Adapting language models for zero-shot learning by meta-tuning on dataset and prompt collections. arXiv preprint arXiv:2104.04670, 2021.",
+        "x": 108,
+        "y": 658.4,
+        "w": 396.3,
+        "h": 20.9,
+        "zh": "[73] R. Zhong、K. Lee、Z. Zhang 与 D. Klein。通过在数据集和提示集合上做元调节，使语言模型适应零样本学习。arXiv 预印本 arXiv:2104.04670，2021。"
+      }
+    ],
+    "22": [
+      {
+        "text": "QLoRA vs Standard Finetuning Experimental Setup Details",
+        "x": 128.6,
+        "y": 710,
+        "w": 306.9,
+        "h": 12,
+        "zh": "QLoRA 与标准微调：实验设定的细节"
+      },
+      {
+        "text": "Hyperparameters for QLORA We do a hyperparameter search for LoRA over the following variables: LoRA dropout { 0.0, 0.05, 0.1}, LoRA r { 8, 16, 32, 64, 128, 256}, LoRA layers {key+query, all attention layers, all FFN layers, all layers, attention + FFN output layers}. We keep LoRA α fixed and search the learning rate, since LoRA α is always proportional to the learning rate. We find that LoRA dropout 0.05 is useful for small models (7B, 13B), but not for larger models (33B, 65B). We find LoRA r is unrelated to final performance if LoRA is used on all layers as can be seen",
+        "x": 107.5,
+        "y": 614.5,
+        "w": 397.7,
+        "h": 86.8,
+        "zh": "QLORA 的超参数。我们对 LoRA 的下列变量做了超参数搜索：LoRA dropout 取 {0.0, 0.05, 0.1}，LoRA r 取 {8, 16, 32, 64, 128, 256}，LoRA 所在的层取 {key+query、全部注意力层、全部 FFN 层、全部层、注意力层 + FFN 输出层}。LoRA α 保持固定，只搜索学习率，因为 LoRA α 始终与学习率成比例。我们发现，LoRA dropout 取 0.05 对小模型（7B、13B）有用，对更大的模型（33B、65B）则没有。如果 LoRA 加在所有层上，LoRA r 与最终性能无关，如图中所见"
+      },
+      {
+        "text": "Figure 4: LoRA r for LLaMA 7B models finetuned on Alpaca. Each dot represents a combination of hyperparameters and for each LoRA r we run 3 random seed with each hyperparameter combination. The performance of specific LoRA r values appears to be independent of other hyperparameters.",
+        "x": 108,
+        "y": 417.7,
+        "w": 396,
+        "h": 28.9,
+        "zh": "图 4：在 Alpaca 上微调的 LLaMA 7B，其 LoRA r 的结果。每个点是一组超参数组合；对每个 LoRA r，每种超参数组合用 3 个随机种子跑一遍。某个具体 LoRA r 的性能，看起来与其他超参数是独立的。"
+      },
+      {
+        "text": "Super-Natural Instructions Experimental Setup Details We use the same preprocessing of the Super-Natural Instruction dataset as Wang et al. [60]. However, we split the training data in training and validation datasets allowing us to perform more rigorous hyperparameter tuning and early stopping. We use the same hyperparameters described in the paper for training the various T5 model sizes on the Super-Natural Instruction data. We use LoRA r = 16 for small, medium, and large T5 models and LoRA r = 64 for T5 xl and xxl models. We also use LoRA α = 64 in all our experiments and no LoRA dropout.",
+        "x": 107.5,
+        "y": 319.8,
+        "w": 397.7,
+        "h": 79.7,
+        "zh": "Super-Natural Instructions 的实验设定细节。Super-Natural Instruction 数据集的预处理与 Wang 等人 [60] 相同。不过，我们把训练数据分成训练集和验证集，以便做更严格的超参数调节和早停。在 Super-Natural Instruction 数据上训练各种大小的 T5 时，我们使用论文里描述的同一套超参数。small、medium 和 large 的 T5 使用 LoRA r = 16，T5 xl 和 xxl 使用 LoRA r = 64。所有实验还使用 LoRA α = 64，并且不使用 LoRA dropout。"
+      },
+      {
+        "text": "Training a State-of-the-art Chatbot Experimental Setup Details",
+        "x": 127.9,
+        "y": 295.1,
+        "w": 323.2,
+        "h": 12,
+        "zh": "训练当时领先的聊天机器人：实验设定的细节"
+      },
+      {
+        "text": "We describe the datasets used for QLORA finetuning experiments outlined in Section 5.",
+        "x": 107.5,
+        "y": 261.2,
+        "w": 351.8,
+        "h": 10,
+        "zh": "下面说明第 5 节中 QLORA 微调实验所用的数据集。"
+      },
+      {
+        "text": "The OpenAssistant dataset [31] was collected via crowd-sourcing. It contains 161,443 unique messages distributed across 66,497 conversations and spanning 35 different languages. The dataset often contains several ranked replies for each given user question. In our experiments, we only use the top reply at each level in the conversation tree. This limits the dataset to 9,209 examples. We finetuning our models on the full conversation including the user queries.",
+        "x": 107.5,
+        "y": 198.1,
+        "w": 398.2,
+        "h": 53.6,
+        "zh": "OpenAssistant 数据集 [31] 通过众包收集。它包含 161,443 条不重复的消息，分布在 66,497 段对话里，涵盖 35 种语言。对给定的用户问题，数据里常常有若干条已经排好名次的回复。实验中，我们只使用对话树每一层上的最佳回复。这样数据集被限制为 9,209 个例子。我们在包含用户提问的完整对话上微调模型。"
+      },
+      {
+        "text": "This is a human preference dataset about helpfulness and harmlessness. Each datapoint consists of two assistant replies to a user question along with a human preference judgment of the best reply. The dataset contains 160,800 examples. When finetuning on this dataset, we combine helpfulness and harmlessness data and only keep the preferred assistant reply.",
+        "x": 108,
+        "y": 146,
+        "w": 396,
+        "h": 42.7,
+        "zh": "这是一份关于有用性和无害性的人类偏好数据集。每条数据包含对同一个用户问题的两条助手回复，以及人对哪一条更好的判断。数据集包含 160,800 个例子。在这份数据上微调时，我们把有用性数据和无害性数据合在一起，只保留被偏好的那条助手回复。"
+      },
+      {
+        "text": "The FLAN v2 collection [39] is a collection of 1836 tasks augmented with hundreds of manually curated templates and rich formatting patterns into over 15M examples. The authors show that models trained on this collection outperform other public collections including the original FLAN 2021 [62], T0++ [50], Super-Natural Instructions [60], and OPT-IML [29]. We used the same task mixtures described by the authors with the exception of some datasets that were not freely available at the time of writing.",
+        "x": 108,
+        "y": 72,
+        "w": 396.4,
+        "h": 64.5,
+        "zh": "FLAN v2 数据集 [39] 收集了 1836 个任务，并用数百个人工编写的模板和丰富的格式模式，扩充到超过 15M 个例子。作者表明，在这份数据上训练的模型超过其他公开数据集，包括最初的 FLAN 2021 [62]、T0++ [50]、Super-Natural Instructions [60] 和 OPT-IML [29]。我们使用作者描述的同一套任务混合，但去掉了撰写本文时还不能自由获取的若干数据集。"
+      }
+    ],
+    "23": [
+      {
+        "text": "Table 9: Training hyperparameters for QLORA finetuning on different datasets and across model sizes.",
+        "x": 119.6,
+        "y": 492.5,
+        "w": 372.6,
+        "h": 9,
+        "zh": "表 9：在不同数据集、不同模型规模上做 QLORA 微调时的训练超参数。"
+      },
+      {
+        "text": "Self-Instruct, Alpaca, Unnatural Instructions",
+        "x": 108,
+        "y": 459.3,
+        "w": 191.6,
+        "h": 10,
+        "zh": "Self-Instruct、Alpaca、Unnatural Instructions"
+      },
+      {
+        "text": "The Self-Instruct, Alpaca, and Unnatural Instructions datasets [59, 55, 26] are instruction tuning datasets collected with various approaches of model distillation from GPT-3 Instruct and ChatGPT. They rely on prompting, in-context learning, and paraphrasing to come up with diverse sets of instructions and outputs. The datasets comprise of 82,612, 51,942, and 240,670 examples respectively. One advantage of such distilled datasets is that they contain a more diverse set of instruction styles compared to the FLAN v2 collection and similar instruction tuning collections.",
+        "x": 108,
+        "y": 393.9,
+        "w": 397.7,
+        "h": 75.4,
+        "zh": "Self-Instruct、Alpaca 和 Unnatural Instructions 数据集 [59, 55, 26] 是用多种从 GPT-3 Instruct 和 ChatGPT 蒸馏模型的办法收集的指令微调数据。它们依靠提示、上下文学习和改写，来产生多样的指令和输出。三个数据集分别有 82,612、51,942 和 240,670 个例子。这类蒸馏数据集的一个优点是，其中的指令风格比 FLAN v2 以及类似的指令微调数据集更多样。"
+      },
+      {
+        "text": "The LongForm dataset [30] is based on an English corpus augmented with instructions and as such is a hybrid human-generated dataset. The underlying documents are human-written and come from C4 and Wikipedia while the instructions are generated visa LLMs. The dataset is extended with additional structured corpora examples such as Stack Exchange and WikiHow and task examples such as question answering, email writing, grammar error correction, story/poem generation, and text summarization. The dataset contains 23,700 examples. is part of the OIG Laion dataset. It contains Python code examples, natural instruction examples, generic harmless instructions, instruction/responses with lists, follow-up questions, Wikipedia toxic adversarial questions, grade school math, reasoning instructions, and character and scene descriptions with a total of 210,289 examples.",
+        "x": 107.6,
+        "y": 270.7,
+        "w": 398,
+        "h": 115.2,
+        "zh": "LongForm 数据集 [30] 基于一份加了指令的英语语料，因此是人工写成与模型生成混合的数据集。底层文档由人写成，来自 C4 和 Wikipedia，指令则由 LLM 生成。数据集还扩充了额外的结构化语料例子，例如 Stack Exchange 和 WikiHow，以及问答、写邮件、语法纠错、故事与诗歌生成、文本摘要等任务例子。该数据集包含 23,700 个例子。属于 OIG Laion 数据集，其中包含 Python 代码例子、自然指令例子、通用的无害指令、带列表的指令与回答、追问、Wikipedia 上的有毒对抗问题、小学数学、推理指令，以及人物和场景描述，共计 210,289 个例子。"
+      },
+      {
+        "text": "We provide the exact hyperparameters used in our QLORA finetuning experiments. We find hyperparameters to be largely robust across datasets. We use the MMLU 5-shot dev set for validation and hyperparameter tuning. In all our experiments we use NF4 with double quantization and bf16 computation datatype. We set LoRA r = 64, α = 16, and add LoRA modules on all linear layers of the base model. We also use Adam beta2 of 0.999, max grad norm of 0.3 and LoRA dropout of 0.1 for models up to 13B and 0.05 for 33B and 65B models. Following previous work on instruction finetuning [62, 60] and after benchmarking other linear and cosine schedules, we use a constant learning rate schedule. We use group-by-length to group examples of similar lengths in the same batch (note this will produce a oscillating loss curve). The hyperparameters we tune for each model size are shown in Table 9.",
+        "x": 107.5,
+        "y": 138.6,
+        "w": 398.1,
+        "h": 108.1,
+        "zh": "我们给出 QLORA 微调实验中使用的精确超参数。我们发现，超参数在不同数据集上大体是稳健的。验证和超参数调节使用 MMLU 的 5-shot 开发集。所有实验都使用带双重量化的 NF4，计算数据类型为 bf16。我们设 LoRA r = 64、α = 16，并在基座模型的全部线性层上加入 LoRA 模块。Adam 的 beta2 取 0.999，梯度的最大范数取 0.3。13B 及以下模型的 LoRA dropout 为 0.1，33B 和 65B 为 0.05。沿用先前的指令微调工作 [62, 60]，并在比较过其他线性和余弦学习率日程之后，我们使用常数学习率日程。我们用 group-by-length 把长度相近的例子分到同一批次（注意这会产生一条上下波动的损失曲线）。每个模型规模上所调节的超参数见表 9。"
+      },
+      {
+        "text": "While it is general practice in the literature to only train on the response in instruction following datasets, we study the effect of training on the instruction in addition to the response in Table 10. In these experiments, we restrict the training data to 52,000 examples and use the 7B model. Over four different instruction tuning datasets, we find that only training on the target is beneficial to MMLU",
+        "x": 107.5,
+        "y": 72,
+        "w": 396.6,
+        "h": 42.7,
+        "zh": "文献里的通行做法，是在指令遵循数据集上只训练回答。我们在表 10 中研究了除回答之外、也在指令上训练的效果。这些实验把训练数据限制为 52,000 个例子，并使用 7B 模型。在四个不同的指令微调数据集上，我们发现只训练目标对 MMLU"
+      }
+    ],
+    "24": [
+      {
+        "text": "Unnatural Instructions Train on source and target",
+        "x": 122.5,
+        "y": 692.5,
+        "w": 205.4,
+        "h": 26.1,
+        "zh": "Unnatural Instructions：在源文本和目标文本上一起训练"
+      },
+      {
+        "text": "Table 10: MMLU 5-shot test results studying the effect of training on the instructions in addition to the response.",
+        "x": 107.7,
+        "y": 660.8,
+        "w": 396.3,
+        "h": 9,
+        "zh": "表 10：MMLU 的 5-shot 测试结果，研究除回答之外也在指令上训练会有什么效果。"
+      },
+      {
+        "text": "performance. We did not evaluate the effect this may have on chatabot performance as measured by",
+        "x": 108,
+        "y": 627.5,
+        "w": 396.3,
+        "h": 10,
+        "zh": "的表现有利。我们没有评测这可能对聊天机器人表现造成的影响，其衡量方式是"
+      },
+      {
+        "text": "What is more important: instruction finetuning dataset size or dataset quality?",
+        "x": 132.1,
+        "y": 597.2,
+        "w": 334.7,
+        "h": 10,
+        "zh": "哪一个更重要：指令微调数据集的大小，还是数据集的质量？"
+      },
+      {
+        "text": "To understand the effects of dataset quality vs. dataset size, we experiment with subsampling large datasets with at least 150,000 samples (Chip2, FLAN v2, Unnatural Instructions), into datasets of size 50,000, 100,000 and 150,000 and examine the resulting trends, as shown in Table 11. We find that increasing the dataset size and increasing the number of epochs improves MMLU only marginally (0.0 - 0.5 MMLU), while the difference between datasets is up to 40x larger (1.5 - 8.0 MMLU). This is a clear indicator that dataset quality rather than dataset size is critical for mean MMLU accuracy. We obtain similar findings for",
+        "x": 107.7,
+        "y": 517,
+        "w": 396.5,
+        "h": 75.4,
+        "zh": "为了理解数据质量与数据量各自的影响，我们把至少有 150,000 条样本的大数据集（Chip2、FLAN v2、Unnatural Instructions）下采样成 50,000、100,000 和 150,000 的规模，并考察由此得到的趋势，如表 11 所示。我们发现，增大数据量、增加训练轮数，对 MMLU 只有边际改善（0.0–0.5 个 MMLU），而数据集之间的差别最多可达其 40 倍（1.5–8.0 个 MMLU）。这清楚表明，对平均 MMLU 准确率来说，数据集质量比数据集大小更关键。我们也得到了类似的发现，对象是"
+      },
+      {
+        "text": "Data set suitability is more important than dataset size.",
+        "x": 108,
+        "y": 582.5,
+        "w": 241,
+        "h": 10,
+        "zh": "数据集是否对口，比数据集大小更重要。"
+      },
+      {
+        "text": "We conduct a human evaluation with the same wording given to GPT-4 in the original Vicuna evaluation [10], adjusted for an Amazon Mechanical Turk form as show in Figure 5.",
+        "x": 107.5,
+        "y": 453.9,
+        "w": 396.5,
+        "h": 20.9,
+        "zh": "我们做了人工评测，措辞与原始 Vicuna 评测 [10] 里给 GPT-4 的相同，并按图 5 所示改成了 Amazon Mechanical Turk 的表单。"
+      },
+      {
+        "text": "While we found that the GPT-4 evaluation gave different results depend on which system was presented first, when averaged over both options the pairwise results were well-ordered. The aggregated pairwise judgments are hown in Table 12. On inspection, it is clear these judgments are transitive, i.e., when System A is judged better than System B and System B is judged better than System C, it is always the case that System A is judged better than System C. This yields a complete",
+        "x": 107.5,
+        "y": 369,
+        "w": 396.5,
+        "h": 53.6,
+        "zh": "我们发现，GPT-4 的评测会因为哪个系统被放在前面而给出不同结果；但对两种顺序取平均之后，两两比较的结果是良序的。汇总后的两两判断见表 12。检查之后可以清楚看到，这些判断是传递的：若系统 A 被判定优于系统 B，且系统 B 被判定优于系统 C，则系统 A 总是被判定优于系统 C。这就得到一个完整的"
+      },
+      {
+        "text": "NormalFloat 4-bit data type The exact values of the NF4 data type are as follows: [-1.0, -0.6961928009986877, -0.5250730514526367,",
+        "x": 107.7,
+        "y": 300,
+        "w": 212.8,
+        "h": 46.7,
+        "zh": "NormalFloat 4-bit 数据类型。NF4 数据类型的精确取值如下：[−1.0, −0.6961928009986877, −0.5250730514526367,"
+      },
+      {
+        "text": "-0.39491748809814453, -0.28444138169288635, -0.18477343022823334, -0.09105003625154495, 0.0, 0.07958029955625534, 0.16093020141124725,",
+        "x": 106.3,
+        "y": 278.2,
+        "w": 309.7,
+        "h": 20.9,
+        "zh": "−0.39491748809814453, −0.28444138169288635, −0.18477343022823334, −0.09105003625154495, 0.0, 0.07958029955625534, 0.16093020141124725,"
+      },
+      {
+        "text": "0.24611230194568634, 0.33791524171829224, 0.44070982933044434, 0.5626170039176941, 0.7229568362236023, 1.0]",
+        "x": 108,
+        "y": 256.3,
+        "w": 288.9,
+        "h": 20.9,
+        "zh": "0.24611230194568634, 0.33791524171829224, 0.44070982933044434, 0.5626170039176941, 0.7229568362236023, 1.0]"
+      },
+      {
+        "text": "Normality of Trained Neural Network Weights",
+        "x": 127.3,
+        "y": 233,
+        "w": 238.3,
+        "h": 12,
+        "zh": "训练得到的神经网络权重是否服从正态"
+      },
+      {
+        "text": "While it is common knowledge that trained neural network weights are mostly normally distributed, we perform statistical testing to verify this. We use the Shapiro-Wilk test[53] on the weights of the 7B",
+        "x": 107.5,
+        "y": 204.1,
+        "w": 397.7,
+        "h": 20.9,
+        "zh": "训练得到的神经网络权重大体服从正态分布，这是常识。我们仍然做了统计检验来核实这一点。我们对 7B 的权重使用 Shapiro-Wilk 检验 [53]"
+      },
+      {
+        "text": "Table 11: Effect different dataset sizes and finetuning epochs on mean 5-shot MMLU test set accuracy. While increasing the dataset size and training for more than 1 epochs helps with MMLU performance, the difference between datasets are far larger, indicating that dataset quality affects MMLU performance more than dataset size.",
+        "x": 107.7,
+        "y": 147.8,
+        "w": 396.3,
+        "h": 28.9,
+        "zh": "表 11：不同数据量和微调轮数对平均 5-shot MMLU 测试集准确率的影响。增大数据量、训练超过 1 个 epoch 对 MMLU 有帮助，但数据集之间的差别要大得多，说明相对数据量而言，数据质量对 MMLU 表现的影响更大。"
+      },
+      {
+        "text": "Unnatural Instructions Datapoints ↓ Epochs →",
+        "x": 115.4,
+        "y": 125.3,
+        "w": 262.3,
+        "h": 18.2,
+        "zh": "Unnatural Instructions，数据量 ↓，轮数 →"
+      }
+    ],
+    "25": [
+      {
+        "text": "LLaMA model [57]. We find that the weights of each hidden unit have different normal distributions. As such, we test he weights of each individual hidden unit. This mean for weight W ∈ R we perform tests over the out dimension. Using a 5% significance threshold, we find that 7.5% of neurons are non-normally distributed which is about 2.5% more than the expected false-positive rate. As such, while almost all pretrained weights appear to be normally distributed there seem to be exceptions. Such exceptions might be due to outliers weights [13] or because the p-value of the Shaprio-Wilk test is not accurate for large samples sizes[53] that occur in the LLaMA FFN layer hidden units. this verifies the claim that neural network weights.",
+        "x": 107.6,
+        "y": 221.5,
+        "w": 398.1,
+        "h": 86.3,
+        "zh": "LLaMA 模型 [57]。我们发现，每个隐藏单元的权重服从各自不同的正态分布。因此，我们逐个检验每个隐藏单元的权重。也就是说，对权重 W ∈ R，我们沿输出维做检验。使用 5% 的显著性阈值时，有 7.5% 的神经元不服从正态分布，比预期的假阳性率大约高出 2.5%。因此，尽管几乎所有预训练权重看起来都服从正态分布，似乎仍有例外。这些例外可能来自离群权重 [13]，也可能是因为 Shapiro-Wilk 检验的 p 值，在 LLaMA 前馈层隐藏单元那种大样本量下并不准确 [53]。这验证了关于神经网络权重的那一说法。"
+      },
+      {
+        "text": "Table 12: Aggregated pairwise GPT-4 judgments between systems where the value of a cell at row x and column",
+        "x": 107.7,
+        "y": 163,
+        "w": 396.3,
+        "h": 9,
+        "zh": "表 12：系统之间汇总后的 GPT-4 两两判断。单元格在行 x、列"
+      }
+    ],
+    "26": [
+      {
+        "text": "Figure 6: Breakdown of the memory footprint of different LLaMA models. The input gradient size is for batch size 1 and sequence length 512 and is estimated only for adapters and the base model weights (no attention). Numbers on the bars are memory footprint in MB of individual elements of the total footprint. While some models do not quite fit on certain GPUs, paged optimzier provide enough memory to make these models fit.",
+        "x": 108,
+        "y": 453.9,
+        "w": 397.6,
+        "h": 38.9,
+        "zh": "图 6：不同 LLaMA 模型的显存占用分解。输入梯度的大小按批大小 1、序列长度 512 来估计，并且只计入适配器和基座模型权重（不含注意力）。柱上的数字是总占用里各个部分的显存，单位为 MB。有些模型并不能正好放进某些 GPU，分页优化器提供的显存足以让这些模型放下。"
+      },
+      {
+        "text": "The memory footpring for QLoRA training with different LLaMA base models can be seen in Figure 6. We see that the 33B model does not quite fit into a 24 GB and that paged optimizers are needed to train it. Depicted is also batch size 1 with a sequence length of 512 and gradient checkpointning. This means, if one uses a larger batch size, or if a long sequence is processed, the activation gradient might consume a considerable amount of memory.",
+        "x": 107.7,
+        "y": 359.8,
+        "w": 396.3,
+        "h": 53.6,
+        "zh": "不同 LLaMA 基座模型做 QLoRA 训练时的显存占用见图 6。可以看到，33B 模型并不能正好放进 24 GB，训练它需要分页优化器。图中还给出了批大小 1、序列长度 512 以及梯度检查点的情形。因此，如果使用更大的批大小，或者处理很长的序列，激活梯度可能会占用相当多的显存。"
+      },
+      {
+        "text": "Table 13: The complete ordering induced by pairwise GPT-4 judgments between systems",
+        "x": 144.7,
+        "y": 173.8,
+        "w": 322.4,
+        "h": 9,
+        "zh": "表 13：由系统之间的 GPT-4 两两判断所导出的完整排序"
+      }
+    ]
+  }
+}

@@ -1,0 +1,863 @@
+{
+  "id": "2312.03732",
+  "title": "2312.03732",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "A Rank Stabilization Scaling Factor for Fine-Tuning with LoRA",
+        "x": 102.4,
+        "y": 681.1,
+        "w": 392.5,
+        "h": 14.3,
+        "zh": "一种用于 LoRA 微调的秩稳定缩放因子"
+      },
+      {
+        "text": "As large language models (LLMs) have become increasingly compute and memory intensive, parameter-efficient fine-tuning (PEFT) methods are now a common strategy to fine-tune LLMs. A popular PEFT method is Low-Rank Adapters (LoRA), which adds trainable low-rank “adapters” to selected layers. Each adapter consists of a low-rank matrix product, multiplicatively scaled by a rank-dependent factor. This scaling factor, which divides adapters by a factor of the rank, results in slowed learning and stunted performance for LoRA with higher-rank adapters. Consequently, the use of LoRA in practice has generally been limited to very low ranks. In this work, we study the impact of the scaling factor on the learning process and prove that LoRA adapters should be divided by a factor of the square root of the rank. Modifying LoRA with the appropriate scaling factor, which we call the rank-stabilized LoRA (rsLoRA) method, easily provides for a fine-tuning compute/performance trade-off, where larger ranks can be used to trade off increased computational resources during training for better fine-tuning performance, with no",
+        "x": 75,
+        "y": 449.7,
+        "w": 448.3,
+        "h": 117.6,
+        "zh": "随着大语言模型（LLM）对计算和内存的消耗越来越大，参数高效微调（PEFT）已经成了微调 LLM 的常用策略。其中一种常用方法是低秩适配器（LoRA）：在选定的层上加上可训练的低秩“适配器”。每个适配器是一个低秩矩阵乘积，再乘上一个随秩变化的因子。这个缩放因子按秩去除适配器，于是秩一高，LoRA 就学得慢，性能也上不去。因此实践中 LoRA 通常只用很低的秩。本文研究这个缩放因子对学习过程的影响，并证明 LoRA 适配器应当按秩的平方根来除。用合适的缩放因子改过 LoRA 之后，我们把这种方法称为秩稳定 LoRA（rsLoRA）。它很容易给出微调时计算量与性能的权衡：可以用更大的秩，拿训练中多出来的计算资源去换更好的微调性能，而且没有"
+      },
+      {
+        "text": "Large language models (LLMs) have become increasingly capable in the domain of natural language processing (Bommasani et al., 2021). They have been successful in a wide variety of applications ranging from machine translation (Zhu et al., 2023), disease prediction (Rasmy et al., 2021), generating code for robotics control policies (Liang et al., 2023), to chat-bot assistants (Ouyang et al., 2022). While their inherent generalization capability is impressive, performance on down-stream tasks often requires fine-tuning (Ding et al., 2022), which induces substantial computational resource requirements. To address these problems, a multitude of fine-tuning approaches have recently been introduced for computationally-efficient training (Houlsby et al., 2019; Hu et al., 2022; Zaken et al., 2022; Liu et al., 2022; Edalati et al., 2022; Hyeon-Woo et al., 2023; Ding et al., 2022). These methods seek to optimize a reduced set of parameters while achieving comparable performance to full model fine-tuning. Of particular relevance for this paper is the method of Low-Rank Adapters (LoRA), in which “adapters”, consisting of a low-rank matrix product multiplied by a scaling factor, are added to a subset of parameter",
+        "x": 55.1,
+        "y": 261.3,
+        "w": 487.6,
+        "h": 123.5,
+        "zh": "大语言模型（LLM）做自然语言处理的能力越来越强（Bommasani et al., 2021）。它们已经用在很多地方：机器翻译（Zhu et al., 2023）、疾病预测（Rasmy et al., 2021）、为机器人控制策略生成代码（Liang et al., 2023），以及聊天助手（Ouyang et al., 2022）。模型本身的泛化能力很强，但下游任务的表现往往还要靠微调（Ding et al., 2022），而微调会带来相当大的计算开销。为应对这些问题，近来出现了许多计算上更省的微调方法（Houlsby et al., 2019; Hu et al., 2022; Zaken et al., 2022; Liu et al., 2022; Edalati et al., 2022; Hyeon-Woo et al., 2023; Ding et al., 2022）。这些方法希望只优化较少的参数，同时达到与全模型微调相当的性能。和本文特别相关的是低秩适配器（LoRA）：其中的“适配器”由低秩矩阵乘积再乘一个缩放因子构成，被加到一部分参数"
+      },
+      {
+        "text": "matrices of the pre-trained model to be optimized during fine-tuning.",
+        "x": 55.4,
+        "y": 249.3,
+        "w": 274.5,
+        "h": 10,
+        "zh": "预训练模型中、微调时要优化的那些矩阵。"
+      },
+      {
+        "text": "a factor of the square root of the rank, as opposed to conventional LoRA implementation in which adapters are divided by a factor of the rank. We call our method with this corrected scaling factor the rank-stabilized LoRA (rsLoRA) method. We experimentally verify the performance and learning stability of rsLoRA in comparison with the standard LoRA method. We illustrate that the conventional implementation causes gradient collapse as the rank increases, which slows the learning such that larger ranks perform no different than small ranks. In contrast, with rsLoRA the gradients do not collapse, and training with higher ranks increases performance. As such, the rsLoRA method easily provides for a fine-tuning compute/performance trade off, where higher ranks can be used to trade increased training compute for better performance. Further, since the adapters take the exact same form as in LoRA, there is no change in inference computational cost for",
+        "x": 55,
+        "y": 135.7,
+        "w": 488.2,
+        "h": 93.6,
+        "zh": "按秩的平方根这个因子来除；常规 LoRA 实现则是按秩去除适配器。我们把使用这一修正缩放因子的方法称为秩稳定 LoRA（rsLoRA）。实验上，我们比较了 rsLoRA 与标准 LoRA 的性能和学习稳定性。常规实现会随秩增大造成梯度坍缩，学习因此变慢，较大的秩和较小的秩表现没有差别。rsLoRA 的梯度则不会坍缩，用更高的秩训练能提高性能。因此 rsLoRA 很容易给出微调时计算量与性能的权衡：更高的秩可以用来拿增加的训练计算换更好的性能。此外，由于适配器的形式与 LoRA 完全相同，推理时的计算开销不会改变，对于"
+      }
+    ],
+    "2": [
+      {
+        "text": "A Rank Stabilization Scaling Factor for Fine-Tuning with LoRA",
+        "x": 175.6,
+        "y": 737.9,
+        "w": 245.3,
+        "h": 9,
+        "zh": "一种用于 LoRA 微调的秩稳定缩放因子"
+      },
+      {
+        "text": "We first provide an overview of the LoRA method and then follow with the introduction of a framework for studying scaling-initialization-update schemes used in (Yang & Hu, 2022), as our analysis follows a similar approach.",
+        "x": 55,
+        "y": 683.6,
+        "w": 486.5,
+        "h": 21.9,
+        "zh": "我们先概述 LoRA，再介绍（Yang & Hu, 2022）里用来研究缩放–初始化–更新方案的框架，因为我们的分析沿用了类似的做法。"
+      },
+      {
+        "text": "In light of the hypothesis that fine-tuning of pre-trained LLM parameters takes place on a manifold with low intrinsic dimension (Aghajanyan et al., 2020; Li et al., 2018), the authors of (Houlsby et al., 2019) provide an alternative to full model fine-tuning, tuning far fewer parameters with comparable performance. They introduce the concept of fine-tuning an LLM by fixing all existing pre-trained model parameters while adding an “adapter” module after each pre-LayerNorm attention or feed-forward sub-module of the transformer. The adapters are composed of a two-layer neural network with a low hidden-layer dimension, such that learning is constrained to a parameter-efficient low-dimensional manifold.",
+        "x": 55.4,
+        "y": 580.1,
+        "w": 486,
+        "h": 69.7,
+        "zh": "预训练 LLM 的参数微调被认为发生在内在维度较低的流形上（Aghajanyan et al., 2020; Li et al., 2018）。基于这一假设，Houlsby et al.（2019）给出了全模型微调之外的一条路：只调节少得多的参数，性能与全模型微调相当。他们的做法是固定全部已有的预训练参数，并在 Transformer 每个 pre-LayerNorm 的注意力子模块或前馈子模块之后加入一个“适配器”模块。适配器由隐藏层维度很低的两层神经网络构成，学习因此被约束在一个参数高效的低维流形上。"
+      },
+      {
+        "text": "The LoRA method modifies the form of the adapters to be computed in parallel with their associated transformer submodules, such that following fine-tuning, they can be combined with the pre-trained parameters for efficient inference.",
+        "x": 55.1,
+        "y": 367.5,
+        "w": 488,
+        "h": 21.9,
+        "zh": "LoRA 改变了适配器的形式，让它与对应的 Transformer 子模块并行计算。微调之后，可以把适配器与预训练参数合并，推理仍然高效。"
+      },
+      {
+        "text": "Specifically, a linear sub-module of the pre-trained network with parameters W ∈ R",
+        "x": 55.4,
+        "y": 355.5,
+        "w": 346.9,
+        "h": 10,
+        "zh": "具体来说，预训练网络中参数为 W ∈ R 的线性子模块"
+      },
+      {
+        "text": "is augmented by the addition of an adapter, consisting of parameters A ∈ R The resulting LoRA-augmented sub-module is defined by the mapping",
+        "x": 55.1,
+        "y": 300.8,
+        "w": 296.6,
+        "h": 21.9,
+        "zh": "通过再加一个适配器得到扩充，该适配器包含参数 A ∈ R。由此得到的 LoRA 增强子模块由如下映射定义"
+      },
+      {
+        "text": "After fine-tuning, the single matrix (W + γrBA) is stored and used in place of W, such that during inference there is no additional compute cost to the fine-tuned model. Note that the adapter γrBA of the sub-module is constrained to be of rank at most r, which is typically set to be much less than d1, d2. The matrices B, A make up the free parameters to optimize during fine-tuning and are initialized such that B = 0d2×r, and entries of A are iid with mean 0 and variance which is independent of r. The scaling factor γr is some function of rank r to account for the rank effects on the matrix product BA,",
+        "x": 55.1,
+        "y": 207,
+        "w": 487.6,
+        "h": 59.3,
+        "zh": "微调之后，只保存单个矩阵 (W + γrBA)，并用它代替 W，这样推理时微调后的模型没有额外计算开销。注意，该子模块的适配器 γrBA 的秩至多为 r，而 r 通常远小于 d1、d2。矩阵 B 和 A 是微调期间要优化的自由参数，初始化取 B = 0d2×r，A 的元素独立同分布，均值为 0，方差与 r 无关。缩放因子 γr 是秩 r 的某个函数，用来计入秩对矩阵乘积 BA 的影响，"
+      },
+      {
+        "text": "and in the practiced LoRA method, γr is set to γr = r for some hyperparameter α.",
+        "x": 55.4,
+        "y": 193.1,
+        "w": 332.4,
+        "h": 13.4,
+        "zh": "而在实际采用的 LoRA 方法中，对某个超参数 α，把 γr 设为 γr = r。"
+      },
+      {
+        "text": "A follow-on method, AdaloRA (Zhang et al., 2023) allocates rank to LoRA adapters dynamically during training based on an available compute budget. It achieves this by parameterizing the adapter matrix product in an approximate SVD representation and iteratively prunes singular values (based on an importance score) to potentially reduce rank at each training step. Since AdaLoRA uses the same γr as LoRA, while seeking to dynamically allow the use of different rank adapters, optimizing the selection of γr, as proposed in this paper, can improve upon AdaLoRA. As will be shown, the setting of the scaling factor γr in LoRA is overly aggressive and causes gradient collapse as the rank increases, which slows the learning such that LoRA fine-tuning using larger ranks performs no different than that with very small ranks. This may have led the authors of (Hu et al., 2022) to inaccurately conclude that very low ranks (e.g. 4,8,16) “suffice” ((Hu et al., 2022) Table 6), since rank 64 showed no improvements in training with the same setting of α.",
+        "x": 54.1,
+        "y": 76.9,
+        "w": 488,
+        "h": 111.6,
+        "zh": "后续方法 AdaLoRA（Zhang et al., 2023）在训练中按可用计算预算，动态给 LoRA 适配器分配秩。它把适配器的矩阵乘积参数化成近似 SVD，并按重要性分数迭代剪去奇异值，从而有可能在每个训练步降低秩。AdaLoRA 使用与 LoRA 相同的 γr，同时又希望动态使用不同秩的适配器，因此按本文的方式来选取 γr，可以在 AdaLoRA 之上再改进。后文会说明，LoRA 里 γr 的设定过于激进，会随秩增大造成梯度坍缩，学习因此变慢，结果用较大秩做 LoRA 微调与用很小的秩没有差别。这或许使 Hu et al.（2022）的作者得出了不准确的结论：很低的秩（例如 4、8、16）就“够了”（Hu et al., 2022，表 6），因为在同样的 α 下，秩 64 的训练并没有提升。"
+      }
+    ],
+    "3": [
+      {
+        "text": "A Rank Stabilization Scaling Factor for Fine-Tuning with LoRA",
+        "x": 175.6,
+        "y": 737.9,
+        "w": 245.3,
+        "h": 9,
+        "zh": "一种用于 LoRA 微调的秩稳定缩放因子"
+      },
+      {
+        "text": "2.2. Scaling-Initialization-Update Schemes",
+        "x": 55.4,
+        "y": 715,
+        "w": 179.9,
+        "h": 10,
+        "zh": "2.2. 缩放–初始化–更新方案"
+      },
+      {
+        "text": "In order to derive the optimal scaling factor, we carried out a similar learning trajectory analysis to (Yang & Hu, 2022), where we consider the infinite width limit of the hidden dimension r. In (Yang & Hu, 2022) the authors study fully-connected multilayer neural networks in the infinite width limit to analyze and draw conclusions about scaling-initialization-update schemes (which they refer to as abc-parametrizations). They define a scaling-initialization-update scheme for an L layer network with hidden dimensions d, composed of weights W for l ≤ L, with the following parametrization of the initialization, learning rate, and parameters:",
+        "x": 55.1,
+        "y": 636.5,
+        "w": 488,
+        "h": 69.7,
+        "zh": "为了推导出最优的缩放因子，我们做了与（Yang & Hu, 2022）类似的学习轨迹分析，考虑隐藏维度 r 的无限宽极限。（Yang & Hu, 2022）在无限宽极限下研究全连接多层神经网络，用来分析并得出关于缩放–初始化–更新方案的结论（他们称之为 abc-parametrization）。他们对一个 L 层、隐藏维度为 d、由权重 W（l ≤ L）组成的网络，把初始化、学习率和参数写成下面这套参数化："
+      },
+      {
+        "text": "the initialization is Wi,j ∼ N(0, 1/d ) iid for each entry, and",
+        "x": 174.9,
+        "y": 591.4,
+        "w": 247.1,
+        "h": 12.4,
+        "zh": "初始化为每个元素独立同分布的 Wi,j ∼ N(0, 1/d)，并且"
+      },
+      {
+        "text": "They show that standard schemes, which only factor in d to the initialization and set al = c = 0, do not admit stable or non-collapsing learning for larger learning rates with larger d. They alleviate this with their scheme which sets bl = 1 for all l, c = 0, a0 = −1/2, aL = 1/2, and al = 0 for all 0 < l < L. To arrive at these conclusions, they analytically solved for the learning dynamics in the linear network case. We take a similar approach to analyze the learning of the adapters of LoRA with respect to the scaling factor, from which we obtain in section 3 theorem 3.2 and our rsLoRA method.",
+        "x": 55.1,
+        "y": 497.8,
+        "w": 486.5,
+        "h": 57.8,
+        "zh": "他们指出，标准方案只把 d 放进初始化，并令 al = c = 0；d 更大时，这些方案无法在较大学习率下得到稳定、且不坍缩的学习。他们用自己的方案缓解了这一点：对所有 l 令 bl = 1，c = 0，a0 = −1/2，aL = 1/2，并且对所有满足 0 < l < L 的 l 令 al = 0。这些结论来自他们在线性网络情形下解析解出的学习动态。我们用类似的方法，针对缩放因子分析 LoRA 适配器的学习，并由此在第 3 节得到定理 3.2 以及 rsLoRA。"
+      },
+      {
+        "text": "With LoRA adapters, scaling the matrix product BA with γr (which depends on rank r), affects the learning trajectory. Specifically, one needs to ensure the choice of γr is “correct” in the sense that the matrix γrBA is stable for all ranks throughout the learning process, but that γr is not overly aggressive so as to collapse or slow down learning (see definition 3.1). Indeed, if one chooses γr =",
+        "x": 55,
+        "y": 412.5,
+        "w": 488.2,
+        "h": 47.3,
+        "zh": "对 LoRA 适配器而言，用依赖于秩 r 的 γr 去缩放矩阵乘积 BA，会影响学习轨迹。具体来说，γr 必须选得“对”：矩阵 γrBA 在整个学习过程中对所有秩都保持稳定，同时 γr 又不能过于激进，以免学习坍缩或变慢（见定义 3.1）。事实上，如果把 γr 选成"
+      },
+      {
+        "text": "there is minimal impact on the fine-tuning loss when varying the rank r (see figure 2). This is not ideal, since learning with higher ranks could offer better performance when larger computational resources are available. Moreover, higher ranks only impose extra cost in training and not inference, as once training is completed the adapters are added to the pre-trained weights to obtain a single matrix (W + γrBA) which is used in inference. In order to precisely define what we mean for an adapter to be stable with respect to rank, we define a “rank-stabilized”",
+        "x": 55.1,
+        "y": 360.1,
+        "w": 488.1,
+        "h": 63.8,
+        "zh": "改变秩 r 对微调损失几乎没有影响（见图 2）。这并不理想，因为计算资源更充裕时，用更高的秩学习本可以获得更好的性能。而且更高的秩只在训练时增加开销，推理并不增加：训练一结束，适配器就加到预训练权重上，得到推理所用的单个矩阵 (W + γrBA)。为了精确说明适配器怎样才算相对于秩是稳定的，我们定义“秩稳定”"
+      },
+      {
+        "text": "Definition 3.1. An adapter γrBA is rank-stabilized if the following two conditions hold:",
+        "x": 55.4,
+        "y": 332.1,
+        "w": 360.4,
+        "h": 11.5,
+        "zh": "定义 3.1. 若下面两个条件成立，则称适配器 γrBA 是秩稳定的："
+      },
+      {
+        "text": "1. If the inputs to the adapter are iid such that the m’th moment is Θr(1) in each entry, then the m’th moment of the outputs of the adapter is also Θr(1) in each entry. 2. If the gradient of the loss with respect to the the adapter outputs are Θr(1) in each entry, then the loss gradients into the input of the adapter are also Θr(1) in each entry.",
+        "x": 62.9,
+        "y": 266.4,
+        "w": 478.5,
+        "h": 53.9,
+        "zh": "1. 若适配器的输入独立同分布，且每个元素的第 m 阶矩为 Θr(1)，则适配器输出每个元素的第 m 阶矩也是 Θr(1)。2. 若损失关于适配器输出的梯度在每个元素上为 Θr(1)，则进入适配器输入的损失梯度在每个元素上也是 Θr(1)。"
+      },
+      {
+        "text": "Using analysis of the limiting r → ∞ case, we show that the only setting of γr (modulo an additive constant) which results in rank-stabilized adapters is",
+        "x": 55.4,
+        "y": 232.7,
+        "w": 486,
+        "h": 21.9,
+        "zh": "通过对 r → ∞ 这一极限情形的分析，我们证明：能使适配器达到秩稳定的 γr 设定（在相差一个加性常数的意义下）只有"
+      },
+      {
+        "text": "for some hyperparameter α. We call our method, which uses the above setting of γr, the rank-stabilized LoRA (or rsLoRA)",
+        "x": 55.4,
+        "y": 196,
+        "w": 486.7,
+        "h": 11.5,
+        "zh": "对某个超参数 α。我们把采用上述 γr 设定的方法称为秩稳定 LoRA（rsLoRA）"
+      },
+      {
+        "text": "Theorem 3.2. Consider LoRA adapters which are of the form γrBA, where B ∈ R",
+        "x": 55.1,
+        "y": 169.5,
+        "w": 338.2,
+        "h": 11.5,
+        "zh": "定理 3.2. 考虑形如 γrBA 的 LoRA 适配器，其中 B ∈ R"
+      },
+      {
+        "text": "are initialised such that B is 0d1×r, entries of A are iid with mean 0 and variance σA not depending on r, and γr ∈ R is such that γr −→ 0. In expectation over initialization, all adapters are rank-stabilized if and only if",
+        "x": 55.3,
+        "y": 138.3,
+        "w": 486.2,
+        "h": 42.7,
+        "zh": "初始化满足：B 为 0d1×r，A 的元素独立同分布，均值为 0，方差 σA 不依赖于 r，且 γr ∈ R 满足 γr −→ 0。在对初始化取期望的意义下，所有适配器都是秩稳定的，当且仅当"
+      },
+      {
+        "text": "In particular, the above holds at any point in the learning trajectory, and unless γr ∈ Θr(√1 ), there is unstable or collapsing learning for sufficiently large values of r.",
+        "x": 55.3,
+        "y": 76.9,
+        "w": 486.2,
+        "h": 24.1,
+        "zh": "特别地，上述结论在学习轨迹的任意一点都成立；除非 γr ∈ Θr(√1)，否则当 r 足够大时，学习会不稳定或发生坍缩。"
+      }
+    ],
+    "4": [
+      {
+        "text": "A Rank Stabilization Scaling Factor for Fine-Tuning with LoRA",
+        "x": 175.6,
+        "y": 737.9,
+        "w": 245.3,
+        "h": 9,
+        "zh": "一种用于 LoRA 微调的秩稳定缩放因子"
+      },
+      {
+        "text": "See appendix A for detailed proof. The above theorem suggests that the only way to ensure stability through the adapters for an arbitrary rank, is to scale the adapters with γr ∝ √1 . At first glance, it may appear that the assumptions made for the definition of rank-stabilized adapters are not straightforward, since for a layer in the middle of the model the gradient to the adapter should depend on r via adapters from later layers. Moreover, the activations should depend on r from adapters of earlier layers. However, since the input data to the model does not depend at all on the rank r of adapters, we can inductively apply the theorem from input layers to output layers with the forward propagation of activations. This results in an output loss gradient above the adapters which should not otherwise have reason to have magnitude unstable or collapsing in the limit of r. Following this gradient backpropagation, we can inductively apply the theorem in a similar fashion from output layers to input layers to pass through each adapter while maintaining the gradient magnitude in Θr(1). We would like to point out that theorem 3.2 pertains to the stability or collapse of the learning process in the limiting case of r, and does not make any statements about possible variations in performance of features learned with different ranks when learning is stable. The quality of the features during learning can also affect the magnitude of the gradient. This suggests that if the quality of features learned consistently depends on r, the assumptions of the theorem may not hold. Conversely, if the quality of learning is independent of rank, there would be no reason to use larger ranks given the increased resources required. Therefore, the extent to which these factors interplay, the implications of the theorem in practice, and potential benefits of using the corrected scaling factor, require experimental validation and examination.",
+        "x": 55,
+        "y": 528.4,
+        "w": 486.8,
+        "h": 196.5,
+        "zh": "详细证明见附录 A。上述定理说明，要对任意秩都让适配器保持稳定，只能按 γr ∝ √1 来缩放适配器。乍看之下，秩稳定适配器定义里的假设并不好直接用：对位于模型中间的一层，适配器上的梯度会经由后面各层的适配器依赖于 r，激活也会经由前面各层的适配器依赖于 r。不过，模型的输入数据完全不依赖于适配器的秩 r，因此可以顺着激活的前向传播，从输入层到输出层归纳地使用该定理。这样得到的、位于适配器之上的输出损失梯度，在 r 的极限下并没有别的理由在幅度上不稳定或坍缩。再沿着这条梯度做反向传播，可以用同样的方式从输出层到输入层归纳地使用该定理，在穿过每一个适配器时把梯度幅度保持在 Θr(1)。需要指出，定理 3.2 说的是 r 趋于极限时学习过程的稳定或坍缩，并没有谈论：当学习保持稳定时，不同秩学到的特征在性能上可能有什么差别。学习过程中特征的质量也会影响梯度幅度。因此，如果学到的特征质量始终依赖于 r，定理的假设就可能不成立。反过来，如果学习质量与秩无关，那么既然更大的秩要更多资源，就没有理由使用更大的秩。这些因素如何交织、定理在实践中意味着什么，以及使用修正后的缩放因子有什么好处，都需要实验来验证和考察。"
+      },
+      {
+        "text": "Here we present experimental results that show the benefits of rsLoRA when compared to LoRA, and verify the practical consequences of the theorem stating that unless γr ∈ Θr(√1 ), there is unstable or collapsing learning for sufficiently large",
+        "x": 55.4,
+        "y": 467,
+        "w": 486,
+        "h": 23.4,
+        "zh": "这里给出实验结果，说明 rsLoRA 相对 LoRA 的好处，并检验该定理的实际后果：除非 γr ∈ Θr(√1)，否则当大到一定程度时，会出现不稳定或坍缩的学习"
+      },
+      {
+        "text": "Figure 2. Fine-tuning perplexity for varying rank. We vary ranks r ∈ {4, 8, 32, 128, 512, 2048} and compare the fine-tuning performance of LoRA and rsLoRA, where higher ranks are plotted using brighter colors. We observe that LoRA models, denoted in the copper color gradient, converge to a similar loss irrespective of the rank of the adapter, with some larger ranks even performing slightly worse. In contrast, we see that our proposed method rsLoRA, denoted in the blue-to-green color gradient, unlocks improved fine-tuning performance with higher ranks.",
+        "x": 54.9,
+        "y": 177.8,
+        "w": 486.8,
+        "h": 52.8,
+        "zh": "图 2. 不同秩下的微调困惑度。我们取秩 r ∈ {4, 8, 32, 128, 512, 2048}，比较 LoRA 和 rsLoRA 的微调性能，秩越高，颜色越亮。铜色渐变表示的 LoRA，无论适配器秩是多少，都收敛到相近的损失，有些更大的秩甚至略差。蓝到绿的颜色渐变表示我们提出的 rsLoRA，更高的秩能带来更好的微调性能。"
+      },
+      {
+        "text": "To carry out our experiments with LoRA and rsLoRA, we choose a popular model and fine-tuning dataset: We fine-tune the Llama 2 model (Touvron et al., 2023) on 20,000 examples of the OpenOrca instruction tuning dataset (Mukherjee et al., 2023), using the AdamW optimizer (Loshchilov & Hutter, 2019) with the HuggingFace default learning rate of .00005 on a constant learning rate schedule. We add and optimize adapters in all linear (i.e., non-LayerNorm) attention and feed-forward MLP sub-modules of the transformer, since this has been shown to perform best with LoRA for a given parameter number budget ((Zhang et al., 2023) Appendix F). To observe the effects of varying adapter rank, we train with each ranks r ∈ {4, 8, 32, 128, 512, 2048}. To directly measure the stability of learning throughout training, we track the",
+        "x": 55.1,
+        "y": 76.9,
+        "w": 486.3,
+        "h": 81.7,
+        "zh": "实验选用一个常用模型和微调数据集：用 AdamW 优化器（Loshchilov & Hutter, 2019），在常数学习率调度上，以 HuggingFace 默认学习率 0.00005，把 Llama 2（Touvron et al., 2023）在 OpenOrca 指令微调数据集（Mukherjee et al., 2023）的 20,000 条样本上做微调。我们在 Transformer 所有线性（也就是非 LayerNorm）的注意力子模块和前馈 MLP 子模块里加入并优化适配器，因为在给定参数量预算下，这对 LoRA 效果最好（Zhang et al., 2023，附录 F）。为观察适配器秩的影响，我们对每个秩 r ∈ {4, 8, 32, 128, 512, 2048} 都做训练。为直接衡量整个训练过程中的学习稳定性，我们跟踪"
+      }
+    ],
+    "5": [
+      {
+        "text": "A Rank Stabilization Scaling Factor for Fine-Tuning with LoRA",
+        "x": 175.6,
+        "y": 737.9,
+        "w": 245.3,
+        "h": 9,
+        "zh": "一种用于 LoRA 微调的秩稳定缩放因子"
+      },
+      {
+        "text": "average parameter gradient norm (Figure 3). The study (Ding et al., 2022) asserts that fine-tuning on an increased number of parameters tends to perform better, with full-model fine-tuning consistently outperforming parameter efficient methods. Therefore we have reason to conjecture that training with larger ranks should outperform training with smaller ranks. Indeed, as illustrated in figure 2, we find that rsLoRA unlocks this performance increase for larger ranks, while LoRA’s overly aggressive scaling factor collapses and slows learning with larger ranks such that there is little to no performance difference when compared to low ranks. Validating our predictions, we illustrate in figure 3 that LoRA has collapsing gradients with higher ranks, whereas rsLoRA maintains the same gradient norm for each rank at the onset of training, while the norms remain approximately within the same order of magnitude throughout the training process.",
+        "x": 55.1,
+        "y": 607.4,
+        "w": 486.7,
+        "h": 117.6,
+        "zh": "平均参数梯度范数（图 3）。Ding et al.（2022）认为，参与微调的参数越多，效果往往越好，全模型微调一直优于参数高效方法。因此我们有理由猜想，用更大的秩训练应当优于用更小的秩。图 2 确实表明，rsLoRA 把更大秩带来的性能提升释放了出来；LoRA 过于激进的缩放因子则在较大秩下让学习坍缩并变慢，结果和低秩相比几乎没有性能差别。与我们的预测相符，图 3 显示 LoRA 在更高秩下梯度坍缩，而 rsLoRA 在训练一开始让每个秩的梯度范数相同，并且整个训练过程中这些范数大致保持在同一个数量级。"
+      },
+      {
+        "text": "Figure 3. Gradient norm for varying rank. To evaluate learning stability, we vary ranks r ∈ {4, 8, 32, 128, 512, 2048} and compare the average parameter gradient norm of LoRA and rsLoRA, where higher ranks are line-plotted brighter in color. In the copper color gradient, LoRA has collapsing gradients with higher rank. In the blue to green color gradient, rsLoRA has the same gradient norm for each rank at the onset of training, while the norms remain approximately within the same order of magnitude throughout training.",
+        "x": 54.9,
+        "y": 366.9,
+        "w": 486.7,
+        "h": 41.8,
+        "zh": "图 3. 不同秩下的梯度范数。为评估学习稳定性，我们取秩 r ∈ {4, 8, 32, 128, 512, 2048}，比较 LoRA 和 rsLoRA 的平均参数梯度范数，秩越高，折线颜色越亮。在铜色渐变中，LoRA 在更高秩下出现梯度坍缩。在蓝到绿的颜色渐变中，rsLoRA 在训练开始时各个秩的梯度范数相同，并且整个训练过程中范数大致保持在同一个数量级。"
+      },
+      {
+        "text": "To account for other potential variables, we run an extensive set of ablations, some of which we enumerate here (see appendix section B for all ablations and details):",
+        "x": 55.1,
+        "y": 330.8,
+        "w": 486.3,
+        "h": 21.9,
+        "zh": "为排除其他可能的变量，我们做了一组比较全面的消融，这里列出其中一部分（全部消融和细节见附录 B）："
+      },
+      {
+        "text": "• We repeat the experiment with a different pre-trained model, dataset and optimizer, and observe the same pattern of",
+        "x": 66.9,
+        "y": 304.4,
+        "w": 474.5,
+        "h": 10,
+        "zh": "• 换一个预训练模型、数据集和优化器重复该实验，观察到同样的模式"
+      },
+      {
+        "text": "• We observe the same pattern of stability in gradient norms with SGD, to control for any additional stabilization effects that may have been caused by AdamW or other adaptive optimizers used in practice.",
+        "x": 66.9,
+        "y": 259.5,
+        "w": 474.5,
+        "h": 21.9,
+        "zh": "• 用 SGD 时，梯度范数也呈现同样的稳定模式。这是为了控制 AdamW 或其他实践中常用的自适应优化器可能额外带来的稳定作用。"
+      },
+      {
+        "text": "• We sweep through learning rates for LoRA with rank 4, and get that performance cannot match that of rsLoRA with high rank with the default learning rate, showing that the increased capacity is a requirement for improved learning, and the larger γr of rsLoRA is not just acting as a learning rate boost.",
+        "x": 66.9,
+        "y": 213.1,
+        "w": 475.8,
+        "h": 35.4,
+        "zh": "• 我们对秩为 4 的 LoRA 扫描学习率，得到的性能仍然比不上使用默认学习率的高秩 rsLoRA。这说明要学得更好，增加容量是必要条件；rsLoRA 里更大的 γr 并不只是在放大学习率。"
+      },
+      {
+        "text": "• Using adapters in just the attention modules, which is commonly used with LoRA, gives similar results.",
+        "x": 66.9,
+        "y": 193.7,
+        "w": 422.1,
+        "h": 10,
+        "zh": "• 只在注意力模块里使用适配器（这是 LoRA 的常见用法），结果类似。"
+      },
+      {
+        "text": "• If instead of reparameterizing the adapters with a scaling factor we only rank-correct the initialization of the adapter, we observe that learning becomes unstable during training for larger ranks.",
+        "x": 66.9,
+        "y": 160.7,
+        "w": 475.8,
+        "h": 21.9,
+        "zh": "• 如果不用缩放因子重新参数化适配器，而只对适配器的初始化做秩校正，我们观察到更大的秩在训练过程中会变得不稳定。"
+      },
+      {
+        "text": "In this paper we theoretically derived a rank correcting factor for scaling additive adapters when fine-tuning, and experimentally validated the approach. We showed that, in direct contrast to LoRA, learning with the proposed rank-stabilized adapters method remains stable and non-collapsing even for very large adapter ranks, allowing one to achieve better performance using larger ranks. This allows for unrestricted parameter efficiency, where one can use the maximum rank possible given an",
+        "x": 55.4,
+        "y": 76.9,
+        "w": 487.7,
+        "h": 45.8,
+        "zh": "本文从理论上推导了微调时用于缩放加性适配器的秩校正因子，并用实验验证了这一做法。我们表明，与 LoRA 直接相反：使用所提出的秩稳定适配器时，即使适配器秩非常大，学习仍然稳定、不会坍缩，因此可以用更大的秩取得更好的性能。这使得参数效率不受限制：可以在给定的"
+      }
+    ],
+    "6": [
+      {
+        "text": "A Rank Stabilization Scaling Factor for Fine-Tuning with LoRA",
+        "x": 175.6,
+        "y": 737.9,
+        "w": 245.3,
+        "h": 9,
+        "zh": "一种用于 LoRA 微调的秩稳定缩放因子"
+      },
+      {
+        "text": "available memory budget to obtain the best fine-tuning performance. Our findings motivate further studies into the effects of the learning manifold intrinsic dimensionality in the context of fine tuning, since the implications of the original LoRA work inaccurately suggests and purveys the idea that very low ranks suffice when aiming to maximize fine-tuning performance. Possible avenues for future work include investigation of the proposed correction factor’s use in the AdaLoRA method (Zhang et al., 2023), which currently employs the same scaling factor for adapters as in conventional LoRA. Since any adapter is free to potentially be of full rank, the method may be more useful when built on rsLoRA instead of LoRA. Based on our results, we conjecture that AdaLoRA with rsLoRA should see increased fine-tuning performance, with substantial improvements in the case of higher rank budgets.",
+        "x": 55.1,
+        "y": 625.3,
+        "w": 486.7,
+        "h": 99.6,
+        "zh": "可用内存预算下使用尽可能大的秩，以取得最好的微调性能。这些结果促使进一步研究微调场景里学习流形的内在维度有什么影响，因为原始 LoRA 工作的含义并不准确，它暗示并传播了这样一种看法：若要把微调性能做到最好，很低的秩就够了。今后可以考察所提出的校正因子用在 AdaLoRA（Zhang et al., 2023）中的效果；AdaLoRA 目前对适配器使用的缩放因子与常规 LoRA 相同。任何适配器都可能取到满秩，因此这个方法建立在 rsLoRA 上，而不是 LoRA 上，可能会更有用。基于我们的结果，我们猜想 AdaLoRA 与 rsLoRA 一起使用时微调性能会提高，秩预算较高时改进会相当明显。"
+      },
+      {
+        "text": "Aghajanyan, A., Zettlemoyer, L., and Gupta, S. Intrinsic dimensionality explains the effectiveness of language model",
+        "x": 55.4,
+        "y": 578.8,
+        "w": 486,
+        "h": 10,
+        "zh": "Aghajanyan, A., Zettlemoyer, L., and Gupta, S. 内在维度解释了语言模型的有效性"
+      },
+      {
+        "text": "Bommasani, R., Hudson, D. A., Adeli, E., Altman, R. B., Arora, S., von Arx, S., Bernstein, M. S., Bohg, J., Bosselut, A., Brunskill, E., Brynjolfsson, E., Buch, S., Card, D., Castellon, R., Chatterji, N. S., Chen, A. S., Creel, K., Davis, J. Q., Demszky, D., Donahue, C., Doumbouya, M., Durmus, E., Ermon, S., Etchemendy, J., Ethayarajh, K., Fei-Fei, L., Finn, C., Gale, T., Gillespie, L., Goel, K., Goodman, N. D., Grossman, S., Guha, N., Hashimoto, T., Henderson, P., Hewitt, J., Ho, D. E., Hong, J., Hsu, K., Huang, J., Icard, T., Jain, S., Jurafsky, D., Kalluri, P., Karamcheti, S., Keeling, G., Khani, F., Khattab, O., Koh, P. W., Krass, M. S., Krishna, R., Kuditipudi, R., and et al. On the opportunities and risks of foundation models. CoRR, abs/2108.07258, 2021. URL https://arxiv.org/abs/2108.07258.",
+        "x": 55.4,
+        "y": 473.2,
+        "w": 487.3,
+        "h": 81.7,
+        "zh": "Bommasani, R., Hudson, D. A., Adeli, E., Altman, R. B., Arora, S., von Arx, S., Bernstein, M. S., Bohg, J., Bosselut, A., Brunskill, E., Brynjolfsson, E., Buch, S., Card, D., Castellon, R., Chatterji, N. S., Chen, A. S., Creel, K., Davis, J. Q., Demszky, D., Donahue, C., Doumbouya, M., Durmus, E., Ermon, S., Etchemendy, J., Ethayarajh, K., Fei-Fei, L., Finn, C., Gale, T., Gillespie, L., Goel, K., Goodman, N. D., Grossman, S., Guha, N., Hashimoto, T., Henderson, P., Hewitt, J., Ho, D. E., Hong, J., Hsu, K., Huang, J., Icard, T., Jain, S., Jurafsky, D., Kalluri, P., Karamcheti, S., Keeling, G., Khani, F., Khattab, O., Koh, P. W., Krass, M. S., Krishna, R., Kuditipudi, R., and et al. 论基础模型的机遇与风险。 CoRR, abs/2108.07258, 2021. URL https://arxiv.org/abs/2108.07258."
+      },
+      {
+        "text": "Cobbe, K., Kosaraju, V., Bavarian, M., Chen, M., Jun, H., Kaiser, L., Plappert, M., Tworek, J., Hilton, J., Nakano, R., Hesse, C., and Schulman, J. Training verifiers to solve math word problems, 2021.",
+        "x": 55.4,
+        "y": 439.4,
+        "w": 487.2,
+        "h": 21.9,
+        "zh": "Cobbe, K., Kosaraju, V., Bavarian, M., Chen, M., Jun, H., Kaiser, L., Plappert, M., Tworek, J., Hilton, J., Nakano, R., Hesse, C., and Schulman, J. 训练验证器来解答数学应用题，2021。"
+      },
+      {
+        "text": "Ding, N., Qin, Y., Yang, G., Wei, F., Yang, Z., Su, Y., Hu, S., Chen, Y., Chan, C.-M., Chen, W., Yi, J., Zhao, W., Wang, X., Liu, Z., Zheng, H.-T., Chen, J., Liu, Y., Tang, J., Li, J., and Sun, M. Delta tuning: A comprehensive study of parameter efficient methods for pre-trained language models, 2022.",
+        "x": 55.4,
+        "y": 393.6,
+        "w": 487.2,
+        "h": 33.9,
+        "zh": "Ding, N., Qin, Y., Yang, G., Wei, F., Yang, Z., Su, Y., Hu, S., Chen, Y., Chan, C.-M., Chen, W., Yi, J., Zhao, W., Wang, X., Liu, Z., Zheng, H.-T., Chen, J., Liu, Y., Tang, J., Li, J., and Sun, M. Delta tuning：预训练语言模型参数高效方法的综合研究，2022。"
+      },
+      {
+        "text": "Edalati, A., Tahaei, M., Kobyzev, I., Nia, V. P., Clark, J. J., and Rezagholizadeh, M. Krona: Parameter efficient tuning with kronecker adapter, 2022.",
+        "x": 55.4,
+        "y": 359.7,
+        "w": 486,
+        "h": 21.9,
+        "zh": "Edalati, A., Tahaei, M., Kobyzev, I., Nia, V. P., Clark, J. J., and Rezagholizadeh, M. Krona：用 Kronecker 适配器做参数高效调优，2022。"
+      },
+      {
+        "text": "Houlsby, N., Giurgiu, A., Jastrzebski, S., Morrone, B., De Laroussilhe, Q., Gesmundo, A., Attariyan, M., and Gelly, S. Parameter-efficient transfer learning for NLP. In Chaudhuri, K. and Salakhutdinov, R. (eds.), Proceedings of the 36th International Conference on Machine Learning, volume 97 of Proceedings of Machine Learning Research, pp. 2790–2799. PMLR, 09–15 Jun 2019. URL https://proceedings.mlr.press/v97/houlsby19a.html.",
+        "x": 55.4,
+        "y": 302,
+        "w": 487.7,
+        "h": 45.8,
+        "zh": "Houlsby, N., Giurgiu, A., Jastrzebski, S., Morrone, B., De Laroussilhe, Q., Gesmundo, A., Attariyan, M., and Gelly, S. 面向 NLP 的参数高效迁移学习。 载于 Chaudhuri, K. 与 Salakhutdinov, R.（编）， Proceedings of the 36th International Conference on Machine Learning, Proceedings of Machine Learning Research 第 97 卷，第 2790–2799 页。 PMLR，2019 年 6 月 9–15 日。 URL https://proceedings.mlr.press/v97/houlsby19a.html."
+      },
+      {
+        "text": "Hu, E. J., yelong shen, Wallis, P., Allen-Zhu, Z., Li, Y., Wang, S., Wang, L., and Chen, W. LoRA: Low-rank adaptation of large language models. In International Conference on Learning Representations, 2022. URL https://openreview. net/forum?id=nZeVKeeFYf9.",
+        "x": 55.4,
+        "y": 256.1,
+        "w": 490.2,
+        "h": 33.9,
+        "zh": "Hu, E. J., yelong shen, Wallis, P., Allen-Zhu, Z., Li, Y., Wang, S., Wang, L., and Chen, W. LoRA：大语言模型的低秩适配。 载于 International Conference on Learning Representations，2022。 URL https://openreview.net/forum?id=nZeVKeeFYf9."
+      },
+      {
+        "text": "Hyeon-Woo, N., Ye-Bin, M., and Oh, T.-H. Fedpara: Low-rank hadamard product for communication-efficient federated",
+        "x": 55.4,
+        "y": 234.2,
+        "w": 486,
+        "h": 10,
+        "zh": "Hyeon-Woo, N., Ye-Bin, M., and Oh, T.-H. Fedpara：面向通信高效联邦的低秩 Hadamard 积"
+      },
+      {
+        "text": "Li, C., Farkhoor, H., Liu, R., and Yosinski, J. Measuring the intrinsic dimension of objective landscapes, 2018.",
+        "x": 55.4,
+        "y": 200.4,
+        "w": 441.5,
+        "h": 10,
+        "zh": "Li, C., Farkhoor, H., Liu, R., and Yosinski, J. 测量目标函数景观的内在维度，2018。"
+      },
+      {
+        "text": "Liang, J., Huang, W., Xia, F., Xu, P., Hausman, K., Ichter, B., Florence, P., and Zeng, A. Code as policies: Language model programs for embodied control, 2023.",
+        "x": 55.4,
+        "y": 166.5,
+        "w": 486,
+        "h": 21.9,
+        "zh": "Liang, J., Huang, W., Xia, F., Xu, P., Hausman, K., Ichter, B., Florence, P., and Zeng, A. 代码即策略：用于具身控制的语言模型程序，2023。"
+      },
+      {
+        "text": "Liu, H., Tam, D., Muqeeth, M., Mohta, J., Huang, T., Bansal, M., and Raffel, C. Few-shot parameter-efficient fine-tuning is better and cheaper than in-context learning, 2022.",
+        "x": 55.4,
+        "y": 132.7,
+        "w": 486,
+        "h": 21.9,
+        "zh": "Liu, H., Tam, D., Muqeeth, M., Mohta, J., Huang, T., Bansal, M., and Raffel, C. 少样本参数高效微调比上下文学习更好，也更便宜，2022。"
+      },
+      {
+        "text": "Loshchilov, I. and Hutter, F. Decoupled weight decay regularization, 2019.",
+        "x": 55.4,
+        "y": 110.8,
+        "w": 298.6,
+        "h": 10,
+        "zh": "Loshchilov, I. and Hutter, F. 解耦的权重衰减正则，2019。"
+      },
+      {
+        "text": "Mukherjee, S., Mitra, A., Jawahar, G., Agarwal, S., Palangi, H., and Awadallah, A. Orca: Progressive learning from complex explanation traces of gpt-4, 2023.",
+        "x": 55.4,
+        "y": 76.9,
+        "w": 486.3,
+        "h": 21.9,
+        "zh": "Mukherjee, S., Mitra, A., Jawahar, G., Agarwal, S., Palangi, H., and Awadallah, A. Orca：从 GPT-4 的复杂解释轨迹中渐进学习，2023。"
+      }
+    ],
+    "7": [
+      {
+        "text": "A Rank Stabilization Scaling Factor for Fine-Tuning with LoRA",
+        "x": 175.6,
+        "y": 737.9,
+        "w": 245.3,
+        "h": 9,
+        "zh": "一种用于 LoRA 微调的秩稳定缩放因子"
+      },
+      {
+        "text": "Ouyang, L., Wu, J., Jiang, X., Almeida, D., Wainwright, C., Mishkin, P., Zhang, C., Agarwal, S., Slama, K., Ray, A., et al. Training language models to follow instructions with human feedback. Advances in Neural Information Processing",
+        "x": 55.4,
+        "y": 703,
+        "w": 487.7,
+        "h": 21.9,
+        "zh": "Ouyang, L., Wu, J., Jiang, X., Almeida, D., Wainwright, C., Mishkin, P., Zhang, C., Agarwal, S., Slama, K., Ray, A., et al. 用人类反馈训练语言模型遵循指令。 Advances in Neural Information Processing"
+      },
+      {
+        "text": "Rasmy, L., Xiang, Y., Xie, Z., Tao, C., and Zhi, D. Med-bert: pretrained contextualized embeddings on large-scale structured",
+        "x": 55.4,
+        "y": 671.1,
+        "w": 486,
+        "h": 10,
+        "zh": "Rasmy, L., Xiang, Y., Xie, Z., Tao, C., and Zhi, D. Med-bert：在大规模结构化数据上预训练的上下文嵌入"
+      },
+      {
+        "text": "electronic health records for disease prediction. NPJ digital medicine, 4(1):86, 2021.",
+        "x": 65.4,
+        "y": 659.2,
+        "w": 338.1,
+        "h": 10,
+        "zh": "用于疾病预测的电子健康记录。 NPJ digital medicine, 4(1):86, 2021."
+      },
+      {
+        "text": "Shazeer, N. and Stern, M. Adafactor: Adaptive learning rates with sublinear memory cost, 2018.",
+        "x": 55.4,
+        "y": 639.3,
+        "w": 385.1,
+        "h": 10,
+        "zh": "Shazeer, N. and Stern, M. Adafactor：亚线性内存开销的自适应学习率，2018。"
+      },
+      {
+        "text": "Touvron, H., Martin, L., Stone, K., Albert, P., Almahairi, A., Babaei, Y., Bashlykov, N., Batra, S., Bhargava, P., Bhosale, S., Bikel, D., Blecher, L., Ferrer, C. C., Chen, M., Cucurull, G., Esiobu, D., Fernandes, J., Fu, J., Fu, W., Fuller, B., Gao, C., Goswami, V., Goyal, N., Hartshorn, A., Hosseini, S., Hou, R., Inan, H., Kardas, M., Kerkez, V., Khabsa, M., Kloumann, I., Korenev, A., Koura, P. S., Lachaux, M.-A., Lavril, T., Lee, J., Liskovich, D., Lu, Y., Mao, Y., Martinet, X., Mihaylov, T., Mishra, P., Molybog, I., Nie, Y., Poulton, A., Reizenstein, J., Rungta, R., Saladi, K., Schelten, A., Silva, R., Smith, E. M., Subramanian, R., Tan, X. E., Tang, B., Taylor, R., Williams, A., Kuan, J. X., Xu, P., Yan, Z., Zarov, I., Zhang, Y., Fan, A., Kambadur, M., Narang, S., Rodriguez, A., Stojnic, R., Edunov, S., and Scialom, T. Llama 2: Open foundation",
+        "x": 55.4,
+        "y": 547.6,
+        "w": 487.2,
+        "h": 81.7,
+        "zh": "Touvron, H., Martin, L., Stone, K., Albert, P., Almahairi, A., Babaei, Y., Bashlykov, N., Batra, S., Bhargava, P., Bhosale, S., Bikel, D., Blecher, L., Ferrer, C. C., Chen, M., Cucurull, G., Esiobu, D., Fernandes, J., Fu, J., Fu, W., Fuller, B., Gao, C., Goswami, V., Goyal, N., Hartshorn, A., Hosseini, S., Hou, R., Inan, H., Kardas, M., Kerkez, V., Khabsa, M., Kloumann, I., Korenev, A., Koura, P. S., Lachaux, M.-A., Lavril, T., Lee, J., Liskovich, D., Lu, Y., Mao, Y., Martinet, X., Mihaylov, T., Mishra, P., Molybog, I., Nie, Y., Poulton, A., Reizenstein, J., Rungta, R., Saladi, K., Schelten, A., Silva, R., Smith, E. M., Subramanian, R., Tan, X. E., Tang, B., Taylor, R., Williams, A., Kuan, J. X., Xu, P., Yan, Z., Zarov, I., Zhang, Y., Fan, A., Kambadur, M., Narang, S., Rodriguez, A., Stojnic, R., Edunov, S., and Scialom, T. Llama 2：开放基础"
+      },
+      {
+        "text": "Wang, B. and Komatsuzaki, A. GPT-J-6B: A 6 Billion Parameter Autoregressive Language Model. https://github.",
+        "x": 55.4,
+        "y": 515.7,
+        "w": 490.2,
+        "h": 10,
+        "zh": "Wang, B. and Komatsuzaki, A. GPT-J-6B：一个 60 亿参数的自回归语言模型。 https://github."
+      },
+      {
+        "text": "com/kingoflolz/mesh-transformer-jax, May 2021.",
+        "x": 65.4,
+        "y": 503.8,
+        "w": 258.4,
+        "h": 10,
+        "zh": "com/kingoflolz/mesh-transformer-jax, 2021 年 5 月。"
+      },
+      {
+        "text": "Yang, G. and Hu, E. J. Feature learning in infinite-width neural networks, 2022.",
+        "x": 55.4,
+        "y": 483.8,
+        "w": 318.5,
+        "h": 10,
+        "zh": "Yang, G. and Hu, E. J. 无限宽神经网络中的特征学习，2022。"
+      },
+      {
+        "text": "Zaken, E. B., Ravfogel, S., and Goldberg, Y. Bitfit: Simple parameter-efficient fine-tuning for transformer-based masked",
+        "x": 55.4,
+        "y": 463.9,
+        "w": 486,
+        "h": 10,
+        "zh": "Zaken, E. B., Ravfogel, S., and Goldberg, Y. Bitfit：一种简单的参数高效微调，用于基于 Transformer 的掩码"
+      },
+      {
+        "text": "Zhang, Q., Chen, M., Bukharin, A., He, P., Cheng, Y., Chen, W., and Zhao, T. Adaptive budget allocation for parameter-",
+        "x": 55.4,
+        "y": 432,
+        "w": 487.7,
+        "h": 10,
+        "zh": "Zhang, Q., Chen, M., Bukharin, A., He, P., Cheng, Y., Chen, W., and Zhao, T. 面向参数的自适应预算分配"
+      },
+      {
+        "text": "Zhu, W., Liu, H., Dong, Q., Xu, J., Huang, S., Kong, L., Chen, J., and Li, L. Multilingual machine translation with large",
+        "x": 55.4,
+        "y": 400.2,
+        "w": 486,
+        "h": 10,
+        "zh": "Zhu, W., Liu, H., Dong, Q., Xu, J., Huang, S., Kong, L., Chen, J., and Li, L. 借助大型……的多语言机器翻译"
+      },
+      {
+        "text": "language models: Empirical results and analysis, 2023.",
+        "x": 65.4,
+        "y": 388.2,
+        "w": 219.8,
+        "h": 10,
+        "zh": "语言模型：实证结果与分析，2023。"
+      }
+    ],
+    "8": [
+      {
+        "text": "A Rank Stabilization Scaling Factor for Fine-Tuning with LoRA",
+        "x": 175.6,
+        "y": 737.9,
+        "w": 245.3,
+        "h": 9,
+        "zh": "一种用于 LoRA 微调的秩稳定缩放因子"
+      },
+      {
+        "text": "Theorem. Let the LoRA adapters be of the form γrBA, where B ∈ R",
+        "x": 55.1,
+        "y": 694.1,
+        "w": 293.7,
+        "h": 11.5,
+        "zh": "定理. 设 LoRA 适配器形如 γrBA，其中 B ∈ R"
+      },
+      {
+        "text": "are initialised such that B is initially 0d1×r, entries of A are iid with mean 0 and variance σA not depending on r, and γr ∈ R is such that γr −→ 0.",
+        "x": 55.4,
+        "y": 681.2,
+        "w": 486,
+        "h": 24.4,
+        "zh": "初始化满足：B 最初为 0d1×r，A 的元素独立同分布，均值为 0，方差 σA 不依赖于 r，且 γr ∈ R 满足 γr −→ 0。"
+      },
+      {
+        "text": "In expectation over initialization, assuming the inputs to the adapter are iid distributed such that the m’th moment is Θr(1) in each entry, we have that the m’th moment of the outputs of the adapter is Θr(1) in each entry if and only if",
+        "x": 55.3,
+        "y": 648.8,
+        "w": 487.3,
+        "h": 23.4,
+        "zh": "在对初始化取期望的意义下，假设适配器输入独立同分布，且每个元素的第 m 阶矩为 Θr(1)，则适配器输出每个元素的第 m 阶矩为 Θr(1)，当且仅当"
+      },
+      {
+        "text": "In expectation over initialization, assuming the loss gradient to the adapter outputs are Θr(1) in each entry, we have that the loss gradients into the input of the adapter are Θr(1) in each entry if and only if",
+        "x": 55.3,
+        "y": 575.3,
+        "w": 486.2,
+        "h": 23.4,
+        "zh": "在对初始化取期望的意义下，假设损失对适配器输出的梯度在每个元素上为 Θr(1)，则进入适配器输入的损失梯度在每个元素上为 Θr(1)，当且仅当"
+      },
+      {
+        "text": "In particular, the above holds at any point in the learning trajectory if the assumptions do, and unless γr ∈ Θr(√1 ), there is unstable or collapsing learning for r large enough.",
+        "x": 55.3,
+        "y": 507,
+        "w": 486.2,
+        "h": 24.1,
+        "zh": "特别地，只要假设成立，上述结论在学习轨迹的任意一点都成立；除非 γr ∈ Θr(√1)，否则当 r 足够大时，学习会不稳定或发生坍缩。"
+      },
+      {
+        "text": "Proof of theorem 3.2. Let f(x) = γrBAx, and L(f(x)) denote the loss. let Bn, An denote B, A after the n th SGD update on input xn with learning rate η. Recall that B0 = 0d×r, and see that for vn = ∇f(xn)L(f(xn)):",
+        "x": 55.4,
+        "y": 447.3,
+        "w": 486,
+        "h": 42.6,
+        "zh": "定理 3.2 的证明. 令 f(x) = γrBAx，L(f(x)) 表示损失。令 Bn、An 表示在输入 xn 上、以学习率 η 做完第 n 次 SGD 更新之后的 B 和 A。回忆 B0 = 0d×r，并对 vn = ∇f(xn)L(f(xn)) 可以看到："
+      },
+      {
+        "text": "If we take the expectation of the initialization A0, noting that",
+        "x": 55.4,
+        "y": 231.8,
+        "w": 243.3,
+        "h": 11.5,
+        "zh": "如果对初始化 A0 取期望，并注意到"
+      },
+      {
+        "text": "(Backward pass:) On a new input xn, the gradient",
+        "x": 55.1,
+        "y": 115.1,
+        "w": 199.2,
+        "h": 11.5,
+        "zh": "（反向传播：）在新输入 xn 上，梯度"
+      }
+    ],
+    "9": [
+      {
+        "text": "A Rank Stabilization Scaling Factor for Fine-Tuning with LoRA",
+        "x": 175.6,
+        "y": 737.9,
+        "w": 245.3,
+        "h": 9,
+        "zh": "一种用于 LoRA 微调的秩稳定缩放因子"
+      },
+      {
+        "text": "(Forward pass:) On a new input xn, use the assumption that the inputs are iid with moments Θr(1) to note Ex((xk xn) ) ∈ Θr(1). Then, the assumptions γr → 0 and the above numbered equation give",
+        "x": 55.1,
+        "y": 701.5,
+        "w": 486.4,
+        "h": 23.4,
+        "zh": "（前向传播：）对新输入 xn，由输入独立同分布且矩为 Θr(1) 的假设，可知 Ex((xk xn)) ∈ Θr(1)。再由假设 γr → 0 以及上面的编号公式，得到"
+      },
+      {
+        "text": "vk Ex((xk xn) ) + Or((γrr) ) ∈ Θr((γrr) ).",
+        "x": 289.7,
+        "y": 669.2,
+        "w": 198.4,
+        "h": 12.4,
+        "zh": ""
+      },
+      {
+        "text": "For this to not be unstable or collapse in the limit of r → ∞, we need Θr((γrr) ) = Θr(1) or equivalently",
+        "x": 55.4,
+        "y": 637.1,
+        "w": 430.1,
+        "h": 12.4,
+        "zh": "要想在 r → ∞ 的极限下不出现不稳定或坍缩，需要 Θr((γrr)) = Θr(1)，或者等价地"
+      },
+      {
+        "text": "For all experiments including those in the main text, we use a batch size of 32 and a context window size of 512.",
+        "x": 55.4,
+        "y": 559.2,
+        "w": 448.5,
+        "h": 10,
+        "zh": "包括正文在内的全部实验，批大小都是 32，上下文窗口长度都是 512。"
+      },
+      {
+        "text": "To rule out any stabilizing effects from AdamW, and since the theorem is done for SGD, we check the parameter gradient norm stability for rsLoRA vs LoRA when training with SGD. We pick a high but stable learning rate of .0001 and observe a similar pattern of stability as in figure 3:",
+        "x": 55.1,
+        "y": 491.5,
+        "w": 486.3,
+        "h": 33.9,
+        "zh": "为了排除 AdamW 可能带来的稳定作用，也因为定理是对 SGD 给出的，我们在用 SGD 训练时比较 rsLoRA 与 LoRA 的参数梯度范数是否稳定。我们选了一个偏高、但仍然稳定的学习率 0.0001，观察到的稳定模式与图 3 类似："
+      },
+      {
+        "text": "Figure 4. Gradient norm for varying rank with SGD. To observe learning stability, we vary ranks r ∈ {4, 8, 32, 128, 512, 2048} and compare the average parameter gradient norm of LoRA and rsLoRA, where higher ranks are line-plotted brighter in color. We also shade in the region in between the minimum and maximum rank for each method in its corresponding color scheme. In the copper color gradient, LoRA gradient has collapsing gradients with higher rank. In the blue to green color gradient, rsLoRA has the same gradient norm for each rank at the start of training, and the norms remain within the same order of magnitude throughout training. We observe even greater stability of rsLoRA with SGD, as all ranks stay at nearly the same norm value for about 100 steps into the learning trajectory.",
+        "x": 54.9,
+        "y": 244.2,
+        "w": 487.6,
+        "h": 63.8,
+        "zh": "图 4. 使用 SGD 时不同秩下的梯度范数。为观察学习稳定性，我们取秩 r ∈ {4, 8, 32, 128, 512, 2048}，比较 LoRA 和 rsLoRA 的平均参数梯度范数，秩越高，折线颜色越亮。我们还按各自的配色，把每种方法最小秩和最大秩之间的区域涂上阴影。在铜色渐变中，LoRA 的梯度随秩升高而坍缩。在蓝到绿的颜色渐变中，rsLoRA 在训练开始时各个秩的梯度范数相同，并且整个训练过程中范数保持在同一个数量级。用 SGD 时 rsLoRA 甚至更稳定：进入学习轨迹大约 100 步时，所有秩的范数仍然几乎相同。"
+      },
+      {
+        "text": "To show the generality of the results, we re-run training with a different model, optimizer, and fine-tuning dataset. We train the 6 billion parameter GPT-J (Wang & Komatsuzaki, 2021) on the GSM8k benchmark dataset, which consists of grade school math word problems (Cobbe et al., 2021). We use the adaptive optimizer Adafactor (Shazeer & Stern, 2018). The results plotted below show that our findings do indeed translate to this completely different setting.",
+        "x": 55.1,
+        "y": 152.8,
+        "w": 486.3,
+        "h": 45.8,
+        "zh": "为说明这些结果是否普遍，我们换了模型、优化器和微调数据集重新训练。我们在 GSM8k 基准上训练 60 亿参数的 GPT-J（Wang & Komatsuzaki, 2021）。GSM8k 由小学数学应用题组成（Cobbe et al., 2021）。优化器使用自适应方法 Adafactor（Shazeer & Stern, 2018）。下面的结果表明，我们的发现在这个完全不同的设定里同样成立。"
+      }
+    ],
+    "10": [
+      {
+        "text": "A Rank Stabilization Scaling Factor for Fine-Tuning with LoRA",
+        "x": 175.6,
+        "y": 737.9,
+        "w": 245.3,
+        "h": 9,
+        "zh": "一种用于 LoRA 微调的秩稳定缩放因子"
+      },
+      {
+        "text": "Figure 5. GPT-J finetuned on GSM8k with Adafactor. We vary ranks r ∈ {4, 8, 32, 128, 512, 2048}. Blue-green gradient is used for rsLoRA, and copper for LoRA, where for each, brighter color indicates higher rank. In the gradient norm plot, we also shade in the region in between the minimum and maximum rank for each method in its corresponding color scheme. We see the same pattern of results, where training for larger ranks does not change performance with LoRA (in fact, here all LoRA training curves overlap to look like a single run) but unlocks additional fine-tuning performance with rsLoRA. We also see that the parameter gradient norm for each rank is similar with rsLoRA and different orders of magnitude with LoRA, which collapses learning at higher ranks.",
+        "x": 54.9,
+        "y": 506.7,
+        "w": 487.6,
+        "h": 63.8,
+        "zh": "图 5. 用 Adafactor 在 GSM8k 上微调的 GPT-J。秩取 r ∈ {4, 8, 32, 128, 512, 2048}。rsLoRA 用蓝–绿渐变，LoRA 用铜色；颜色越亮表示秩越高。在梯度范数图里，我们也按各自配色，把每种方法最小秩和最大秩之间的区域涂上阴影。结果的模式相同：用 LoRA 时，更大的秩并不改变性能（这里所有 LoRA 的训练曲线叠在一起，看起来像只跑了一次），而 rsLoRA 能靠更大的秩得到额外的微调性能。还可以看到，rsLoRA 各个秩的参数梯度范数彼此接近，LoRA 则相差若干个数量级，更高的秩会让学习坍缩。"
+      },
+      {
+        "text": "Here we examine training performance where instead of reparameterizing the adapters with a scaling factor, we only rank-correct the initialization of the adapter. We examine this in two ways by looking at rank 4 and 2048: First we do not use any scaling factor at all and just scale the initialization of the matrix A by √1 . With this, although the gradient norms are the same magnitude at initialization for rank 4 and 2048, we observed that training perplexity becomes unstable during training for rank 2048. Secondly, we scale the initialization of the matrix A by √1 but also use the LoRA scaling factor of 1 to scale adapters. This shows the same sub-optimal training as with LoRA, and that the initialization cannot correct for this.",
+        "x": 55.4,
+        "y": 376,
+        "w": 486.3,
+        "h": 90.2,
+        "zh": "这里考察另一种训练：不用缩放因子重新参数化适配器，只对适配器的初始化做秩校正。我们用秩 4 和 2048 从两方面看。首先完全不用缩放因子，只把矩阵 A 的初始化按 √1 缩放。这时秩 4 和 2048 在初始化处的梯度范数量级相同，但我们观察到秩 2048 的训练困惑度在训练过程中变得不稳定。其次，把矩阵 A 的初始化按 √1 缩放，同时仍用 LoRA 的缩放因子 1 去缩放适配器。这和 LoRA 一样，训练仍然不理想，说明初始化纠正不了这一点。"
+      },
+      {
+        "text": "Figure 6. Training with scaled initialization for ranks 4 (darker) and 2048 (brighter). On the left we plot the result of not using any scaling factor at all and just scaling the initialization by √1 . We observe that learning becomes unstable during training for rank 2048. On the right we plot the result of scaling the initialization but use the LoRA adapter scaling factor of",
+        "x": 54.9,
+        "y": 174.8,
+        "w": 486.8,
+        "h": 33.1,
+        "zh": "图 6. 秩 4（颜色较深）和秩 2048（颜色较亮）在缩放初始化下的训练。左图是完全不用缩放因子、只把初始化按 √1 缩放的结果。我们观察到秩 2048 在训练过程中变得不稳定。右图是对初始化做了缩放、但仍使用 LoRA 适配器缩放因子"
+      },
+      {
+        "text": ". This shows the same sub-optimal learning for high rank as training with LoRA, and that the initialization cannot correct for this.",
+        "x": 55.4,
+        "y": 163.9,
+        "w": 486,
+        "h": 19.9,
+        "zh": "。这和用 LoRA 训练时一样，高秩下的学习仍然不理想，初始化纠正不了这一点。"
+      }
+    ],
+    "11": [
+      {
+        "text": "A Rank Stabilization Scaling Factor for Fine-Tuning with LoRA",
+        "x": 175.6,
+        "y": 737.9,
+        "w": 245.3,
+        "h": 9,
+        "zh": "一种用于 LoRA 微调的秩稳定缩放因子"
+      },
+      {
+        "text": "B.4. Learning Rate for Low Rank is Not Enough",
+        "x": 55.4,
+        "y": 715,
+        "w": 205.4,
+        "h": 10,
+        "zh": "B.4. 低秩下只调学习率并不够"
+      },
+      {
+        "text": "To definitively show that higher ranks are required for better learning, and that the larger γr of rsLoRA is not just acting as a learning rate boost, we sweep through learning rates in {5 × 10",
+        "x": 55.1,
+        "y": 684.4,
+        "w": 486.3,
+        "h": 21.9,
+        "zh": "为了明确说明更好的学习确实需要更高的秩，并且 rsLoRA 里更大的 γr 并不只是在放大学习率，我们在学习率集合 {5 × 10 上做扫描"
+      },
+      {
+        "text": ": −5 < n < −1} for LoRA with rank 4, and compare to rank 2048 with rsLoRA. We get that the best performance with rank 4 adapters (at learning rate .0005), reaching 1.863 perplexity, cannot match that of rsLoRA with high rank with the default learning rate, which reaches 1.836 perplexity, showing that rsLoRA and the increased capacity of higher ranks is a requirement for improved learning.",
+        "x": 54.7,
+        "y": 648.5,
+        "w": 487.1,
+        "h": 45.8,
+        "zh": "：−5 < n < −1} 中，对秩为 4 的 LoRA 做扫描，并与秩为 2048 的 rsLoRA 比较。秩为 4 的适配器在学习率 0.0005 时表现最好，困惑度为 1.863，仍然比不上使用默认学习率的高秩 rsLoRA，后者困惑度为 1.836。这说明 rsLoRA 以及更高秩所增加的容量，是把学习效果做上去所必需的。"
+      },
+      {
+        "text": "We ablated using adapters in all modules and observed that putting rsLoRA in the attention modules only results in a similar effect; The larger rank still trains better for rsLoRA and does not for LoRA, and the gradient norms of trained parameters are still collapsing in the same way with LoRA when rank is large.",
+        "x": 55,
+        "y": 580.8,
+        "w": 486.6,
+        "h": 33.9,
+        "zh": "我们消融了在所有模块中使用适配器的做法，观察到把 rsLoRA 放在注意力模块里，得到的效果是类似的：对 rsLoRA，更大的秩仍然训得更好，对 LoRA 则不会；秩很大时，LoRA 已训练参数的梯度范数仍以同样的方式坍缩。"
+      },
+      {
+        "text": "Figure 7. Llama 2 7B with adapters only in attention modules. We vary ranks r ∈ {4, 8, 32, 128, 512, 2048}. Blue-green gradient is used for rsLoRA, and copper for LoRA, where for each, brighter color indicates higher rank. In the gradient norm plot, we also shade in the region in between the minimum and maximum rank for each method in its corresponding color scheme. We observe very similar results as the rest of our experiments, where we train with adapters in all MLP and attention modules.",
+        "x": 54.9,
+        "y": 348.2,
+        "w": 486.7,
+        "h": 41.8,
+        "zh": "图 7. 只在注意力模块中放置适配器的 Llama 2 7B。秩取 r ∈ {4, 8, 32, 128, 512, 2048}。rsLoRA 用蓝–绿渐变，LoRA 用铜色；颜色越亮表示秩越高。在梯度范数图里，我们也按各自配色，把每种方法最小秩和最大秩之间的区域涂上阴影。结果和其余实验非常接近；那些实验是在全部 MLP 和注意力模块中放置适配器来训练的。"
+      },
+      {
+        "text": "B.6. Other Scaling Factors than in LoRA and rsLoRA To confirm instability when using a scaling factor larger than √1 , we checked the setting of",
+        "x": 55.1,
+        "y": 298.7,
+        "w": 364.2,
+        "h": 28.6,
+        "zh": "B.6. LoRA 和 rsLoRA 以外的其他缩放因子。为确认使用大于 √1 的缩放因子时会出现不稳定，我们检查了如下设定"
+      },
+      {
+        "text": "Also, to see if slowdown of learning turns into outright collapse when we reduce γr more than in LoRA, we check setting",
+        "x": 55.1,
+        "y": 236.9,
+        "w": 484.7,
+        "h": 11.5,
+        "zh": "另外，为了看把 γr 降得比 LoRA 更低时，学习变慢会不会变成彻底坍缩，我们检查了如下设定"
+      }
+    ],
+    "12": [
+      {
+        "text": "A Rank Stabilization Scaling Factor for Fine-Tuning with LoRA",
+        "x": 175.6,
+        "y": 737.9,
+        "w": 245.3,
+        "h": 9,
+        "zh": "一种用于 LoRA 微调的秩稳定缩放因子"
+      },
+      {
+        "text": "Since theorem 3.2 made statements about the moments of the activations, we inspected the averaged first two moments of post-adapter pre-LayerNorm activations. We found that both LoRA and rsLoRA seemed to have relatively stable and non-collapsing activations when averaged over all adapters. This could be due a number of things, including: aspects of the transformer’s non-adapter architecture like LayerNorm, the fact that activations in either case have very small moments, or averaging out effects from averaging all activations and layers. We do note however that the higher ranks (512, 2048) for rsLoRA can be observed to level off later in training for both moments, and although we do not examine this aspect further, it may be that this is a consequence of rank-stabilization that is helpful for training with higher ranks.",
+        "x": 55.4,
+        "y": 443.2,
+        "w": 487.2,
+        "h": 81.7,
+        "zh": "由于定理 3.2 对激活的矩作了陈述，我们查看了适配器之后、pre-LayerNorm 之前激活的前两阶矩的平均值。把所有适配器平均之后，LoRA 和 rsLoRA 的激活看起来都比较稳定，没有坍缩。这可能有好几个原因，包括：Transformer 里适配器以外的结构，例如 LayerNorm；两种情况下激活的矩都非常小；以及把全部激活和全部层平均之后抹平了差异。不过我们确实注意到，rsLoRA 在较高秩（512、2048）下，两个矩都会在训练后期趋于平缓。我们没有进一步考察这一点，但它可能正是秩稳定带来的结果，而这种结果有助于用更高的秩训练。"
+      },
+      {
+        "text": "Figure 9. Average activation first and second moments over training. Here we plot the average activation moments with LoRA and rsLoRA. We see that the average moments for both methods look benign and small in magnitute. One does observe a difference with high ranks in rsLoRA, where the for both moments, the increase in magnitute over training steps levels off considerably.",
+        "x": 54.9,
+        "y": 144.4,
+        "w": 486.5,
+        "h": 30.9,
+        "zh": "图 9. 训练过程中激活一阶矩和二阶矩的平均值。这里画出 LoRA 和 rsLoRA 的平均激活矩。两种方法的平均矩看起来都没有问题，幅度也很小。高秩的 rsLoRA 确实有所不同：对两个矩而言，幅度随训练步数的上升，到后期都明显变缓。"
+      }
+    ]
+  }
+}

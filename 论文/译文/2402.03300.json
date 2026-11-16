@@ -1,0 +1,2267 @@
+{
+  "id": "2402.03300",
+  "title": "2402.03300",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "DeepSeekMath: Pushing the Limits of Mathematical",
+        "x": 105.9,
+        "y": 713.2,
+        "w": 383.4,
+        "h": 15.9,
+        "zh": "DeepSeekMath：把数学推向极限"
+      },
+      {
+        "text": ", Runxin Xu , Junxiao Song Xiao Bi , Haowei Zhang , Mingchuan Zhang , Y.K. Li , Y. Wu , Daya Guo",
+        "x": 131.3,
+        "y": 640.9,
+        "w": 330.5,
+        "h": 21.9,
+        "zh": "、Runxin Xu、Junxiao Song、Xiao Bi、Haowei Zhang、Mingchuan Zhang、Y.K. Li、Y. Wu、Daya Guo"
+      },
+      {
+        "text": "DeepSeek-AI, Tsinghua University, Peking University",
+        "x": 177.5,
+        "y": 622.1,
+        "w": 244.5,
+        "h": 10,
+        "zh": "DeepSeek-AI、清华大学、北京大学"
+      },
+      {
+        "text": "{zhihongshao,wangpeiyi,zhuqh,guoday}@deepseek.com https://github.com/deepseek-ai/DeepSeek-Math",
+        "x": 155.5,
+        "y": 587.4,
+        "w": 281.9,
+        "h": 22.9,
+        "zh": ""
+      },
+      {
+        "text": "Mathematical reasoning poses a significant challenge for language models due to its complex and structured nature. In this paper, we introduce DeepSeekMath 7B, which continues pretraining DeepSeek-Coder-Base-v1.5 7B with 120B math-related tokens sourced from Common Crawl, together with natural language and code data. DeepSeekMath 7B has achieved an impressive score of 51.7% on the competition-level MATH benchmark without relying on external toolkits and voting techniques, approaching the performance level of Gemini-Ultra and GPT-4. Self-consistency over 64 samples from DeepSeekMath 7B achieves 60.9% on MATH. The mathematical reasoning capability of DeepSeekMath is attributed to two key factors: First, we harness the significant potential of publicly available web data through a meticulously engineered data selection pipeline. Second, we introduce Group Relative Policy Optimization (GRPO), a variant of Proximal Policy Optimization (PPO), that enhances mathematical reasoning abilities while concurrently optimizing the memory usage of PPO.",
+        "x": 70.4,
+        "y": 344.7,
+        "w": 455.9,
+        "h": 168.8,
+        "zh": "数学推理结构复杂、步骤严整，对语言模型是很大的挑战。本文提出 DeepSeekMath 7B。它在 DeepSeek-Coder-Base-v1.5 7B 上继续预训练，使用来自 Common Crawl 的 120B 数学相关 token，并配合自然语言和代码数据。在不借助外部工具包、也不使用投票方法的情况下，DeepSeekMath 7B 在竞赛级 MATH 基准上取得 51.7%，接近 Gemini-Ultra 和 GPT-4。对 DeepSeekMath 7B 做 64 次采样再取自洽（self-consistency），MATH 上达到 60.9%。DeepSeekMath 的数学推理能力主要来自两点。第一，我们用一套精心设计的数据筛选流程，把公开网页数据里的潜力挖出来。第二，我们提出 Group Relative Policy Optimization（GRPO）。它是 Proximal Policy Optimization（PPO）的一种变体，既能增强数学推理，又能降低 PPO 的显存占用。"
+      },
+      {
+        "text": "Figure 1 | Top1 accuracy of open-source models on the competition-level MATH benchmark (Hendrycks et al., 2021) without the use of external toolkits and voting techniques.",
+        "x": 70.5,
+        "y": 113.8,
+        "w": 454.2,
+        "h": 24.5,
+        "zh": "图 1 | 开源模型在竞赛级 MATH 基准（Hendrycks et al., 2021）上的 Top1 准确率。评测时不使用外部工具包，也不使用投票方法。"
+      },
+      {
+        "text": "Work done during internship at DeepSeek-AI.",
+        "x": 82.6,
+        "y": 43.2,
+        "w": 222.1,
+        "h": 10.9,
+        "zh": "本工作在 DeepSeek-AI 实习期间完成。"
+      }
+    ],
+    "2": [
+      {
+        "text": "Large language models (LLM) have revolutionized the approach to mathematical reasoning in artificial intelligence, spurring significant advancements in both the quantitative reasoning benchmark (Hendrycks et al., 2021) and the geometry reasoning benchmark (Trinh et al., 2024). Moreover, these models have proven instrumental in assisting humans in solving complex mathematical problems (Tao, 2023). However, cutting-edge models such as GPT-4 (OpenAI, 2023) and Gemini-Ultra (Anil et al., 2023) are not publicly available, and the currently accessible open-source models considerably trail behind in performance.",
+        "x": 70.9,
+        "y": 639.3,
+        "w": 455.4,
+        "h": 92.2,
+        "zh": "大语言模型（LLM）改变了人工智能处理数学推理的方式，并推动定量推理基准（Hendrycks et al., 2021）和几何推理基准（Trinh et al., 2024）取得明显进展。这些模型也已经能帮助人解决复杂的数学问题（Tao, 2023）。不过，GPT-4（OpenAI, 2023）和 Gemini-Ultra（Anil et al., 2023）这类最前沿的模型并不公开，而目前能够获得的开源模型在性能上仍明显落后。"
+      },
+      {
+        "text": "In this study, we introduce DeepSeekMath, a domain-specific language model that significantly outperforms the mathematical capabilities of open-source models and approaches the performance level of GPT-4 on academic benchmarks. To achieve this, we create the DeepSeekMath Corpus, a large-scale high-quality pre-training corpus comprising 120B math tokens. This dataset is extracted from the Common Crawl (CC) using a fastText-based classifier (Joulin et al., 2016). In the initial iteration, the classifier is trained using instances from OpenWebMath (Paster et al., 2023) as positive examples, while incorporating a diverse selection of other web pages to serve as negative examples. Subsequently, we employ the classifier to mine additional positive instances from the CC, which are further refined through human annotation. The classifier is then updated with this enhanced dataset to improve its performance. The evaluation results indicate that the large-scale corpus is of high quality, as our base model DeepSeekMath-Base 7B achieves 64.2% on GSM8K (Cobbe et al., 2021) and 36.2% on the competition-level MATH dataset (Hendrycks et al., 2021), outperforming Minerva 540B (Lewkowycz et al., 2022a). In addition, the DeepSeekMath Corpus is multilingual, so we notice an improvement in Chinese mathematical benchmarks (Wei et al., 2023; Zhong et al., 2023). We believe that our experience in mathematical data processing is a starting point for the research community, and there is significant room for improvement in the future.",
+        "x": 70.5,
+        "y": 402.2,
+        "w": 455.7,
+        "h": 227.7,
+        "zh": "本文介绍 DeepSeekMath，一个面向特定领域的语言模型。它明显超过开源模型的数学能力，在学术基准上接近 GPT-4。为此，我们构建了 DeepSeekMath Corpus，一份大规模、高质量的预训练语料，包含 120B 数学 token。这份数据用基于 fastText 的分类器（Joulin et al., 2016）从 Common Crawl（CC）中抽取。第一轮中，分类器用 OpenWebMath（Paster et al., 2023）的样本作为正例，并用一批多样的其他网页作为负例。随后，我们用这个分类器从 CC 中再挖掘正例，并经由人工标注进一步精炼。分类器再用这份增强后的数据更新，以提高性能。评测表明，这份大规模语料质量很高：我们的基座模型 DeepSeekMath-Base 7B 在 GSM8K（Cobbe et al., 2021）上达到 64.2%，在竞赛级 MATH 数据集（Hendrycks et al., 2021）上达到 36.2%，超过了 Minerva 540B（Lewkowycz et al., 2022a）。此外，DeepSeekMath Corpus 是多语言的，因此中文数学基准上也有提升（Wei et al., 2023; Zhong et al., 2023）。我们相信，这套数学数据处理经验可以作为研究社区的一个起点，未来仍有很大的改进空间。"
+      },
+      {
+        "text": "DeepSeekMath-Base is initialized with DeepSeek-Coder-Base-v1.5 7B (Guo et al., 2024), as we notice that starting from a code training model is a better choice compared to a general LLM. Furthermore, we observe the math training also improves model capability on MMLU (Hendrycks et al., 2020) and BBH benchmarks (Suzgun et al., 2022), indicating it does not only enhance the model’s mathematical abilities but also amplifies general reasoning capabilities.",
+        "x": 70.4,
+        "y": 327.7,
+        "w": 454.4,
+        "h": 65.1,
+        "zh": "DeepSeekMath-Base 以 DeepSeek-Coder-Base-v1.5 7B（Guo et al., 2024）初始化。我们发现，从经过代码训练的模型出发，比从通用 LLM 出发更好。我们还观察到，数学训练也会提高模型在 MMLU（Hendrycks et al., 2020）和 BBH 基准（Suzgun et al., 2022）上的能力，说明它不只增强数学能力，也会放大一般推理能力。"
+      },
+      {
+        "text": "After pre-training, we apply mathematical instruction tuning to DeepSeekMath-Base with chain-of-thought (Wei et al., 2022), program-of-thought (Chen et al., 2022; Gao et al., 2023), and tool-integrated reasoning (Gou et al., 2023) data. The resulting model DeepSeekMath-Instruct 7B beats all 7B counterparts and is comparable with 70B open-source instruction-tuned models.",
+        "x": 70.9,
+        "y": 266.7,
+        "w": 455.3,
+        "h": 51.6,
+        "zh": "预训练之后，我们用思维链（chain-of-thought，Wei et al., 2022）、程序思维（program-of-thought，Chen et al., 2022; Gao et al., 2023）和工具集成推理（Gou et al., 2023）的数据，对 DeepSeekMath-Base 做数学指令微调。得到的 DeepSeekMath-Instruct 7B 超过所有 7B 同类模型，并与 70B 的开源指令微调模型相当。"
+      },
+      {
+        "text": "Furthermore, we introduce the Group Relative Policy Optimization (GRPO), a variant reinforcement learning (RL) algorithm of Proximal Policy Optimization (PPO) (Schulman et al., 2017). GRPO foregoes the critic model, instead estimating the baseline from group scores, significantly reducing training resources. By solely using a subset of English instruction tuning data, GRPO obtains a substantial improvement over the strong DeepSeekMath-Instruct, including both in-domain (GSM8K: 82.9% → 88.2%, MATH: 46.8% → 51.7%) and out-of-domain mathematical tasks (e.g., CMATH: 84.6% → 88.8%) during the reinforcement learning phase. We also provide a unified paradigm to understand different methods, such as Rejection Sampling Fine-Tuning (RFT) (Yuan et al., 2023a), Direct Preference Optimization (DPO) (Rafailov et al., 2023), PPO and GRPO. Based on such a unified paradigm, we find that all these methods are conceptualized as either direct or simplified RL techniques. We also conduct extensive experiments, e.g., online v.s. offline training, outcome v.s. process supervision, single-turn v.s. iterative RL and so on,",
+        "x": 70.5,
+        "y": 97.3,
+        "w": 455.8,
+        "h": 160,
+        "zh": "我们还提出 Group Relative Policy Optimization（GRPO），它是 Proximal Policy Optimization（PPO）（Schulman et al., 2017）的一种强化学习（RL）变体。GRPO 省去评论家模型（critic），改为用一组得分估计基线，从而显著减少训练资源。只用英语指令微调数据的一个子集，GRPO 就在很强的 DeepSeekMath-Instruct 之上取得明显提升，既包括域内任务（GSM8K：82.9% → 88.2%，MATH：46.8% → 51.7%），也包括域外数学任务（例如 CMATH：84.6% → 88.8%），这些提升都出现在强化学习阶段。我们还给出一个统一框架，用来理解不同方法，例如 Rejection Sampling Fine-Tuning（RFT）（Yuan et al., 2023a）、Direct Preference Optimization（DPO）（Rafailov et al., 2023）、PPO 和 GRPO。基于这一框架，我们发现这些方法都可以看成直接的或简化的强化学习技术。我们还做了大量实验，例如在线对比离线训练、结果监督对比过程监督、单轮对比迭代式 RL 等，"
+      }
+    ],
+    "3": [
+      {
+        "text": "to deeply investigate the essential elements of this paradigm. At last, we explain why our RL boosts the performance of instruction-tuned models, and further summarize potential directions",
+        "x": 70.9,
+        "y": 732.3,
+        "w": 453.9,
+        "h": 24.5,
+        "zh": "以便深入考察这一框架中真正关键的要素。最后，我们解释为什么我们的 RL 能够提升指令微调模型的表现，并进一步归纳若干可能的方向，"
+      },
+      {
+        "text": "to achieve more effective RL based on this unified paradigm.",
+        "x": 70.9,
+        "y": 718.8,
+        "w": 292.5,
+        "h": 10.9,
+        "zh": "以便基于这一统一框架，实现更有效的 RL。"
+      },
+      {
+        "text": "Our contribution includes scalable math pre-training, along with the exploration and analysis of",
+        "x": 70.9,
+        "y": 663.4,
+        "w": 453.5,
+        "h": 10.9,
+        "zh": "我们的贡献包括可扩展的数学预训练，以及探索与分析。"
+      },
+      {
+        "text": "• Our research provides compelling evidence that the publicly accessible Common Crawl data contains valuable information for mathematical purposes. By implementing a meticulously designed data selection pipeline, we successfully construct the DeepSeekMath Corpus, a high-quality dataset of 120B tokens from web pages filtered for mathematical content, which is almost 7 times the size of the math web pages used by Minerva (Lewkowycz et al., 2022a) and 9 times the size of the recently released OpenWebMath",
+        "x": 86.1,
+        "y": 541.4,
+        "w": 440.1,
+        "h": 78.7,
+        "zh": "• 我们的研究有力地表明，公开可获取的 Common Crawl 数据中含有对数学有价值的信息。借助一套精心设计的数据筛选流程，我们建成了 DeepSeekMath Corpus：从网页中筛出数学内容，得到 120B token 的高质量数据。其规模几乎是 Minerva（Lewkowycz et al., 2022a）所用数学网页的 7 倍，也是最近发布的 OpenWebMath 的 9 倍。"
+      },
+      {
+        "text": "• Our pre-trained base model DeepSeekMath-Base 7B achieves comparable performance with Minerva 540B (Lewkowycz et al., 2022a), indicating the number of parameters is not the only key factor in mathematical reasoning capability. A smaller model pre-trained on",
+        "x": 86.1,
+        "y": 487.2,
+        "w": 438.3,
+        "h": 38,
+        "zh": "• 预训练基座 DeepSeekMath-Base 7B 达到了与 Minerva 540B（Lewkowycz et al., 2022a）相当的表现，说明参数量并不是数学推理能力的唯一关键因素。更小的模型，只要在"
+      },
+      {
+        "text": "high-quality data could achieve strong performance as well.",
+        "x": 98.1,
+        "y": 473.7,
+        "w": 289.2,
+        "h": 10.9,
+        "zh": "高质量数据上预训练，同样可以取得很强的表现。"
+      },
+      {
+        "text": "• We share our findings from math training experiments. Code training prior to math training improves models’ ability to solve mathematical problems both with and without tool use. This offers a partial answer to the long-standing question: does code training improve reasoning abilities? We believe it does, at least for mathematical reasoning. • Although training on arXiv papers is common, especially in many math-related papers, it brings no notable improvements on all mathematical benchmarks adopted in this paper.",
+        "x": 86.1,
+        "y": 392.4,
+        "w": 438.3,
+        "h": 78.7,
+        "zh": "• 我们分享数学训练实验中的发现。在数学训练之前先做代码训练，能提高模型解决数学问题的能力，无论是否使用工具都是如此。这为一个长期问题提供了部分答案：代码训练会不会提高推理能力？我们认为会，至少对数学推理而言是这样。• 尽管在 arXiv 论文上训练很常见，许多与数学相关的工作尤其如此，但在本文采用的全部数学基准上，它并没有带来明显提升。"
+      },
+      {
+        "text": "Exploration and Analysis of Reinforcement Learning",
+        "x": 70.9,
+        "y": 372.1,
+        "w": 263.3,
+        "h": 10.9,
+        "zh": "强化学习的探索与分析"
+      },
+      {
+        "text": "• We introduce Group Relative Policy Optimization (GRPO), an efficient and effective reinforcement learning algorithm. GRPO foregoes the critic model, instead estimating the baseline from group scores, significantly reducing training resources compared to",
+        "x": 86.1,
+        "y": 324.6,
+        "w": 438.3,
+        "h": 38,
+        "zh": "• 我们提出 Group Relative Policy Optimization（GRPO），一种高效且有效的强化学习算法。GRPO 省去评论家模型，改为用一组得分估计基线，从而显著减少训练资源。"
+      },
+      {
+        "text": "• We demonstrate that GRPO significantly enhances the performance of our instructiontuned model DeepSeekMath-Instruct, by solely using the instruction-tuning data. Furthermore, we observe enhancements in the out-of-domain performance during the reinforce-",
+        "x": 86.1,
+        "y": 270.4,
+        "w": 440.1,
+        "h": 38,
+        "zh": "• 我们表明，只使用指令微调数据，GRPO 就能显著提升指令微调模型 DeepSeekMath-Instruct 的表现。此外，在强化学习期间，我们也观察到域外表现有所提升。"
+      },
+      {
+        "text": "• We provide a unified paradigm to understand different methods, such as RFT, DPO, PPO, and GRPO. We also conduct extensive experiments, e.g., online v.s. offline training, outcome v.s. process supervision, single-turn v.s. iterative reinforcement learning, and so on to deeply investigate the essential elements of this paradigm. • Based on our unified paradigm, we explore the reasons behind the effectiveness of reinforcement learning, and summarize several potential directions to achieve more effective",
+        "x": 86.1,
+        "y": 175.6,
+        "w": 440.1,
+        "h": 78.7,
+        "zh": "• 我们给出一个统一框架，用来理解 RFT、DPO、PPO 和 GRPO 等不同方法。我们还做了大量实验，例如在线对比离线训练、结果监督对比过程监督、单轮对比迭代式强化学习等，以深入考察这一框架的关键要素。• 基于这一统一框架，我们探究强化学习为何有效，并归纳若干可能的方向，以便实现更有效的"
+      },
+      {
+        "text": "• English and Chinese Mathematical Reasoning: We conduct comprehensive assessments of our models on English and Chinese benchmarks, covering mathematical problems",
+        "x": 86.1,
+        "y": 93.1,
+        "w": 438.3,
+        "h": 24.5,
+        "zh": "• 英文与中文数学推理：我们在英文和中文基准上对模型做了全面评估，覆盖的数学问题"
+      }
+    ],
+    "4": [
+      {
+        "text": "from grade-school level to college level. English benchmarks include GSM8K (Cobbe et al., 2021), MATH (Hendrycks et al., 2021), SAT (Azerbayev et al., 2023), OCW Courses (Lewkowycz et al., 2022a), MMLU-STEM (Hendrycks et al., 2020). Chinese benchmarks include MGSM-zh (Shi et al., 2023), CMATH (Wei et al., 2023), Gaokao-MathCloze (Zhong et al., 2023), and Gaokao-MathQA (Zhong et al., 2023). We evaluate models’ ability to generate self-contained text solutions without tool use, and also the ability to solve",
+        "x": 97.8,
+        "y": 678.1,
+        "w": 427.1,
+        "h": 78.7,
+        "zh": "从小学程度一直到大学程度。英文基准包括 GSM8K（Cobbe et al., 2021）、MATH（Hendrycks et al., 2021）、SAT（Azerbayev et al., 2023）、OCW Courses（Lewkowycz et al., 2022a）、MMLU-STEM（Hendrycks et al., 2020）。中文基准包括 MGSM-zh（Shi et al., 2023）、CMATH（Wei et al., 2023）、Gaokao-MathCloze（Zhong et al., 2023）和 Gaokao-MathQA（Zhong et al., 2023）。我们评估模型在不使用工具时生成自身完整的文本解答的能力，也评估它求解的能力。"
+      },
+      {
+        "text": "On English benchmarks, DeepSeekMath-Base is competitive with the closed-source Minerva 540B (Lewkowycz et al., 2022a), and surpasses all open-source base models (e.g., Mistral 7B (Jiang et al., 2023) and Llemma-34B (Azerbayev et al., 2023)), regardless of whether they’ve undergone math pre-training or not, often by a significant margin. Notably, DeepSeekMath-Base is superior on Chinese benchmarks, likely because we don’t follow previous works (Azerbayev et al., 2023; Lewkowycz et al., 2022a) to collect English-only math pre-training data, and also include high-quality non-English ones. With mathematical instruction tuning and reinforcement learning, the resulting DeepSeekMath-Instruct and DeepSeekMath-RL demonstrate strong performance, obtaining an accuracy of over 50% on the competition-level MATH dataset for the first time within the open-source",
+        "x": 97.8,
+        "y": 529.1,
+        "w": 428.4,
+        "h": 132.9,
+        "zh": "在英文基准上，DeepSeekMath-Base 与闭源的 Minerva 540B（Lewkowycz et al., 2022a）相当，并超过所有开源基座模型（例如 Mistral 7B（Jiang et al., 2023）和 Llemma-34B（Azerbayev et al., 2023）），无论这些模型是否做过数学预训练，而且往往领先一截。值得注意的是，DeepSeekMath-Base 在中文基准上更强。一个可能的原因是，我们没有沿用先前工作（Azerbayev et al., 2023; Lewkowycz et al., 2022a）只收集英文数学预训练数据的做法，而是也纳入了高质量的非英文数据。经过数学指令微调和强化学习，得到的 DeepSeekMath-Instruct 与 DeepSeekMath-RL 表现很强，在开源范围内第一次在竞赛级 MATH 数据集上取得超过 50% 的准确率。"
+      },
+      {
+        "text": "• Formal Mathematics: We evaluate DeepSeekMath-Base using the informal-to-formal theorem proving task from (Jiang et al., 2022) on miniF2F (Zheng et al., 2021) with Isabelle (Wenzel et al., 2008) chosen to be the proof assistant. DeepSeekMath-Base demonstrates",
+        "x": 86.1,
+        "y": 474.9,
+        "w": 438.3,
+        "h": 38,
+        "zh": "• 形式化数学：我们采用（Jiang et al., 2022）的非形式到形式定理证明任务，在 miniF2F（Zheng et al., 2021）上评估 DeepSeekMath-Base，证明助手选用 Isabelle（Wenzel et al., 2008）。DeepSeekMath-Base 展现出"
+      },
+      {
+        "text": "strong few-shot autoformalization performance.",
+        "x": 98.1,
+        "y": 461.4,
+        "w": 232,
+        "h": 10.9,
+        "zh": "很强的少样本自动形式化能力。"
+      },
+      {
+        "text": "• Natural Language Understanding, Reasoning, and Code: To build a comprehensive profile of models’ general understanding, reasoning, and coding capabilities, we evaluate DeepSeekMath-Base on the Massive Multitask Language Understanding (MMLU) benchmark (Hendrycks et al., 2020) which encompasses 57 multiple-choice tasks covering diverse subjects, BIG-Bench Hard (BBH) (Suzgun et al., 2022) which consists of 23 challenging tasks that mostly require multi-step reasoning to solve, as well as HumanEval (Chen et al., 2021) and MBPP (Austin et al., 2021) which are widely used to evaluate code language models. Math pre-training benefits both language understanding and reasoning",
+        "x": 86.1,
+        "y": 353,
+        "w": 440.1,
+        "h": 105.8,
+        "zh": "• 自然语言理解、推理与代码：为了全面刻画模型的一般理解、推理和编程能力，我们在大规模多任务语言理解基准（Massive Multitask Language Understanding，MMLU）（Hendrycks et al., 2020）上评估 DeepSeekMath-Base。该基准包含 57 项选择题，覆盖多种学科。我们还使用 BIG-Bench Hard（BBH）（Suzgun et al., 2022），它由 23 个较难的任务组成，大多需要多步推理才能解出；以及 HumanEval（Chen et al., 2021）和 MBPP（Austin et al., 2021），二者被广泛用于评估代码语言模型。数学预训练对语言理解和推理都有好处。"
+      },
+      {
+        "text": "2.1. Data Collection and Decontamination",
+        "x": 70.9,
+        "y": 276.9,
+        "w": 210.6,
+        "h": 10.9,
+        "zh": "2.1. 数据采集与去污染"
+      },
+      {
+        "text": "In this section, we will outline the process of constructing the DeepSeekMath Corpus from Common Crawl. As depicted in Figure 2, we present an iterative pipeline that demonstrates how to systematically gather a large-scale mathematical corpus from Common Crawl, starting with a seed corpus (e.g., a small but high-quality collection of math-related dataset). It’s worth noting that this approach is also applicable to other domains, such as coding.",
+        "x": 70.4,
+        "y": 200.4,
+        "w": 454,
+        "h": 65.1,
+        "zh": "本节说明如何从 Common Crawl 构建 DeepSeekMath Corpus。如图 2 所示，我们给出一条迭代流程：从一份种子语料出发（例如一小份但质量很高的数学相关数据集），系统地从 Common Crawl 收集大规模数学语料。值得一提的是，这套做法也适用于其他领域，例如代码。"
+      },
+      {
+        "text": "First, we choose OpenWebMath (Paster et al., 2023), a collection of high-quality mathematical web texts, as our initial seed corpus. Using this corpus, we train a fastText model (Joulin et al., 2016) to recall more OpenWebMath-like mathematical web pages. Specifically, we randomly select 500,000 data points from the seed corpus as positive training examples and another 500,000 web pages from Common Crawl as negative ones. We employ an open-source library for training, configuring the vector dimension to 256, learning rate to 0.1, the maximum length",
+        "x": 70.4,
+        "y": 112.3,
+        "w": 455.4,
+        "h": 78.7,
+        "zh": "首先，我们选用 OpenWebMath（Paster et al., 2023）作为初始种子语料。它是一批高质量的数学网页文本。利用这份语料，我们训练一个 fastText 模型（Joulin et al., 2016），用来召回更多类似 OpenWebMath 的数学网页。具体而言，我们从种子语料中随机抽取 500,000 条作为正例，再从 Common Crawl 中另取 500,000 个网页作为负例。训练使用一个开源库，向量维度设为 256，学习率设为 0.1，最大长度"
+      }
+    ],
+    "5": [
+      {
+        "text": "Figure 2 | An iterative pipeline that collects mathematical web pages from Common Crawl.",
+        "x": 78.4,
+        "y": 571.2,
+        "w": 438.5,
+        "h": 10.9,
+        "zh": "图 2 | 一条从 Common Crawl 收集数学网页的迭代流程。"
+      },
+      {
+        "text": "of word n-gram to 3, the minimum number of word occurrences to 3, and the number of training epochs to 3. To reduce the size of the original Common Crawl, we employ URL-based deduplication and near-deduplication techniques, resulting in 40B HTML web pages. We then recall mathematical web pages from deduplicated Common Crawl with the fastText model. To filter out low-quality mathematical content, we rank the collected pages according to their scores predicted by the fastText model, and only preserve the top-ranking ones. The volume of data preserved is assessed through pre-training experiments on the top 40B, 80B, 120B, and 160B tokens. In the first iteration, we choose to keep the top 40B tokens.",
+        "x": 70.3,
+        "y": 429.4,
+        "w": 456,
+        "h": 105.8,
+        "zh": "词 n-gram 设为 3，词的最少出现次数设为 3，训练轮数设为 3。为缩小原始 Common Crawl 的规模，我们采用基于 URL 的去重和近似去重，得到 40B 个 HTML 网页。然后用 fastText 模型，从去重后的 Common Crawl 中召回数学网页。为滤掉低质量的数学内容，我们按 fastText 模型预测的分数对收集到的页面排序，只保留排名靠前的部分。保留多少数据，通过在排名前 40B、80B、120B 和 160B token 上做预训练实验来判断。第一轮中，我们选择保留前 40B token。"
+      },
+      {
+        "text": "After the first iteration of data collection, numerous mathematical web pages remain uncollected, mainly because the fastText model is trained on a set of positive examples that lacks sufficient diversity. We therefore identify additional mathematical web sources to enrich the seed corpus, so that we can optimize the fastText model. Specifically, we first organize the entire Common Crawl into disjoint domains; a domain is defined as web pages sharing the same base URL. For each domain, we calculate the percentage of web pages that are collected in the first iteration. Domains where over 10% of the web pages have been collected are classified as math-related (e.g., mathoverflow.net). Subsequently, we manually annotate the URLs associated with mathematical content within these identified domains (e.g., mathoverflow.net/questions). Web pages linked to these URLs, yet uncollected, will be added to the seed corpus. This approach enables us to gather more positive examples, thereby training an improved fastText model capable of recalling more mathematical data in the subsequent iteration. After four iterations of data collection, we end up with 35.5M mathematical web pages, totaling 120B tokens. In the fourth iteration, we notice that nearly 98% of the data has already been collected",
+        "x": 70.3,
+        "y": 233,
+        "w": 456,
+        "h": 187,
+        "zh": "第一轮收集之后，仍有大量数学网页没有被收进来，主要是因为训练 fastText 的正例不够多样。因此，我们再寻找数学网页来源，以丰富种子语料，从而优化 fastText 模型。具体而言，我们先把整个 Common Crawl 划分成互不相交的域；一个域定义为共享同一个 base URL 的网页。对每个域，我们计算第一轮中已被收集的网页所占比例。超过 10% 的网页已被收集的域，被判定为与数学相关（例如 mathoverflow.net）。随后，我们在这些域中人工标注与数学内容相关的 URL（例如 mathoverflow.net/questions）。链接到这些 URL、但尚未被收集的网页，会被加入种子语料。这样就能收集到更多正例，从而训练出更好的 fastText 模型，在下一轮召回更多数学数据。经过四轮收集，我们最终得到 35.5M 个数学网页，共计 120B token。在第四轮，我们注意到将近 98% 的数据在"
+      },
+      {
+        "text": "in the third iteration, so we decide to cease data collection.",
+        "x": 70.9,
+        "y": 219.4,
+        "w": 281,
+        "h": 10.9,
+        "zh": "第三轮就已经被收集到了，因此我们决定停止数据收集。"
+      },
+      {
+        "text": "To avoid benchmark contamination, we follow Guo et al. (2024) to filter out web pages containing questions or answers from English mathematical benchmarks such as GSM8K (Cobbe et al., 2021) and MATH (Hendrycks et al., 2021) and Chinese benchmarks such as CMATH (Wei et al., 2023) and AGIEval (Zhong et al., 2023). The filtering criteria are as follows: any text segment containing a 10-gram string that matches exactly with any sub-string from the evaluation benchmarks is removed from our math training corpus. For benchmark texts that are shorter than 10 grams but have at least 3 grams, we employ exact matching to filter out",
+        "x": 70.5,
+        "y": 117.8,
+        "w": 454.3,
+        "h": 92.2,
+        "zh": "为避免基准污染，我们沿用 Guo et al. (2024) 的做法，滤掉包含英文数学基准中题目或答案的网页，例如 GSM8K（Cobbe et al., 2021）和 MATH（Hendrycks et al., 2021），以及中文基准，例如 CMATH（Wei et al., 2023）和 AGIEval（Zhong et al., 2023）。过滤标准如下：任一文本片段，只要其中有一段 10-gram 与评测基准的某个子串完全匹配，就从数学训练语料中删除。对于短于 10-gram、但至少有 3-gram 的基准文本，我们用精确匹配滤掉"
+      }
+    ],
+    "6": [
+      {
+        "text": "2.2. Validating the Quality of the DeepSeekMath Corpus",
+        "x": 70.9,
+        "y": 745.9,
+        "w": 284.2,
+        "h": 10.9,
+        "zh": "2.2. 检验 DeepSeekMath Corpus 的质量"
+      },
+      {
+        "text": "We run pre-training experiments to investigate how the DeepSeekMath Corpus is compared with the recently released math-training corpora:",
+        "x": 70.3,
+        "y": 710,
+        "w": 454.1,
+        "h": 24.5,
+        "zh": "我们做预训练实验，考察 DeepSeekMath Corpus 与最近发布的数学训练语料相比如何："
+      },
+      {
+        "text": "• MathPile (Wang et al., 2023c): a multi-source corpus (8.9B tokens) aggregated from textbooks, Wikipedia, ProofWiki, CommonCrawl, StackExchange, and arXiv, with the majority (over 85%) sourced from arXiv; • OpenWebMath (Paster et al., 2023): CommonCrawl data filtered for mathematical content, totaling 13.6B tokens; • Proof-Pile-2 (Azerbayev et al., 2023): a mathematical corpus consisting of OpenWebMath, AlgebraicStack (10.3B tokens of mathematical code), and arXiv papers (28.0B tokens). When experimenting on Proof-Pile-2, we follow Azerbayev et al. (2023) to use an arXiv:Web:Code ratio of 2:4:1.",
+        "x": 86.1,
+        "y": 581.3,
+        "w": 440.1,
+        "h": 119.3,
+        "zh": "• MathPile（Wang et al., 2023c）：一份多来源语料（8.9B token），汇总自教材、Wikipedia、ProofWiki、CommonCrawl、StackExchange 和 arXiv，其中大部分（超过 85%）来自 arXiv；• OpenWebMath（Paster et al., 2023）：按数学内容过滤后的 CommonCrawl 数据，共 13.6B token；• Proof-Pile-2（Azerbayev et al., 2023）：由 OpenWebMath、AlgebraicStack（10.3B token 的数学代码）和 arXiv 论文（28.0B token）组成的数学语料。在 Proof-Pile-2 上实验时，我们沿用 Azerbayev et al. (2023)，采用 arXiv:Web:Code = 2:4:1 的比例。"
+      },
+      {
+        "text": "We apply math training to a general pre-trained language model with 1.3B parameters, which shares the same framework as the DeepSeek LLMs (DeepSeek-AI, 2024), denoted as DeepSeekLLM 1.3B. We separately train a model on each mathematical corpus for 150B tokens. All experiments are conducted using the efficient and light-weight HAI-LLM (High-flyer, 2023) training framework. Following the training practice of DeepSeek LLMs, we use the AdamW optimizer (Loshchilov and Hutter, 2017) with 𝛽1 = 0.9, 𝛽2 = 0.95, and weight_decay = 0.1, along with a multi-step learning rate schedule where the learning rate reaches the peak after 2,000 warmup steps, decreases to its 31.6% after 80% of the training process, and further decreases to 10.0% of the peak after 90% of the training process. We set the maximum value of learning rate to 5.3e-4, and use a batch size of 4M tokens with a 4K context length.",
+        "x": 70.3,
+        "y": 406.5,
+        "w": 455.9,
+        "h": 132.9,
+        "zh": "我们把数学训练用在一个 1.3B 参数的通用预训练语言模型上。它与 DeepSeek LLM（DeepSeek-AI, 2024）使用同一套框架，记为 DeepSeek-LLM 1.3B。我们分别在每份数学语料上训练 150B token。所有实验都使用高效、轻量的 HAI-LLM（High-flyer, 2023）训练框架。沿用 DeepSeek LLM 的训练做法，我们使用 AdamW 优化器（Loshchilov and Hutter, 2017），β1 = 0.9，β2 = 0.95，weight_decay = 0.1，并采用多步学习率日程：学习率在 2,000 步预热后达到峰值，训练进程走过 80% 后降到峰值的 31.6%，走过 90% 后再降到峰值的 10.0%。学习率最大值设为 5.3e-4，批大小为 4M token，上下文长度为 4K。"
+      },
+      {
+        "text": "Table 1 | Performance of DeepSeek-LLM 1.3B trained on different mathematical corpora, evaluated using few-shot chain-of-thought prompting. Corpus sizes are calculated using our tokenizer with a vocabulary size of 100K.",
+        "x": 70.4,
+        "y": 223.2,
+        "w": 455.8,
+        "h": 38,
+        "zh": "表 1 | 在不同数学语料上训练的 DeepSeek-LLM 1.3B 的表现，评测使用 few-shot chain-of-thought 提示。语料规模用我们的分词器计算，词表大小为 100K。"
+      },
+      {
+        "text": "The DeepSeekMath Corpus is of high quality, covers multilingual mathematical content, and is the largest in size.",
+        "x": 70.5,
+        "y": 150.7,
+        "w": 453.9,
+        "h": 24.5,
+        "zh": "DeepSeekMath Corpus 质量高，覆盖多语言的数学内容，而且规模最大。"
+      },
+      {
+        "text": "• High-quality: We evaluate downstream performance on 8 mathematical benchmarks using few-shot chain-of-thought prompting Wei et al. (2022). As shown in Table 1, there is a clear performance lead of the model trained on the DeepSeekMath Corpus. Figure 3 shows that the model trained on the DeepSeekMath Corpus demonstrates better performance than",
+        "x": 86.1,
+        "y": 89.7,
+        "w": 438.6,
+        "h": 51.6,
+        "zh": "• 高质量：我们用 few-shot chain-of-thought 提示（Wei et al., 2022），在 8 个数学基准上评估下游表现。如表 1 所示，在 DeepSeekMath Corpus 上训练的模型明显领先。图 3 表明，在 DeepSeekMath Corpus 上训练的模型，表现优于"
+      }
+    ],
+    "7": [
+      {
+        "text": "Figure 3 | Benchmark curves of DeepSeek-LLM 1.3B trained on different mathematical corpora.",
+        "x": 71,
+        "y": 360.1,
+        "w": 453.3,
+        "h": 10.9,
+        "zh": "图 3 | 在不同数学语料上训练的 DeepSeek-LLM 1.3B 的基准曲线。"
+      },
+      {
+        "text": "Proof-Pile-2 at 50B tokens (1 full epoch of Proof-Pile-2), indicating the average quality of DeepSeekMath Corpus is higher. • Multilingual: The DeepSeekMath Corpus encompasses data in multiple languages, predominantly featuring English and Chinese as the two most represented languages. As shown in Table 1, training on the DeepSeekMath Corpus enhances mathematical reasoning performance in both English and Chinese. In contrast, existing mathematical corpora, which are primarily English-centric, show limited improvement and may even hinder performance in Chinese mathematical reasoning. • Large-scale: The DeepSeekMath Corpus is several times larger than existing mathematical corpora. As depicted in Figure 3, DeepSeek-LLM 1.3B, when trained on the DeepSeekMath Corpus, shows a steeper learning curve along with more lasting improvements. In contrast, the baseline corpora are much smaller, and have already been repeated multiple rounds during training, with the resulting model performance quickly reaching a plateau.",
+        "x": 86.1,
+        "y": 162.5,
+        "w": 440.2,
+        "h": 173.5,
+        "zh": "50B token 处的 Proof-Pile-2（即 Proof-Pile-2 的 1 个完整 epoch），说明 DeepSeekMath Corpus 的平均质量更高。• 多语言：DeepSeekMath Corpus 包含多种语言的数据，其中英语和中文是占比最高的两种。如表 1 所示，在 DeepSeekMath Corpus 上训练，能同时提高英文和中文的数学推理表现。相比之下，现有数学语料以英语为中心，对中文数学推理的提升有限，甚至可能损害中文表现。• 大规模：DeepSeekMath Corpus 比现有数学语料大出数倍。如图 3 所示，DeepSeek-LLM 1.3B 在 DeepSeekMath Corpus 上训练时，学习曲线更陡，提升也更持久。相比之下，基线语料小得多，训练过程中已经被重复多轮，模型表现很快就进入平台期。"
+      },
+      {
+        "text": "2.3. Training and Evaluating DeepSeekMath-Base 7B",
+        "x": 70.9,
+        "y": 129.4,
+        "w": 264.8,
+        "h": 10.9,
+        "zh": "2.3. 训练并评估 DeepSeekMath-Base 7B"
+      },
+      {
+        "text": "In this section, we introduce DeepSeekMath-Base 7B, a base model with strong reasoning abilities, especially in mathematics. Our model is initialized with DeepSeek-Coder-Base-v1.5 7B",
+        "x": 70.9,
+        "y": 93.5,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "本节介绍 DeepSeekMath-Base 7B。这是一个推理能力很强的基座模型，尤其擅长数学。模型以 DeepSeek-Coder-Base-v1.5 7B 初始化"
+      }
+    ],
+    "8": [
+      {
+        "text": "(Guo et al., 2024) and trained for 500B tokens. The distribution of the data is as follows: 56% is from the DeepSeekMath Corpus, 4% from AlgebraicStack, 10% from arXiv, 20% is Github code, and the remaining 10% is natural language data from Common Crawl in both English and Chinese. We mainly adopt the training setting specified in Section 2.2.1, except that we set the maximum value of the learning rate to 4.2e-4 and use a batch size of 10M tokens.",
+        "x": 70.5,
+        "y": 691.7,
+        "w": 454.8,
+        "h": 65.1,
+        "zh": "（Guo et al., 2024），并训练 500B token。数据分布如下：56% 来自 DeepSeekMath Corpus，4% 来自 AlgebraicStack，10% 来自 arXiv，20% 是 GitHub 代码，其余 10% 是 Common Crawl 中的英文和中文自然语言数据。我们主要采用第 2.2.1 节的训练设定，只是把学习率最大值设为 4.2e-4，批大小设为 10M token。"
+      },
+      {
+        "text": "We conduct a comprehensive assessment of the mathematical capabilities of DeepSeekMathBase 7B, focusing on its ability to produce self-contained mathematical solutions without relying on external tools, solve mathematical problems using tools, and conduct formal theorem proving. Beyond mathematics, we also provide a more general profile of the base model, including its performance of natural language understanding, reasoning, and programming skills.",
+        "x": 70.5,
+        "y": 617.2,
+        "w": 455.8,
+        "h": 65.1,
+        "zh": "我们全面评估 DeepSeekMath-Base 7B 的数学能力，重点看三个方面：不依赖外部工具、写出自身完整的数学解答；借助工具解决数学问题；以及进行形式化定理证明。数学之外，我们也给出这个基座模型更一般的画像，包括自然语言理解、推理和编程技能上的表现。"
+      },
+      {
+        "text": "Mathematical Problem Solving with Step-by-Step Reasoning",
+        "x": 70.9,
+        "y": 581.6,
+        "w": 305.4,
+        "h": 10.9,
+        "zh": "用逐步推理解决数学问题"
+      },
+      {
+        "text": "Base’s performance of solving mathematical problems using few-shot chain-of-thought prompting (Wei et al., 2022), across eight benchmarks in English and Chinese. These benchmarks encompass quantitative reasoning (e.g., GSM8K (Cobbe et al., 2021), MATH (Hendrycks et al., 2021), and CMATH (Wei et al., 2023)) and multiple-choice problems (e.g., MMLU-STEM (Hendrycks et al., 2020) and Gaokao-MathQA (Zhong et al., 2023)), covering diverse fields of mathematics",
+        "x": 70.5,
+        "y": 513.8,
+        "w": 455.7,
+        "h": 65.1,
+        "zh": "Base 用 few-shot chain-of-thought 提示（Wei et al., 2022）解决数学问题的表现，覆盖英文和中文共八个基准。这些基准既包括定量推理（例如 GSM8K（Cobbe et al., 2021）、MATH（Hendrycks et al., 2021）和 CMATH（Wei et al., 2023）），也包括选择题（例如 MMLU-STEM（Hendrycks et al., 2020）和 Gaokao-MathQA（Zhong et al., 2023）），所涉数学领域"
+      },
+      {
+        "text": "from elementary to college-level complexity.",
+        "x": 70.9,
+        "y": 500.3,
+        "w": 213.6,
+        "h": 10.9,
+        "zh": "从初等一直到大学难度。"
+      },
+      {
+        "text": "As shown in Table 2, DeepSeekMath-Base 7B leads in performance across all eight benchmarks among the open-source base models (including the widely-used general model Mistral 7B (Jiang et al., 2023) and the recently released Llemma 34B (Azerbayev et al., 2023) which underwent math training on Proof-Pile-2 (Azerbayev et al., 2023)). Notably, on the competitionlevel MATH dataset, DeepSeekMath-Base surpasses existing open-source base models by over 10% absolute, and outperforms Minerva 540B (Lewkowycz et al., 2022a), a closed-source base model 77 times larger which builds on PaLM (Lewkowycz et al., 2022b) and is further trained",
+        "x": 70.3,
+        "y": 398.7,
+        "w": 455.9,
+        "h": 92.2,
+        "zh": "如表 2 所示，在开源基座模型中，DeepSeekMath-Base 7B 在全部八个基准上都领先。这些模型包括广泛使用的通用模型 Mistral 7B（Jiang et al., 2023），以及最近发布、并在 Proof-Pile-2（Azerbayev et al., 2023）上做过数学训练的 Llemma 34B（Azerbayev et al., 2023）。尤其在竞赛级 MATH 数据集上，DeepSeekMath-Base 比现有开源基座模型绝对高出 10% 以上，也超过了 Minerva 540B（Lewkowycz et al., 2022a）。后者是闭源基座，规模大出 77 倍，建立在 PaLM（Lewkowycz et al., 2022b）之上，并进一步训练"
+      },
+      {
+        "text": "Table 2 | Comparisons between DeepSeekMath-Base 7B and strong base models on English and Chinese mathematical benchmarks. Models are evaluated with chain-of-thought prompting.",
+        "x": 70.5,
+        "y": 147.8,
+        "w": 455.8,
+        "h": 24.5,
+        "zh": "表 2 | DeepSeekMath-Base 7B 与强基座模型在英文和中文数学基准上的比较。模型均用 chain-of-thought 提示评测。"
+      },
+      {
+        "text": "Minerva results are quoted from Lewkowycz et al. (2022a).",
+        "x": 70.9,
+        "y": 134.3,
+        "w": 282.8,
+        "h": 10.9,
+        "zh": "Minerva 的结果引自 Lewkowycz et al. (2022a)。"
+      }
+    ],
+    "9": [
+      {
+        "text": "We evaluate program-aided mathematical reasoning on GSM8K and MATH using few-shot program-of-thought prompting (Chen et al., 2022; Gao et al., 2023). Models are prompted to solve each problem by writing a Python program where libraries such as math and sympy can be utilized for intricate computations. The execution result of the program is evaluated as the answer. As shown in Table 3, DeepSeekMath-Base 7B outperforms the prior state-of-the-art Llemma 34B.",
+        "x": 70.4,
+        "y": 678.1,
+        "w": 455.4,
+        "h": 78.7,
+        "zh": "我们用 few-shot program-of-thought 提示（Chen et al., 2022; Gao et al., 2023），在 GSM8K 和 MATH 上评估程序辅助的数学推理。模型需要为每道题写一段 Python 程序，可以使用 math、sympy 等库完成复杂计算。程序的执行结果被当作答案。如表 3 所示，DeepSeekMath-Base 7B 超过了此前的最优模型 Llemma 34B。"
+      },
+      {
+        "text": "Mathematical Problem Solving with Tool Use",
+        "x": 70.9,
+        "y": 745.9,
+        "w": 234.4,
+        "h": 10.9,
+        "zh": "借助工具解决数学问题"
+      },
+      {
+        "text": "Informal-to-Formal Proving GSM8K+Python MATH+Python miniF2F-valid miniF2F-test",
+        "x": 218.2,
+        "y": 633.6,
+        "w": 276.5,
+        "h": 27.2,
+        "zh": "非形式到形式证明、GSM8K+Python、MATH+Python、miniF2F-valid、miniF2F-test"
+      },
+      {
+        "text": "Table 3 | Few-shot evaluation of base models’ ability to solve mathematical problems using tools and the ability to conduct informal-to-formal theorem proving in Isabelle.",
+        "x": 70.5,
+        "y": 500.7,
+        "w": 453.9,
+        "h": 24.5,
+        "zh": "表 3 | 对基座模型的 few-shot 评估：用工具解决数学问题的能力，以及在 Isabelle 中做非形式到形式定理证明的能力。"
+      },
+      {
+        "text": "Formal proof automation is beneficial to ensure the accuracy and reliability of mathematical proofs and enhance efficiency, with increasing attention in recent years. We evaluate DeepSeekMath-Base 7B on the task of informal-to-formal proving from (Jiang et al., 2022) which is to generate a formal proof based on an informal statement, a formal counterpart of the statement, and an informal proof. We evaluate on miniF2F (Zheng et al., 2021), a benchmark for formal Olympiad-level mathematics, and generate a formal proof in Isabelle for each problem with few-shot prompting. Following Jiang et al. (2022), we leverage models to generate proof sketches, and execute the off-the-shelf automated prover Sledgehammer (Paulson, 2010) to fill in the missing details. As shown in Table 3, DeepSeekMath-Base 7B demonstrates strong performance in proof autoformalization.",
+        "x": 70.3,
+        "y": 337,
+        "w": 456,
+        "h": 132.9,
+        "zh": "形式化证明自动化有助于保证数学证明准确、可靠，并提高效率，近年来越来越受关注。我们在（Jiang et al., 2022）的非形式到形式证明任务上评估 DeepSeekMath-Base 7B。该任务是根据一条非形式陈述、该陈述的形式化对应物，以及一份非形式证明，生成形式化证明。评测使用 miniF2F（Zheng et al., 2021），这是一个形式化奥林匹克级数学基准。我们用 few-shot 提示，为每道题生成 Isabelle 形式化证明。沿用 Jiang et al. (2022)，我们让模型生成证明梗概，再用现成的自动证明器 Sledgehammer（Paulson, 2010）补上缺失的细节。如表 3 所示，DeepSeekMath-Base 7B 在证明自动形式化上表现很强。"
+      },
+      {
+        "text": "DeepSeek-Coder-Base-v1.5 DeepSeek-Coder-Base-v1.5",
+        "x": 100.1,
+        "y": 262.7,
+        "w": 118.8,
+        "h": 21.9,
+        "zh": "DeepSeek-Coder-Base-v1.5、DeepSeek-Coder-Base-v1.5"
+      },
+      {
+        "text": "Table 4 | Evaluation on natural language understanding, reasoning, and code benchmarks. DeepSeek-Coder-Base-v1.5 is the checkpoint right before learning rate decay, which is used to train DeepSeekMath-Base. On MMLU and BBH, we use few-shot chain-of-thought prompting. On HumanEval and MBPP, we evaluate model performance under the zero-shot setting and a few-shot setting, respectively.",
+        "x": 70.5,
+        "y": 165.3,
+        "w": 455.8,
+        "h": 65.1,
+        "zh": "表 4 | 在自然语言理解、推理和代码基准上的评估。DeepSeek-Coder-Base-v1.5 是学习率衰减之前的检查点，被用来训练 DeepSeekMath-Base。MMLU 和 BBH 使用 few-shot chain-of-thought 提示。HumanEval 和 MBPP 分别在 zero-shot 设定和 few-shot 设定下评测。"
+      },
+      {
+        "text": "Natural Language Understanding, Reasoning, and Code",
+        "x": 70.9,
+        "y": 123.5,
+        "w": 275.7,
+        "h": 10.9,
+        "zh": "自然语言理解、推理与代码"
+      },
+      {
+        "text": "We evaluate model performance of natural language understanding on MMLU (Hendrycks et al., 2020), reasoning on BBH (Suzgun et al., 2022), and coding capabilities on HumanEval (Chen et al., 2021) and MBPP (Austin et al.,",
+        "x": 70.9,
+        "y": 96.4,
+        "w": 454.9,
+        "h": 38,
+        "zh": "我们评估模型在 MMLU（Hendrycks et al., 2020）上的自然语言理解、在 BBH（Suzgun et al., 2022）上的推理，以及在 HumanEval（Chen et al., 2021）和 MBPP（Austin et al.,"
+      }
+    ],
+    "10": [
+      {
+        "text": "2021). As shown in Table 4, DeepSeekMath-Base 7B exhibits significant enhancements in performance on MMLU and BBH over its precursor, DeepSeek-Coder-Base-v1.5 (Guo et al., 2024), illustrating the positive impact of math training on language understanding and reasoning. Additionally, by including code tokens for continual training, DeepSeekMath-Base 7B effectively maintains the performance of DeepSeek-Coder-Base-v1.5 on the two coding benchmarks. Overall, DeepSeekMath-Base 7B significantly outperforms the general model Mistral 7B (Jiang et al.,",
+        "x": 70.4,
+        "y": 678.1,
+        "w": 455.9,
+        "h": 78.7,
+        "zh": "2021）上的代码能力。如表 4 所示，DeepSeekMath-Base 7B 在 MMLU 和 BBH 上相对其前身 DeepSeek-Coder-Base-v1.5（Guo et al., 2024）有明显提升，说明数学训练对语言理解和推理有正面作用。此外，持续训练时加入了代码 token，DeepSeekMath-Base 7B 在两个代码基准上有效保持了 DeepSeek-Coder-Base-v1.5 的表现。总体来看，DeepSeekMath-Base 7B 明显超过通用模型 Mistral 7B（Jiang et al.,"
+      },
+      {
+        "text": "2023) on the three reasoning and coding benchmarks.",
+        "x": 70.9,
+        "y": 664.6,
+        "w": 256.9,
+        "h": 10.9,
+        "zh": "2023），在这三项推理与代码基准上。"
+      },
+      {
+        "text": "We construct a mathematical instruction-tuning dataset covering English and Chinese problems from different mathematical fields and of varying complexity levels: problems are paired with solutions in chain-of-thought (CoT) (Wei et al., 2022), program-of-thought (PoT) (Chen et al., 2022; Gao et al., 2023), and tool-integrated reasoning format (Gou et al., 2023). The total number",
+        "x": 70.3,
+        "y": 539.1,
+        "w": 455.5,
+        "h": 51.6,
+        "zh": "我们构建了一份数学指令微调数据集，覆盖英文和中文问题，领域不同，难度也不同：题目与解答配对，解答格式包括思维链（CoT）（Wei et al., 2022）、程序思维（PoT）（Chen et al., 2022; Gao et al., 2023）和工具集成推理（Gou et al., 2023）。总数"
+      },
+      {
+        "text": "• English mathematical datasets: We annotate GSM8K and MATH problems with toolintegrated solutions, and adopt a subset of MathInstruct (Yue et al., 2023) along with the training set of Lila-OOD (Mishra et al., 2022) where problems are solved with CoT or PoT. Our English collection covers diverse fields of mathematics, e.g., algebra, probability,",
+        "x": 86.1,
+        "y": 464.6,
+        "w": 440.2,
+        "h": 51.6,
+        "zh": "• 英文数学数据集：我们为 GSM8K 和 MATH 的题目标注了工具集成的解答，并采用 MathInstruct（Yue et al., 2023）的一个子集，以及 Lila-OOD（Mishra et al., 2022）的训练集，其中题目用 CoT 或 PoT 解答。我们的英文集合覆盖多种数学领域，例如代数、概率，"
+      },
+      {
+        "text": "• Chinese mathematical datasets: We collect Chinese K-12 mathematical problems spanning 76 sub-topics such as linear equations, with solutions annotated in both CoT and tool-",
+        "x": 86.1,
+        "y": 424,
+        "w": 440.1,
+        "h": 24.5,
+        "zh": "• 中文数学数据集：我们收集中国 K-12 数学题，涵盖 76 个子主题，例如线性方程，解答同时用 CoT 和工具集成两种格式标注。"
+      },
+      {
+        "text": "3.2. Training and Evaluating DeepSeekMath-Instruct 7B",
+        "x": 70.9,
+        "y": 377.3,
+        "w": 280.6,
+        "h": 10.9,
+        "zh": "3.2. 训练并评估 DeepSeekMath-Instruct 7B"
+      },
+      {
+        "text": "In this section, we introduce DeepSeekMath-Instruct 7B which undergoes mathematical instruction tuning based on DeepSeekMath-Base. Training examples are randomly concatenated until reaching a maximum context length of 4K tokens. We train the model for 500 steps with a batch",
+        "x": 70.9,
+        "y": 327.9,
+        "w": 455.3,
+        "h": 38,
+        "zh": "本节介绍 DeepSeekMath-Instruct 7B。它在 DeepSeekMath-Base 的基础上做数学指令微调。训练样本被随机拼接，直到达到 4K token 的最大上下文长度。我们训练 500 步，批"
+      },
+      {
+        "text": "size of 256 and a constant learning rate of 5e-5.",
+        "x": 70.9,
+        "y": 314.3,
+        "w": 224.3,
+        "h": 10.9,
+        "zh": "大小为 256，学习率恒定为 5e-5。"
+      },
+      {
+        "text": "We evaluate models’ mathematical performance both without and with tool use, on 4 quantitative reasoning benchmarks in English and Chinese. We benchmark our model against",
+        "x": 70.6,
+        "y": 280.5,
+        "w": 453.9,
+        "h": 24.5,
+        "zh": "我们在英文和中文共 4 个定量推理基准上评估模型的数学表现，分别考察不使用工具和使用工具两种情形。对比对象包括"
+      },
+      {
+        "text": "• Closed-source models include: (1) the GPT family among which GPT-4 (OpenAI, 2023)",
+        "x": 86.1,
+        "y": 246.6,
+        "w": 439.4,
+        "h": 10.9,
+        "zh": "• 闭源模型包括：（1）GPT 系列，其中 GPT-4（OpenAI, 2023）"
+      },
+      {
+        "text": "are the most capable ones, (2) Gemini Ultra and Pro (Anil et al., 2023), (3) Inflection-2 (Inflection AI, 2023), (4) Grok-1 , as well as models recently released by Chinese companies including (5) Baichuan-3 , (6) the latest GLM-4 GLM family (Du et al., 2022). These models are for general purposes, most of which have",
+        "x": 98.1,
+        "y": 192.4,
+        "w": 426.7,
+        "h": 51.6,
+        "zh": "是其中能力最强的，（2）Gemini Ultra 与 Pro（Anil et al., 2023），（3）Inflection-2（Inflection AI, 2023），（4）Grok-1，以及中国公司最近发布的模型，包括（5）Baichuan-3，（6）最新的 GLM-4 及 GLM 系列（Du et al., 2022）。这些模型面向通用用途，其中大多数已经"
+      },
+      {
+        "text": "undergone a series of alignment procedures.",
+        "x": 98.1,
+        "y": 178.9,
+        "w": 214,
+        "h": 10.9,
+        "zh": "经过一系列对齐流程。"
+      },
+      {
+        "text": "• Open-source models include: general models like (1) DeepSeek-LLM-Chat 67B (DeepSeekAI, 2024), (2) Qwen 72B (Bai et al., 2023), (3) SeaLLM-v2 7B (Nguyen et al., 2023), and (4)",
+        "x": 86.1,
+        "y": 151.8,
+        "w": 440.2,
+        "h": 24.5,
+        "zh": "• 开源模型包括：通用模型，如（1）DeepSeek-LLM-Chat 67B（DeepSeek-AI, 2024），（2）Qwen 72B（Bai et al., 2023），（3）SeaLLM-v2 7B（Nguyen et al., 2023），以及（4）"
+      },
+      {
+        "text": "2https://openai.com/blog/chatgpt-plugins#code-interpreter 3https://x.ai/model-card 4https://www.baichuan-ai.com 5https://open.bigmodel.cn/dev/api#glm-4",
+        "x": 86.3,
+        "y": 85,
+        "w": 295.1,
+        "h": 45.3,
+        "zh": ""
+      }
+    ],
+    "11": [
+      {
+        "text": "ChatGLM3 6B (ChatGLM3 Team, 2023), as well as models with enhancements in mathematics including (5) InternLM2-Math 20B",
+        "x": 98.1,
+        "y": 732.3,
+        "w": 428.1,
+        "h": 24.5,
+        "zh": "ChatGLM3 6B（ChatGLM3 Team, 2023），以及在数学上做过增强的模型，包括（5）InternLM2-Math 20B"
+      },
+      {
+        "text": "which builds on InternLM2 and underwent math training followed by instruction tuning, (6) Math-Shepherd-Mistral 7B which applys PPO training (Schulman et al., 2017) to Mistral 7B (Jiang et al., 2023) with a process-supervised reward model, (7) the WizardMath series (Luo et al., 2023) which improves mathematical reasoning in Mistral 7B and Llama-2 70B (Touvron et al., 2023) using evolve-instruct (i.e., a version of instruction tuning that uses AI-evolved instructions) and PPO training with training problems primarily sourced from GSM8K and MATH, (8) MetaMath 70B (Yu et al., 2023) which is Llama-2 70B fine-tuned on an augmented version of GSM8K and MATH, (9) ToRA 34B Gou et al. (2023) which is CodeLlama 34B fine-tuned to do tool-integrated mathematical reasoning, (10) MAmmoTH 70B (Yue et al., 2023) which is Llama-2 70B instruction-tuned on MathInstruct.",
+        "x": 97.8,
+        "y": 596.9,
+        "w": 428,
+        "h": 146.4,
+        "zh": "它基于 InternLM2，先做数学训练，再做指令微调；（6）Math-Shepherd-Mistral 7B，它对 Mistral 7B（Jiang et al., 2023）做了 PPO 训练（Schulman et al., 2017），并使用过程监督的奖励模型；（7）WizardMath 系列（Luo et al., 2023），用 evolve-instruct（即用 AI 演化出的指令来做指令微调）和 PPO 训练，提升 Mistral 7B 与 Llama-2 70B（Touvron et al., 2023）的数学推理，训练题主要来自 GSM8K 和 MATH；（8）MetaMath 70B（Yu et al., 2023），即在 GSM8K 和 MATH 的增强版上微调得到的 Llama-2 70B；（9）ToRA 34B（Gou et al., 2023），即经过微调、用来做工具集成数学推理的 CodeLlama 34B；（10）MAmmoTH 70B（Yue et al., 2023），即在 MathInstruct 上做指令微调的 Llama-2 70B。"
+      },
+      {
+        "text": "As shown in Table 5, under the evaluation setting where tool use is disallowed, DeepSeekMathInstruct 7B demonstrates strong performance of step-by-step reasoning. competition-level MATH dataset, our model surpasses all open-source models and the majority of proprietary models (e.g., Inflection-2 and Gemini Pro) by at least 9% absolute. This is true even for models that are substantially larger (e.g., Qwen 72B) or have been specifically enhanced through math-focused reinforcement learning (e.g., WizardMath-v1.1 7B). While DeepSeekMath-Instruct rivals the Chinese proprietary models GLM-4 and Baichuan-3 on MATH, it still underperforms GPT-4 and Gemini Ultra.",
+        "x": 70.9,
+        "y": 481.7,
+        "w": 460.2,
+        "h": 105.8,
+        "zh": "如表 5 所示，在不允许使用工具的评测设定下，DeepSeekMath-Instruct 7B 的逐步推理表现很强。在竞赛级 MATH 数据集上，我们的模型超过所有开源模型，也超过大多数专有模型（例如 Inflection-2 和 Gemini Pro），绝对领先至少 9%。即便对方规模大得多（例如 Qwen 72B），或者专门用面向数学的强化学习增强过（例如 WizardMath-v1.1 7B），也是如此。DeepSeekMath-Instruct 在 MATH 上与中国的专有模型 GLM-4 和 Baichuan-3 相当，但仍低于 GPT-4 和 Gemini Ultra。"
+      },
+      {
+        "text": "Under the evaluation setting where models are allowed to integrate natural language reasoning and program-based tool use for problem solving, DeepSeekMath-Instruct 7B approaches an accuracy of 60% on MATH, surpassing all existing open-source models. On the other benchmarks, our model is competitive with DeepSeek-LLM-Chat 67B, the prior state-of-the-art that is",
+        "x": 70.9,
+        "y": 420.7,
+        "w": 455.4,
+        "h": 51.6,
+        "zh": "在允许把自然语言推理和基于程序的工具使用结合起来解题的评测设定下，DeepSeekMath-Instruct 7B 在 MATH 上的准确率接近 60%，超过所有现有开源模型。在其他基准上，我们的模型与 DeepSeek-LLM-Chat 67B 相当，而后者是此前的最优，并且"
+      },
+      {
+        "text": "Reinforcement learning (RL) has been proven to be effective in further improving the mathematical reasoning ability of LLMs after the Supervised Fine-Tuning (SFT) stage (Luo et al., 2023; Wang et al., 2023b). In this section, we introduce our efficient and effective RL algorithm, Group Relative Policy Optimization (GRPO).",
+        "x": 70.3,
+        "y": 282.5,
+        "w": 455.9,
+        "h": 51.6,
+        "zh": "强化学习（RL）已被证明，能够在监督微调（SFT）阶段之后进一步提升 LLM 的数学推理能力（Luo et al., 2023; Wang et al., 2023b）。本节介绍我们高效且有效的 RL 算法：Group Relative Policy Optimization（GRPO）。"
+      },
+      {
+        "text": "Proximal Policy Optimization (PPO) (Schulman et al., 2017) is an actor-critic RL algorithm that is widely used in the RL fine-tuning stage of LLMs (Ouyang et al., 2022). In particular, it optimizes LLMs by maximizing the following surrogate objective:",
+        "x": 70.4,
+        "y": 203,
+        "w": 454,
+        "h": 38,
+        "zh": "Proximal Policy Optimization（PPO）（Schulman et al., 2017）是一种 actor-critic 强化学习算法，广泛用于 LLM 的 RL 微调阶段（Ouyang et al., 2022）。具体而言，它通过最大化下面这个替代目标来优化 LLM："
+      },
+      {
+        "text": "are the current and old policy models, and 𝑞, 𝑜 are questions and outputs sampled from the question dataset and the old policy 𝜋𝜃",
+        "x": 70.9,
+        "y": 131.3,
+        "w": 453.5,
+        "h": 26.1,
+        "zh": "分别是当前策略模型和旧策略模型；q、o 是从问题数据集和旧策略 π_θ 中采样得到的问题与输出"
+      },
+      {
+        "text": ", respectively. 𝜀 is a clipping-related hyper-parameter introduced in PPO for stabilizing training. 𝐴𝑡 is the advantage, which is computed by applying Generalized Advantage Estimation (GAE) (Schulman et al., 2015), based",
+        "x": 70.9,
+        "y": 105.8,
+        "w": 453.5,
+        "h": 38,
+        "zh": "。ε 是 PPO 中为稳定训练而引入的、与截断（clip）相关的超参数。A_t 是优势，由广义优势估计（Generalized Advantage Estimation，GAE）（Schulman et al., 2015）计算，依据是"
+      },
+      {
+        "text": "6https://github.com/InternLM/InternLM-Math",
+        "x": 86.3,
+        "y": 85,
+        "w": 216.9,
+        "h": 10.5,
+        "zh": ""
+      }
+    ],
+    "12": [
+      {
+        "text": "Table 5 | Performance of Open- and Closed-Source models with both Chain-of-Thought and Tool-Integrated Reasoning on English and Chinese Benchmarks. Scores in gray denote majority votes with 32 candidates; The others are Top1 scores. DeepSeekMath-RL 7B beats all opensource models from 7B to 70B, as well as the majority of closed-source models. Although DeepSeekMath-RL 7B is only further trained on chain-of-thought-format instruction tuning data of GSM8K and MATH, it improves over DeepSeekMath-Instruct 7B on all benchmarks.",
+        "x": 70.5,
+        "y": 120.8,
+        "w": 455.7,
+        "h": 78.7,
+        "zh": "表 5 | 开源与闭源模型在英文和中文基准上的表现，同时报告 Chain-of-Thought 和工具集成推理。灰色分数表示 32 个候选上的多数投票；其余为 Top1。DeepSeekMath-RL 7B 超过从 7B 到 70B 的全部开源模型，也超过大多数闭源模型。尽管 DeepSeekMath-RL 7B 只在 GSM8K 和 MATH 的 chain-of-thought 格式指令微调数据上继续训练，它仍在所有基准上超过 DeepSeekMath-Instruct 7B。"
+      }
+    ],
+    "13": [
+      {
+        "text": "Figure 4 | Demonstration of PPO and our GRPO. GRPO foregoes the value model, instead estimating the baseline from group scores, significantly reducing training resources.",
+        "x": 70.9,
+        "y": 541.6,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "图 4 | PPO 与我们的 GRPO 的示意。GRPO 省去价值模型，改为用一组得分估计基线，从而显著减少训练资源。"
+      },
+      {
+        "text": "on the rewards {𝑟≥𝑡} and a learned value function 𝑉𝜓. Thus, in PPO, a value function needs to be trained alongside the policy model and to mitigate over-optimization of the reward model, the standard approach is to add a per-token KL penalty from a reference model in the reward at each token (Ouyang et al., 2022), i.e.,",
+        "x": 70.9,
+        "y": 467,
+        "w": 454.9,
+        "h": 51.6,
+        "zh": "奖励 {r≥t}，以及一个学出来的价值函数 V_ψ。因此，在 PPO 中，价值函数需要与策略模型一起训练。为缓解对奖励模型的过度优化，标准做法是在每个 token 的奖励中，加入相对参考模型的逐 token KL 惩罚（Ouyang et al., 2022），即"
+      },
+      {
+        "text": "where 𝑟𝜑 is the reward model, 𝜋𝑟𝑒 𝑓 is the reference model, which is usually the initial SFT model, and 𝛽 is the coefficient of the KL penalty.",
+        "x": 70.4,
+        "y": 395.7,
+        "w": 455.4,
+        "h": 24.5,
+        "zh": "其中 r_φ 是奖励模型，π_ref 是参考模型，通常就是初始的 SFT 模型，β 是 KL 惩罚的系数。"
+      },
+      {
+        "text": "As the value function employed in PPO is typically another model of comparable size as the policy model, it brings a substantial memory and computational burden. Additionally, during RL training, the value function is treated as a baseline in the calculation of the advantage for variance reduction. While in the LLM context, usually only the last token is assigned a reward score by the reward model, which may complicate the training of a value function that is accurate at each token. To address this, as shown in Figure 4, we propose Group Relative Policy Optimization (GRPO), which obviates the need for additional value function approximation as in PPO, and instead uses the average reward of multiple sampled outputs, produced in response to the same question, as the baseline. More specifically, for each question 𝑞, GRPO samples a group of outputs {𝑜1, 𝑜2, · · · , 𝑜𝐺} from the old policy 𝜋𝜃",
+        "x": 70.9,
+        "y": 251.7,
+        "w": 454.9,
+        "h": 134.6,
+        "zh": "PPO 使用的价值函数通常是另一个与策略模型规模相当的模型，因此带来可观的显存和计算负担。此外，在 RL 训练中，价值函数在计算优势时被当作基线，用来降低方差。而在 LLM 的场景里，奖励模型通常只给最后一个 token 打一个奖励分，这会使价值函数很难在每个 token 上都学准。为解决这一问题，如图 4 所示，我们提出 Group Relative Policy Optimization（GRPO）。它不再像 PPO 那样额外近似一个价值函数，而是把针对同一问题采样出的多条输出的平均奖励当作基线。更具体地说，对每个问题 q，GRPO 从旧策略 π_θ 中采样一组输出 {o_1, o_2, ⋯, o_G}"
+      },
+      {
+        "text": "and then optimizes the policy model by maximizing the following objective:",
+        "x": 70.9,
+        "y": 239.9,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "然后通过最大化下面的目标来优化策略模型："
+      },
+      {
+        "text": "J𝐺𝑅𝑃𝑂(𝜃) = E[𝑞 ∼ 𝑃(𝑄), {𝑜𝑖} =1 ∼ 𝜋𝜃",
+        "x": 80.6,
+        "y": 217.1,
+        "w": 140.2,
+        "h": 12.4,
+        "zh": ""
+      },
+      {
+        "text": ", 1 − 𝜀, 1 + 𝜀 𝐴ˆ𝑖,𝑡 − 𝛽D𝐾𝐿 𝜋𝜃||𝜋𝑟𝑒 𝑓",
+        "x": 360.5,
+        "y": 193.7,
+        "w": 131.6,
+        "h": 12.1,
+        "zh": ""
+      },
+      {
+        "text": "where 𝜀 and 𝛽 are hyper-parameters, and 𝐴ˆ𝑖,𝑡 is the advantage calculated based on relative rewards of the outputs inside each group only, which will be detailed in the following subsections. The group relative way that GRPO leverages to calculate the advantages, aligns well with the comparative nature of rewards models, as reward models are typically trained on datasets of comparisons between outputs on the same question. Also note that, instead of adding KL penalty in the reward, GRPO regularizes by directly adding the KL divergence between the trained policy and the reference policy to the loss, avoiding complicating the calculation of 𝐴ˆ𝑖,𝑡.",
+        "x": 70.4,
+        "y": 83.4,
+        "w": 455.9,
+        "h": 95.5,
+        "zh": "其中 ε 和 β 是超参数，Â_{i,t} 是优势，只根据每组内部各条输出的相对奖励来计算，具体见后面各小节。GRPO 用组内相对的方式计算优势，这与奖励模型的比较式特性相一致：奖励模型通常就是在同一问题的不同输出之间的比较数据上训练的。还要注意，GRPO 并不是把 KL 惩罚加进奖励，而是直接把训练策略与参考策略之间的 KL 散度加到损失中做正则，从而避免把 Â_{i,t} 的计算搞复杂。"
+      }
+    ],
+    "14": [
+      {
+        "text": "Algorithm 1 Iterative Group Relative Policy Optimization Input initial policy model 𝜋𝜃",
+        "x": 70.4,
+        "y": 730,
+        "w": 279.5,
+        "h": 27.1,
+        "zh": "算法 1：迭代式 Group Relative Policy Optimization。输入：初始策略模型 π_θ"
+      },
+      {
+        "text": "; reward models 𝑟𝜑; task prompts D; hyperparameters 𝜀, 𝛽, 𝜇 1: policy model 𝜋𝜃 ← 𝜋𝜃init 2: for iteration = 1, . . . , I do reference model 𝜋𝑟𝑒 𝑓 ← 𝜋𝜃 for step = 1, . . . , M do",
+        "x": 76.1,
+        "y": 681.7,
+        "w": 397.6,
+        "h": 59.8,
+        "zh": "；奖励模型 r_φ；任务提示 D；超参数 ε、β、μ。1：策略模型 π_θ ← π_θinit。2：for iteration = 1, …, I do：参考模型 π_ref ← π_θ；for step = 1, …, M do"
+      },
+      {
+        "text": "Sample a batch D𝑏 from D Update the old policy model 𝜋𝜃𝑜𝑙𝑑 ← 𝜋𝜃 Sample 𝐺 outputs {𝑜𝑖}",
+        "x": 117.7,
+        "y": 644.3,
+        "w": 172.8,
+        "h": 35.4,
+        "zh": "从 D 中采样一个批次 D_b。将旧策略模型更新为 π_θold ← π_θ。采样 G 条输出 {o_i}"
+      },
+      {
+        "text": "(· | 𝑞) for each question 𝑞 ∈ D𝑏 Compute rewards {𝑟𝑖}",
+        "x": 117.7,
+        "y": 631.4,
+        "w": 270.4,
+        "h": 24.4,
+        "zh": "（· | q），针对每个问题 q ∈ D_b。计算奖励 {r_i}"
+      },
+      {
+        "text": "for each sampled output 𝑜𝑖 by running 𝑟𝜑 Compute ˆ𝐴𝑖,𝑡 for the 𝑡-th token of 𝑜𝑖 through group relative advantage estimation. for GRPO iteration = 1, . . . , 𝜇 do Update the policy model 𝜋𝜃 by maximizing the GRPO objective (Equation 21) Update 𝑟𝜑 through continuous training using a replay mechanism.",
+        "x": 102.7,
+        "y": 579.6,
+        "w": 372.6,
+        "h": 63.2,
+        "zh": "对每条采样输出 o_i，通过运行 r_φ 来打分。用组内相对优势估计，计算 o_i 第 t 个 token 的 Â_{i,t}。for GRPO iteration = 1, …, μ do：通过最大化 GRPO 目标（式 21）更新策略模型 π_θ。借助重放机制做持续训练，从而更新 r_φ。"
+      },
+      {
+        "text": "And different from the KL penalty term used in (2), we estimate the KL divergence with the following unbiased estimator (Schulman, 2020):",
+        "x": 70.4,
+        "y": 514.9,
+        "w": 454,
+        "h": 24.5,
+        "zh": "与式 (2) 中的 KL 惩罚项不同，我们用下面这个无偏估计量来估计 KL 散度（Schulman, 2020）："
+      },
+      {
+        "text": "Formally, for each question 𝑞, a group of outputs {𝑜1, 𝑜2, · · · , 𝑜𝐺} are sampled from the old",
+        "x": 70.9,
+        "y": 403.4,
+        "w": 453.5,
+        "h": 12.6,
+        "zh": "形式化地说，对每个问题 q，从旧策略中采样一组输出 {o_1, o_2, ⋯, o_G}"
+      },
+      {
+        "text": ". A reward model is then used to score the outputs, yielding 𝐺 rewards r = {𝑟1, 𝑟2, · · · , 𝑟𝐺} correspondingly. Subsequently, these rewards are normalized by subtracting the group average and dividing by the group standard deviation. Outcome supervision provides the normalized reward at the end of each output 𝑜𝑖 and sets the advantages 𝐴ˆ𝑖,𝑡 of all tokens in",
+        "x": 70.9,
+        "y": 349.3,
+        "w": 453.5,
+        "h": 53.2,
+        "zh": "。然后用奖励模型给这些输出打分，得到对应的 G 个奖励 r = {r_1, r_2, ⋯, r_G}。随后，这些奖励减去组内均值，再除以组内标准差，完成归一化。结果监督把归一化奖励放在每条输出 o_i 的末尾，并把 o_i 中所有 token 的优势 Â_{i,t} 设为"
+      },
+      {
+        "text": "= e𝑟 = 𝑟𝑖−mean(r) , and then optimizes the policy by the output as the normalized reward, i.e., 𝐴ˆ maximizing the objective defined in equation (3).",
+        "x": 70.9,
+        "y": 322.4,
+        "w": 454,
+        "h": 26.8,
+        "zh": "等于 r̃ = r_i − mean(r)，然后以这条输出的归一化奖励来优化策略，即 Â，并通过最大化式 (3) 所定义的目标来完成。"
+      },
+      {
+        "text": "Outcome supervision only provides a reward at the end of each output, which may not be sufficient and efficient to supervise the policy in complex mathematical tasks. Following Wang et al. (2023b), we also explore process supervision, which provides a reward at the end of each reasoning step. Formally, given the question 𝑞 and 𝐺 sampled outputs {𝑜1, 𝑜2, · · · , 𝑜𝐺}, a process reward model is used to score each step of the outputs, yielding corresponding rewards:",
+        "x": 70.5,
+        "y": 215.3,
+        "w": 455.2,
+        "h": 65.1,
+        "zh": "结果监督只在每条输出的末尾提供一个奖励。对复杂的数学任务而言，这样监督策略可能既不够，也不够高效。沿用 Wang et al. (2023b)，我们也探索过程监督，即在每个推理步骤的末尾提供一个奖励。形式化地说，给定问题 q 以及 G 条采样输出 {o_1, o_2, ⋯, o_G}，用过程奖励模型给输出的每一步打分，得到相应的奖励："
+      },
+      {
+        "text": "}}, where 𝑖𝑛𝑑𝑒𝑥(𝑗) is the end token index of the 𝑗-th step, and 𝐾𝑖 is the total number of steps in the 𝑖-th output. We also normalize these rewards with the average and the standard deviation, i.e.,e𝑟 the process supervision calculates the advantage of each token as the sum of the normalized rewards from the following steps, i.e., 𝐴𝑖,𝑡 =",
+        "x": 70.9,
+        "y": 137.2,
+        "w": 453.8,
+        "h": 73.9,
+        "zh": "其中 index(j) 是第 j 步结束 token 的下标，K_i 是第 i 条输出的总步数。这些奖励同样用均值和标准差做归一化。过程监督把每个 token 的优势算成其后各步归一化奖励之和，即 A_{i,t} ="
+      },
+      {
+        "text": ", and then optimizes the policy by maximizing the objective defined in equation (3).",
+        "x": 70.9,
+        "y": 125.3,
+        "w": 454,
+        "h": 24.5,
+        "zh": "，然后通过最大化式 (3) 所定义的目标来优化策略。"
+      }
+    ],
+    "15": [
+      {
+        "text": "As the reinforcement learning training process progresses, the old reward model may not be sufficient to supervise the current policy model. Therefore, we also explore the iterative RL with GRPO. As shown in Algorithm 1, in iterative GRPO, we generate new training sets for the reward model based on the sampling results from the policy model and continually train the old reward model using a replay mechanism that incorporates 10% of historical data. Then, we set the reference model as the policy model, and continually train the policy model with the",
+        "x": 70.4,
+        "y": 655.8,
+        "w": 454.3,
+        "h": 78.7,
+        "zh": "随着强化学习训练不断推进，旧的奖励模型可能不再足以监督当前的策略模型。因此，我们也探索与 GRPO 结合的迭代式 RL。如算法 1 所示，在迭代式 GRPO 中，我们根据策略模型的采样结果为奖励模型生成新的训练集，并用一种重放机制持续训练旧的奖励模型，其中纳入 10% 的历史数据。然后，我们把参考模型设为策略模型，并继续训练策略模型，所用的是"
+      },
+      {
+        "text": "4.2. Training and Evaluating DeepSeekMath-RL",
+        "x": 70.9,
+        "y": 609.2,
+        "w": 240.9,
+        "h": 10.9,
+        "zh": "4.2. 训练并评估 DeepSeekMath-RL"
+      },
+      {
+        "text": "We conduct RL based on DeepSeekMath-Instruct 7B. The training data of RL are chain-ofthought-format questions related to GSM8K and MATH from the SFT data, which consists of around 144K questions. We exclude other SFT questions to investigate the impact of RL",
+        "x": 70.3,
+        "y": 559.8,
+        "w": 455.9,
+        "h": 38,
+        "zh": "我们在 DeepSeekMath-Instruct 7B 上做 RL。RL 的训练数据是 SFT 数据中与 GSM8K 和 MATH 相关的 chain-of-thought 格式问题，大约有 144K 道。我们排除了其他 SFT 问题，以便考察 RL 的影响。"
+      },
+      {
+        "text": "We construct the training set of reward models following (Wang et al., 2023b). We train our initial reward model based on the DeepSeekMath-Base 7B with a learning rate of 2e-5. For GRPO, we set the learning rate of the policy model as 1e-6. The KL coefficient is 0.04. For each question, we sample 64 outputs. The max length is set to 1024, and the training batch size is 1024. The policy model only has a single update following each exploration stage. We evaluate DeepSeekMath-RL 7B on benchmarks following DeepSeekMath-Instruct 7B. For DeepSeekMath-RL 7B, GSM8K and MATH with chain-of-thought reasoning can be regarded as in-domain tasks and all the other benchmarks",
+        "x": 70.5,
+        "y": 451.4,
+        "w": 453.9,
+        "h": 105.8,
+        "zh": "我们沿用（Wang et al., 2023b）构建奖励模型的训练集。初始奖励模型基于 DeepSeekMath-Base 7B 训练，学习率为 2e-5。对 GRPO，策略模型的学习率设为 1e-6。KL 系数为 0.04。每道题采样 64 条输出。最大长度设为 1024，训练批大小为 1024。策略模型在每次探索之后只更新一次。我们按与 DeepSeekMath-Instruct 7B 相同的方式，在各基准上评估 DeepSeekMath-RL 7B。对 DeepSeekMath-RL 7B 而言，使用 chain-of-thought 推理的 GSM8K 和 MATH 可以看作域内任务，其余所有基准"
+      },
+      {
+        "text": "on benchmarks that lack data throughout the RL phase.",
+        "x": 70.9,
+        "y": 546.2,
+        "w": 285.1,
+        "h": 10.9,
+        "zh": "在整个 RL 阶段都缺少数据的基准上。"
+      },
+      {
+        "text": "Table 5 demonstrates the performance of open- and closed-source models with both chainof-thought and tool-integrated reasoning on English and Chinese benchmarks. We find that: 1) DeepSeekMath-RL 7B attains accuracies of 88.2% and 51.7% on GSM8K and MATH, respectively, utilizing chain-of-thought reasoning. This performance surpasses that of all open-source models in the 7B to 70B range, as well as the majority of closed-source models. 2) Crucially, DeepSeekMath-RL 7B is only trained on chain-of-thought-format instruction tuning data of GSM8K and MATH, starting from DeepSeekMath-Instruct 7B. Despite the constrained scope of its training data, it outperforms DeepSeekMath-Instruct 7B across all evaluation metrics,",
+        "x": 70.3,
+        "y": 322.6,
+        "w": 455.9,
+        "h": 105.8,
+        "zh": "表 5 给出开源与闭源模型在英文和中文基准上的表现，同时包含思维链和工具集成推理。我们发现：1）DeepSeekMath-RL 7B 使用思维链推理，在 GSM8K 和 MATH 上分别达到 88.2% 和 51.7%。这一表现超过 7B 到 70B 范围内的全部开源模型，也超过大多数闭源模型。2）关键在于，DeepSeekMath-RL 7B 只是从 DeepSeekMath-Instruct 7B 出发，在 GSM8K 和 MATH 的 chain-of-thought 格式指令微调数据上训练。尽管训练数据的范围有限，它仍在所有评测指标上超过 DeepSeekMath-Instruct 7B，"
+      },
+      {
+        "text": "showcasing the effectiveness of reinforcement learning.",
+        "x": 70.9,
+        "y": 309.1,
+        "w": 266.4,
+        "h": 10.9,
+        "zh": "显示出强化学习的效果。"
+      },
+      {
+        "text": "In this section, we will share our findings in pre-training and RL experiments.",
+        "x": 70.9,
+        "y": 247.7,
+        "w": 374.4,
+        "h": 10.9,
+        "zh": "本节分享我们在预训练和 RL 实验中的发现。"
+      },
+      {
+        "text": "We first share our experience in pre-training. Unless otherwise specified, we will adhere to the training settings outlined in Section 2.2.1. It is worth noting that, when referring to the DeepSeekMath Corpus in this section, we use an 89B-token dataset from the second iteration of",
+        "x": 70.3,
+        "y": 165.2,
+        "w": 454.1,
+        "h": 38,
+        "zh": "我们先分享预训练方面的经验。除非另有说明，训练设定都沿用第 2.2.1 节。需要说明的是，本节提到 DeepSeekMath Corpus 时，使用的是来自第二轮迭代的一份 89B token 数据集"
+      },
+      {
+        "text": "5.1.1. Code Training Benefits Mathematical Reasoning",
+        "x": 70.9,
+        "y": 121.1,
+        "w": 265,
+        "h": 10.9,
+        "zh": "5.1.1. 代码训练有益于数学推理"
+      },
+      {
+        "text": "A popular yet unverified hypothesis suggests that code training improves reasoning. We attempt to offer a partial response to this, particularly within the mathematical domain: code training",
+        "x": 70.4,
+        "y": 85.2,
+        "w": 454,
+        "h": 24.5,
+        "zh": "一个流行但尚未证实的假说认为，代码训练能够提高推理能力。我们试图对此给出部分回应，尤其是在数学领域：代码训练"
+      }
+    ],
+    "16": [
+      {
+        "text": "General Code Math GSM8K MATH CMATH GSM8K+Python MATH+Python No Continual Training",
+        "x": 75.5,
+        "y": 715.2,
+        "w": 444.3,
+        "h": 24.3,
+        "zh": "通用、代码、数学、GSM8K、MATH、CMATH、GSM8K+Python、MATH+Python、无持续训练"
+      },
+      {
+        "text": "Stage 1: General Training Stage 2: Math Training Stage 1: Code Training Stage 2: Math Training",
+        "x": 75.5,
+        "y": 644.8,
+        "w": 98.9,
+        "h": 46.3,
+        "zh": "阶段 1：通用训练；阶段 2：数学训练；阶段 1：代码训练；阶段 2：数学训练"
+      },
+      {
+        "text": "Table 6 | Investigation of how code affects mathematical reasoning under different training settings. We experiment with DeepSeek-LLM 1.3B, and evaluate its mathematical reasoning performance without and with tool use via few-shot chain-of-thought prompting and few-shot program-of-thought prompting, respectively.",
+        "x": 70.5,
+        "y": 530.8,
+        "w": 453.9,
+        "h": 51.6,
+        "zh": "表 6 | 考察不同训练设定下，代码如何影响数学推理。实验使用 DeepSeek-LLM 1.3B。不用工具时用 few-shot chain-of-thought 提示评估，用工具时用 few-shot program-of-thought 提示评估。"
+      },
+      {
+        "text": "improves models’ ability to do mathematical reasoning both with and without tool use.",
+        "x": 70.9,
+        "y": 495.8,
+        "w": 420.7,
+        "h": 10.9,
+        "zh": "能够提高模型做数学推理的能力，无论是否使用工具都是如此。"
+      },
+      {
+        "text": "To study how code training affects mathematical reasoning, we experimented with the following two-stage training and one-stage training settings:",
+        "x": 70.9,
+        "y": 461.9,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "为研究代码训练如何影响数学推理，我们试验了下面这些两阶段训练和一阶段训练设定："
+      },
+      {
+        "text": "• Code Training for 400B Tokens → Math Training for 150B Tokens: We train DeepSeekLLM 1.3B for 400B code tokens followed by 150B math tokens; • General Training for 400B Tokens → Math Training for 150B Tokens: As a control experiment, we also experiment with general tokens (sampled from a large-scale general corpus created by DeepSeek-AI) instead of code tokens in the first stage of training, in an attempt to investigate the advantages of code tokens over general tokens in improving mathematical reasoning.",
+        "x": 86.1,
+        "y": 340,
+        "w": 440.1,
+        "h": 92.2,
+        "zh": "• 先用 400B token 做代码训练，再用 150B token 做数学训练：我们先用 400B 代码 token 训练 DeepSeek-LLM 1.3B，再用 150B 数学 token 训练；• 先用 400B token 做通用训练，再用 150B token 做数学训练：作为对照，第一阶段不用代码 token，而改用通用 token（从 DeepSeek-AI 构建的一份大规模通用语料中采样），以便考察代码 token 相对于通用 token，在提升数学推理上有什么好处。"
+      },
+      {
+        "text": "• Math Training for 150B Tokens: We train DeepSeek-LLM 1.3B for 150B math tokens; • Training on a mixture of 400B Code Tokens and 150B Math Tokens: Math training following code training degrades coding performance. We investigate whether code tokens, when mixed with math tokens for one-stage training, would still improve mathematical reasoning and also alleviate the problem of catastrophic forgetting.",
+        "x": 86.1,
+        "y": 245.1,
+        "w": 440.1,
+        "h": 65.1,
+        "zh": "• 用 150B token 做数学训练：我们用 150B 数学 token 训练 DeepSeek-LLM 1.3B；• 把 400B 代码 token 与 150B 数学 token 混合后做训练：代码训练之后再做数学训练，会损害编程表现。我们想考察的是，若把代码 token 与数学 token 混在一起做一阶段训练，是否仍能提升数学推理，同时缓解灾难性遗忘。"
+      },
+      {
+        "text": "Table 6 and Table 7 demonstrate the downstream performance under different training",
+        "x": 117.9,
+        "y": 209.6,
+        "w": 406.5,
+        "h": 10.9,
+        "zh": "表 6 和表 7 给出不同训练设定下的下游表现。"
+      },
+      {
+        "text": "Code training benefits program-aided mathematical reasoning, both under the two-stage training and one-stage training settings. As shown in Table 6, under the two-stage training setting, code training alone already significantly enhances the ability to solve GSM8K and MATH problems using Python. Math training in the second stage yields further improvements. Interestingly, under the one-stage training setting, mixing code tokens and math tokens effectively mitigates the issue of catastrophic forgetting that arises from two-stage training, and also synergizes coding (Table 7) and program-aided mathematical reasoning (Table 6).",
+        "x": 70.9,
+        "y": 94.4,
+        "w": 455.5,
+        "h": 92.2,
+        "zh": "代码训练有利于程序辅助的数学推理，在两阶段和一阶段设定下都是如此。如表 6 所示，在两阶段设定下，仅做代码训练就已经明显提高了用 Python 解决 GSM8K 和 MATH 问题的能力。第二阶段的数学训练还会进一步提升。有意思的是，在一阶段设定下，把代码 token 和数学 token 混合，能有效缓解两阶段训练带来的灾难性遗忘，并且让编程能力（表 7）和程序辅助的数学推理（表 6）彼此增益。"
+      }
+    ],
+    "17": [
+      {
+        "text": "MMLU BBH HumanEval (Pass@1) MBPP (Pass@1)",
+        "x": 295.3,
+        "y": 739.5,
+        "w": 224.2,
+        "h": 9.4,
+        "zh": "MMLU、BBH、HumanEval（Pass@1）、MBPP（Pass@1）"
+      },
+      {
+        "text": "Stage 1: General Training Stage 2: Math Training Stage 1: Code Training Stage 2: Math Training",
+        "x": 75.8,
+        "y": 640.5,
+        "w": 104.6,
+        "h": 49,
+        "zh": "阶段 1：通用训练；阶段 2：数学训练；阶段 1：代码训练；阶段 2：数学训练"
+      },
+      {
+        "text": "Table 7 | Investigation of how different settings of code and math training affect model performance of language understanding, reasoning, and coding. We experiment with DeepSeek-LLM 1.3B. We evaluate the models on MMLU and BBH using few-shot chain-of-thought prompting. On HumanEval and MBPP, we conduct zero-shot and few-shot evaluations, respectively.",
+        "x": 70.3,
+        "y": 525.6,
+        "w": 456,
+        "h": 51.6,
+        "zh": "表 7 | 考察代码训练与数学训练的不同设定，如何影响语言理解、推理和编程。实验使用 DeepSeek-LLM 1.3B。MMLU 和 BBH 使用 few-shot chain-of-thought 提示。HumanEval 和 MBPP 分别做 zero-shot 和 few-shot 评估。"
+      },
+      {
+        "text": "Table 8 | Effect of math training on different arXiv datasets. Model performance is evaluated with few-shot chain-of-thought prompting.",
+        "x": 70.4,
+        "y": 375.3,
+        "w": 454,
+        "h": 24.5,
+        "zh": "表 8 | 数学训练在不同 arXiv 数据集上的效果。模型表现用 few-shot chain-of-thought 提示评估。"
+      },
+      {
+        "text": "Table 9 | Effect of math training on different arXiv corpora, the base model being DeepSeekCoder-Base-v1.5 7B. We evaluate informal-to-formal proving in Isabelle.",
+        "x": 70.5,
+        "y": 260.8,
+        "w": 455.7,
+        "h": 24.5,
+        "zh": "表 9 | 数学训练在不同 arXiv 语料上的效果。基座模型为 DeepSeek-Coder-Base-v1.5 7B。我们在 Isabelle 中评估非形式到形式证明。"
+      },
+      {
+        "text": "Code training also improves mathematical reasoning without tool use. Under the two-stage training setting, the initial stage of code training already results in moderate enhancements. It also boosts the efficiency of the subsequent math training, eventually leading to the best performance. However, combining code tokens and math tokens for one-stage training compromises mathematical reasoning without tool use. One conjecture is that DeepSeek-LLM 1.3B, due to its limited scale, lacks the capacity to fully assimilate both code and mathematical data",
+        "x": 70.5,
+        "y": 165.3,
+        "w": 455.8,
+        "h": 78.7,
+        "zh": "代码训练也会提高不使用工具时的数学推理。在两阶段设定下，第一阶段的代码训练已经带来中等程度的提升。它还会提高后续数学训练的效率，最终得到最好的表现。不过，把代码 token 和数学 token 合在一起做一阶段训练，会损害不使用工具时的数学推理。一种猜想是：DeepSeek-LLM 1.3B 规模有限，容量不足以把代码数据和数学数据都充分吸收。"
+      },
+      {
+        "text": "5.1.2. ArXiv Papers Seem Ineffective in Improving Mathematical Reasoning",
+        "x": 70.9,
+        "y": 121.2,
+        "w": 367.9,
+        "h": 10.9,
+        "zh": "5.1.2. arXiv 论文似乎无助于提高数学推理"
+      },
+      {
+        "text": "ArXiv papers are commonly included as a component of math pre-training data (Azerbayev et al., 2023; Lewkowycz et al., 2022a; Polu and Sutskever, 2020; Wang et al., 2023c). However,",
+        "x": 70.4,
+        "y": 85.4,
+        "w": 455.3,
+        "h": 24.5,
+        "zh": "arXiv 论文常被纳入数学预训练数据（Azerbayev et al., 2023; Lewkowycz et al., 2022a; Polu and Sutskever, 2020; Wang et al., 2023c）。然而，"
+      }
+    ],
+    "18": [
+      {
+        "text": "detailed analysis regarding their impact on mathematical reasoning has not been extensively conducted. Perhaps counter-intuitively, according to our experiments, arXiv papers seem ineffective in improving mathematical reasoning. We experiment with models of different sizes, including DeepSeek-LLM 1.3B and DeepSeek-Coder-Base-v1.5 7B (Guo et al., 2024), using arXiv corpora that underwent varied processing pipelines:",
+        "x": 70.9,
+        "y": 691.7,
+        "w": 454.9,
+        "h": 65.1,
+        "zh": "关于它们如何影响数学推理，此前并没有做过充分的细致分析。也许与直觉相反，根据我们的实验，arXiv 论文似乎无助于提高数学推理。我们用不同规模的模型做实验，包括 DeepSeek-LLM 1.3B 和 DeepSeek-Coder-Base-v1.5 7B（Guo et al., 2024），语料则是经过不同处理流程的 arXiv 数据："
+      },
+      {
+        "text": "• MathPile (Wang et al., 2023c): an 8.9B-token corpus developed with cleaning and filtering heuristic rules, over 85% of which are scientific arXiv papers; • ArXiv-RedPajama (Computer, 2023): the entirety of arXiv LaTeX files with preambles, comments, macros, and bibliographies removed, totaling 28.0B tokens.",
+        "x": 86.1,
+        "y": 630.7,
+        "w": 439.7,
+        "h": 51.6,
+        "zh": "• MathPile（Wang et al., 2023c）：一份 8.9B token 的语料，用清洗和过滤的启发式规则构建，其中超过 85% 是科学类 arXiv 论文；• ArXiv-RedPajama（Computer, 2023）：全部 arXiv 的 LaTeX 文件，去掉了导言、注释、宏和参考文献，共计 28.0B token。"
+      },
+      {
+        "text": "In our experiments, we separately train DeepSeek-LLM 1.3B for 150B tokens and DeepSeekCoder-Base-v1.5 7B for 40B tokens on each arXiv corpus. It seems that arXiv papers are ineffective in improving mathematical reasoning. When trained on a arXiv-only corpus, both models display no notable improvements or even deterioration across various mathematical benchmarks of different complexities employed in this study. These benchmarks include quantitative reasoning datasets like GSM8K and MATH (Table 8), multiple-choice challenges like MMLU-STEM (Table 8), and formal mathematics like miniF2F (Table 9).",
+        "x": 70.5,
+        "y": 529.1,
+        "w": 455.7,
+        "h": 92.2,
+        "zh": "实验中，我们分别让 DeepSeek-LLM 1.3B 在每份 arXiv 语料上训练 150B token，让 DeepSeek-Coder-Base-v1.5 7B 训练 40B token。看起来，arXiv 论文无助于提高数学推理。只在 arXiv 语料上训练时，两个模型在本研究采用的、难度各不相同的多种数学基准上，都没有明显提升，甚至出现下降。这些基准包括 GSM8K 和 MATH 这类定量推理数据集（表 8）、MMLU-STEM 这类选择题（表 8），以及 miniF2F 这类形式化数学（表 9）。"
+      },
+      {
+        "text": "However, this conclusion has its limitations and should be taken with a grain of salt. We have not yet studied:",
+        "x": 70.9,
+        "y": 495.2,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "不过，这一结论有其局限，不宜看得太满。我们还没有研究："
+      },
+      {
+        "text": "• The impact of arXiv tokens on specific math-related tasks not included in this research, such as informalization of theorems which is to convert formal statements or proofs to their informal versions; • The effect of arXiv tokens when combined with other types of data; • Whether the benefits of arXiv papers would manifest themselves at a larger model scale.",
+        "x": 86.1,
+        "y": 420.7,
+        "w": 439.7,
+        "h": 65.1,
+        "zh": "• arXiv token 对本研究未纳入的、与数学相关的特定任务有何影响，例如定理的非形式化，也就是把形式化陈述或证明转换成它们的非形式版本；• arXiv token 与其他类型数据结合时的效果；• arXiv 论文的好处会不会在更大的模型规模上才显现出来。"
+      },
+      {
+        "text": "Thus, further exploration is required, which we leave for future studies.",
+        "x": 70.5,
+        "y": 400.4,
+        "w": 345.4,
+        "h": 10.9,
+        "zh": "因此还需要进一步探索，我们把它留给后续研究。"
+      },
+      {
+        "text": "In this section, we provide a unified paradigm to analyze different training methods, such as SFT, RFT, DPO, PPO, GRPO, and further conduct experiments to explore the factors of the unified paradigm. Generally, the gradient with respect to the parameter 𝜃 of a training method",
+        "x": 70.9,
+        "y": 295.5,
+        "w": 453.5,
+        "h": 38,
+        "zh": "本节给出一个统一框架，用来分析 SFT、RFT、DPO、PPO、GRPO 等不同训练方法，并进一步做实验，考察这一统一框架中的因素。一般而言，某种训练方法关于参数 θ 的梯度为"
+      },
+      {
+        "text": "𝐺𝐶A(𝑞, 𝑜, 𝑡, 𝜋𝑟 𝑓) ∇𝜃 log 𝜋𝜃(𝑜𝑡|𝑞, 𝑜<𝑡)® .",
+        "x": 291.4,
+        "y": 239.8,
+        "w": 170,
+        "h": 12.5,
+        "zh": ""
+      },
+      {
+        "text": "There exist three key components: 1) Data Source D, which determines the training data; 2) Reward Function 𝜋𝑟 𝑓, which is the source of the training reward signal; 3) Algorithm A: which processes the training data and the reward signal to the gradient coefficient 𝐺𝐶 that determines the magnitude of the penalty or reinforcement for the data. We analyze several representative methods based on such a unified paradigm:",
+        "x": 70.5,
+        "y": 143.1,
+        "w": 455,
+        "h": 65.1,
+        "zh": "其中有三个关键组成部分：1）数据来源 D，它决定训练数据；2）奖励函数，它是训练奖励信号的来源；3）算法 A，它把训练数据和奖励信号处理成梯度系数 G_C，而 G_C 决定对这条数据施加惩罚或强化的幅度。我们基于这一统一框架，分析几种有代表性的方法："
+      },
+      {
+        "text": "• Supervised Fine-tuning (SFT): SFT fine-tunes pretrained model on human selected SFT",
+        "x": 86.1,
+        "y": 110.8,
+        "w": 438.7,
+        "h": 10.9,
+        "zh": "• 监督微调（Supervised Fine-tuning，SFT）：SFT 在人工挑选的 SFT 数据上微调预训练模型。"
+      }
+    ],
+    "19": [
+      {
+        "text": "𝑞 ∼ 𝑃𝑠 𝑓 𝑡(𝑄), 𝑜 ∼ 𝜋𝑠 𝑓 𝑡(𝑂|𝑞)",
+        "x": 177.2,
+        "y": 708.2,
+        "w": 105.4,
+        "h": 11.5,
+        "zh": ""
+      },
+      {
+        "text": "𝑞 ∼ 𝑃𝑠 𝑓 𝑡(𝑄), 𝑜 ∼ 𝜋𝜃(𝑂|𝑞) 𝑞 ∼ 𝑃𝑠 𝑓 𝑡(𝑄), 𝑜 ∼ 𝜋𝜃(𝑂|𝑞)",
+        "x": 179.7,
+        "y": 666.9,
+        "w": 100.3,
+        "h": 23.4,
+        "zh": ""
+      },
+      {
+        "text": "Table 10 | The data source and gradient coefficient of different methods. 𝑃𝑠 𝑓 𝑡 denotes the data distribution of supervised fine-tuning datasets. 𝜋𝜃𝑠 𝑓 𝑡 and 𝜋𝜃 denote the supervised fine-tuned model and the real-time policy model during the online training process, respectively.",
+        "x": 70.5,
+        "y": 603.3,
+        "w": 453.9,
+        "h": 38,
+        "zh": "表 10 | 不同方法的数据来源与梯度系数。P_sft 表示监督微调数据集的数据分布。π_{θ,sft} 与 π_θ 分别表示监督微调后的模型，以及在线训练过程中的实时策略模型。"
+      },
+      {
+        "text": "Figure 5 | Performance of the DeepSeekMath-Instruct 1.3B model, which was further trained using various methods, on two benchmarks.",
+        "x": 70.9,
+        "y": 360.3,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "图 5 | DeepSeekMath-Instruct 1.3B 再用各种方法继续训练之后，在两个基准上的表现。"
+      },
+      {
+        "text": "• Rejection Sampling Fine-tuning (RFT): RFT further fine-tunes the SFT model on the filtered outputs sampled from the SFT model based on SFT questions. RFT filters the outputs based on the correctness of their answers. • Direct Preference Optimization (DPO): DPO further refines the SFT model by fine-tuning it on augmented outputs sampled from the SFT model, using pair-wise DPO loss. • Online Rejection Sampling Fine-tuning (Online RFT): Different from RFT, Online RFT initiates the policy model using the SFT model and refines it by fine-tuning with the augmented outputs sampled from the real-time policy model. • PPO/GRPO: PPO/GRPO initializes the policy model using the SFT model and reinforces it with the outputs sampled from the real-time policy model.",
+        "x": 86.1,
+        "y": 203.4,
+        "w": 438.7,
+        "h": 132.9,
+        "zh": "• 拒绝采样微调（Rejection Sampling Fine-tuning，RFT）：RFT 针对 SFT 问题，从 SFT 模型采样输出，再按答案是否正确过滤，并在过滤后的输出上继续微调 SFT 模型。• 直接偏好优化（Direct Preference Optimization，DPO）：DPO 使用从 SFT 模型采样并增广后的输出，用成对的 DPO 损失继续精炼 SFT 模型。• 在线拒绝采样微调（Online RFT）：与 RFT 不同，Online RFT 用 SFT 模型初始化策略，再用从实时策略模型采样并增广的输出做微调。• PPO/GRPO：PPO/GRPO 用 SFT 模型初始化策略，并用从实时策略模型采样的输出加以强化。"
+      },
+      {
+        "text": "We summarize the components of these methods in Table 10. Please refer to Appendix A.1 for a more detailed derivation process.",
+        "x": 70.3,
+        "y": 157.6,
+        "w": 454.1,
+        "h": 24.5,
+        "zh": "这些方法的组成部分汇总于表 10。更详细的推导见附录 A.1。"
+      },
+      {
+        "text": "We divide the data source into two categories, online sampling, and offline sampling. Online sampling denotes that the training data is from the exploration results of the real-time training policy model, while offline sampling denotes that the",
+        "x": 70.5,
+        "y": 94.9,
+        "w": 455.7,
+        "h": 38,
+        "zh": "我们把数据来源分成两类：在线采样和离线采样。在线采样指训练数据来自实时训练策略模型的探索结果；离线采样指"
+      }
+    ],
+    "20": [
+      {
+        "text": "Figure 6 | Performance of iterative reinforcement learning with DeepSeekMath-Instruct 7B on",
+        "x": 70.9,
+        "y": 543,
+        "w": 453.5,
+        "h": 10.9,
+        "zh": "图 6 | 使用 DeepSeekMath-Instruct 7B 做迭代式强化学习时的表现，评测于"
+      },
+      {
+        "text": "training data is from the sampling results of the initial SFT model. RFT and DPO follow the offline style, while Online RFT and GRPO follow the online style.",
+        "x": 70.9,
+        "y": 480.9,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "训练数据来自初始 SFT 模型的采样结果。RFT 和 DPO 采用离线方式，Online RFT 和 GRPO 采用在线方式。"
+      },
+      {
+        "text": "As shown in Figure 5, we find that the Online RFT significantly outperforms RFT on two benchmarks. Specifically, Online RFT is comparable to RFT in the early stage of training but gains an absolute advantage in the later stage, demonstrating the superiority of online training. This is intuitive, as in the initial stage, the actor and the SFT model exhibit close resemblance, with the sampled data revealing only minor differences. In the later stage, however, the data sampled from the actor will exhibit more significant differences, and real-time data sampling will offer greater advantages.",
+        "x": 70.4,
+        "y": 379.3,
+        "w": 455.9,
+        "h": 92.2,
+        "zh": "如图 5 所示，Online RFT 在两个基准上明显超过 RFT。具体而言，训练早期 Online RFT 与 RFT 相当，但到后期取得绝对优势，说明在线训练更好。这很直观：初期 actor 与 SFT 模型十分接近，采样数据只显示出很小的差别；到了后期，从 actor 采样的数据差别会大得多，实时采样的优势也就更大。"
+      },
+      {
+        "text": "The algorithm processes the reward signal to the gradient coefficient to update the model parameter. We divide the reward function as ‘Rule’ and ‘Model’ in our experiments. Rule refers to judging the quality of a response based on the correctness of the answer, and Model denotes that we train a reward model to score each response. The training data of the reward model is based on the rule judgment. Equations 10 and 21 highlight a key difference between GRPO and Online RFT: GRPO uniquely adjusts its gradient coefficient based on the reward value provided by the reward model. This allows for differential reinforcement and penalization of responses according to their varying magnitudes. In contrast, Online RFT lacks this feature; it does not penalize incorrect responses and uniformly reinforces all responses with correct answers at the same level of intensity.",
+        "x": 70.9,
+        "y": 221.8,
+        "w": 455.7,
+        "h": 132.9,
+        "zh": "算法把奖励信号处理成梯度系数，用来更新模型参数。实验中，我们把奖励函数分为“规则”和“模型”两类。规则是指按答案是否正确来判断一条回复的质量；模型是指我们训练一个奖励模型，为每条回复打分。奖励模型的训练数据来自规则判断。式 10 和式 21 点出了 GRPO 与 Online RFT 的一个关键差别：GRPO 会根据奖励模型给出的奖励值，单独调整自己的梯度系数。这样就可以按奖励幅度的不同，对回复做不同程度的强化和惩罚。Online RFT 没有这一机制：它不惩罚错误回复，并且对所有答案正确的回复施以同样强度的强化。"
+      },
+      {
+        "text": "As demonstrated in Figure 5, GRPO surpasses online RFT, thereby highlighting the efficiency of altering positive and negative gradient coefficients. In addition, GRPO+PS shows superior performance compared to GRPO+OS, indicating the benefits of using fine-grained, step-aware gradient coefficients. Furthermore, we explore the iterative RL, in our experiments, we conduct two rounds of iteration. As shown in Figure 6, we notice that the iterative RL significantly improves the performance, especially at the first iteration.",
+        "x": 70.5,
+        "y": 133.7,
+        "w": 454.3,
+        "h": 78.7,
+        "zh": "如图 5 所示，GRPO 超过 Online RFT，说明调整正、负梯度系数是有效的。此外，GRPO+PS 优于 GRPO+OS，说明使用更细、能够感知步骤的梯度系数有好处。我们还探索了迭代式 RL。实验中做了两轮迭代。如图 6 所示，迭代式 RL 能明显提升表现，尤其是在第一轮迭代。"
+      }
+    ],
+    "21": [
+      {
+        "text": "Figure 7 | The Maj@K and Pass@K of SFT and RL DeepSeekMath 7B on GSM8K and MATH (temperature 0.7). It was noted that RL enhances Maj@K but not Pass@K.",
+        "x": 70.5,
+        "y": 518.2,
+        "w": 453.9,
+        "h": 24.5,
+        "zh": "图 7 | SFT 与 RL 版 DeepSeekMath 7B 在 GSM8K 和 MATH 上的 Maj@K 与 Pass@K（温度 0.7）。可以看到，RL 提高了 Maj@K，但没有提高 Pass@K。"
+      },
+      {
+        "text": "In this paper, we conduct reinforcement learning based on a subset of instruction tuning data, and it achieves significant performance enhancement upon the instruction tuning model. To further explain why reinforcement learning works. We evaluate the Pass@K and Maj@K accuracy of the Instruct and RL models on two benchmarks. As shown in Figure 7, RL enhances Maj@K’s performance but not Pass@K. These findings indicate that RL enhances the model’s overall performance by rendering the output distribution more robust, in other words, it seems that the improvement is attributed to boosting the correct response from TopK rather than the enhancement of fundamental capabilities. Similarly, (Wang et al., 2023a) identified a misalignment problem in reasoning tasks within the SFT model, showing that the reasoning performance of SFT models can be improved through a series of preference alignment strategies (Song et al., 2023; Wang et al., 2023a; Yuan et al., 2023b).",
+        "x": 70.5,
+        "y": 325.5,
+        "w": 455.8,
+        "h": 146.4,
+        "zh": "本文的强化学习基于指令微调数据的一个子集，并在指令微调模型之上取得了明显提升。为进一步解释强化学习为什么有效，我们在两个基准上评估 Instruct 模型与 RL 模型的 Pass@K 和 Maj@K 准确率。如图 7 所示，RL 提高了 Maj@K，但没有提高 Pass@K。这些结果说明，RL 是通过让输出分布更加稳健来提高整体表现的。换句话说，提升似乎来自把 TopK 中的正确回复往上抬，而不是基础能力本身得到增强。类似地，（Wang et al., 2023a）指出 SFT 模型在推理任务上存在错位，并表明一系列偏好对齐策略可以改善 SFT 模型的推理表现（Song et al., 2023; Wang et al., 2023a; Yuan et al., 2023b）。"
+      },
+      {
+        "text": "5.2.3. How to Achieve More Effective RL?",
+        "x": 70.9,
+        "y": 294.9,
+        "w": 202.4,
+        "h": 10.9,
+        "zh": "5.2.3. 怎样做到更有效的 RL？"
+      },
+      {
+        "text": "We demonstrate RL works pretty well in mathematical reasoning tasks. We also provide a unified paradigm to understand different representative training methods. Within this paradigm, all methods are conceptualized as either direct or simplified RL techniques. As summarized in Equation 5, there exist three key components: Data Source, Algorithm, and Reward Function. We provide some potential future directions about the three components.",
+        "x": 70.3,
+        "y": 218.4,
+        "w": 456,
+        "h": 65.1,
+        "zh": "我们表明，RL 在数学推理任务上效果相当好。我们也给出一个统一框架，用来理解几种有代表性的训练方法。在这个框架里，所有方法都可以看成直接的或简化的 RL 技术。如式 5 所归纳的，存在三个关键部分：数据来源、算法和奖励函数。我们就这三部分给出一些可能的未来方向。"
+      },
+      {
+        "text": "Data source is the raw material of all training methods. In the context of RL, we specifically refer to the data source as the unlabeled questions with the outputs sampled from the policy model. In this paper, we only use the questions from the instruction tuning stage and a naive nucleus sampling to sample outputs. We think this is a potential reason that our RL pipeline only improves the Maj@K performance. In the future, we will explore our RL pipeline on out-of-distribution question prompts, in conjunction with advanced sampling (decoding) strategies, like those based on tree-search methods (Yao et al., 2023). Also, the efficient inference techniques (Kwon et al., 2023; Leviathan et al., 2023; Xia et al., 2023, 2024), which determines",
+        "x": 70.5,
+        "y": 88,
+        "w": 455,
+        "h": 105.8,
+        "zh": "数据来源是所有训练方法的原材料。在 RL 的语境中，我们特指那些未标注的问题，以及从策略模型采样得到的输出。本文只用了指令微调阶段的问题，并用朴素的 nucleus sampling 来采样输出。我们认为，这可能是本套 RL 流程只提升了 Maj@K 的一个原因。今后，我们会在分布外的问题提示上探索这套 RL 流程，并配合更先进的采样（解码）策略，例如基于树搜索的方法（Yao et al., 2023）。另外，高效推理技术（Kwon et al., 2023; Leviathan et al., 2023; Xia et al., 2023, 2024）所决定的"
+      }
+    ],
+    "22": [
+      {
+        "text": "the exploration efficiency of policy models, also play an exceedingly important role.",
+        "x": 70.9,
+        "y": 745.9,
+        "w": 403.3,
+        "h": 10.9,
+        "zh": "策略模型的探索效率，同时也起着极其重要的作用。"
+      },
+      {
+        "text": "Algorithms process the data and reward signal to the gradient coefficient to update the model parameter. Based on Equation 5, to some extent, all methods now fully TRUST the signal of the reward function to increase or decrease the conditional probability of a certain token. However, it is impossible to ensure the reward signal is always reliable, especially in extremely complex tasks. For example, even the PRM800K datasets (Lightman et al., 2023), which have been carefully annotated by well-trained annotators, still contain approximately 20% of incorrectly annotations . To this end, we will explore the reinforcement learning algorithm that is robust against noisy reward signals. We believe such WEAK-TO-STRONG (Burns et al., 2023) alignment methods will bring a fundamental change to the learning algorithms.",
+        "x": 70.4,
+        "y": 601.9,
+        "w": 455.4,
+        "h": 119.3,
+        "zh": "算法把数据和奖励信号处理成梯度系数，用来更新模型参数。基于式 5，在某种程度上，现有方法都完全信任奖励函数的信号，并据此提高或降低某个 token 的条件概率。然而，无法保证奖励信号始终可靠，在极其复杂的任务上尤其如此。例如，即便是由训练有素的标注员仔细标注的 PRM800K 数据集（Lightman et al., 2023），仍大约有 20% 的标注是错误的。为此，我们将探索对噪声奖励信号更加稳健的强化学习算法。我们相信，这类由弱到强（WEAK-TO-STRONG）（Burns et al., 2023）的对齐方法，会给学习算法带来根本性的变化。"
+      },
+      {
+        "text": "Reward function is the source of the training signal. In RL, the reward function is usually the neural reward model. We think there exist three important directions for reward models: 1) How to enhance the generalization ability of the reward model. The reward model must be effectively generalized to handle out-of-distribution questions and advanced decoding outputs; otherwise, reinforcement learning may merely stabilize the distribution of LLMs rather than improve their fundamental capabilities; 2) How to reflect the uncertainty of reward model. The uncertainty could potentially act as a linking bridge between the weak reward model and the weak-to-strong learning algorithms; 3) How to efficiently build highquality process reward models that can provide fine-grained training signals for the reasoning",
+        "x": 70.5,
+        "y": 457.9,
+        "w": 455.7,
+        "h": 119.3,
+        "zh": "奖励函数是训练信号的来源。在 RL 中，奖励函数通常是神经网络奖励模型。我们认为奖励模型有三个重要方向：1）如何增强奖励模型的泛化能力。奖励模型必须能够有效泛化到分布外的问题，以及更先进的解码输出；否则，强化学习可能只是稳住 LLM 的分布，而不是提高它们的基础能力。2）如何反映奖励模型的不确定性。不确定性有可能成为弱奖励模型与由弱到强学习算法之间的桥梁。3）如何高效构建高质量的过程奖励模型，以便为推理"
+      },
+      {
+        "text": "process (Lightman et al., 2023; Wang et al., 2023b).",
+        "x": 70.5,
+        "y": 444.4,
+        "w": 240.9,
+        "h": 10.9,
+        "zh": "过程提供细粒度的训练信号（Lightman et al., 2023; Wang et al., 2023b）。"
+      },
+      {
+        "text": "6. Conclusion, Limitation, and Future Work",
+        "x": 70.9,
+        "y": 408.3,
+        "w": 259.1,
+        "h": 13,
+        "zh": "6. 结论、局限与未来工作"
+      },
+      {
+        "text": "We present DeepSeekMath, which outperforms all open-source models on the competitionlevel MATH benchmark and approaches the performance of closed models. DeepSeekMath is initialized with DeepSeek-Coder-v1.5 7B and undergoes continual training for 500B tokens, with a significant component of the training data being 120B math tokens sourced from Common Crawl. Our extensive ablation study shows web pages offer significant potential for high-quality mathematical data, while arXiv may not as beneficial as we expected. We introduce Group Relative Policy Optimization (GRPO), a variant of Proximal Policy Optimization (PPO), which can notably improve mathematical reasoning capabilities with less memory consumption. The experiment results show that GRPO is effective even if DeepSeekMath-Instruct 7B has reached a high score on benchmarks. We also provide a unified paradigm to understand a series of methods and summarize several potential directions for more effective reinforcement learning.",
+        "x": 70.3,
+        "y": 247.5,
+        "w": 455.9,
+        "h": 146.4,
+        "zh": "我们提出 DeepSeekMath。它在竞赛级 MATH 基准上超过所有开源模型，并接近闭源模型的表现。DeepSeekMath 以 DeepSeek-Coder-v1.5 7B 初始化，再持续训练 500B token，其中很大一部分训练数据是来自 Common Crawl 的 120B 数学 token。大量消融表明，网页在高质量数学数据上潜力很大，而 arXiv 可能并不像我们预期的那样有益。我们提出 Group Relative Policy Optimization（GRPO），它是 Proximal Policy Optimization（PPO）的变体，能够以更少的显存明显提升数学推理能力。实验结果表明，即便 DeepSeekMath-Instruct 7B 在基准上的分数已经很高，GRPO 仍然有效。我们还给出一个统一框架来理解一系列方法，并归纳了若干方向，以便实现更有效的强化学习。"
+      },
+      {
+        "text": "Although DeepSeekMath achieves impressive scores on quantitative reasoning benchmarks, its capability on geometry and theorem-proof are relatively weaker than closed models. For instance, in our dry run, the model cannot handle problems related to triangles and ellipses, which may indicate data selection bias in pre-training and fine-tuning. In addition, restricted by the model scale, DeepSeekMath is worse than GPT-4 on few-shot capability. GPT-4 could improve its performance with few-shot inputs, while DeepSeekMath shows similar performance in zero-shot and few-shot evaluation. In the future, we will further improve our engineered data selection pipeline to construct more high-quality pre-trained corpus. In addition, we will explore the potential directions (Section 5.2.3) for more effective reinforcement learning of LLMs.",
+        "x": 70.4,
+        "y": 118.8,
+        "w": 455.9,
+        "h": 119.3,
+        "zh": "尽管 DeepSeekMath 在定量推理基准上取得了亮眼的分数，它在几何和定理证明上的能力相对闭源模型仍然较弱。例如，在我们的试跑中，模型处理不了与三角形和椭圆相关的问题，这可能说明预训练和微调的数据筛选存在偏差。此外，受模型规模限制，DeepSeekMath 的少样本能力不如 GPT-4。GPT-4 能够借助少样本输入提升表现，而 DeepSeekMath 在 zero-shot 与 few-shot 评测中表现相近。今后，我们将进一步改进这套经过工程化的数据筛选流程，以构建更高质量的预训练语料。此外，我们会探索第 5.2.3 节中的方向，以便对 LLM 做更有效的强化学习。"
+      },
+      {
+        "text": "7https://github.com/openai/prm800k/issues/12#issuecomment-1728491852",
+        "x": 86.3,
+        "y": 85,
+        "w": 351.6,
+        "h": 10.5,
+        "zh": ""
+      }
+    ],
+    "23": [
+      {
+        "text": "R. Anil, S. Borgeaud, Y. Wu, J. Alayrac, J. Yu, R. Soricut, J. Schalkwyk, A. M. Dai, A. Hauth, K. Millican, D. Silver, S. Petrov, M. Johnson, I. Antonoglou, J. Schrittwieser, A. Glaese, J. Chen, E. Pitler, T. P. Lillicrap, A. Lazaridou, O. Firat, J. Molloy, M. Isard, P. R. Barham, T. Hennigan, B. Lee, F. Viola, M. Reynolds, Y. Xu, R. Doherty, E. Collins, C. Meyer, E. Rutherford, E. Moreira, K. Ayoub, M. Goel, G. Tucker, E. Piqueras, M. Krikun, I. Barr, N. Savinov, I. Danihelka, B. Roelofs, A. White, A. Andreassen, T. von Glehn, L. Yagati, M. Kazemi, L. Gonzalez, M. Khalman, J. Sygnowski, and et al. models. CoRR, abs/2312.11805, 2023. doi: 10.48550/ARXIV.2312.11805. URL https: //doi.org/10.48550/arXiv.2312.11805.",
+        "x": 70.9,
+        "y": 612.2,
+        "w": 456.7,
+        "h": 119.3,
+        "zh": "R. Anil、S. Borgeaud、Y. Wu、J. Alayrac、J. Yu、R. Soricut、J. Schalkwyk、A. M. Dai、A. Hauth、K. Millican、D. Silver、S. Petrov、M. Johnson、I. Antonoglou、J. Schrittwieser、A. Glaese、J. Chen、E. Pitler、T. P. Lillicrap、A. Lazaridou、O. Firat、J. Molloy、M. Isard、P. R. Barham、T. Hennigan、B. Lee、F. Viola、M. Reynolds、Y. Xu、R. Doherty、E. Collins、C. Meyer、E. Rutherford、E. Moreira、K. Ayoub、M. Goel、G. Tucker、E. Piqueras、M. Krikun、I. Barr、N. Savinov、I. Danihelka、B. Roelofs、A. White、A. Andreassen、T. von Glehn、L. Yagati、M. Kazemi、L. Gonzalez、M. Khalman、J. Sygnowski 等。模型。CoRR，abs/2312.11805，2023。doi: 10.48550/ARXIV.2312.11805。URL https://doi.org/10.48550/arXiv.2312.11805。"
+      },
+      {
+        "text": "Gemini: A family of highly capable multimodal",
+        "x": 280.2,
+        "y": 639.3,
+        "w": 244.2,
+        "h": 10.9,
+        "zh": "Gemini：一系列能力很强的多模态"
+      },
+      {
+        "text": "J. Austin, A. Odena, M. Nye, M. Bosma, H. Michalewski, D. Dohan, E. Jiang, C. Cai, M. Terry, Q. Le, et al. Program synthesis with large language models. arXiv preprint arXiv:2108.07732,",
+        "x": 70.9,
+        "y": 577.1,
+        "w": 454.9,
+        "h": 24.5,
+        "zh": "J. Austin、A. Odena、M. Nye、M. Bosma、H. Michalewski、D. Dohan、E. Jiang、C. Cai、M. Terry、Q. Le 等。用大语言模型做程序合成。arXiv preprint arXiv:2108.07732，"
+      },
+      {
+        "text": "Z. Azerbayev, H. Schoelkopf, K. Paster, M. D. Santos, S. McAleer, A. Q. Jiang, J. Deng, S. Biderman, and S. Welleck. Llemma: An open language model for mathematics. arXiv preprint",
+        "x": 70.9,
+        "y": 528.4,
+        "w": 455.4,
+        "h": 24.5,
+        "zh": "Z. Azerbayev、H. Schoelkopf、K. Paster、M. D. Santos、S. McAleer、A. Q. Jiang、J. Deng、S. Biderman、S. Welleck。Llemma：一个面向数学的开放语言模型。arXiv preprint"
+      },
+      {
+        "text": "J. Bai, S. Bai, Y. Chu, Z. Cui, K. Dang, X. Deng, Y. Fan, W. Ge, Y. Han, F. Huang, et al. Qwen technical report. arXiv preprint arXiv:2309.16609, 2023.",
+        "x": 70.9,
+        "y": 479.8,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "J. Bai、S. Bai、Y. Chu、Z. Cui、K. Dang、X. Deng、Y. Fan、W. Ge、Y. Han、F. Huang 等。Qwen 技术报告。arXiv preprint arXiv:2309.16609，2023。"
+      },
+      {
+        "text": "C. Burns, P. Izmailov, J. H. Kirchner, B. Baker, L. Gao, L. Aschenbrenner, Y. Chen, A. Ecoffet, M. Joglekar, J. Leike, et al. Weak-to-strong generalization: Eliciting strong capabilities with weak supervision. arXiv preprint arXiv:2312.09390, 2023. ChatGLM3 Team. Chatglm3 series: Open bilingual chat llms, 2023. URL https://github.c",
+        "x": 70.9,
+        "y": 409.6,
+        "w": 454.9,
+        "h": 59.6,
+        "zh": "C. Burns、P. Izmailov、J. H. Kirchner、B. Baker、L. Gao、L. Aschenbrenner、Y. Chen、A. Ecoffet、M. Joglekar、J. Leike 等。由弱到强的泛化：用弱监督引出强能力。arXiv preprint arXiv:2312.09390，2023。ChatGLM3 Team。ChatGLM3 系列：开放的双语对话 LLM，2023。URL https://github.c"
+      },
+      {
+        "text": "M. Chen, J. Tworek, H. Jun, Q. Yuan, H. P. de Oliveira Pinto, J. Kaplan, H. Edwards, Y. Burda, N. Joseph, G. Brockman, A. Ray, R. Puri, G. Krueger, M. Petrov, H. Khlaaf, G. Sastry, P. Mishkin, B. Chan, S. Gray, N. Ryder, M. Pavlov, A. Power, L. Kaiser, M. Bavarian, C. Winter, P. Tillet, F. P. Such, D. Cummings, M. Plappert, F. Chantzis, E. Barnes, A. Herbert-Voss, W. H. Guss, A. Nichol, A. Paino, N. Tezak, J. Tang, I. Babuschkin, S. Balaji, S. Jain, W. Saunders, C. Hesse, A. N. Carr, J. Leike, J. Achiam, V. Misra, E. Morikawa, A. Radford, M. Knight, M. Brundage, M. Murati, K. Mayer, P. Welinder, B. McGrew, D. Amodei, S. McCandlish, I. Sutskever, and W. Zaremba. Evaluating large language models trained on code. CoRR, abs/2107.03374, 2021. URL https://arxiv.org/abs/2107.03374.",
+        "x": 70.9,
+        "y": 266.1,
+        "w": 454.9,
+        "h": 119.3,
+        "zh": "M. Chen、J. Tworek、H. Jun、Q. Yuan、H. P. de Oliveira Pinto、J. Kaplan、H. Edwards、Y. Burda、N. Joseph、G. Brockman、A. Ray、R. Puri、G. Krueger、M. Petrov、H. Khlaaf、G. Sastry、P. Mishkin、B. Chan、S. Gray、N. Ryder、M. Pavlov、A. Power、L. Kaiser、M. Bavarian、C. Winter、P. Tillet、F. P. Such、D. Cummings、M. Plappert、F. Chantzis、E. Barnes、A. Herbert-Voss、W. H. Guss、A. Nichol、A. Paino、N. Tezak、J. Tang、I. Babuschkin、S. Balaji、S. Jain、W. Saunders、C. Hesse、A. N. Carr、J. Leike、J. Achiam、V. Misra、E. Morikawa、A. Radford、M. Knight、M. Brundage、M. Murati、K. Mayer、P. Welinder、B. McGrew、D. Amodei、S. McCandlish、I. Sutskever、W. Zaremba。评估在代码上训练的大语言模型。CoRR，abs/2107.03374，2021。URL https://arxiv.org/abs/2107.03374。"
+      },
+      {
+        "text": "W. Chen, X. Ma, X. Wang, and W. W. Cohen. Program of thoughts prompting: Disentangling computation from reasoning for numerical reasoning tasks. CoRR, abs/2211.12588, 2022. doi: 10.48550/ARXIV.2211.12588. URL https://doi.org/10.48550/arXiv.2211.12588.",
+        "x": 70.9,
+        "y": 217.4,
+        "w": 454.5,
+        "h": 38,
+        "zh": "W. Chen、X. Ma、X. Wang、W. W. Cohen。Program of Thoughts 提示：把计算从推理中拆开，用于数值推理任务。CoRR，abs/2211.12588，2022。doi: 10.48550/ARXIV.2211.12588。URL https://doi.org/10.48550/arXiv.2211.12588。"
+      },
+      {
+        "text": "K. Cobbe, V. Kosaraju, M. Bavarian, M. Chen, H. Jun, L. Kaiser, M. Plappert, J. Tworek, J. Hilton, R. Nakano, et al. Training verifiers to solve math word problems. arXiv preprint",
+        "x": 70.9,
+        "y": 182.3,
+        "w": 454.9,
+        "h": 24.5,
+        "zh": "K. Cobbe、V. Kosaraju、M. Bavarian、M. Chen、H. Jun、L. Kaiser、M. Plappert、J. Tworek、J. Hilton、R. Nakano 等。训练验证器来解决数学应用题。arXiv preprint"
+      },
+      {
+        "text": "T. Computer. Redpajama: an open dataset for training large language models, Oct. 2023. URL https://github.com/togethercomputer/RedPajama-Data.",
+        "x": 70.9,
+        "y": 133.7,
+        "w": 453.9,
+        "h": 24.5,
+        "zh": "T. Computer。RedPajama：一份用于训练大语言模型的开放数据集，2023 年 10 月。URL https://github.com/togethercomputer/RedPajama-Data。"
+      },
+      {
+        "text": "DeepSeek-AI. Deepseek LLM: scaling open-source language models with longtermism. CoRR, abs/2401.02954, 2024. doi: 10.48550/ARXIV.2401.02954. URL https://doi.org/10.485",
+        "x": 70.9,
+        "y": 98.6,
+        "w": 454.8,
+        "h": 24.5,
+        "zh": "DeepSeek-AI。DeepSeek LLM：以长期主义扩展开源语言模型。CoRR，abs/2401.02954，2024。doi: 10.48550/ARXIV.2401.02954。URL https://doi.org/10.485"
+      }
+    ],
+    "24": [
+      {
+        "text": "Z. Du, Y. Qian, X. Liu, M. Ding, J. Qiu, Z. Yang, and J. Tang. Glm: General language model pretraining with autoregressive blank infilling. In Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), pages 320–335,",
+        "x": 70.9,
+        "y": 718.8,
+        "w": 457.2,
+        "h": 38,
+        "zh": "Z. Du、Y. Qian、X. Liu、M. Ding、J. Qiu、Z. Yang、J. Tang。GLM：用自回归空白填充做通用语言模型预训练。载于第 60 届计算语言学协会年会论文集（Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics，第 1 卷：长文），第 320–335 页，"
+      },
+      {
+        "text": "L. Gao, A. Madaan, S. Zhou, U. Alon, P. Liu, Y. Yang, J. Callan, and G. Neubig. PAL: programaided language models. In A. Krause, E. Brunskill, K. Cho, B. Engelhardt, S. Sabato, and J. Scarlett, editors, International Conference on Machine Learning, ICML 2023, 23-29 July 2023, Honolulu, Hawaii, USA, volume 202 of Proceedings of Machine Learning Research, pages 10764–10799. PMLR, 2023. URL https://proceedings.mlr.press/v202/gao23f.",
+        "x": 70.9,
+        "y": 628.5,
+        "w": 460.3,
+        "h": 65.1,
+        "zh": "L. Gao、A. Madaan、S. Zhou、U. Alon、P. Liu、Y. Yang、J. Callan、G. Neubig。PAL：程序辅助的语言模型。载于 A. Krause、E. Brunskill、K. Cho、B. Engelhardt、S. Sabato、J. Scarlett 编，International Conference on Machine Learning，ICML 2023，2023 年 7 月 23–29 日，美国夏威夷檀香山，Proceedings of Machine Learning Research 第 202 卷，第 10764–10799 页。PMLR，2023。URL https://proceedings.mlr.press/v202/gao23f。"
+      },
+      {
+        "text": "Z. Gou, Z. Shao, Y. Gong, Y. Shen, Y. Yang, M. Huang, N. Duan, and W. Chen. Tora: A toolintegrated reasoning agent for mathematical problem solving. CoRR, abs/2309.17452, 2023. doi: 10.48550/ARXIV.2309.17452. URL https://doi.org/10.48550/arXiv.2309.1745",
+        "x": 70.9,
+        "y": 565.4,
+        "w": 455.8,
+        "h": 38,
+        "zh": "Z. Gou、Z. Shao、Y. Gong、Y. Shen、Y. Yang、M. Huang、N. Duan、W. Chen。ToRA：面向数学问题求解的工具集成推理智能体。CoRR，abs/2309.17452，2023。doi: 10.48550/ARXIV.2309.17452。URL https://doi.org/10.48550/arXiv.2309.1745"
+      },
+      {
+        "text": "D. Guo, Q. Zhu, D. Yang, Z. Xie, K. Dong, W. Zhang, G. Chen, X. Bi, Y. Wu, Y. K. Li, F. Luo, Y. Xiong, and W. Liang. Deepseek-coder: When the large language model meets programming",
+        "x": 70.9,
+        "y": 515.8,
+        "w": 454.9,
+        "h": 24.5,
+        "zh": "D. Guo、Q. Zhu、D. Yang、Z. Xie、K. Dong、W. Zhang、G. Chen、X. Bi、Y. Wu、Y. K. Li、F. Luo、Y. Xiong、W. Liang。DeepSeek-Coder：当大语言模型遇上编程"
+      },
+      {
+        "text": "D. Hendrycks, C. Burns, S. Basart, A. Zou, M. Mazeika, D. Song, and J. Steinhardt. Measuring massive multitask language understanding. arXiv preprint arXiv:2009.03300, 2020.",
+        "x": 70.9,
+        "y": 466.1,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "D. Hendrycks、C. Burns、S. Basart、A. Zou、M. Mazeika、D. Song、J. Steinhardt。测量大规模多任务语言理解。arXiv preprint arXiv:2009.03300，2020。"
+      },
+      {
+        "text": "D. Hendrycks, C. Burns, S. Kadavath, A. Arora, S. Basart, E. Tang, D. Song, and J. Steinhardt. Measuring mathematical problem solving with the math dataset. arXiv preprint arXiv:2103.03874,",
+        "x": 70.9,
+        "y": 430.1,
+        "w": 455.4,
+        "h": 24.5,
+        "zh": "D. Hendrycks、C. Burns、S. Kadavath、A. Arora、S. Basart、E. Tang、D. Song、J. Steinhardt。用 MATH 数据集测量数学问题求解。arXiv preprint arXiv:2103.03874，"
+      },
+      {
+        "text": "High-flyer. Hai-llm: 高效且轻量的大模型训练工具, 2023. URL https://www.high-flyer.c",
+        "x": 70.9,
+        "y": 394,
+        "w": 453.5,
+        "h": 12,
+        "zh": "High-flyer。HAI-LLM：高效且轻量的大模型训练工具，2023。URL https://www.high-flyer.c"
+      },
+      {
+        "text": "Inflection AI. Inflection-2, 2023. URL https://inflection.ai/inflection-2.",
+        "x": 70.9,
+        "y": 357.9,
+        "w": 398.7,
+        "h": 12,
+        "zh": "Inflection AI。Inflection-2，2023。URL https://inflection.ai/inflection-2。"
+      },
+      {
+        "text": "A. Q. Jiang, S. Welleck, J. P. Zhou, W. Li, J. Liu, M. Jamnik, T. Lacroix, Y. Wu, and G. Lample. Draft, sketch, and prove: Guiding formal theorem provers with informal proofs. arXiv preprint",
+        "x": 70.9,
+        "y": 321.9,
+        "w": 454.9,
+        "h": 24.5,
+        "zh": "A. Q. Jiang、S. Welleck、J. P. Zhou、W. Li、J. Liu、M. Jamnik、T. Lacroix、Y. Wu、G. Lample。起草、写证明梗概、再证明：用非形式证明引导形式定理证明器。arXiv preprint"
+      },
+      {
+        "text": "A. Q. Jiang, A. Sablayrolles, A. Mensch, C. Bamford, D. S. Chaplot, D. d. l. Casas, F. Bressand, G. Lengyel, G. Lample, L. Saulnier, et al. Mistral 7b. arXiv preprint arXiv:2310.06825, 2023.",
+        "x": 70.9,
+        "y": 272.3,
+        "w": 454.9,
+        "h": 24.5,
+        "zh": "A. Q. Jiang、A. Sablayrolles、A. Mensch、C. Bamford、D. S. Chaplot、D. d. l. Casas、F. Bressand、G. Lengyel、G. Lample、L. Saulnier 等。Mistral 7B。arXiv preprint arXiv:2310.06825，2023。"
+      },
+      {
+        "text": "A. Joulin, E. Grave, P. Bojanowski, M. Douze, H. Jégou, and T. Mikolov. Fasttext. zip: Compressing text classification models. arXiv preprint arXiv:1612.03651, 2016.",
+        "x": 70.9,
+        "y": 236.2,
+        "w": 455.4,
+        "h": 24.5,
+        "zh": "A. Joulin、E. Grave、P. Bojanowski、M. Douze、H. Jégou、T. Mikolov。fastText.zip：压缩文本分类模型。arXiv preprint arXiv:1612.03651，2016。"
+      },
+      {
+        "text": "W. Kwon, Z. Li, S. Zhuang, Y. Sheng, L. Zheng, C. H. Yu, J. E. Gonzalez, H. Zhang, and I. Stoica. Efficient memory management for large language model serving with pagedattention. In Proceedings of the ACM SIGOPS 29th Symposium on Operating Systems Principles, 2023.",
+        "x": 70.9,
+        "y": 186.6,
+        "w": 455.5,
+        "h": 38,
+        "zh": "W. Kwon、Z. Li、S. Zhuang、Y. Sheng、L. Zheng、C. H. Yu、J. E. Gonzalez、H. Zhang、I. Stoica。用 PagedAttention 为大语言模型服务做高效的内存管理。载于 Proceedings of the ACM SIGOPS 29th Symposium on Operating Systems Principles，2023。"
+      },
+      {
+        "text": "Y. Leviathan, M. Kalman, and Y. Matias. Fast inference from transformers via speculative",
+        "x": 70.9,
+        "y": 164.1,
+        "w": 453.5,
+        "h": 10.9,
+        "zh": "Y. Leviathan、M. Kalman、Y. Matias。借助推测实现 Transformer 的快速推理"
+      },
+      {
+        "text": "In International Conference on Machine Learning, pages 19274–19286. PMLR,",
+        "x": 138.5,
+        "y": 150.5,
+        "w": 391.6,
+        "h": 10.9,
+        "zh": "载于 International Conference on Machine Learning，第 19274–19286 页。PMLR，"
+      },
+      {
+        "text": "A. Lewkowycz, A. Andreassen, D. Dohan, E. Dyer, H. Michalewski, V. Ramasesh, A. Slone, C. Anil, I. Schlag, T. Gutman-Solo, et al. language models. Advances in Neural Information Processing Systems, 35:3843–3857, 2022a.",
+        "x": 70.9,
+        "y": 87.4,
+        "w": 454.9,
+        "h": 38,
+        "zh": "A. Lewkowycz、A. Andreassen、D. Dohan、E. Dyer、H. Michalewski、V. Ramasesh、A. Slone、C. Anil、I. Schlag、T. Gutman-Solo 等。语言模型。Advances in Neural Information Processing Systems，35:3843–3857，2022a。"
+      },
+      {
+        "text": "Solving quantitative reasoning problems with",
+        "x": 294.1,
+        "y": 100.9,
+        "w": 230.3,
+        "h": 10.9,
+        "zh": "解决定量推理问题，借助"
+      }
+    ],
+    "25": [
+      {
+        "text": "A. Lewkowycz, A. Andreassen, D. Dohan, E. Dyer, H. Michalewski, V. V. Ramasesh, A. Slone, C. Anil, I. Schlag, T. Gutman-Solo, Y. Wu, B. Neyshabur, G. Gur-Ari, and V. Misra. Solving quantitative reasoning problems with language models. In S. Koyejo, S. Mohamed, A. Agarwal, D. Belgrave, K. Cho, and A. Oh, editors, Advances in Neural Information Processing Systems 35: Annual Conference on Neural Information Processing Systems 2022, NeurIPS 2022, New Orleans, LA, USA, November 28 - December 9, 2022, 2022b. URL http://papers.nips. cc/paper_files/paper/2022/hash/18abbeef8cfe9203fdf9053c9c4fe191-Abstr",
+        "x": 70.9,
+        "y": 664.6,
+        "w": 458,
+        "h": 92.2,
+        "zh": "A. Lewkowycz、A. Andreassen、D. Dohan、E. Dyer、H. Michalewski、V. V. Ramasesh、A. Slone、C. Anil、I. Schlag、T. Gutman-Solo、Y. Wu、B. Neyshabur、G. Gur-Ari、V. Misra。用语言模型解决定量推理问题。载于 S. Koyejo、S. Mohamed、A. Agarwal、D. Belgrave、K. Cho、A. Oh 编，Advances in Neural Information Processing Systems 35：Neural Information Processing Systems 2022 年会，NeurIPS 2022，美国路易斯安那州新奥尔良，2022 年 11 月 28 日至 12 月 9 日，2022b。URL http://papers.nips.cc/paper_files/paper/2022/hash/18abbeef8cfe9203fdf9053c9c4fe191-Abstr"
+      },
+      {
+        "text": "H. Lightman, V. Kosaraju, Y. Burda, H. Edwards, B. Baker, T. Lee, J. Leike, J. Schulman, I. Sutskever, and K. Cobbe. Let’s verify step by step. arXiv preprint arXiv:2305.20050, 2023.",
+        "x": 70.9,
+        "y": 615,
+        "w": 454.9,
+        "h": 24.5,
+        "zh": "H. Lightman、V. Kosaraju、Y. Burda、H. Edwards、B. Baker、T. Lee、J. Leike、J. Schulman、I. Sutskever、K. Cobbe。让我们逐步验证。arXiv preprint arXiv:2305.20050，2023。"
+      },
+      {
+        "text": "I. Loshchilov and F. Hutter. arXiv:1711.05101, 2017.",
+        "x": 70.9,
+        "y": 578.9,
+        "w": 146.3,
+        "h": 24.5,
+        "zh": "I. Loshchilov、F. Hutter。arXiv:1711.05101，2017。"
+      },
+      {
+        "text": "H. Luo, Q. Sun, C. Xu, P. Zhao, J. Lou, C. Tao, X. Geng, Q. Lin, S. Chen, and D. Zhang. Wizardmath: Empowering mathematical reasoning for large language models via reinforced",
+        "x": 70.9,
+        "y": 542.9,
+        "w": 455.5,
+        "h": 24.5,
+        "zh": "H. Luo、Q. Sun、C. Xu、P. Zhao、J. Lou、C. Tao、X. Geng、Q. Lin、S. Chen、D. Zhang。WizardMath：让大语言模型获得数学推理能力，其途径是强化的"
+      },
+      {
+        "text": "evol-instruct. arXiv preprint arXiv:2308.09583, 2023.",
+        "x": 81.7,
+        "y": 529.3,
+        "w": 250.3,
+        "h": 10.9,
+        "zh": "evol-instruct。arXiv preprint arXiv:2308.09583，2023。"
+      },
+      {
+        "text": "S. Mishra, M. Finlayson, P. Lu, L. Tang, S. Welleck, C. Baral, T. Rajpurohit, O. Tafjord, A. Sabharwal, P. Clark, and A. Kalyan. LILA: A unified benchmark for mathematical reasoning. In Y. Goldberg, Z. Kozareva, and Y. Zhang, editors, Proceedings of the 2022 Conference on Empirical Methods in Natural Language Processing, EMNLP 2022, Abu Dhabi, United Arab Emirates, December 7-11, 2022, pages 5807–5832. Association for Computational Linguistics, 2022. doi: 10.18653/V1/2022.EMNLP-MAIN.392. URL https://doi.org/10.18653/v1/",
+        "x": 70.9,
+        "y": 439,
+        "w": 457,
+        "h": 78.7,
+        "zh": "S. Mishra、M. Finlayson、P. Lu、L. Tang、S. Welleck、C. Baral、T. Rajpurohit、O. Tafjord、A. Sabharwal、P. Clark、A. Kalyan。LILA：数学推理的统一基准。载于 Y. Goldberg、Z. Kozareva、Y. Zhang 编，2022 年自然语言处理经验方法会议论文集，EMNLP 2022，阿拉伯联合酋长国阿布扎比，2022 年 12 月 7–11 日，第 5807–5832 页。Association for Computational Linguistics，2022。doi: 10.18653/V1/2022.EMNLP-MAIN.392。URL https://doi.org/10.18653/v1/"
+      },
+      {
+        "text": "X. Nguyen, W. Zhang, X. Li, M. M. Aljunied, Q. Tan, L. Cheng, G. Chen, Y. Deng, S. Yang, C. Liu, H. Zhang, and L. Bing. Seallms - large language models for southeast asia. CoRR, abs/2312.00738, 2023. doi: 10.48550/ARXIV.2312.00738. URL https://doi.org/10.485",
+        "x": 70.9,
+        "y": 375.9,
+        "w": 455.5,
+        "h": 38,
+        "zh": "X. Nguyen、W. Zhang、X. Li、M. M. Aljunied、Q. Tan、L. Cheng、G. Chen、Y. Deng、S. Yang、C. Liu、H. Zhang、L. Bing。SeaLLMs：面向东南亚的大语言模型。CoRR，abs/2312.00738，2023。doi: 10.48550/ARXIV.2312.00738。URL https://doi.org/10.485"
+      },
+      {
+        "text": "OpenAI. GPT4 technical report. arXiv preprint arXiv:2303.08774, 2023.",
+        "x": 70.9,
+        "y": 339.8,
+        "w": 340,
+        "h": 10.9,
+        "zh": "OpenAI。GPT-4 技术报告。arXiv preprint arXiv:2303.08774，2023。"
+      },
+      {
+        "text": "L. Ouyang, J. Wu, X. Jiang, D. Almeida, C. Wainwright, P. Mishkin, C. Zhang, S. Agarwal, K. Slama, A. Ray, et al. Training language models to follow instructions with human feedback. Advances in Neural Information Processing Systems, 35:27730–27744, 2022.",
+        "x": 70.9,
+        "y": 290.2,
+        "w": 455.5,
+        "h": 38,
+        "zh": "L. Ouyang、J. Wu、X. Jiang、D. Almeida、C. Wainwright、P. Mishkin、C. Zhang、S. Agarwal、K. Slama、A. Ray 等。用人类反馈训练语言模型遵循指令。Advances in Neural Information Processing Systems，35:27730–27744，2022。"
+      },
+      {
+        "text": "K. Paster, M. D. Santos, Z. Azerbayev, and J. Ba. Openwebmath: An open dataset of high-quality mathematical web text. CoRR, abs/2310.06786, 2023. doi: 10.48550/ARXIV.2310.06786. URL",
+        "x": 70.9,
+        "y": 254.1,
+        "w": 454,
+        "h": 24.5,
+        "zh": "K. Paster、M. D. Santos、Z. Azerbayev、J. Ba。OpenWebMath：一份高质量数学网页文本的开放数据集。CoRR，abs/2310.06786，2023。doi: 10.48550/ARXIV.2310.06786。URL"
+      },
+      {
+        "text": "https://doi.org/10.48550/arXiv.2310.06786.",
+        "x": 81.7,
+        "y": 240.6,
+        "w": 261,
+        "h": 12,
+        "zh": ""
+      },
+      {
+        "text": "L. C. Paulson. Three years of experience with sledgehammer, a practical link between automatic and interactive theorem provers. In R. A. Schmidt, S. Schulz, and B. Konev, editors, Proceedings of the 2nd Workshop on Practical Aspects of Automated Reasoning, PAAR-2010, Edinburgh, Scotland, UK, July 14, 2010, volume 9 of EPiC Series in Computing, pages 1–10. EasyChair, 2010. doi: 10.29007/TNFD. URL https://doi.org/10.29007/tnfd.",
+        "x": 70.9,
+        "y": 163.9,
+        "w": 457.8,
+        "h": 65.1,
+        "zh": "L. C. Paulson。使用 Sledgehammer 的三年经验：自动定理证明器与交互式定理证明器之间的一条实用纽带。载于 R. A. Schmidt、S. Schulz、B. Konev 编，第 2 届自动推理实践问题研讨会论文集，PAAR-2010，英国苏格兰爱丁堡，2010 年 7 月 14 日，EPiC Series in Computing 第 9 卷，第 1–10 页。EasyChair，2010。doi: 10.29007/TNFD。URL https://doi.org/10.29007/tnfd。"
+      },
+      {
+        "text": "S. Polu and I. Sutskever. Generative language modeling for automated theorem proving. CoRR, abs/2009.03393, 2020. URL https://arxiv.org/abs/2009.03393.",
+        "x": 70.9,
+        "y": 127.8,
+        "w": 454.4,
+        "h": 24.5,
+        "zh": "S. Polu、I. Sutskever。面向自动定理证明的生成式语言建模。CoRR，abs/2009.03393，2020。URL https://arxiv.org/abs/2009.03393。"
+      },
+      {
+        "text": "R. Rafailov, A. Sharma, E. Mitchell, S. Ermon, C. D. Manning, and C. Finn. Direct preference optimization: Your language model is secretly a reward model. 2023.",
+        "x": 70.9,
+        "y": 91.7,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "R. Rafailov、A. Sharma、E. Mitchell、S. Ermon、C. D. Manning、C. Finn。直接偏好优化：你的语言模型其实是一个奖励模型。2023。"
+      }
+    ],
+    "26": [
+      {
+        "text": "J. Schulman. Approximating kl divergence, 2020. URL http://joschu.net/blog/kl-app",
+        "x": 70.9,
+        "y": 745.9,
+        "w": 453.5,
+        "h": 12,
+        "zh": "J. Schulman。近似 KL 散度，2020。URL http://joschu.net/blog/kl-app"
+      },
+      {
+        "text": "J. Schulman, P. Moritz, S. Levine, M. Jordan, and P. Abbeel. High-dimensional continuous control using generalized advantage estimation. arXiv preprint arXiv:1506.02438, 2015.",
+        "x": 70.9,
+        "y": 696.5,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "J. Schulman、P. Moritz、S. Levine、M. Jordan、P. Abbeel。用广义优势估计做高维连续控制。arXiv preprint arXiv:1506.02438，2015。"
+      },
+      {
+        "text": "J. Schulman, F. Wolski, P. Dhariwal, A. Radford, and O. Klimov. Proximal policy optimization algorithms. arXiv preprint arXiv:1707.06347, 2017.",
+        "x": 70.9,
+        "y": 660.6,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "J. Schulman、F. Wolski、P. Dhariwal、A. Radford、O. Klimov。近端策略优化算法。arXiv preprint arXiv:1707.06347，2017。"
+      },
+      {
+        "text": "F. Shi, M. Suzgun, M. Freitag, X. Wang, S. Srivats, S. Vosoughi, H. W. Chung, Y. Tay, S. Ruder, D. Zhou, D. Das, and J. Wei. Language models are multilingual chain-of-thought reasoners. In The Eleventh International Conference on Learning Representations, ICLR 2023, Kigali, Rwanda, May 1-5, 2023. OpenReview.net, 2023. URL https://openreview.net/pdf?id=",
+        "x": 70.9,
+        "y": 597.6,
+        "w": 462.8,
+        "h": 51.6,
+        "zh": "F. Shi、M. Suzgun、M. Freitag、X. Wang、S. Srivats、S. Vosoughi、H. W. Chung、Y. Tay、S. Ruder、D. Zhou、D. Das、J. Wei。语言模型是多语言的思维链推理者。载于第十一届学习表征国际会议，ICLR 2023，卢旺达基加利，2023 年 5 月 1–5 日。OpenReview.net，2023。URL https://openreview.net/pdf?id="
+      },
+      {
+        "text": "F. Song, B. Yu, M. Li, H. Yu, F. Huang, Y. Li, and H. Wang. Preference ranking optimization for human alignment. arXiv preprint arXiv:2306.17492, 2023.",
+        "x": 70.9,
+        "y": 548.2,
+        "w": 453.8,
+        "h": 24.5,
+        "zh": "F. Song、B. Yu、M. Li、H. Yu、F. Huang、Y. Li、H. Wang。面向人类对齐的偏好排序优化。arXiv preprint arXiv:2306.17492，2023。"
+      },
+      {
+        "text": "M. Suzgun, N. Scales, N. Schärli, S. Gehrmann, Y. Tay, H. W. Chung, A. Chowdhery, Q. V. Le, E. H. Chi, D. Zhou, et al. Challenging big-bench tasks and whether chain-of-thought can solve",
+        "x": 70.9,
+        "y": 512.3,
+        "w": 454.9,
+        "h": 24.5,
+        "zh": "M. Suzgun、N. Scales、N. Schärli、S. Gehrmann、Y. Tay、H. W. Chung、A. Chowdhery、Q. V. Le、E. H. Chi、D. Zhou 等。有挑战性的 BIG-Bench 任务，以及思维链能否解决"
+      },
+      {
+        "text": "them. arXiv preprint arXiv:2210.09261, 2022.",
+        "x": 81.7,
+        "y": 498.8,
+        "w": 214,
+        "h": 10.9,
+        "zh": "它们。arXiv preprint arXiv:2210.09261，2022。"
+      },
+      {
+        "text": "T. Tao. Embracing change and resetting expectations, 2023. URL https://unlocked.micro",
+        "x": 70.9,
+        "y": 476.4,
+        "w": 453.5,
+        "h": 12,
+        "zh": "T. Tao。拥抱变化，并重置预期，2023。URL https://unlocked.micro"
+      },
+      {
+        "text": "H. Touvron, L. Martin, K. Stone, P. Albert, A. Almahairi, Y. Babaei, N. Bashlykov, S. Batra, P. Bhargava, S. Bhosale, D. Bikel, L. Blecher, C. Canton-Ferrer, M. Chen, G. Cucurull, D. Esiobu, J. Fernandes, J. Fu, W. Fu, B. Fuller, C. Gao, V. Goswami, N. Goyal, A. Hartshorn, S. Hosseini, R. Hou, H. Inan, M. Kardas, V. Kerkez, M. Khabsa, I. Kloumann, A. Korenev, P. S. Koura, M. Lachaux, T. Lavril, J. Lee, D. Liskovich, Y. Lu, Y. Mao, X. Martinet, T. Mihaylov, P. Mishra, I. Molybog, Y. Nie, A. Poulton, J. Reizenstein, R. Rungta, K. Saladi, A. Schelten, R. Silva, E. M. Smith, R. Subramanian, X. E. Tan, B. Tang, R. Taylor, A. Williams, J. X. Kuan, P. Xu, Z. Yan, I. Zarov, Y. Zhang, A. Fan, M. Kambadur, S. Narang, A. Rodriguez, R. Stojnic, S. Edunov, and T. Scialom. Llama 2: Open foundation and fine-tuned chat models. CoRR, abs/2307.09288, 2023. doi: 10.48550/arXiv.2307.09288. URL https://doi.org/10.48550/arXiv.2307.",
+        "x": 70.9,
+        "y": 318.6,
+        "w": 458,
+        "h": 132.9,
+        "zh": "H. Touvron、L. Martin、K. Stone、P. Albert、A. Almahairi、Y. Babaei、N. Bashlykov、S. Batra、P. Bhargava、S. Bhosale、D. Bikel、L. Blecher、C. Canton-Ferrer、M. Chen、G. Cucurull、D. Esiobu、J. Fernandes、J. Fu、W. Fu、B. Fuller、C. Gao、V. Goswami、N. Goyal、A. Hartshorn、S. Hosseini、R. Hou、H. Inan、M. Kardas、V. Kerkez、M. Khabsa、I. Kloumann、A. Korenev、P. S. Koura、M. Lachaux、T. Lavril、J. Lee、D. Liskovich、Y. Lu、Y. Mao、X. Martinet、T. Mihaylov、P. Mishra、I. Molybog、Y. Nie、A. Poulton、J. Reizenstein、R. Rungta、K. Saladi、A. Schelten、R. Silva、E. M. Smith、R. Subramanian、X. E. Tan、B. Tang、R. Taylor、A. Williams、J. X. Kuan、P. Xu、Z. Yan、I. Zarov、Y. Zhang、A. Fan、M. Kambadur、S. Narang、A. Rodriguez、R. Stojnic、S. Edunov、T. Scialom。Llama 2：开放的基础模型与经过微调的对话模型。CoRR，abs/2307.09288，2023。doi: 10.48550/arXiv.2307.09288。URL https://doi.org/10.48550/arXiv.2307。"
+      },
+      {
+        "text": "T. H. Trinh, Y. Wu, Q. V. Le, H. He, and T. Luong. Solving olympiad geometry without human demonstrations. Nature, 625(7995):476–482, 2024.",
+        "x": 70.9,
+        "y": 269.2,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "T. H. Trinh、Y. Wu、Q. V. Le、H. He、T. Luong。不依靠人类演示解决奥林匹克几何问题。Nature，625(7995):476–482，2024。"
+      },
+      {
+        "text": "P. Wang, L. Li, L. Chen, F. Song, B. Lin, Y. Cao, T. Liu, and Z. Sui. Making large language models better reasoners with alignment. arXiv preprint arXiv:2309.02144, 2023a.",
+        "x": 70.9,
+        "y": 233.3,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "P. Wang、L. Li、L. Chen、F. Song、B. Lin、Y. Cao、T. Liu、Z. Sui。通过对齐，让大语言模型成为更好的推理者。arXiv preprint arXiv:2309.02144，2023a。"
+      },
+      {
+        "text": "P. Wang, L. Li, Z. Shao, R. Xu, D. Dai, Y. Li, D. Chen, Y. Wu, and Z. Sui. Math-shepherd: Verify and reinforce llms step-by-step without human annotations. CoRR, abs/2312.08935, 2023b.",
+        "x": 70.9,
+        "y": 197.4,
+        "w": 454,
+        "h": 24.5,
+        "zh": "P. Wang、L. Li、Z. Shao、R. Xu、D. Dai、Y. Li、D. Chen、Y. Wu、Z. Sui。Math-Shepherd：无需人工标注，逐步验证并强化 LLM。CoRR，abs/2312.08935，2023b。"
+      },
+      {
+        "text": "Z. Wang, R. Xia, and P. Liu. Generative AI for math: Part I - mathpile: A billion-token-scale pretraining corpus for math. CoRR, abs/2312.17120, 2023c. doi: 10.48550/ARXIV.2312.17120. URL https://doi.org/10.48550/arXiv.2312.17120.",
+        "x": 70.9,
+        "y": 148,
+        "w": 455.1,
+        "h": 38,
+        "zh": "Z. Wang、R. Xia、P. Liu。面向数学的生成式 AI：第一部分——MathPile：一份十亿 token 规模的数学预训练语料。CoRR，abs/2312.17120，2023c。doi: 10.48550/ARXIV.2312.17120。URL https://doi.org/10.48550/arXiv.2312.17120。"
+      },
+      {
+        "text": "J. Wei, X. Wang, D. Schuurmans, M. Bosma, B. Ichter, F. Xia, E. H. Chi, Q. V. Le, and D. Zhou. Chain-of-thought prompting elicits reasoning in large language models. In NeurIPS, 2022. URL http://papers.nips.cc/paper_files/paper/2022/hash/9d5609613524ecf 4f15af0f7b31abca4-Abstract-Conference.html.",
+        "x": 70.9,
+        "y": 85,
+        "w": 456.3,
+        "h": 51.6,
+        "zh": "J. Wei、X. Wang、D. Schuurmans、M. Bosma、B. Ichter、F. Xia、E. H. Chi、Q. V. Le、D. Zhou。思维链提示激发大语言模型中的推理。载于 NeurIPS，2022。URL http://papers.nips.cc/paper_files/paper/2022/hash/9d5609613524ecf4f15af0f7b31abca4-Abstract-Conference.html。"
+      }
+    ],
+    "27": [
+      {
+        "text": "T. Wei, J. Luan, W. Liu, S. Dong, and B. Wang. Cmath: Can your language model pass chinese",
+        "x": 70.9,
+        "y": 745.9,
+        "w": 453.5,
+        "h": 10.9,
+        "zh": "T. Wei、J. Luan、W. Liu、S. Dong、B. Wang。CMATH：你的语言模型能通过中文"
+      },
+      {
+        "text": "M. Wenzel, L. C. Paulson, and T. Nipkow. The isabelle framework. In O. A. Mohamed, C. A. Muñoz, and S. Tahar, editors, Theorem Proving in Higher Order Logics, 21st International Conference, TPHOLs 2008, Montreal, Canada, August 18-21, 2008. Proceedings, volume 5170 of Lecture Notes in Computer Science, pages 33–38. Springer, 2008. doi: 10.1007/978-3-540-7 1067-7\\_7. URL https://doi.org/10.1007/978-3-540-71067-7_7.",
+        "x": 70.9,
+        "y": 655.6,
+        "w": 459,
+        "h": 65.1,
+        "zh": "M. Wenzel、L. C. Paulson、T. Nipkow。Isabelle 框架。载于 O. A. Mohamed、C. A. Muñoz、S. Tahar 编，高阶逻辑中的定理证明，第 21 届国际会议 TPHOLs 2008，加拿大蒙特利尔，2008 年 8 月 18–21 日，论文集，Lecture Notes in Computer Science 第 5170 卷，第 33–38 页。Springer，2008。doi: 10.1007/978-3-540-71067-7_7。URL https://doi.org/10.1007/978-3-540-71067-7_7。"
+      },
+      {
+        "text": "H. Xia, T. Ge, P. Wang, S.-Q. Chen, F. Wei, and Z. Sui.",
+        "x": 70.9,
+        "y": 633.1,
+        "w": 277.7,
+        "h": 10.9,
+        "zh": "H. Xia、T. Ge、P. Wang、S.-Q. Chen、F. Wei、Z. Sui。"
+      },
+      {
+        "text": "Speculative decoding: Exploiting speculative execution for accelerating seq2seq generation. In H. Bouamor, J. Pino, and K. Bali, editors, Findings of the Association for Computational Linguistics: EMNLP 2023, pages 3909– 3925, Singapore, Dec. 2023. Association for Computational Linguistics. doi: 10.18653/v1/20 23.findings-emnlp.257. URL https://aclanthology.org/2023.findings-emnlp.257.",
+        "x": 81.7,
+        "y": 578.9,
+        "w": 444.6,
+        "h": 65.1,
+        "zh": "推测式解码：利用推测执行加速序列到序列生成。载于 H. Bouamor、J. Pino、K. Bali 编，计算语言学协会发现集：EMNLP 2023，第 3909–3925 页，新加坡，2023 年 12 月。Association for Computational Linguistics。doi: 10.18653/v1/2023.findings-emnlp.257。URL https://aclanthology.org/2023.findings-emnlp.257。"
+      },
+      {
+        "text": "H. Xia, Z. Yang, Q. Dong, P. Wang, Y. Li, T. Ge, T. Liu, W. Li, and Z. Sui. Unlocking efficiency in large language model inference: A comprehensive survey of speculative decoding. arXiv",
+        "x": 70.9,
+        "y": 542.9,
+        "w": 454,
+        "h": 24.5,
+        "zh": "H. Xia、Z. Yang、Q. Dong、P. Wang、Y. Li、T. Ge、T. Liu、W. Li、Z. Sui。释放大语言模型推理中的效率：推测式解码综述。arXiv"
+      },
+      {
+        "text": "S. Yao, D. Yu, J. Zhao, I. Shafran, T. L. Griffiths, Y. Cao, and K. Narasimhan. Tree of thoughts: Deliberate problem solving with large language models. arXiv preprint arXiv:2305.10601,",
+        "x": 70.9,
+        "y": 493.2,
+        "w": 457.9,
+        "h": 24.5,
+        "zh": "S. Yao、D. Yu、J. Zhao、I. Shafran、T. L. Griffiths、Y. Cao、K. Narasimhan。思维树：用大语言模型做审慎的问题求解。arXiv preprint arXiv:2305.10601，"
+      },
+      {
+        "text": "L. Yu, W. Jiang, H. Shi, J. Yu, Z. Liu, Y. Zhang, J. T. Kwok, Z. Li, A. Weller, and W. Liu. Metamath: Bootstrap your own mathematical questions for large language models. CoRR, abs/2309.12284, 2023. doi: 10.48550/ARXIV.2309.12284. URL https://doi.org/10.485",
+        "x": 70.9,
+        "y": 430.1,
+        "w": 455.5,
+        "h": 38,
+        "zh": "L. Yu、W. Jiang、H. Shi、J. Yu、Z. Liu、Y. Zhang、J. T. Kwok、Z. Li、A. Weller、W. Liu。MetaMath：为大语言模型自举你自己的数学问题。CoRR，abs/2309.12284，2023。doi: 10.48550/ARXIV.2309.12284。URL https://doi.org/10.485"
+      },
+      {
+        "text": "Z. Yuan, H. Yuan, C. Li, G. Dong, C. Tan, and C. Zhou.",
+        "x": 70.9,
+        "y": 394,
+        "w": 284.8,
+        "h": 10.9,
+        "zh": "Z. Yuan、H. Yuan、C. Li、G. Dong、C. Tan、C. Zhou。"
+      },
+      {
+        "text": "Scaling relationship on learning mathematical reasoning with large language models. arXiv preprint arXiv:2308.01825, 2023a.",
+        "x": 81.7,
+        "y": 380.5,
+        "w": 443.2,
+        "h": 24.5,
+        "zh": "大语言模型学习数学推理时的缩放关系。arXiv preprint arXiv:2308.01825，2023a。"
+      },
+      {
+        "text": "Z. Yuan, H. Yuan, C. Tan, W. Wang, S. Huang, and F. Huang. Rrhf: Rank responses to align language models with human feedback without tears. arXiv preprint arXiv:2304.05302, 2023b.",
+        "x": 70.9,
+        "y": 344.4,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "Z. Yuan、H. Yuan、C. Tan、W. Wang、S. Huang、F. Huang。RRHF：对回复排序，让语言模型对齐人类反馈，而且不必那么费劲。arXiv preprint arXiv:2304.05302，2023b。"
+      },
+      {
+        "text": "X. Yue, X. Qu, G. Zhang, Y. Fu, W. Huang, H. Sun, Y. Su, and W. Chen. Mammoth: Building math generalist models through hybrid instruction tuning. CoRR, abs/2309.05653, 2023. doi: 10.48550/ARXIV.2309.05653. URL https://doi.org/10.48550/arXiv.2309.05653.",
+        "x": 70.9,
+        "y": 294.8,
+        "w": 454.7,
+        "h": 38,
+        "zh": "X. Yue、X. Qu、G. Zhang、Y. Fu、W. Huang、H. Sun、Y. Su、W. Chen。MAmmoTH：通过混合指令微调构建数学通才模型。CoRR，abs/2309.05653，2023。doi: 10.48550/ARXIV.2309.05653。URL https://doi.org/10.48550/arXiv.2309.05653。"
+      },
+      {
+        "text": "K. Zheng, J. M. Han, and S. Polu. Minif2f: a cross-system benchmark for formal olympiad-level",
+        "x": 70.9,
+        "y": 272.3,
+        "w": 453.5,
+        "h": 10.9,
+        "zh": "K. Zheng、J. M. Han、S. Polu。miniF2F：一个跨系统的基准，面向形式化奥林匹克级别的"
+      },
+      {
+        "text": "mathematics. arXiv preprint arXiv:2109.00110, 2021.",
+        "x": 81.7,
+        "y": 258.7,
+        "w": 250.8,
+        "h": 10.9,
+        "zh": "数学。arXiv preprint arXiv:2109.00110，2021。"
+      },
+      {
+        "text": "W. Zhong, R. Cui, Y. Guo, Y. Liang, S. Lu, Y. Wang, A. Saied, W. Chen, and N. Duan. AGIEval: A human-centric benchmark for evaluating foundation models. CoRR, abs/2304.06364, 2023. doi: 10.48550/arXiv.2304.06364. URL https://doi.org/10.48550/arXiv.2304.06364.",
+        "x": 70.9,
+        "y": 209.1,
+        "w": 456,
+        "h": 38,
+        "zh": "W. Zhong、R. Cui、Y. Guo、Y. Liang、S. Lu、Y. Wang、A. Saied、W. Chen、N. Duan。AGIEval：一个以人为中心的基础模型评测基准。CoRR，abs/2304.06364，2023。doi: 10.48550/arXiv.2304.06364。URL https://doi.org/10.48550/arXiv.2304.06364。"
+      }
+    ],
+    "28": [
+      {
+        "text": "We provide the detailed derivation of the data source and gradient coefficient (algorithm and reward function) across various methods, including SFT, RFT, Online RFT, DPO, PPO, and",
+        "x": 70.3,
+        "y": 683.6,
+        "w": 454.1,
+        "h": 24.5,
+        "zh": "我们给出不同方法中数据来源与梯度系数（算法与奖励函数）的详细推导，所涉方法包括 SFT、RFT、Online RFT、DPO、PPO 以及"
+      },
+      {
+        "text": "The objective of Supervised Fine-tuning is maximizing the following objective:",
+        "x": 70.5,
+        "y": 617.6,
+        "w": 378.6,
+        "h": 10.9,
+        "zh": "监督微调的目标，是最大化下面这个目标函数："
+      },
+      {
+        "text": "J𝑆𝐹𝑇 (𝜃) = E[𝑞, 𝑜 ∼ 𝑃𝑠 𝑓 𝑡(𝑄,𝑂)]",
+        "x": 169.2,
+        "y": 582,
+        "w": 136.2,
+        "h": 12.5,
+        "zh": ""
+      },
+      {
+        "text": "∇𝜃J𝑆𝐹𝑇 = E[𝑞, 𝑜 ∼ 𝑃𝑠 𝑓 𝑡(𝑄,𝑂)]",
+        "x": 163.1,
+        "y": 515.8,
+        "w": 134,
+        "h": 12.5,
+        "zh": ""
+      },
+      {
+        "text": "Data Source: The dataset employed for SFT. Reward Function: This can be regarded as human selection. Gradient Coefficient: always set to 1.",
+        "x": 70.9,
+        "y": 471.6,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "数据来源：用于 SFT 的数据集。奖励函数：可以看作人工挑选。梯度系数：始终设为 1。"
+      },
+      {
+        "text": "Rejection Sampling Fine-tuning first samples multiple outputs from the supervised fine-tuned LLMs for each question, and then trains LLMs on the sampled outputs with the correct answer. Formally, the objective of RFT is to maximize the following objectives:",
+        "x": 70.9,
+        "y": 392.1,
+        "w": 455.5,
+        "h": 38,
+        "zh": "拒绝采样微调先针对每个问题，从经过监督微调的 LLM 中采样多条输出，再在答案正确的那些采样输出上训练 LLM。形式化地说，RFT 的目标是最大化下面这些目标："
+      },
+      {
+        "text": "J𝑅𝐹𝑇 (𝜃) = E[𝑞 ∼ 𝑃𝑠 𝑓 𝑡(𝑄), 𝑜 ∼ 𝜋𝑠 𝑓 𝑡(𝑂|𝑞)]",
+        "x": 137,
+        "y": 356.4,
+        "w": 179.6,
+        "h": 12.5,
+        "zh": ""
+      },
+      {
+        "text": "∇𝜃J𝑅𝐹𝑇 (𝜃) = E[𝑞 ∼ 𝑃𝑠 𝑓 𝑡(𝑄), 𝑜 ∼ 𝜋𝑠 𝑓 𝑡(𝑂|𝑞)]",
+        "x": 124.4,
+        "y": 290.2,
+        "w": 192.3,
+        "h": 12.5,
+        "zh": ""
+      },
+      {
+        "text": "Data Source: question in SFT dataset with outputs sampled from SFT model. Reward Function: Rule (whether the answer is correct or not). Gradient Coefficient:",
+        "x": 70.9,
+        "y": 246.1,
+        "w": 454.9,
+        "h": 24.5,
+        "zh": "数据来源：SFT 数据集中的问题，以及从 SFT 模型采样的输出。奖励函数：规则（答案是否正确）。梯度系数："
+      },
+      {
+        "text": "the answer of o is correct 𝐺𝐶𝑅𝐹𝑇 (𝑞, 𝑜, 𝑡) = I(𝑜) =",
+        "x": 169.3,
+        "y": 212.7,
+        "w": 255.4,
+        "h": 20.9,
+        "zh": "当 o 的答案正确时，G_C^{RFT}(q, o, t) = I(o) ="
+      },
+      {
+        "text": "A.1.3. Online Rejection Sampling Fine-tuning",
+        "x": 70.9,
+        "y": 174.2,
+        "w": 222.4,
+        "h": 10.9,
+        "zh": "A.1.3. 在线拒绝采样微调"
+      },
+      {
+        "text": "The only difference between RFT and Online RFT is that the outputs of Online RFT are sampled from the real-time policy model 𝜋𝜃, rather than from the SFT model 𝜋𝜃𝑠 𝑓 𝑡. Therefore, the gradient",
+        "x": 70.5,
+        "y": 135.4,
+        "w": 453.9,
+        "h": 27.4,
+        "zh": "RFT 与 Online RFT 的唯一差别在于：Online RFT 的输出来自实时策略模型 π_θ，而不是来自 SFT 模型 π_{θ,sft}。因此，梯度"
+      },
+      {
+        "text": "∇𝜃J𝑂𝑛𝑅𝐹𝑇 (𝜃) = E[𝑞 ∼ 𝑃𝑠 𝑓 𝑡(𝑄), 𝑜 ∼ 𝜋𝜃(𝑂|𝑞)]",
+        "x": 122.6,
+        "y": 92,
+        "w": 195.9,
+        "h": 12.5,
+        "zh": ""
+      }
+    ],
+    "29": [
+      {
+        "text": "A.1.4. Direct Preference Optimization (DPO)",
+        "x": 70.9,
+        "y": 745.9,
+        "w": 219.4,
+        "h": 10.9,
+        "zh": "A.1.4. 直接偏好优化（DPO）"
+      },
+      {
+        "text": "J𝐷𝑃𝑂(𝜃) = E[𝑞 ∼ 𝑃𝑠 𝑓 𝑡(𝑄), 𝑜 , 𝑜",
+        "x": 77.6,
+        "y": 692.4,
+        "w": 116.3,
+        "h": 10.7,
+        "zh": ""
+      },
+      {
+        "text": "∇𝜃J𝐷𝑃𝑂(𝜃) = E[𝑞 ∼ 𝑃𝑠 𝑓 𝑡(𝑄), 𝑜 , 𝑜",
+        "x": 123.4,
+        "y": 633.3,
+        "w": 127.2,
+        "h": 10.7,
+        "zh": ""
+      },
+      {
+        "text": "𝐺𝐶𝐷𝑃𝑂(𝑞, 𝑜,𝑡)∇𝜃 log𝜋𝜃(𝑜𝑡 |𝑞, 𝑜<𝑡)",
+        "x": 342,
+        "y": 632.8,
+        "w": 125.3,
+        "h": 11.2,
+        "zh": ""
+      },
+      {
+        "text": "𝐺𝐶𝐷𝑃𝑂(𝑞, 𝑜,𝑡)∇𝜃 log𝜋𝜃(𝑜𝑡 |𝑞, 𝑜<𝑡)®",
+        "x": 341.1,
+        "y": 597.6,
+        "w": 130.9,
+        "h": 11.2,
+        "zh": ""
+      },
+      {
+        "text": "Data Source: question in SFT dataset with outputs sampled from SFT model. Reward Function: human preference in the general domain (can be ‘Rule’ in mathematical tasks). Gradient",
+        "x": 70.9,
+        "y": 556.6,
+        "w": 454.9,
+        "h": 24.5,
+        "zh": "数据来源：SFT 数据集中的问题，以及从 SFT 模型采样的输出。奖励函数：通用领域中的人类偏好（在数学任务中可以是“规则”）。梯度"
+      },
+      {
+        "text": "A.1.5. Proximal Policy Optimization (PPO)",
+        "x": 70.9,
+        "y": 491.9,
+        "w": 215.6,
+        "h": 10.9,
+        "zh": "A.1.5. 近端策略优化（PPO）"
+      },
+      {
+        "text": "J𝑃𝑃𝑂(𝜃) = E[𝑞 ∼ 𝑃𝑠 𝑓 𝑡(𝑄), 𝑜 ∼ 𝜋𝜃",
+        "x": 84.4,
+        "y": 421.4,
+        "w": 123.2,
+        "h": 10.7,
+        "zh": ""
+      },
+      {
+        "text": "To simplify the analysis, it is assumed that the model only has a single update following each exploration stage, thereby ensuring that 𝜋𝜃",
+        "x": 70.5,
+        "y": 379.6,
+        "w": 453.9,
+        "h": 26.1,
+        "zh": "为简化分析，假设模型在每次探索之后只更新一次，从而保证 π_θ"
+      },
+      {
+        "text": "= 𝜋𝜃. In this case, we can remove the min and clip",
+        "x": 286.5,
+        "y": 379.6,
+        "w": 238.3,
+        "h": 12.5,
+        "zh": "等于 π_θ。在这种情况下，可以去掉 min 和 clip。"
+      },
+      {
+        "text": "J𝑃𝑃𝑂(𝜃) = E[𝑞 ∼ 𝑃𝑠 𝑓 𝑡(𝑄), 𝑜 ∼ 𝜋𝜃",
+        "x": 173.5,
+        "y": 344.2,
+        "w": 123.2,
+        "h": 10.7,
+        "zh": ""
+      },
+      {
+        "text": "∇𝜃J𝑃𝑃𝑂(𝜃) = E[𝑞 ∼ 𝑃𝑠 𝑓 𝑡(𝑄), 𝑜 ∼ 𝜋𝜃",
+        "x": 161,
+        "y": 290.4,
+        "w": 134.1,
+        "h": 10.7,
+        "zh": ""
+      },
+      {
+        "text": "Data Source: question in SFT dataset with outputs sampled from policy model. Reward Function: reward model. Gradient Coefficient:",
+        "x": 70.9,
+        "y": 250.1,
+        "w": 454.9,
+        "h": 24.5,
+        "zh": "数据来源：SFT 数据集中的问题，以及从策略模型采样的输出。奖励函数：奖励模型。梯度系数："
+      },
+      {
+        "text": "where 𝐴𝑡 is the advantage, which is computed by applying Generalized Advantage Estimation (GAE) (Schulman et al., 2015), based on the rewards {𝑟≥𝑡} and a learned value function 𝑉𝜓.",
+        "x": 70.4,
+        "y": 187.6,
+        "w": 454,
+        "h": 26.1,
+        "zh": "其中 A_t 是优势，由广义优势估计（GAE）（Schulman et al., 2015）根据奖励 {r≥t} 以及一个学到的价值函数 V_ψ 计算得到。"
+      },
+      {
+        "text": "A.1.6. Group Relative Policy Optimization (GRPO)",
+        "x": 70.9,
+        "y": 158.8,
+        "w": 254.1,
+        "h": 10.9,
+        "zh": "A.1.6. Group Relative Policy Optimization（GRPO）"
+      },
+      {
+        "text": "The objective of GRPO is (assume 𝜋𝜃𝑜𝑙𝑑 = 𝜋𝜃 for simplified analysis):",
+        "x": 70.5,
+        "y": 133.6,
+        "w": 325.6,
+        "h": 13.8,
+        "zh": "GRPO 的目标如下（为简化分析，假设 π_θold = π_θ）："
+      },
+      {
+        "text": "J𝐺𝑅𝑃𝑂(𝜃) = E[𝑞 ∼ 𝑃𝑠 𝑓 𝑡(𝑄), {𝑜𝑖} =1 ∼ 𝜋𝜃",
+        "x": 117.1,
+        "y": 113.3,
+        "w": 149.6,
+        "h": 12.4,
+        "zh": ""
+      }
+    ],
+    "30": [
+      {
+        "text": "∇𝜃J𝐺𝑅𝑃𝑂(𝜃) = E[𝑞 ∼ 𝑃𝑠 𝑓 𝑡(𝑄), {𝑜𝑖} =1 ∼ 𝜋𝜃",
+        "x": 149.4,
+        "y": 722.2,
+        "w": 160.4,
+        "h": 12.4,
+        "zh": ""
+      },
+      {
+        "text": "Data Source: question in SFT dataset with outputs sampled from policy model. Reward Function:",
+        "x": 70.9,
+        "y": 671.5,
+        "w": 454.9,
+        "h": 10.9,
+        "zh": "数据来源：SFT 数据集中的问题，以及从策略模型采样的输出。奖励函数："
+      },
+      {
+        "text": "𝐺𝐶𝐺𝑅𝑃𝑂(𝑞, 𝑜,𝑡,𝜋𝜃 ) = 𝐴ˆ𝑖,𝑡 + 𝛽",
+        "x": 200.1,
+        "y": 633.4,
+        "w": 112.4,
+        "h": 12.1,
+        "zh": ""
+      },
+      {
+        "text": "where ˆ𝐴𝑖,𝑡 is computed based on the group reward scores.",
+        "x": 70.4,
+        "y": 606.7,
+        "w": 277.4,
+        "h": 12.5,
+        "zh": "其中 Â_{i,t} 根据这一组奖励分数计算得到。"
+      }
+    ]
+  }
+}

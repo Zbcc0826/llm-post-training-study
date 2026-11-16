@@ -1,0 +1,3389 @@
+{
+  "id": "2212.10560",
+  "title": "2212.10560",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "Arizona State University Johns Hopkins University",
+        "x": 183.8,
+        "y": 671.1,
+        "w": 300.4,
+        "h": 25.9,
+        "zh": "亚利桑那州立大学，约翰斯·霍普金斯大学"
+      },
+      {
+        "text": "Allen Institute for AI yizhongw@cs.washington.edu",
+        "x": 219.2,
+        "y": 657.2,
+        "w": 201.2,
+        "h": 25.9,
+        "zh": "艾伦人工智能研究所 yizhongw@cs.washington.edu"
+      },
+      {
+        "text": "Large “instruction-tuned” language models",
+        "x": 87.9,
+        "y": 597.1,
+        "w": 184.3,
+        "h": 10,
+        "zh": "经过“指令微调”的大语言模型"
+      },
+      {
+        "text": "Address: 123 Main Street, City: San Francisco (i.e., finetuned to respond to instructions) have demonstrated a remarkable ability to gener-",
+        "x": 87.5,
+        "y": 573.2,
+        "w": 406,
+        "h": 29,
+        "zh": "地址：123 Main Street，城市：San Francisco。（也就是经过微调、用来响应指令）已经展现出非凡的能力，能够 gener-"
+      },
+      {
+        "text": "fill out an application form. Can you please help they depend heavily on human-written instruction data that is often limited in quantity, di-",
+        "x": 87.9,
+        "y": 537.4,
+        "w": 421.9,
+        "h": 31.5,
+        "zh": "填写一份申请表。请你帮帮忙。它们严重依赖人工撰写的指令数据，而这些数据在数量上往往有限，多样"
+      },
+      {
+        "text": "versity, and creativity, therefore hindering the",
+        "x": 87.6,
+        "y": 525.4,
+        "w": 184.5,
+        "h": 10,
+        "zh": "多样性与创造性，因此阻碍了"
+      },
+      {
+        "text": "generality of the tuned model. We introduce",
+        "x": 87.9,
+        "y": 513.5,
+        "w": 184.3,
+        "h": 10,
+        "zh": "微调后模型的通用性。我们提出"
+      },
+      {
+        "text": "Education:___________________ ... SELF-INSTRUCT, a framework for improving",
+        "x": 87.9,
+        "y": 501.5,
+        "w": 357.6,
+        "h": 18.7,
+        "zh": "教育程度：___________________ …… SELF-INSTRUCT，一个用来提升的框架"
+      },
+      {
+        "text": "the instruction-following capabilities of pretrained language models by bootstrapping off",
+        "x": 87.9,
+        "y": 477.6,
+        "w": 185.9,
+        "h": 21.9,
+        "zh": "预训练语言模型遵循指令的能力，办法是从"
+      },
+      {
+        "text": "their own generations. Our pipeline generates",
+        "x": 87.9,
+        "y": 465.6,
+        "w": 184.3,
+        "h": 10,
+        "zh": "模型自己的生成结果出发做自举。我们的流程会生成"
+      },
+      {
+        "text": "degrees fahrenheit to celsius. instructions, input, and output samples from a language model, then filters invalid or sim-",
+        "x": 87.9,
+        "y": 441.7,
+        "w": 345.4,
+        "h": 28.4,
+        "zh": "把华氏度转换成摄氏度。由语言模型生成指令、输入和输出样本，然后滤掉无效或过于相似"
+      },
+      {
+        "text": "def convert_fahrenheit_to_celsius(fahr): ilar ones before using them to finetune the",
+        "x": 87.9,
+        "y": 429.8,
+        "w": 385.6,
+        "h": 16,
+        "zh": "def convert_fahrenheit_to_celsius(fahr)：的那些，再用它们来微调"
+      },
+      {
+        "text": "celsius = (fahr - 32) * 5 / 9 original model. Applying our method to the vanilla GPT3, we demonstrate a 33% abso-",
+        "x": 87.6,
+        "y": 405.9,
+        "w": 357.7,
+        "h": 31.9,
+        "zh": "celsius = (fahr - 32) * 5 / 9。原始模型。把我们的方法用到未经指令微调的 GPT3 上，我们展示了 33% 的绝对"
+      },
+      {
+        "text": "Instruction: Write a letter from the perspective lute improvement over the original model on SUPER-NATURALINSTRUCTIONS, on par with the performance of InstructGPT001,1 which",
+        "x": 87.9,
+        "y": 367.5,
+        "w": 417.8,
+        "h": 43.4,
+        "zh": "指令：从某个视角写一封信。的提升，超过原始模型；在 SUPER-NATURALINSTRUCTIONS 上与 InstructGPT001 的表现相当，1 而该模型"
+      },
+      {
+        "text": "was trained with private user data and human",
+        "x": 87.5,
+        "y": 358,
+        "w": 184.6,
+        "h": 10,
+        "zh": "训练时用了私有用户数据和人工"
+      },
+      {
+        "text": "for the past [Number of Years] and I love it here. annotations. For further evaluation, we curate a",
+        "x": 87.9,
+        "y": 346.1,
+        "w": 425.8,
+        "h": 16.2,
+        "zh": "在过去的［年数］年里，我喜欢这里。标注。为了做进一步评估，我们编写了一"
+      },
+      {
+        "text": "set of expert-written instructions for novel tasks,",
+        "x": 87.9,
+        "y": 334.1,
+        "w": 185.5,
+        "h": 10,
+        "zh": "一套由专家撰写、面向新任务的指令，"
+      },
+      {
+        "text": "noticed that you’re not as affectionate towards and show through human evaluation that tuning",
+        "x": 87.9,
+        "y": 322.2,
+        "w": 413.8,
+        "h": 15.9,
+        "zh": "注意到你对我不再那么亲热。并通过人类评估表明，微调"
+      },
+      {
+        "text": "GPT3 with SELF-INSTRUCT outperforms using",
+        "x": 87.9,
+        "y": 310.2,
+        "w": 184.3,
+        "h": 10,
+        "zh": "用 SELF-INSTRUCT 微调后的 GPT3，其表现超过使用"
+      },
+      {
+        "text": "existing public instruction datasets by a large margin, leaving only a 5% absolute gap behind",
+        "x": 87.9,
+        "y": 286.3,
+        "w": 184.3,
+        "h": 21.9,
+        "zh": "现有公开指令数据集一大截，绝对差距只落后 5%"
+      },
+      {
+        "text": "Figure 1: Selected tasks from the generated instruction InstructGPT001. SELF-INSTRUCT provides an",
+        "x": 87.9,
+        "y": 271.9,
+        "w": 436.5,
+        "h": 19.9,
+        "zh": "图 1：从生成的指令中选出的若干任务。InstructGPT001。SELF-INSTRUCT 提供了一种"
+      },
+      {
+        "text": "data using vanilla GPT3. Some texts are reformatted almost annotation-free method for aligning pre-",
+        "x": 87.9,
+        "y": 262.4,
+        "w": 436.5,
+        "h": 17.4,
+        "zh": "数据，由未经指令微调的 GPT3 生成。部分文本为了排版做了重排。几乎不需要标注的方法，用来对齐预训练"
+      },
+      {
+        "text": "for presentation. See Table 10 for more examples. trained language models with instructions, and",
+        "x": 87.9,
+        "y": 250.4,
+        "w": 417.3,
+        "h": 17.4,
+        "zh": "以便展示。更多例子见表 10。过的语言模型与指令对齐，并且"
+      },
+      {
+        "text": "we release our large synthetic dataset to facili-",
+        "x": 87.5,
+        "y": 238.5,
+        "w": 186.3,
+        "h": 10,
+        "zh": "我们发布了大规模合成数据集，以便促进"
+      },
+      {
+        "text": "can follow natural language instructions (Mishra et al., 2022; Wei et al., 2022; Sanh et al., 2022; Wang et al., 2022; Ouyang et al., 2022; Chung et al., The recent NLP literature has witnessed a tremen-",
+        "x": 70.5,
+        "y": 182.6,
+        "w": 455.2,
+        "h": 48.2,
+        "zh": "能够遵循自然语言指令（Mishra et al., 2022；Wei et al., 2022；Sanh et al., 2022；Wang et al., 2022；Ouyang et al., 2022；Chung et al.）。近期的 NLP 文献中出现了巨量"
+      },
+      {
+        "text": "2022, i.a.). These developments are powered by two dous amount of activity in building models that",
+        "x": 70.9,
+        "y": 169,
+        "w": 453.5,
+        "h": 21.2,
+        "zh": "2022 等）。这些进展由两个因素推动。的工作，人们在构建能够"
+      },
+      {
+        "text": "key components: large pretrained language models (LM) and human-written instruction data (e.g., 1Unless otherwise specified, our comparisons are with the text-davinci-001 engine. We focus on this engine since it",
+        "x": 70.9,
+        "y": 140.8,
+        "w": 455.4,
+        "h": 35.8,
+        "zh": "关键组成部分：大规模预训练语言模型（LM），以及人工撰写的指令数据（例如。1 除非另有说明，我们的比较对象是 text-davinci-001 引擎。我们关注这个引擎，因为它"
+      },
+      {
+        "text": "PROMPTSOURCE (Bach et al., 2022) and SUPERis the closest to our experimental setup: supervised finetuning",
+        "x": 70.9,
+        "y": 130.8,
+        "w": 455.3,
+        "h": 18.7,
+        "zh": "PROMPTSOURCE（Bach et al., 2022）以及 SUPER。最接近我们的实验设置：有监督微调"
+      },
+      {
+        "text": "NATURALINSTRUCTIONS (Wang et al., 2022, SUwith human demonstrations. The newer engines are more",
+        "x": 70.5,
+        "y": 120.9,
+        "w": 455.6,
+        "h": 15.1,
+        "zh": "NATURALINSTRUCTIONS（Wang et al., 2022，SU。用人类演示。较新的引擎更加"
+      },
+      {
+        "text": "PERNI for short)). However, collecting such inpowerful, though they use more data (e.g., code completion or latest user queries) or algorithms (e.g., PPO) that are difficult",
+        "x": 70.9,
+        "y": 101,
+        "w": 455.4,
+        "h": 21.5,
+        "zh": "PERNI，下文简称））。然而，收集这类指令。强大，不过它们使用了更多数据（例如代码补全或最新的用户查询）或算法（例如 PPO），而这些很难"
+      },
+      {
+        "text": "struction data is costly and often suffers limited diversity given that most human generations tend 2Code and data are available at https://github.com/",
+        "x": 83.5,
+        "y": 80.8,
+        "w": 440.9,
+        "h": 28,
+        "zh": "数据既花钱，多样性也常常不够，因为大多数人工编写的内容倾向于。2 代码和数据见 https://github.com/"
+      },
+      {
+        "text": "to be popular NLP tasks, falling short of covering a yizhongw/self-instruct",
+        "x": 70.9,
+        "y": 70.9,
+        "w": 453.5,
+        "h": 10.9,
+        "zh": "是热门的 NLP 任务，远不足以覆盖。yizhongw/self-instruct"
+      }
+    ],
+    "2": [
+      {
+        "text": "Instruction : Give me a quote from a famous person on this topic.",
+        "x": 284.1,
+        "y": 719,
+        "w": 100.1,
+        "h": 13.9,
+        "zh": "指令：就这个话题，给我一句名人名言。"
+      },
+      {
+        "text": "Instruction : Find out if the given text is in favor of or against abortion. Class Label: Pro-abortion",
+        "x": 199.1,
+        "y": 653.6,
+        "w": 192.1,
+        "h": 18.6,
+        "zh": "指令：判断给定文本是支持堕胎还是反对堕胎。类别标签：支持堕胎"
+      },
+      {
+        "text": "Instruction : Give me a quote from a famous person on this topic. Input:TaskTopic: The importance of being honest. Output: \"Honesty is the first chapter in the book of wisdom.\" - Thomas Jefferson",
+        "x": 202.5,
+        "y": 592.4,
+        "w": 217.2,
+        "h": 27.1,
+        "zh": "指令：就这个话题给我一句名人名言。输入：任务主题：诚实的重要性。输出：“诚实是智慧之书的第一章。”——Thomas Jefferson"
+      },
+      {
+        "text": "Figure 2: A high-level overview of SELF-INSTRUCT. The process starts with a small seed set of tasks as the task pool. Random tasks are sampled from the task pool, and used to prompt an off-the-shelf LM to generate both new instructions and corresponding instances, followed by filtering low-quality or similar generations, and then added back to the initial repository of tasks. The resulting data can be used for the instruction tuning of the language model itself later to follow instructions better. Tasks shown in the figure are generated by GPT3.",
+        "x": 70.9,
+        "y": 515.5,
+        "w": 453.9,
+        "h": 57.8,
+        "zh": "图 2：SELF-INSTRUCT 的总体流程。过程从一个很小的种子任务集开始，把它当作任务池。从任务池里随机抽取任务，用来提示一个现成的语言模型，让它同时生成新指令和对应实例；随后滤掉低质量或过于相似的生成结果，再加回最初的任务库。得到的数据之后可以用来对这个语言模型本身做指令微调，使它更好地遵循指令。图中展示的任务由 GPT3 生成。"
+      },
+      {
+        "text": "true variety of tasks and different ways to describe",
+        "x": 70.9,
+        "y": 481,
+        "w": 218.3,
+        "h": 10.9,
+        "zh": "任务真正的多样性，以及描述它们的不同方式"
+      },
+      {
+        "text": "data provides a diverse range of creative tasks, as them. Continuing to improve the quality and cov-",
+        "x": 70.9,
+        "y": 467.5,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "数据提供了多种多样、富有创意的任务，正如。它们。要继续提高质量与覆盖"
+      },
+      {
+        "text": "is demonstrated by examples in Figure 1. These erage of instruction-tuned models necessitates the",
+        "x": 70.9,
+        "y": 453.9,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "图 1 里的例子说明了这一点。这些。范围，因此必须为指令微调模型"
+      },
+      {
+        "text": "generated tasks deviate from the distribution of typdevelopment of alternative approaches for supervis-",
+        "x": 70.9,
+        "y": 440.4,
+        "w": 455.4,
+        "h": 24.5,
+        "zh": "生成的任务偏离了典型任务的分布。发展别的办法，以便监督"
+      },
+      {
+        "text": "ical NLP tasks, and also have fairly small overlap ing the instruction tuning process.",
+        "x": 70.9,
+        "y": 426.8,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "的 NLP 任务，而且重叠也相当小。指令微调过程。"
+      },
+      {
+        "text": "with the seed tasks (§3.2). On this resulting data, we build GPT3SELF-INST by finetuning GPT3 (i.e., In this work, we introduce SELF-INSTRUCT, a",
+        "x": 81.8,
+        "y": 410.5,
+        "w": 444,
+        "h": 27.2,
+        "zh": "与种子任务相比（§3.2）。在由此得到的数据上，我们微调 GPT3，构建出 GPT3SELF-INST（也就是。本文提出 SELF-INSTRUCT，一种"
+      },
+      {
+        "text": "the same model used for generating the instruction semi-automated process for instruction-tuning a",
+        "x": 70.9,
+        "y": 397.9,
+        "w": 453.5,
+        "h": 12.7,
+        "zh": "用来生成这些指令的同一个模型）。半自动流程，对一个模型做指令微调"
+      },
+      {
+        "text": "data). We evaluate GPT3SELF-INST in comparison to pretrained LM using instructional signals from the",
+        "x": 70.9,
+        "y": 383.4,
+        "w": 453.5,
+        "h": 13.6,
+        "zh": "数据）。我们评估 GPT3SELF-INST，拿它来做比较。预训练语言模型，并使用来自该模型的指令信号"
+      },
+      {
+        "text": "various other models on both typical NLP tasks inmodel itself. The overall process is an iterative boot-",
+        "x": 70.9,
+        "y": 370.8,
+        "w": 455.4,
+        "h": 12.7,
+        "zh": "SUPERNI 中的典型 NLP 任务，也包括。模型自身。整个过程是一个迭代的自举"
+      },
+      {
+        "text": "cluded in SUPERNI (Wang et al., 2022), and a set of strapping algorithm (see Figure 2), which starts off",
+        "x": 70.9,
+        "y": 357.2,
+        "w": 453.5,
+        "h": 12.7,
+        "zh": "收录在 SUPERNI 里的任务（Wang et al., 2022），以及一套。算法（见图 2）。它从"
+      },
+      {
+        "text": "new instructions that are created for novel usage of with a limited (e.g., 175 in our study) seed set of",
+        "x": 70.5,
+        "y": 343.7,
+        "w": 453.9,
+        "h": 12.7,
+        "zh": "为指令遵循模型的新用法而写的新指令。一个有限的种子集出发（本研究中有 175 个）"
+      },
+      {
+        "text": "instruction-following models (§4). The results inmanually-written tasks that are used to guide the",
+        "x": 70.9,
+        "y": 330.1,
+        "w": 455.4,
+        "h": 12.7,
+        "zh": "（§4）。结果表明。人工撰写的任务，用来引导整体"
+      },
+      {
+        "text": "dicate that GPT3SELF-INST outperforms GPT3 (the overall generation. In the first phase, the model",
+        "x": 70.9,
+        "y": 315.7,
+        "w": 453.5,
+        "h": 13.6,
+        "zh": "GPT3SELF-INST 明显超过 GPT3（那个。生成。第一阶段，模型"
+      },
+      {
+        "text": "original model) by a large margin (+33.1%) and is prompted to generate instructions for new tasks.",
+        "x": 70.9,
+        "y": 303,
+        "w": 453.5,
+        "h": 12.7,
+        "zh": "原始模型），幅度为 +33.1%，并且。被提示去为新任务生成指令。"
+      },
+      {
+        "text": "nearly matches the performance of InstructGPT001. This step leverages the existing collection of instruc-",
+        "x": 70.5,
+        "y": 288.6,
+        "w": 455.8,
+        "h": 13.6,
+        "zh": "几乎赶上 InstructGPT001 的表现。这一步利用已有的指令集合"
+      },
+      {
+        "text": "Moreover, our human evaluation on the newlytions to create more broad-coverage instructions",
+        "x": 70.9,
+        "y": 275.9,
+        "w": 455.4,
+        "h": 12.7,
+        "zh": "此外，我们对新编写的指令做了人类评估。来写出覆盖面更广的指令"
+      },
+      {
+        "text": "created instruction set shows that GPT3SELF-INST that define (often new) tasks. Given the newly-",
+        "x": 70.9,
+        "y": 261.5,
+        "w": 453,
+        "h": 13.6,
+        "zh": "的指令集表明，GPT3SELF-INST。这些指令定义了（常常是新的）任务。给定新"
+      },
+      {
+        "text": "demonstrates a broad range of instruction followgenerated set of instructions, the framework also",
+        "x": 70.9,
+        "y": 248.8,
+        "w": 455.4,
+        "h": 12.7,
+        "zh": "展现出很宽的指令遵循范围。生成出来的指令集合，框架还会"
+      },
+      {
+        "text": "ing ability, outperforming models trained on other creates input-output instances for them, which can",
+        "x": 70.9,
+        "y": 235.3,
+        "w": 453.7,
+        "h": 12.7,
+        "zh": "的能力，优于用其他数据训练的模型。为它们创建输入—输出实例，这些实例可以"
+      },
+      {
+        "text": "publicly available instruction datasets and leaving be later used for supervising the instruction tuning.",
+        "x": 70.9,
+        "y": 221.7,
+        "w": 453.5,
+        "h": 12.7,
+        "zh": "公开的指令数据集，并且留下。日后用来监督指令微调。"
+      },
+      {
+        "text": "only a 5% gap behind InstructGPT001. Finally, various heuristics are used to automatically filter low-quality or repeated instructions, before adding the remaining valid tasks to the task pool.",
+        "x": 70.9,
+        "y": 181.1,
+        "w": 401.2,
+        "h": 39.8,
+        "zh": "与 InstructGPT001 只差 5%。最后，用各种启发式自动滤掉低质量或重复的指令，再把剩下的有效任务加回任务池。"
+      },
+      {
+        "text": "In summary, our contributions are: This process can be repeated for many iterations",
+        "x": 70.5,
+        "y": 167.5,
+        "w": 413.2,
+        "h": 22.6,
+        "zh": "总结起来，我们的贡献是：这个过程可以重复很多轮"
+      },
+      {
+        "text": "introduce SELF-INSTRUCT, a method for inducuntil reaching a large number of tasks.",
+        "x": 70.9,
+        "y": 154,
+        "w": 455.4,
+        "h": 22.6,
+        "zh": "提出 SELF-INSTRUCT，一种诱导出。直到任务数量变得很大。"
+      },
+      {
+        "text": "ing instruction following capabilities with miniTo evaluate SELF-INSTRUCT empirically, we run",
+        "x": 81.8,
+        "y": 138.6,
+        "w": 444.4,
+        "h": 24.5,
+        "zh": "指令遵循能力的方法，只需要极少的。为了从经验上评估 SELF-INSTRUCT，我们运行"
+      },
+      {
+        "text": "mal human-labeled data; (2) we demonstrate its this framework on GPT3 (Brown et al., 2020),",
+        "x": 70.9,
+        "y": 125.1,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "人工标注数据；（2）我们证明了它。这一框架用在 GPT3 上（Brown et al., 2020），"
+      },
+      {
+        "text": "effectiveness via extensive instruction-tuning exwhich is a vanilla LM (§3). The iterative SELF-",
+        "x": 70.5,
+        "y": 111.5,
+        "w": 455.7,
+        "h": 24.5,
+        "zh": "通过大量指令微调实验所体现的有效性。它是一个未经额外调教的语言模型（§3）。迭代的 SELF-"
+      },
+      {
+        "text": "periments; and (3) we release a large synthetic INSTRUCT process on this model leads to about 52k",
+        "x": 70.9,
+        "y": 98,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "实验；以及（3）我们发布一份大规模合成。INSTRUCT 过程在这个模型上得到大约 5.2 万"
+      },
+      {
+        "text": "dataset of 52K instructions and a set of manuallyinstructions, paired with about 82K instance inputs",
+        "x": 70.9,
+        "y": 84.4,
+        "w": 455.4,
+        "h": 24.5,
+        "zh": "的数据集，含 5.2 万条指令，以及一套人工。条指令，并配有大约 8.2 万条实例输入"
+      },
+      {
+        "text": "written novel tasks for building and evaluating fuand target outputs. We observe that the resulting",
+        "x": 70.9,
+        "y": 70.9,
+        "w": 455.4,
+        "h": 24.5,
+        "zh": "撰写的新任务，用于构建和评估今后的。以及目标输出。我们观察到，得到的"
+      }
+    ],
+    "3": [
+      {
+        "text": "tasks, and 2 are from the model-generated tasks in previous steps to promote diversity. The prompting template is shown in Table 5.",
+        "x": 306.1,
+        "y": 733,
+        "w": 218.3,
+        "h": 38,
+        "zh": "任务，另外 2 条来自前面步骤里模型生成的任务，用来增加多样性。提示模板见表 5。"
+      },
+      {
+        "text": "Annotating large-scale instruction data can be challenging for humans because it requires 1) creativity to come up with novel tasks and 2) expertise for writing the solutions to each task. Here, we detail our process for SELF-INSTRUCT, which refers to the pipeline of generating tasks with a vanilla pretrained language model itself, filtering the generated data, and then conducting instruction tuning with this generated data in order to align the LM to follow instructions better. This pipeline is depicted",
+        "x": 70.5,
+        "y": 616.2,
+        "w": 220.5,
+        "h": 132.9,
+        "zh": "大规模标注指令数据对人很难：既要有创造力想出新任务，又要有专业知识为每个任务写出解答。这里我们具体说明 SELF-INSTRUCT。它是这样一条流水线：让一个未经额外调教的预训练语言模型自己生成任务，过滤这些生成数据，再用这些数据做指令微调，使语言模型更好地遵循指令。这条流水线如图所示"
+      },
+      {
+        "text": "Classification Task Identification. need two different approaches for classification and non-classification tasks, we next identify whether the generated instruction represents a classification task or not.4 We prompt the LM in a few-shot way to determine this, using 12 classification instructions and 19 non-classification instructions from the seed tasks. The prompting template is shown in Table 6.",
+        "x": 306.1,
+        "y": 615.9,
+        "w": 220.1,
+        "h": 105.8,
+        "zh": "分类任务识别。分类任务和非分类任务需要两套不同做法，因此我们接着判断生成出来的指令是不是在定义一个分类任务。4 我们用少样本方式提示语言模型来做这个判断，用了种子任务中的 12 条分类指令和 19 条非分类指令。提示模板见表 6。"
+      },
+      {
+        "text": "Given the instructions and their task type, we generate instances for each instruction independently. This is challenging because it requires the model to understand what the target task is, based on the instruction, figure out what additional input fields are needed and generate them, and finally complete the task by producing the output. We found that pretrained LMs can achieve this to a large extent when prompted with instruction-input-output in-context examples from other tasks. A natural way to do this is the Inputfirst Approach, where we can ask an LM to come up with the input fields first based on the instruction, and then produce the corresponding output. This generation order is similar to how models are used to respond to instruction and input, but here with in-context examples from other tasks. The prompting template is shown in Table 7. However, we found that this approach can generate inputs biased toward one label, especially for classification tasks (e.g., for grammar error detection, it usually generates grammatical input). Therefore, we additionally propose an Output-first Approach for classification tasks, where we first generate the possible class labels, and then condition the input generation on each class label. The prompting template is shown in Table 8. We apply the outputfirst approach to the classification tasks identified in the former step, and the input-first approach to the remaining non-classification tasks.",
+        "x": 305.7,
+        "y": 200.3,
+        "w": 220.6,
+        "h": 404.2,
+        "zh": "有了指令及其任务类型之后，我们为每条指令单独生成实例。这一步很难，因为模型必须根据指令弄清目标任务是什么，判断还需要哪些额外输入字段并生成它们，最后给出输出来完成任务。我们发现，只要用来自其他任务的“指令—输入—输出”上下文示例来提示，预训练语言模型在很大程度上能做到这一点。一种自然的做法是输入优先：先让语言模型根据指令想出输入字段，再生成对应输出。这个生成顺序和模型平时响应“指令加输入”的方式类似，只是这里的上下文示例来自其他任务。提示模板见表 7。不过我们发现，这种做法生成的输入会偏向某一个标签，分类任务上尤其明显（例如语法错误检测，它往往生成语法正确的输入）。因此，我们另外为分类任务提出输出优先：先生成可能的类别标签，再在每个类别标签的条件下生成输入。提示模板见表 8。对上一步判定为分类任务的指令，我们用输出优先；对其余非分类任务，用输入优先。"
+      },
+      {
+        "text": "Defining Instruction Data The instruction data we want to generate contains a set of instructions {𝐼𝑡}, each of which defines a task 𝑡 in natural language. Task 𝑡 has 𝑛𝑡 ≥ 1 input-output instances {(𝑋𝑡,𝑖, 𝑌𝑡,𝑖)}",
+        "x": 70.5,
+        "y": 517.1,
+        "w": 218.9,
+        "h": 72.6,
+        "zh": "指令数据的定义。我们要生成的指令数据是一组指令 {𝐼𝑡}，每条指令用自然语言定义一个任务 𝑡。任务 𝑡 有 𝑛𝑡 ≥ 1 个输入—输出实例 {(𝑋𝑡,𝑖, 𝑌𝑡,𝑖)}"
+      },
+      {
+        "text": ". A model 𝑀 is expected to produce the output, given the task instruction and the corresponding input: 𝑀(𝐼𝑡, 𝑋𝑡,𝑖) = 𝑌𝑡,𝑖, for 𝑖 ∈ {1, … , 𝑛𝑡}. Note that the instruction and instance input does not have a strict boundary in many cases. For example, “write an essay about school safety” can be a valid instruction that we expect models to respond to directly, while it can also be formulated as “write an essay about the following topic” as the instruction, and “school safety” as an instance input. To encourage the diversity of the data format, we allow such instructions that do not require additional input (i.e., 𝑋 is empty).",
+        "x": 70.9,
+        "y": 357.2,
+        "w": 220.2,
+        "h": 173.5,
+        "zh": "。给定任务指令和对应输入，模型 𝑀 应当产出输出：𝑀(𝐼𝑡, 𝑋𝑡,𝑖) = 𝑌𝑡,𝑖，其中 𝑖 ∈ {1, … , 𝑛𝑡}。需要注意，指令和实例输入在很多情况下并没有严格分界。例如，“写一篇关于校园安全的文章”可以是一条我们期望模型直接回答的合法指令；也可以拆成指令“就下面这个主题写一篇文章”，再把“校园安全”当作实例输入。为了让数据格式更多样，我们允许这种不需要额外输入的指令（也就是 𝑋 为空）。"
+      },
+      {
+        "text": "Automatic Instruction Data Generation Our pipeline for data generation consists of four steps: 1) generating task instructions, 2) determining if the instruction represents a classification task, 3) instance generation with either an input-first or output-first approach, and 4) filtering low-quality",
+        "x": 70.9,
+        "y": 260.9,
+        "w": 220.1,
+        "h": 83.4,
+        "zh": "自动生成指令数据。我们的数据生成流程分四步：1）生成任务指令；2）判断该指令是不是分类任务；3）用输入优先或输出优先的方式生成实例；4）过滤低质量数据"
+      },
+      {
+        "text": "At the first step, SELFINSTRUCT generates new instructions from a small set of seed human-written instructions in a bootstrapping fashion. We initiate the task pool with 175 tasks (1 instruction and 1 instance for each For every step, we sample 8 task instructions from this pool as in-context examples. Of the 8 instructions, 6 are from the human-written",
+        "x": 70,
+        "y": 130.1,
+        "w": 220.9,
+        "h": 105.8,
+        "zh": "第一步，SELF-INSTRUCT 以自举方式，从一小套人工撰写的种子指令生成新指令。我们用 175 个任务初始化任务池（每个任务 1 条指令、1 个实例。每一步，我们从这个池中抽取 8 条任务指令作为上下文示例。这 8 条里，有 6 条来自人工撰写的"
+      },
+      {
+        "text": "Filtering and Postprocessing. versity, a new instruction is added to the task pool only when its ROUGE-L similarity with any exist-",
+        "x": 305.9,
+        "y": 150.9,
+        "w": 220.4,
+        "h": 38,
+        "zh": "过滤与后处理。就多样性而言，一条新指令要加入任务池，只有当它与任何已有指令的 ROUGE-L 相似度"
+      },
+      {
+        "text": "More concretely, we regard tasks that have a small limited output label space as classification tasks. In this work, we use a fixed set of seed tasks for prompting the instance generation, and thus only generate a small number of instances per task in one round. Future work can use randomly sampled tasks to prompt the model to generate a larger number of instances in multiple rounds.",
+        "x": 306.1,
+        "y": 70.9,
+        "w": 219.8,
+        "h": 68.9,
+        "zh": "更具体地说，我们把输出标签空间较小、且标签有限的任务视为分类任务。本文用一组固定的种子任务来提示实例生成，因此每一轮里每个任务只生成少量实例。后续工作可以改用随机抽取的任务来提示模型，在多轮中为每个任务生成更多实例。"
+      },
+      {
+        "text": "These tasks were newly written by the authors and their labmates at UW, without reference to existing datasets or the test set used in this work. We provide more details about these tasks and analyze their similarity to the test tasks in Appendix",
+        "x": 70.9,
+        "y": 80.8,
+        "w": 218.5,
+        "h": 38.9,
+        "zh": "这些任务是作者和他们在华盛顿大学（UW）的实验室同事新写的，没有参照已有数据集，也没有参照本文使用的测试集。这些任务的更多细节，以及它们与测试任务的相似度分析，见附录"
+      }
+    ],
+    "4": [
+      {
+        "text": "ing instruction is less than 0.7. We also exclude instructions that contain some specific keywords (e.g., image, picture, graph) that usually can not be processed by LMs. When generating new instances for each instruction, we filter out instances that are exactly the same or those with the same input but different outputs. Invalid generations are identified and filtered out based on heuristics (e.g., instruction is too long or too short, instance output is a repetition of the input).",
+        "x": 70.5,
+        "y": 638.1,
+        "w": 220.4,
+        "h": 132.9,
+        "zh": "低于 0.7。我们还会排除包含某些特定关键词（例如 image、picture、graph）的指令，这些内容通常是语言模型处理不了的。为每条指令生成新实例时，我们去掉完全相同的实例，以及输入相同但输出不同的实例。无效生成靠启发式规则识别并滤除，例如指令过长或过短，或者实例输出只是在重复输入。"
+      },
+      {
+        "text": "To study what types of instructions are generated and how diverse they are, we identify the verb-noun structure in the generated instructions. We use the Berkeley Neural Parser (Kitaev and Klein, 2018; Kitaev et al., 2019) to parse the instructions and then extract the verb that is closest to the root as well as its first direct noun object. 26,559 out of the 52,445 instructions contain such structure; other instructions usually contain more complex clauses (e.g., “Classify whether this tweet contains political content or not.”) or are framed as questions (e.g., “Which of these statements are true?”). We plot the top 20 most common root verbs and their top 4 direct noun objects in Figure 3, which account for 14% of the entire set. Overall, we see quite diverse intents and textual formats in these instructions. We further study how the generated instructions differ from the seed instructions used to prompt the generation. For each generated instruction, we compute its highest ROUGE-L overlap with the 175 seed instructions. We plot the distribution of these ROUGE-L scores in Figure 4. The results indicate a decent number of new instructions were generated, which do not have much overlap with the seeds. We also demonstrate diversity in the length of the instructions, instance inputs, and instance outputs in Figure 5.",
+        "x": 304.7,
+        "y": 379.7,
+        "w": 221.1,
+        "h": 366.7,
+        "zh": "为了弄清生成了哪些类型的指令、它们有多多样，我们识别生成指令中的动宾结构。我们用 Berkeley Neural Parser（Kitaev and Klein, 2018；Kitaev et al., 2019）解析指令，抽出离根最近的动词及其第一个直接名词宾语。52,445 条指令中有 26,559 条含有这种结构；其余指令通常包含更复杂的从句（例如“判断这条推文是否包含政治内容”），或者被写成问句（例如“这些说法中哪些是真的？”）。我们在图 3 中画出最常见的 20 个根动词及其前 4 个直接名词宾语，它们合计占整个集合的 14%。总体来看，这些指令的意图和文本形式相当多样。我们进一步比较生成指令与用来提示生成的种子指令有何不同。对每条生成指令，我们计算它与 175 条种子指令的最高 ROUGE-L 重叠，并把这些 ROUGE-L 分数的分布画在图 4 中。结果表明，有相当一批新指令与种子的重叠并不高。指令、实例输入和实例输出在长度上的多样性见图 5。"
+      },
+      {
+        "text": "Finetuning the LM to Follow Instructions After creating large-scale instruction data, we use it to finetune the original LM (i.e., SELF-INSTRUCT). To do this, we concatenate the instruction and instance input as a prompt and train the model to generate the instance output in a standard supervised way. To make the model robust to different formats, we use multiple templates to encode the instruction and instance input together. For example, the instruction can be prefixed with “Task:” or not, the input can be prefixed with “Input:” or not, “Output:” can be appended at the end of the prompt or not, and different numbers of break lines can be put in the middle, etc.",
+        "x": 69.4,
+        "y": 436.3,
+        "w": 221.6,
+        "h": 191,
+        "zh": "微调语言模型以遵循指令。造出大规模指令数据之后，我们用它来微调原来的语言模型（也就是 SELF-INSTRUCT 这一步）。具体做法是把指令和实例输入拼成提示，以标准的有监督方式训练模型生成实例输出。为了让模型适应不同格式，我们用多套模板把指令和实例输入编码在一起。例如，指令前面可以加“Task:”，也可以不加；输入前面可以加“Input:”，也可以不加；提示末尾可以加“Output:”，也可以不加；中间还可以插入不同数量的空行，等等。"
+      },
+      {
+        "text": "In this section, we apply our method for inducing instruction data to GPT3 as a case study. We use the largest GPT3 LM (“davinci” engine) accessed through the OpenAI API. The parameters for making queries are described in Appendix A.2. Here we present an overview of the generated data.",
+        "x": 70.5,
+        "y": 325.2,
+        "w": 220.5,
+        "h": 78.7,
+        "zh": "本节把诱导指令数据的方法用到 GPT3 上，作为一个案例。我们通过 OpenAI API 调用最大的 GPT3 语言模型（“davinci”引擎）。查询参数见附录 A.2。这里先概述生成出来的数据。"
+      },
+      {
+        "text": "So far, we have shown the quantity and diversity of the generated data, but its quality remains uncertain. To investigate this, we randomly sample 200 instructions and randomly select 1 instance per instruction. We asked an expert annotator (author of this work) to label whether each instance is correct or not, in terms of the instruction, the instance input, and the instance output. Evaluation results in Table 2 show that most of the generated instructions are meaningful, while the generated instances may contain more noise (to a reasonable extent). However, we found that even though the generations may contain errors, most of them are still in the correct format or partially correct, which can provide useful guidance for training models to follow instructions. We listed a number of good examples and bad examples in Table 10 and 11, respectively.",
+        "x": 305.8,
+        "y": 103.6,
+        "w": 220.4,
+        "h": 227.7,
+        "zh": "到目前为止，我们展示了生成数据的数量和多样性，但它的质量仍不确定。为此，我们随机抽取 200 条指令，每条再随机选 1 个实例。我们请一位专家标注者（本文作者）判断每个实例是否正确，分别看指令、实例输入和实例输出。表 2 的评估结果表明，大多数生成指令是有意义的，而生成的实例噪声更多一些（程度仍在可接受范围内）。不过我们发现，即便生成结果里有错误，大多数仍格式正确或至少部分正确，可以为训练模型遵循指令提供有用指导。若干好例子和坏例子分别列在表 10 和表 11。"
+      },
+      {
+        "text": "Table 1 describes the basic statistics of the generated data. We generate a total of over 52K instructions and more than 82K instances corresponding to these instructions after filtering.",
+        "x": 70.5,
+        "y": 245.4,
+        "w": 220.4,
+        "h": 51.6,
+        "zh": "表 1 给出生成数据的基本统计。过滤之后，我们一共生成了超过 5.2 万条指令，以及与这些指令对应的 8.2 万多个实例。"
+      },
+      {
+        "text": "- # of classification instructions - # of non-classification instructions",
+        "x": 96.3,
+        "y": 185.7,
+        "w": 129.2,
+        "h": 18.9,
+        "zh": "分类指令的条数；非分类指令的条数"
+      },
+      {
+        "text": "- # of instances with empty input ave. instruction length (in words) ave. non-empty input length (in words) ave. output length (in words)",
+        "x": 91.8,
+        "y": 135.9,
+        "w": 139.7,
+        "h": 38.9,
+        "zh": "输入为空的实例条数；指令平均长度（按词计）；非空输入的平均长度（按词计）；输出平均长度（按词计）"
+      },
+      {
+        "text": "Table 1: Statistics of the generated data by applying SELF-INSTRUCT to GPT3.",
+        "x": 70.6,
+        "y": 99.9,
+        "w": 218.6,
+        "h": 21.9,
+        "zh": "表 1：将 SELF-INSTRUCT 用于 GPT3 后，生成数据的统计。"
+      }
+    ],
+    "5": [
+      {
+        "text": "ROUGE-L Overlap with the Most Similar Seed Instruction Figure 4: Distribution of the ROUGE-L scores between generated instructions and their most similar seed instructions.",
+        "x": 340.3,
+        "y": 685.6,
+        "w": 181.4,
+        "h": 45,
+        "zh": "与最相似种子指令的 ROUGE-L 重叠。图 4：生成指令与其最相似种子指令之间 ROUGE-L 分数的分布。"
+      },
+      {
+        "text": "Figure 3: The top 20 most common root verbs (inner circle) and their top 4 direct noun objects (outer circle) in the generated instructions. Despite their diversity, the instructions shown here only account for 14% of all the generated instructions because many instructions (e.g., “Classify whether the user is satisfied",
+        "x": 73.6,
+        "y": 471.1,
+        "w": 249.5,
+        "h": 57.8,
+        "zh": "图 3：生成指令中最常见的 20 个根动词（内圈），以及它们最常见的 4 个直接名词宾语（外圈）。尽管这些指令已经不少样，这里展示的仍只占全部生成指令的 14%，因为许多指令（例如“Classify whether the user is satisfied”）"
+      },
+      {
+        "text": "Figure 5: Length distribution of the generated with the service.”) do not contain such a verb-noun structure.",
+        "x": 73.2,
+        "y": 459.1,
+        "w": 448.4,
+        "h": 20.5,
+        "zh": "图 5：所生成内容的长度分布。对服务感到满意。”）并不包含这种动宾结构。"
+      },
+      {
+        "text": "instructions, non-empty inputs, and outputs.",
+        "x": 340.3,
+        "y": 457.6,
+        "w": 175.3,
+        "h": 10,
+        "zh": "指令、非空输入和输出。"
+      },
+      {
+        "text": "and input, and train the model to generate the output. Quality Review Question",
+        "x": 117.4,
+        "y": 414.7,
+        "w": 409,
+        "h": 10.9,
+        "zh": "和输入，并训练模型生成输出。质量审查问题"
+      },
+      {
+        "text": "This finetuning is done through the OpenAI fineDoes the instruction",
+        "x": 126.5,
+        "y": 395.3,
+        "w": 399.8,
+        "h": 16.7,
+        "zh": "这次微调通过 OpenAI 的 fine 完成。这条指令是否"
+      },
+      {
+        "text": "tuning API. We use the default hyper-parameters, describe a valid task?",
+        "x": 124.2,
+        "y": 387.6,
+        "w": 401.6,
+        "h": 10.9,
+        "zh": "微调 API。我们使用默认超参数。描述的是一项有效任务吗？"
+      },
+      {
+        "text": "except that we set the prompt loss weight to 0, and Is the input appropriate",
+        "x": 120.9,
+        "y": 366.7,
+        "w": 403.5,
+        "h": 18.2,
+        "zh": "只把提示一侧的损失权重设为 0，并且。输入是否合适"
+      },
+      {
+        "text": "we train the model for 2 epochs. We refer the reader to Appendix A.3 for additional finetuning details. Is the output a correct and acceptable",
+        "x": 95.8,
+        "y": 337.8,
+        "w": 430.6,
+        "h": 33.6,
+        "zh": "模型训练 2 个 epoch。更多微调细节见附录 A.3。输出是否正确、可以接受"
+      },
+      {
+        "text": "The resulting model is denoted by GPT3SELF-INST. response to the instruction and input?",
+        "x": 95.5,
+        "y": 329.8,
+        "w": 426.8,
+        "h": 14.5,
+        "zh": "得到的模型记为 GPT3SELF-INST。是对指令和输入的回应吗？"
+      },
+      {
+        "text": "We evaluate T5-LM (Lester Table 2: Data quality review for the instruction, input,",
+        "x": 70.6,
+        "y": 286.4,
+        "w": 454,
+        "h": 18.8,
+        "zh": "我们评估 T5-LM（Lester。表 2：对生成数据里的指令、输入所做的质量审查，"
+      },
+      {
+        "text": "et al., 2021; Raffel et al., 2020) and GPT3 (Brown and output of the generated data. See Table 10 and",
+        "x": 70.9,
+        "y": 274.4,
+        "w": 453.5,
+        "h": 17.2,
+        "zh": "et al., 2021；Raffel et al., 2020）和 GPT3（Brown。以及输出。有代表性的有效例子和无效例子见表 10 和"
+      },
+      {
+        "text": "et al., 2020) as the vanilla LM baselines (only preTable 11 for representative valid and invalid examples.",
+        "x": 70.6,
+        "y": 262.5,
+        "w": 455.7,
+        "h": 15.6,
+        "zh": "et al., 2020），作为只做了预训练、没有额外微调的原始语言模型基线。表 11。"
+      },
+      {
+        "text": "training, no additional finetuning). These baselines will indicate the extent to which off-the-shelf LMs Experimental Results",
+        "x": 88.8,
+        "y": 227.7,
+        "w": 435.6,
+        "h": 36.8,
+        "zh": "训练，没有额外微调）。这些基线用来说明，现成的语言模型在多大程度上。实验结果"
+      },
+      {
+        "text": "are capable of following instructions naturally immediately after pretraining. We conduct experiments to measure and compare the performance of models under various instruc-",
+        "x": 70.4,
+        "y": 192.9,
+        "w": 455.9,
+        "h": 44.6,
+        "zh": "能够在预训练一结束就自然地遵循指令。我们做实验，测量并比较模型在各种指令"
+      },
+      {
+        "text": "Publicly available instruction-tuned models. tion tuning setups. We first describe our models",
+        "x": 70.9,
+        "y": 179.3,
+        "w": 455.5,
+        "h": 24.4,
+        "zh": "已经公开的、经过指令微调的模型。微调设置。我们首先描述我们的模型"
+      },
+      {
+        "text": "T0 and T𝑘-INSTRUCT are two instruction-tuned and other baselines, followed by our experiments.",
+        "x": 70.9,
+        "y": 165.8,
+        "w": 453.5,
+        "h": 24.4,
+        "zh": "T0 和 T𝑘-INSTRUCT 是两个经过指令微调的模型。以及其他基线，随后是我们的实验。"
+      },
+      {
+        "text": "models proposed in Sanh et al. (2022) and Wang et al. (2022), respectively, and are demonstrated GPT3SELF-INST: finetuning GPT3 on its",
+        "x": 95.4,
+        "y": 140.1,
+        "w": 429,
+        "h": 36.5,
+        "zh": "分别由 Sanh et al.（2022）和 Wang et al.（2022）提出，并且已经表明。GPT3SELF-INST：用它自己的数据微调 GPT3"
+      },
+      {
+        "text": "to be able to follow instructions for many NLP own instruction data",
+        "x": 95.4,
+        "y": 129.3,
+        "w": 429,
+        "h": 20.3,
+        "zh": "它们能够在许多 NLP 任务上遵循指令。自己的指令数据"
+      },
+      {
+        "text": "tasks. Both of these models are finetuned from the T5 (Raffel et al., 2020) checkpoints and are pubGiven the instruction-generated instruction data, we",
+        "x": 70.9,
+        "y": 111.5,
+        "w": 455.4,
+        "h": 24.5,
+        "zh": "。这两个模型都从 T5（Raffel et al., 2020）的检查点微调而来，并且已经公开。给定这些由指令生成的指令数据，我们"
+      },
+      {
+        "text": "For both of these models, we use conduct instruction tuning with the GPT3 model itself (“davinci” engine). As described in §2.3, we",
+        "x": 70.9,
+        "y": 84.4,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "对这两个模型，我们都使用。用 GPT3 模型自身（“davinci”引擎）做指令微调。如 §2.3 所述，我们"
+      },
+      {
+        "text": "8See OpenAI’s documentation on finetuning. use various templates to concatenate the instruction",
+        "x": 70.9,
+        "y": 70.9,
+        "w": 409.1,
+        "h": 19.3,
+        "zh": "8 参见 OpenAI 关于微调的文档。用多种模板把指令拼接起来"
+      },
+      {
+        "text": "T0 is available at here and T𝑘-INSTRUCT is here.",
+        "x": 322.3,
+        "y": 70.9,
+        "w": 175.3,
+        "h": 9,
+        "zh": "T0 可在此处获取，T𝑘-INSTRUCT 也在此处。"
+      }
+    ],
+    "6": [
+      {
+        "text": "their largest version with 11B parameters.",
+        "x": 70.9,
+        "y": 760.1,
+        "w": 182.4,
+        "h": 10.9,
+        "zh": "它们参数量最大的版本有 110 亿参数。"
+      },
+      {
+        "text": "Instruction-tuned GPT3 models. InstructGPT (Ouyang et al., 2022), which is developed by OpenAI based on GPT3 to follow human instructions better and has been found by the community to have impressive zero-shot abilities. There are various generations of these models, where newer ones use more expansive data or algorithmic novelties.10 For our SUPERNI experiments in §4.3, we only compare with their text-davinci-001 engine, because their newer engines are trained with the latest user data and are likely to have already seen the SUPERNI test set. For our human evaluation on newly written instructions, we include their 001, 002 and 003 engines for completeness. Additionally, to compare SELF-INSTRUCT training with other publicly available instruction tuning data, we further finetune GPT3 model with data from PROMPTSOURCE and SUPERNI, which are used to train the T0 and T𝑘-INSTRUCT models. We call them T0 training and SUPERNI training for short, respectively. To save the training budget, we sampled 50K instances (but covering all their instructions) for each dataset, which has a comparable size to the instruction data we generated. Based on the findings from Wang et al. (2022) and our early experiments, reducing the number of instances per training task does not degrade the model’s generalization performance to unseen tasks.",
+        "x": 70.5,
+        "y": 371.7,
+        "w": 220.5,
+        "h": 377.1,
+        "zh": "经过指令微调的 GPT3 模型。InstructGPT（Ouyang et al., 2022）由 OpenAI 在 GPT3 基础上开发，目的是更好地遵循人类指令，社区也发现它有很强的零样本能力。这类模型有多个代际，较新的版本使用了更广泛的数据，或引入了算法上的新做法。10 在 §4.3 的 SUPERNI 实验中，我们只与他们的 text-davinci-001 引擎比较，因为更新的引擎用最新用户数据训练过，很可能已经见过 SUPERNI 测试集。在新写指令上的人类评估中，为了完整起见，我们纳入他们的 001、002 和 003 引擎。此外，为了把 SELF-INSTRUCT 训练和其他公开的指令微调数据做对比，我们进一步用 PROMPTSOURCE 和 SUPERNI 的数据微调 GPT3，这两套数据分别用来训练 T0 和 T𝑘-INSTRUCT。我们简称为 T0 训练和 SUPERNI 训练。为节省训练预算，每个数据集我们抽样 5 万个实例（但覆盖其全部指令），规模与我们生成的指令数据相当。根据 Wang et al.（2022）的发现以及我们早期的实验，减少每个训练任务的实例数，并不会降低模型在未见任务上的泛化表现。"
+      },
+      {
+        "text": "GPT3 + SUPERNI Training GPT3SELF-INST + SUPERNI Training (Ours)",
+        "x": 318,
+        "y": 633.3,
+        "w": 129.9,
+        "h": 18.9,
+        "zh": "GPT3 + SUPERNI 训练；GPT3SELF-INST + SUPERNI 训练（本文）"
+      },
+      {
+        "text": "Table 3: Evaluation results on unseen tasks from SUPERNI (§4.3). From the results, we see that ⃝1 SELFINSTRUCT can boost GPT3 performance by a large margin (+33.1%) and ⃝2 nearly matches the performance of InstructGPT001. Additionally, ⃝3 it can further improve the performance even when a large amount of labeled instruction data is present.",
+        "x": 305.8,
+        "y": 540,
+        "w": 220.2,
+        "h": 81.7,
+        "zh": "表 3：在 SUPERNI 未见任务上的评估结果（§4.3）。从结果可以看出：① SELF-INSTRUCT 能把 GPT3 的表现大幅抬高（+33.1%）；② 它几乎赶上 InstructGPT001；③ 即便已经有大量带标注的指令数据，它仍能进一步提升表现。"
+      },
+      {
+        "text": "vant and repetitive text, and does not know when",
+        "x": 305.9,
+        "y": 505.1,
+        "w": 218.5,
+        "h": 10.9,
+        "zh": "无关且重复的文本，也不知道该在何时"
+      },
+      {
+        "text": "Compared with other models that are not specifically trained for SUPERNI, GPT3SELF-INST achieves better performance than T0 or the GPT3 finetuned on the T0 training set, which takes tremendous human labeling efforts. Notably, GPT3SELF-INST also nearly matches the performance of InstructGPT001, which is trained with private user data and human-annotated labels. Models trained on the SUPERNI training set still achieve better performance on its evaluation set, which we attribute to the similar instruction style",
+        "x": 305.7,
+        "y": 355.9,
+        "w": 220.5,
+        "h": 146.6,
+        "zh": "与那些并非专门为 SUPERNI 训练的模型相比，GPT3SELF-INST 优于 T0，也优于在 T0 训练集上微调的 GPT3，而后者耗费了大量人工标注。值得注意的是，GPT3SELF-INST 也几乎赶上 InstructGPT001，而 InstructGPT001 是用私有用户数据和人工标注训练的。在 SUPERNI 训练集上训练的模型，在它自己的评估集上仍然更好，我们把这归因于指令风格相近"
+      },
+      {
+        "text": "Experiment 1: Zero-Shot Generalization on SUPERNI benchmark We first evaluate the models’ ability to follow instructions on typical NLP tasks in a zero-shot fashion. We use the evaluation set of SUPERNI (Wang et al., 2022), which consists of 119 tasks with 100 instances in each task. In this work, we mainly focus on the zero-shot setup, i.e., the model is prompted with the definition of the tasks only, without incontext demonstration examples. For all our requests to the GPT3 variants, we use the deterministic generation mode (temperature as 0 and no nucleus sampling) without specific stop sequences.",
+        "x": 70.4,
+        "y": 180.8,
+        "w": 220.6,
+        "h": 178.2,
+        "zh": "实验 1：在 SUPERNI 基准上的零样本泛化。我们首先以零样本方式，评估模型在典型 NLP 任务上遵循指令的能力。我们使用 SUPERNI 的评估集（Wang et al., 2022），其中有 119 个任务，每个任务 100 个实例。本文主要关注零样本设置，也就是只把任务定义放进提示，不提供上下文演示示例。对所有 GPT3 变体的请求，我们都使用确定性生成（temperature 为 0，不做 nucleus sampling），也不设置特定的停止序列。"
+      },
+      {
+        "text": "However, we show that SELFINSTRUCT still brings in additional gains when combined with the SUPERNI training set, proving its value as complementary data.",
+        "x": 305.9,
+        "y": 301.7,
+        "w": 220.4,
+        "h": 51.6,
+        "zh": "不过我们表明，把 SELF-INSTRUCT 与 SUPERNI 训练集结合后仍能带来额外收益，说明它可以作为补充数据。"
+      },
+      {
+        "text": "Experiment 2: Generalization to User-oriented Instructions on Novel Tasks Despite the comprehensiveness of SUPERNI in collecting existing NLP tasks, most of these NLP tasks were proposed for research purposes and skewed toward classification. To better access the practical value of instruction-following models, a subset of the authors curate a new set of instructions motivated by user-oriented applications. We first brainstorm various domains where large LMs may be useful (e.g., email writing, social media, productivity tools, entertainment, programming), then craft instructions related to each domain along with an input-output instance (again, input is optional). We aim to diversify the styles and formats of these tasks (e.g., instructions may be long or short; in-",
+        "x": 305.6,
+        "y": 70.9,
+        "w": 220.7,
+        "h": 218.5,
+        "zh": "实验 2：在新任务上泛化到面向用户的指令。SUPERNI 在收集已有 NLP 任务方面已经相当全面，但这些任务大多为研究而提出，而且偏向分类。为了更好地衡量遵循指令的模型有多大实用价值，一部分作者围绕面向用户的应用，新编了一套指令。我们先头脑风暴大语言模型可能有用的领域（例如写邮件、社交媒体、效率工具、娱乐、编程），再为每个领域编写指令，并配上一个输入—输出实例（同样，输入可以没有）。我们希望这些任务在风格和格式上尽量多样（例如指令可长可短；输"
+      },
+      {
+        "text": "We make the following observations from the results in Table 3. SELF-INSTRUCT boosts the instruction-following ability of GPT3 by a large margin. The vanilla GPT3 model basically cannot follow human instructions at all. Upon manual analysis, we find that it usually generates irrele-",
+        "x": 70.9,
+        "y": 90.9,
+        "w": 220.1,
+        "h": 78.7,
+        "zh": "从表 3 的结果可以得出如下观察。SELF-INSTRUCT 大幅提升了 GPT3 遵循指令的能力。原始的 GPT3 基本上完全不会遵循人类指令。我们手工查看后发现，它通常会生成无关"
+      },
+      {
+        "text": "See OpenAI’s documentation on their models.",
+        "x": 87,
+        "y": 70.9,
+        "w": 166.1,
+        "h": 9,
+        "zh": "参见 OpenAI 关于其模型的文档。"
+      }
+    ],
+    "7": [
+      {
+        "text": "correct and satisfying responsecorrect and satisfying response acceptable response with minor imperfectionsacceptable response with minor imperfections correct and satisfying responsecorrect and satisfying responsecorrect and satisfying responseAcorrect and satisfying response: correct and satisfying response acceptable response with minor imperfectionsacceptable response with minor imperfectionsacceptable response with minor imperfectionsacceptable response with minor imperfectionsB: acceptable response with minor imperfections 0responds to the instruction but has significant errors0responds to the instruction but has significant errors000responds to the instruction but has significant errorsresponds to the instruction but has significant errorsCresponds to the instruction but has significant errors0:responds to the instruction but has significant errorsresponds to the instruction but has significant errors",
+        "x": 126.7,
+        "y": 762.3,
+        "w": 359.2,
+        "h": 27.3,
+        "zh": ""
+      },
+      {
+        "text": "irrelevant or invalid responseDirrelevant or invalid responseirrelevant or invalid response:irrelevant or invalid responseirrelevant or invalid responseirrelevantirrelevant or invalid responseor invalid response",
+        "x": 356.4,
+        "y": 762.3,
+        "w": 140.7,
+        "h": 14.5,
+        "zh": ""
+      },
+      {
+        "text": "Self-InstructSelf-InstructGPT3Self-InstructSelf-InstructSelf-InstructSelf-InstructInstructGPT InstructGPT InstructGPT InstructGPT-001InstructGPT-001InstructGPT-001InstructGPT-001InstructGPT-002InstructGPT-002InstructGPT-002InstructGPT-002InstructGPT-003InstructGPT-003InstructGPT-003InstructGPT-003 SuperNI TrainingSuperNI TrainingSuperNI TrainingSuperNI TrainingSelf",
+        "x": 181.2,
+        "y": 595.7,
+        "w": 328,
+        "h": 17.4,
+        "zh": ""
+      },
+      {
+        "text": "InstructGPT-001InstructGPT-001InstructGPT-002InstructGPT-002InstructGPT-003InstructGPT-003 GPT3+SuperNISelf-Instruct + SuperNISelf-Instruct + SuperNISelf-Instruct + SuperNISelf-Instruct + SuperNI",
+        "x": 162.2,
+        "y": 585.2,
+        "w": 331.6,
+        "h": 14.9,
+        "zh": ""
+      },
+      {
+        "text": "Self-Instruct + SuperNISelf-Instruct + SuperNI Figure 6: Performance of GPT3 model and its instruction-tuned variants, evaluated by human experts on our 252 user-oriented instructions (§4.4). Human evaluators are instructed to rate the models’ responses into four levels. The results indicate that GPT3SELF-INST outperforms all the other GPT3 variants trained on publicly available instruction datasets. Additionally, GPT3SELF-INST scores nearly as good as InstructGPT001 (cf. footnote 1).",
+        "x": 70.9,
+        "y": 528.3,
+        "w": 453.5,
+        "h": 60.8,
+        "zh": "Self-Instruct + SuperNI。图 6：GPT3 及其经过指令微调的各个变体的表现，由人类专家在我们的 252 条面向用户的指令上评估（§4.4）。评估者须把模型回答分成四个等级。结果表明，GPT3SELF-INST 优于所有在公开指令数据上训练的其他 GPT3 变体。此外，GPT3SELF-INST 的得分几乎和 InstructGPT001 一样好（见脚注 1）。"
+      },
+      {
+        "text": "put/output may take the form of bullet points, ta-",
+        "x": 70.9,
+        "y": 496.4,
+        "w": 220.1,
+        "h": 10.9,
+        "zh": "输入/输出可以采取项目符号、表格"
+      },
+      {
+        "text": "erate other irrelevant things. bles, codes, equations, etc.). In total, we create 252",
+        "x": 70.9,
+        "y": 482.8,
+        "w": 368.9,
+        "h": 24.5,
+        "zh": "出其他无关的内容。表格、代码、公式等等）。我们一共编写了 252"
+      },
+      {
+        "text": "• RATING-D: The response is irrelevant or cominstructions with 1 instance per instruction. We believe it can serve as a testbed for evaluating how",
+        "x": 70.9,
+        "y": 455.7,
+        "w": 455.4,
+        "h": 38,
+        "zh": "• 评级 D：回答是无关的，或者完全。条指令，每条指令 1 个实例。我们相信它可以作为一个测试台，用来评估如何"
+      },
+      {
+        "text": "Figure 6 shows the performance of instruction-based models handle diverse and unfa-",
+        "x": 70.9,
+        "y": 442.2,
+        "w": 453.5,
+        "h": 18,
+        "zh": "图 6 展示了下列模型的表现。基于指令的模型能够应对多样、而且不熟悉"
+      },
+      {
+        "text": "GPT3 model and its instruction-tuned counterparts miliar instructions. Table 9 presents a small portion",
+        "x": 70.9,
+        "y": 428.6,
+        "w": 453.5,
+        "h": 18,
+        "zh": "GPT3 模型及其经过指令微调的各个版本。的指令。表 9 给出了其中一小部分"
+      },
+      {
+        "text": "on this newly written instruction set (w. inter-rater of them. The entire set is available in our GitHub",
+        "x": 70.9,
+        "y": 415.1,
+        "w": 453.7,
+        "h": 18,
+        "zh": "在这套新写指令上的结果（评分者间。这些指令。完整集合放在我们的 GitHub"
+      },
+      {
+        "text": "agreement 𝜅 = 0.57 on the 4-class categorical scale, repository. We analyze the overlap between this set",
+        "x": 70.9,
+        "y": 401.5,
+        "w": 454.9,
+        "h": 18,
+        "zh": "一致性为 𝜅 = 0.57，按四级分类计），仓库里。我们分析了这一集合与"
+      },
+      {
+        "text": "see Appendix B for details). As anticipated, the set and the seed instructions in §A.1.",
+        "x": 70.9,
+        "y": 388,
+        "w": 453.5,
+        "h": 18,
+        "zh": "详见附录 B）。不出所料，这一集合。以及 §A.1 中的种子指令。"
+      },
+      {
+        "text": "vanilla GPT3 LM is largely unable to respond to instructions, and all instruction-tuned models demonHuman evaluation setup.",
+        "x": 70.9,
+        "y": 367.4,
+        "w": 455.4,
+        "h": 25,
+        "zh": "原始的 GPT3 语言模型基本上无法回应指令，而所有经过指令微调的模型都表现。人类评估的设置。"
+      },
+      {
+        "text": "strate comparatively higher performance. Nonetheperformance on this evaluation set of diverse tasks",
+        "x": 70.9,
+        "y": 353.9,
+        "w": 455.4,
+        "h": 11.4,
+        "zh": "出相对更高的水平。尽管如此，在这组多样任务上的表现"
+      },
+      {
+        "text": "less, GPT3SELF-INST (i.e., GPT3 model finetuned is extremely challenging because different tasks re-",
+        "x": 70.9,
+        "y": 338.1,
+        "w": 453.5,
+        "h": 13.6,
+        "zh": "不过，GPT3SELF-INST（也就是微调之后的 GPT3 模型）。这非常困难，因为不同任务需要"
+      },
+      {
+        "text": "with SELF-INSTRUCT) outperforms those counterquire different expertise. Indeed, many of these",
+        "x": 70.9,
+        "y": 326.8,
+        "w": 455.4,
+        "h": 11.4,
+        "zh": "用 SELF-INSTRUCT）超过了那些对照模型。要不同的专业知识。事实上，其中许多"
+      },
+      {
+        "text": "parts trained on T0 or SUPERNI data by a large martasks cannot be measured by automatic metrics or",
+        "x": 70.9,
+        "y": 313.2,
+        "w": 455.4,
+        "h": 11.4,
+        "zh": "在 T0 或 SUPERNI 数据上训练的模型，而且幅度很大。任务无法用自动指标衡量，或者"
+      },
+      {
+        "text": "gin, demonstrating the value of the generated data even be judged by normal crowdworkers (e.g., writ-",
+        "x": 70.9,
+        "y": 299.7,
+        "w": 453.5,
+        "h": 11.4,
+        "zh": "这说明了生成数据的价值。就连普通众包人员也很难判断（例如撰写"
+      },
+      {
+        "text": "despite the noise. Compared with InstructGPT001, ing a program, or converting first-order logic into",
+        "x": 70.9,
+        "y": 283.9,
+        "w": 454.9,
+        "h": 13.6,
+        "zh": "尽管其中有噪声。与 InstructGPT001 相比，一段程序，或把一阶逻辑转换成"
+      },
+      {
+        "text": "GPT3SELF-INST is quite close in performance—if natural language). To get a more faithful evaluation,",
+        "x": 70.9,
+        "y": 270.4,
+        "w": 453.5,
+        "h": 13.6,
+        "zh": "GPT3SELF-INST 的表现相当接近——如果。自然语言）。为了得到更可信的评估，"
+      },
+      {
+        "text": "we count acceptable response with minor imperwe asked the authors of the instructions to judge",
+        "x": 70.5,
+        "y": 259.1,
+        "w": 455.8,
+        "h": 11.4,
+        "zh": "我们把带有小瑕疵、但可以接受的回答。我们请这些指令的作者来评判"
+      },
+      {
+        "text": "fections (RATING-B) as valid, GPT3SELF-INST is model predictions. Details on how we set up this",
+        "x": 70.9,
+        "y": 243.3,
+        "w": 453.5,
+        "h": 13.6,
+        "zh": "算作有效（评级 B），GPT3SELF-INST 就。模型的预测。我们如何搭建这次"
+      },
+      {
+        "text": "only 5% behind InstructGPT001. Lastly, our evaluahuman evaluation are described in Appendix B. The",
+        "x": 70.9,
+        "y": 229.7,
+        "w": 455.4,
+        "h": 13.6,
+        "zh": "只比 InstructGPT001 落后 5%。最后，我们的评估。人类评估写在附录 B。这些"
+      },
+      {
+        "text": "tion confirms the impressive instruction-following evaluators were asked to rate the output based on",
+        "x": 70.9,
+        "y": 218.4,
+        "w": 453.5,
+        "h": 11.4,
+        "zh": "证实了很强的指令遵循能力。评估者需要根据下述标准为输出打分"
+      },
+      {
+        "text": "ability of InstructGPT002 and InstructGPT003. Alwhether it accurately and effectively completes the",
+        "x": 70.5,
+        "y": 202.6,
+        "w": 455.7,
+        "h": 13.6,
+        "zh": "InstructGPT002 和 InstructGPT003 的能力。尽管。它是否准确而有效地完成了"
+      },
+      {
+        "text": "though there are many factors behind this success, task. We implemented a four-level rating system",
+        "x": 70.9,
+        "y": 191.3,
+        "w": 454.9,
+        "h": 11.4,
+        "zh": "这一成功背后有许多因素，任务。我们做了一套四级评分"
+      },
+      {
+        "text": "we conjecture that future work can largely benefit for categorizing the quality of the models’ outputs:",
+        "x": 70.9,
+        "y": 177.8,
+        "w": 453.5,
+        "h": 11.4,
+        "zh": "我们猜想，以后的工作可以大大受益。用来给模型输出的质量分类："
+      },
+      {
+        "text": "from improving the quality of our generated data by • RATING-A: The response is valid and satisfying.",
+        "x": 70.9,
+        "y": 152.2,
+        "w": 453.9,
+        "h": 23.5,
+        "zh": "如果去提高所生成数据的质量，办法包括。• 评级 A：回答有效，并且令人满意。"
+      },
+      {
+        "text": "using human annotators or training a reward model • RATING-B: The response is acceptable but has",
+        "x": 70.9,
+        "y": 138.6,
+        "w": 453.5,
+        "h": 23.5,
+        "zh": "请人类标注，或者训练一个奖励模型。• 评级 B：回答可以接受，但有"
+      },
+      {
+        "text": "to select better generations, similar to the algorithm minor errors or imperfections.",
+        "x": 81.6,
+        "y": 125.1,
+        "w": 442.9,
+        "h": 23.5,
+        "zh": "用来选出更好的生成结果，类似于这一算法。轻微的错误或不完美之处。"
+      },
+      {
+        "text": "used by Ouyang et al. (2022). • RATING-C: The response is relevant and re-",
+        "x": 70.9,
+        "y": 111.5,
+        "w": 364.2,
+        "h": 23.5,
+        "zh": "Ouyang et al.（2022）使用的那种。• 评级 C：回答与指令相关，并且有所回应"
+      },
+      {
+        "text": "Effect of Data Size and Quality sponds to the instruction, but it has significant errors in the content. For example, GPT3 might",
+        "x": 81.6,
+        "y": 84.4,
+        "w": 393.2,
+        "h": 28.4,
+        "zh": "数据规模与质量的影响。回应了指令，但内容有明显错误。例如，GPT3 可能"
+      },
+      {
+        "text": "SELF-INSTRUCT provides a way to generate a valid output first, but continue to gen-",
+        "x": 81.6,
+        "y": 70.9,
+        "w": 442.9,
+        "h": 24.5,
+        "zh": "SELF-INSTRUCT 提供了一种生成手段。先给出一段有效输出，然后继续生成"
+      },
+      {
+        "text": "grow instruction data at a low cost with almost",
+        "x": 306.1,
+        "y": 70.9,
+        "w": 218.3,
+        "h": 10.9,
+        "zh": "以很低的成本扩充指令数据，而且几乎"
+      }
+    ],
+    "8": [
+      {
+        "text": "no human labeling; could more of this generated data lead to better instruction-following ability? We conduct an analysis of the size of generated data by subsampling different numbers of instructions from the generated dataset, finetuning GPT3 on the sampled subsets, and evaluating how the resulting models perform on the 252 user-oriented instruction set. We conduct the same human evaluation as in §4.4. Figure 7 presents the performance of GPT3SELF-INST models finetuned with different sizes of generated data. Overall, we see consistent improvement as we grow the data size. However, this improvement almost plateaus after 16K. This is inline with the data scaling experiments in Wang et al. (2022, Fig. 5). Interestingly, when evaluating on SUPERNI we found the model’s performance gain plateaus earlier at around hundreds of instructions. This may be due to the fact that the new generated data is distinct from typical NLP tasks in SUPERNI, indicating that future research may benefit from using a combination of different instruction data for better performance on various types of tasks.",
+        "x": 70.5,
+        "y": 475.5,
+        "w": 220.5,
+        "h": 295.4,
+        "zh": "不需要人工标注；这类生成数据再多一些，会不会让模型更会遵循指令？我们从生成数据集中抽取不同数量的指令，构成若干子集，在这些子集上微调 GPT3，再看得到的模型在 252 条面向用户的指令上表现如何，以此来分析生成数据的规模效应。人类评估方式与 §4.4 相同。图 7 给出用不同规模生成数据微调后的 GPT3SELF-INST。总体上看，数据变大，表现就稳步变好。不过到了 1.6 万条之后，这种提升几乎停住了。这与 Wang et al.（2022，图 5）里的数据规模实验一致。有意思的是，在 SUPERNI 上评估时，模型的收益更早进入平台期，大约在几百条指令时就不再明显上升。这可能是因为新生成的数据与 SUPERNI 里的典型 NLP 任务并不相同，说明以后的研究或许可以把不同来源的指令数据结合起来，以便在各类任务上都有更好的表现。"
+      },
+      {
+        "text": "GPT3SELF-INST models tuned with different sizes of",
+        "x": 306.1,
+        "y": 560.4,
+        "w": 218.3,
+        "h": 12.5,
+        "zh": "用不同数据规模微调得到的 GPT3SELF-INST 模型"
+      },
+      {
+        "text": "𝑥-axis is in log scale. size is 175, where only the seed tasks are used for instruction tuning. We also evaluate whether improving the data quality will further improve the performance by distilling the outputs from InstructGPT003. We see consistent improvement from using larger data with",
+        "x": 306.1,
+        "y": 491.2,
+        "w": 218.4,
+        "h": 69.7,
+        "zh": "横轴 𝑥 取对数坐标。规模为 175 时，指令微调只用了种子任务。我们还评估：如果用 InstructGPT003 把输出蒸馏出来、从而提高数据质量，表现会不会进一步变好。使用更大规模的数据时，我们看到稳定的提升，同时"
+      },
+      {
+        "text": "Another direction to improve the model’s performance is to take our generated data and get better supervision (with less noise). We explore this idea by using InstructGPT available general-purpose model) to regenerate the output field of all our instances given the instruction and input. We then use this improved version of our data to finetune GPT3. This can be regarded as a distillation of InstructGPT",
+        "x": 70.9,
+        "y": 346.1,
+        "w": 218.3,
+        "h": 119.3,
+        "zh": "另一个提升模型表现的方向，是拿我们生成的数据，换成噪声更小的监督信号。我们用 InstructGPT（可用的通用模型）来试这个想法：给定指令和输入，重新生成我们全部实例的输出字段。再用这个改进后的数据微调 GPT3。这可以看作是对 InstructGPT 的蒸馏"
+      },
+      {
+        "text": "these developments largely focus on existing NLP tasks and depend on human-annotated instructions, this poses a bottleneck for progress toward more generalizable models (e.g., see Fig. 5a in Wang et al., 2022). Our work aims to move beyond classical NLP tasks and tackle the challenges of creating diverse instruction data by employing pretrained LMs. InstructGPT (Ouyang et al., 2022) shares a similar goal as ours in building more generalpurpose LMs, and has demonstrated remarkable performance in following diverse user instructions. However, as a commercial system, their construction process still remains quite opaque. In particular, the role of data has remained understudied due to limited transparency and the private user data they used in their study. Addressing such challenges necessitates the creation of a large-scale, public dataset covering a broad range of tasks.",
+        "x": 306.1,
+        "y": 214.2,
+        "w": 220.2,
+        "h": 241.2,
+        "zh": "这些进展大多仍集中在已有的 NLP 任务上，并且依赖人工标注的指令，这成了通向更通用模型的瓶颈（例如见 Wang et al., 2022 的图 5a）。我们的工作希望走出经典 NLP 任务，借助预训练语言模型来应对“如何造出多样指令数据”这一困难。InstructGPT（Ouyang et al., 2022）和我们目标相近，都想构建更通用的语言模型，并且在遵循多样的用户指令上表现突出。但作为一个商业系统，它的构建过程仍然相当不透明。尤其是数据所起的作用，由于透明度有限，加上他们在研究中使用了私有用户数据，一直缺少充分研究。要面对这些困难，就需要一份大规模、公开、覆盖广泛任务的数据集。"
+      },
+      {
+        "text": "with our data. As is shown in Figure 7, the resulting model outperforms the counterpart trained with the original data by 10%, which suggests big room for future work on using our generation pipeline to get initial data and then improving the data quality with human experts or distillation from better models.",
+        "x": 70,
+        "y": 264.8,
+        "w": 219.5,
+        "h": 92.2,
+        "zh": "用我们的数据做蒸馏。如图 7 所示，这样得到的模型比用原始数据训练的对应模型高出 10%。这说明以后还有很大空间：可以先用我们的生成流程得到初始数据，再用人类专家或从更强模型蒸馏来提高数据质量。"
+      },
+      {
+        "text": "Instruction-following LMs. have found evidence that vanilla LMs can be effective at following general language instructions if tuned with annotated “instructional” data—datasets containing language instructional commands and their desired outcomes based on human annotation (Weller et al., 2020; Mishra et al., 2022; Wei et al., 2022; Sanh et al., 2022, i.a.). Additionally, they show a direct correlation between the size and diversity of the “instructional” data and the generalizability of resulting models to unseen tasks (Wang et al., 2022; Chung et al., 2022). However, since",
+        "x": 70.9,
+        "y": 70.9,
+        "w": 220.1,
+        "h": 160,
+        "zh": "遵循指令的语言模型。已经有证据表明，如果用带标注的“指令式”数据来微调，原始语言模型可以有效地遵循一般的语言指令。这类数据集包含语言形式的指令，以及基于人工标注的期望结果（Weller et al., 2020；Mishra et al., 2022；Wei et al., 2022；Sanh et al., 2022 等）。他们还表明，“指令式”数据的规模和多样性，与所得模型在未见任务上的泛化能力直接相关（Wang et al., 2022；Chung et al., 2022）。然而，由于"
+      },
+      {
+        "text": "Language models for data generation and aug-",
+        "x": 306.1,
+        "y": 192.8,
+        "w": 220.1,
+        "h": 10.9,
+        "zh": "用于数据生成与增强的语言模型"
+      },
+      {
+        "text": "A variety of works have proposed using LMs for data generation (Schick and Schütze, 2021; Wang et al., 2021; Liu et al., 2022; Meng et al., 2023) or augmentation (Feng et al., 2021; Yang et al., 2020; Mekala et al., 2022). Our work differs from this line in that it is not specific to a particular task (say, QA or NLI). In contrast, a distinct motivation for SELF-INSTRUCT is to bootstrap new task definitions that may not have been defined",
+        "x": 305.5,
+        "y": 70.9,
+        "w": 220.7,
+        "h": 119.3,
+        "zh": "已有不少工作提出用语言模型做数据生成（Schick and Schütze, 2021；Wang et al., 2021；Liu et al., 2022；Meng et al., 2023）或数据增强（Feng et al., 2021；Yang et al., 2020；Mekala et al., 2022）。我们与这条路线的不同在于，它并不针对某一个具体任务（比如说问答或自然语言推理）。相比之下，SELF-INSTRUCT 一个鲜明的动机是自举出新的任务定义，而这些任务可能还没有被定义过"
+      }
+    ],
+    "9": [
+      {
+        "text": "before by NLP practitioners (though potentially still important for real users). In parallel with our work, Honovich et al. (2022a) also propose to generate large-scale instruction data (so-called Unnatural Instructions) with GPT3 models. The major differences are that 1) they use tasks in SUPERNI (Wang et al., 2022) as their seed tasks, resulting in a different distribution of generated tasks; 2) they employ InstructGPT002 for generating the data, in which sense they are distilling knowledge from an already instruction-tuned model, while we solely rely on the vanilla LM; 3) the detailed generation pipeline and templates are different. Nevertheless, we believe that both efforts in expanding instruction data are complementary, and the community will benefit from these diverse datasets.",
+        "x": 70.9,
+        "y": 556.8,
+        "w": 220.1,
+        "h": 214.1,
+        "zh": "被 NLP 从业者定义过（但对真实用户仍可能重要）。与我们并行，Honovich et al.（2022a）也提出用 GPT3 生成大规模指令数据（所谓 Unnatural Instructions）。主要差别有三点：1）他们用 SUPERNI（Wang et al., 2022）里的任务做种子，因此生成任务的分布不同；2）他们用 InstructGPT002 来生成数据，从这个意义上说是在从一个已经做过指令微调的模型里蒸馏知识，而我们只依赖未经指令微调的原始语言模型；3）具体的生成流程和模板不同。尽管如此，我们认为这两项扩充指令数据的努力是互补的，社区会从这些不同的数据集中受益。"
+      },
+      {
+        "text": "the content of distillation is in the form of an instruction task (i.e., instructions that define a task, and a set of examples that instantiate it).",
+        "x": 306.1,
+        "y": 733,
+        "w": 219.6,
+        "h": 38,
+        "zh": "蒸馏的内容采取指令任务的形式（也就是：用指令定义一个任务，再用一组示例把这个任务具体化）。"
+      },
+      {
+        "text": "Bootstrapping with limited resources. ries of recent works use language models to bootstrap some inferences using specialized methods. NPPrompt (Zhao et al., 2022) provides a method to generate predictions for semantic labels without any finetuning. It uses a model’s own embeddings to automatically find words relevant to the label of the data sample and hence reduces the dependency on manual mapping from model prediction to label (verbalizers). STAR (Zelikman et al., 2022) iteratively leverages a small number of rationale examples and a large dataset without rationales, to bootstrap a model’s ability to perform reasoning. Self-Correction (Welleck et al., 2023) decouples an imperfect base generator (model) from a separate corrector that learns to iteratively correct imperfect generations and demonstrates improvement over the base generator. Our work instead focuses on bootstrapping new tasks in the instruction paradigm.",
+        "x": 306.1,
+        "y": 459.1,
+        "w": 220.2,
+        "h": 254.8,
+        "zh": "用有限资源做自举。最近一批工作用专门方法，让语言模型自举出某些推断。NPPrompt（Zhao et al., 2022）可以在不做任何微调的情况下，为语义标签生成预测。它利用模型自己的嵌入，自动找出与样本标签相关的词，从而减少把模型预测手工映射到标签（verbalizer）的依赖。STAR（Zelikman et al., 2022）迭代地利用少量带推理过程的例子，以及一个没有推理过程的大数据集，来自举模型的推理能力。Self-Correction（Welleck et al., 2023）把一个不完美的基础生成器（模型）和一个单独的校正器分开，校正器学习迭代地修正不完美的生成，并显示出相对基础生成器的改进。我们的工作则聚焦于在指令范式下自举出新任务。"
+      },
+      {
+        "text": "Instruction generation. works (Zhou et al., 2022b; Ye et al., 2022; Singh et al., 2022; Honovich et al., 2022b) generate instructions of a task given a few examples. While SELF-INSTRUCT also involves instruction generation, a major difference in our case is it is taskagnostic; we generate new tasks (instructions along with instances) from scratch.",
+        "x": 70.5,
+        "y": 440,
+        "w": 220.5,
+        "h": 105.8,
+        "zh": "指令生成。一些工作（Zhou et al., 2022b；Ye et al., 2022；Singh et al., 2022；Honovich et al., 2022b）是在给定少量示例后，为某个任务生成指令。SELF-INSTRUCT 也涉及指令生成，但一个主要差别是它与具体任务无关：我们是从零开始生成新任务（指令连同实例一起）。"
+      },
+      {
+        "text": "Multi-modal instruction-following. following models have also been of interest in the multi-modal learning literature (Fried et al., 2018; Shridhar et al., 2020; Min et al., 2022; Weir et al., 2022). SELF-INSTRUCT, as a general approach to expanding data, can potentially also be helpful in those settings, which we leave to future work.",
+        "x": 306.1,
+        "y": 347.9,
+        "w": 219.6,
+        "h": 92.2,
+        "zh": "多模态的指令遵循。遵循指令的模型在多模态学习文献里也同样受到关注（Fried et al., 2018；Shridhar et al., 2020；Min et al., 2022；Weir et al., 2022）。SELF-INSTRUCT 作为一种扩充数据的一般方法，在那些场景里也可能有用，我们留待以后的工作。"
+      },
+      {
+        "text": "A typical self-training framework (He et al., 2019; Xie et al., 2020; Du et al., 2021; Amini et al., 2022; Huang et al., 2022) uses trained models to assign labels to unlabeled data and then leverages the newly labeled data to improve the model. In a similar line, Zhou et al. (2022a) use multiple prompts to specify a single task and propose to regularize via prompt consistency, encouraging consistent predictions over the prompts. This allows either finetuning the model with extra unlabeled training data, or direct application at inference time. While SELF-INSTRUCT has similarities with the self-training literature, most self-training methods assume a specific target task as well as unlabeled examples under it; in contrast, SELF-INSTRUCT produces a variety of tasks from",
+        "x": 70.5,
+        "y": 214.8,
+        "w": 220.6,
+        "h": 214.1,
+        "zh": "典型的自训练框架（He et al., 2019；Xie et al., 2020；Du et al., 2021；Amini et al., 2022；Huang et al., 2022）用训练好的模型给无标注数据打标签，再用这些新标注的数据改进模型。类似地，Zhou et al.（2022a）用多条提示来指定同一个任务，并提出以提示一致性做正则，鼓励模型在不同提示下给出一致的预测。这样既可以拿额外的无标注训练数据来微调模型，也可以在推理时直接使用。SELF-INSTRUCT 与自训练文献有相似之处，但大多数自训练方法假定已经有一个具体的目标任务，以及该任务下的无标注样本；相比之下，SELF-INSTRUCT 产出的是各种各样的任务，来自"
+      },
+      {
+        "text": "We introduce SELF-INSTRUCT, a method to improve the instruction-following ability of LMs via their own generation of instruction data. On experimenting with vanilla GPT3, we automatically construct a large-scale dataset of 52K instructions for diverse tasks, and finetuning GPT3 on this data leads to a 33% absolute improvement on SUPERNI over the original GPT3. Furthermore, we curate a set of expert-written instructions for novel tasks. Human evaluation on this set shows that tuning GPT3 with SELF-INSTRUCT outperforms using existing public instruction datasets by a large margin and performs closely to InstructGPT001. We hope SELF-INSTRUCT can serve as the first step to align pretrained LMs to follow human instructions, and future work can build on top of this data to improve instruction-following models.",
+        "x": 305.6,
+        "y": 70.9,
+        "w": 220.7,
+        "h": 227.7,
+        "zh": "我们提出 SELF-INSTRUCT，一种借助语言模型自己生成的指令数据来提升其指令遵循能力的方法。在原始 GPT3 上实验时，我们自动构建了包含 5.2 万条指令、覆盖多样任务的大规模数据集；在这份数据上微调 GPT3，相对原始 GPT3 在 SUPERNI 上取得了 33% 的绝对提升。我们还为新任务编写了一套专家指令。在这套指令上的人类评估表明，用 SELF-INSTRUCT 微调 GPT3，大幅优于使用现有的公开指令数据集，并且表现接近 InstructGPT001。我们希望 SELF-INSTRUCT 能成为让预训练语言模型对齐到遵循人类指令的第一步，以后的工作可以在这份数据之上继续改进遵循指令的模型。"
+      },
+      {
+        "text": "tion (Hinton et al., 2015; Sanh et al., 2019; West et al., 2021; Magister et al., 2022) often involves the transfer of knowledge from larger models to smaller ones. SELF-INSTRUCT can also be viewed as a form of “knowledge distillation\", however, it differs from this line in the following ways: (1) the source and target of distillation are the same, i.e., a model’s knowledge is distilled to itself; (2)",
+        "x": 70.9,
+        "y": 70.9,
+        "w": 219.6,
+        "h": 105.8,
+        "zh": "馏（Hinton et al., 2015；Sanh et al., 2019；West et al., 2021；Magister et al., 2022）通常是把知识从较大的模型迁移到较小的模型。SELF-INSTRUCT 也可以看成一种“知识蒸馏”，但它与这条路线有如下不同：（1）蒸馏的来源和目标是同一个模型，也就是把一个模型的知识蒸馏给它自己；（2）"
+      }
+    ],
+    "10": [
+      {
+        "text": "limitation: gains of instruction-tuning are higher for larger models (Wei et al., 2022).",
+        "x": 306.1,
+        "y": 746.5,
+        "w": 218.5,
+        "h": 24.5,
+        "zh": "局限：指令微调带来的收益在更大的模型上更高（Wei et al., 2022）。"
+      },
+      {
+        "text": "Beyond the immediate focus of this paper, we believe that SELF-INSTRUCT may help bring more transparency to what happens “behind the scenes” of widely-used instruction-tuned models like InstructGPT or ChatGPT. Unfortunately, such industrial models remain behind API walls as their datasets are not released, and hence there is little understanding of their construction and why they demonstrate impressive capabilities. The burden now falls on academia to better understand the source of success in these models and strive for better—and more open—models. We believe our findings in this paper demonstrate the importance of diverse instruction data, and our large synthetic dataset can be the first step toward higher-quality data for building better instruction-following models. At this writing, the central idea of this paper has been adopted in several follow-up works for such endeavors (Taori et al., 2023; Xu et al., 2023; Sun et al., 2023, i.a.).",
+        "x": 70.9,
+        "y": 481.9,
+        "w": 220.1,
+        "h": 268.3,
+        "zh": "超出本文的直接焦点，我们认为 SELF-INSTRUCT 有助于让 InstructGPT 或 ChatGPT 这类广泛使用的指令微调模型“幕后发生了什么”变得更透明。遗憾的是，这类工业模型仍隔在 API 之后，数据集也不公开，因此人们很难理解它们是如何构建的，以及它们为什么展现出如此强的能力。现在需要学术界来更好地理解这些模型成功的来源，并追求更好、也更开放的模型。我们相信，本文的发现说明了多样指令数据的重要性，而我们这份大规模合成数据集可以成为迈向更高质量数据、从而构建更好的指令遵循模型的第一步。在撰写本文时，这一核心想法已被若干后续工作采纳，用来推进同类努力（Taori et al., 2023；Xu et al., 2023；Sun et al., 2023 等）。"
+      },
+      {
+        "text": "A point of concern for the authors is the unintended consequences of this iterative algorithm, such as the amplification of problematic social biases (stereotypes or slurs about gender, race, etc.). Relatedly, one observed challenge in this process is the algorithm’s difficulty in producing balanced labels, which reflected models’ prior biases. We hope future work will lead to better understanding of the pros and cons of the approach.",
+        "x": 306.1,
+        "y": 615.6,
+        "w": 220.2,
+        "h": 119.3,
+        "zh": "作者关心的一点，是这种迭代算法可能带来的意外后果，例如放大有问题的社会偏见（关于性别、种族等的刻板印象或侮辱性说法）。与此相关，这个过程中观察到的一个困难是：算法很难产生均衡的标签，而这反映出模型原有的偏见。我们希望以后的工作能更好地理解这种方法的利与弊。"
+      },
+      {
+        "text": "The authors would like to thank the anonymous reviewers for their constructive feedback. We especially thank Sewon Min, Eric Wallace, Ofir Press, and other members of UWNLP and AllenNLP for their encouraging feedback and intellectual support. This work was supported in part by DARPA MCS program through NIWC Pacific (N66001-19- 2-4031), ONR N00014-18-1-2826, ONR MURI N00014-18-1-2670, and gifts from AI2 and an Allen Investigator award.",
+        "x": 305.7,
+        "y": 446.2,
+        "w": 220.5,
+        "h": 132.9,
+        "zh": "作者感谢匿名审稿人富有建设性的意见。我们特别感谢 Sewon Min、Eric Wallace、Ofir Press，以及 UWNLP 和 AllenNLP 的其他成员，感谢他们的鼓励和智识上的支持。本工作部分得到 DARPA MCS 计划经由 NIWC Pacific 的资助（N66001-19-2-4031），以及 ONR N00014-18-1-2826、ONR MURI N00014-18-1-2670、AI2 的赠予和一项 Allen Investigator 奖。"
+      },
+      {
+        "text": "Here, we discuss some limitations of this work to inspire future research in this direction.",
+        "x": 70.9,
+        "y": 424,
+        "w": 218.3,
+        "h": 24.5,
+        "zh": "这里我们讨论本工作的一些局限，以期引发这个方向上以后的研究。"
+      },
+      {
+        "text": "SELF-INSTRUCT depends on LMs, and it will inherit all the limitations that carry over with LMs.",
+        "x": 70.9,
+        "y": 376.1,
+        "w": 218.3,
+        "h": 38,
+        "zh": "SELF-INSTRUCT 依赖语言模型，因此也会继承语言模型所带有的全部局限。"
+      },
+      {
+        "text": "Massih-Reza Amini, Vasilii Feofanov, Loic Pauletto, Emilie Devijver, and Yury Maximov. 2022. Selftraining: A survey. arXiv preprint arXiv:2202.12040.",
+        "x": 306.1,
+        "y": 367.5,
+        "w": 220,
+        "h": 31.9,
+        "zh": "Massih-Reza Amini、Vasilii Feofanov、Loic Pauletto、Emilie Devijver、Yury Maximov. 2022. 自训练：一项综述. arXiv 预印本 arXiv:2202.12040。"
+      },
+      {
+        "text": "As recent studies have shown (Razeghi et al., 2022; Kandpal et al., 2022), tail phenomena pose a serious challenge to the success of LMs. In other words, LMs’ largest gains correspond to the frequent uses of languages (head of the language use distribution), and there might be minimal gains in the low-frequency contexts. Similarly, in the context of this work, it would not be surprising if the majority of the gains by SELFINSTRUCT are skewed toward tasks or instructions that present more frequently in the pretraining corpus. As a consequence, the approach might show brittleness with respect to uncommon and creative",
+        "x": 70.9,
+        "y": 213.6,
+        "w": 220.2,
+        "h": 173.5,
+        "zh": "正如近期研究所表明的（Razeghi et al., 2022；Kandpal et al., 2022），长尾现象对语言模型的成功构成严重挑战。换句话说，语言模型最大的收益对应语言使用分布的头部，也就是高频用法，在低频语境里收益可能很小。同样，在本工作的语境下，如果 SELF-INSTRUCT 的大部分收益偏向预训练语料里出现更频繁的任务或指令，并不会让人意外。其结果是，这种方法面对不常见的、有创造性的"
+      },
+      {
+        "text": "Stephen H Bach, Victor Sanh, Zheng-Xin Yong, Albert Webson, Colin Raffel, Nihal V Nayak, Abheesht Sharma, Taewoon Kim, M Saiful Bari, Thibault Fevry, et al. 2022. PromptSource: An Integrated Development Environment and Repository for Natural Language Prompts. In Annual Meeting of the Association for Computational Linguistics (ACL) System Demonstrations.",
+        "x": 306.1,
+        "y": 269,
+        "w": 219.9,
+        "h": 86.7,
+        "zh": "Stephen H Bach、Victor Sanh、Zheng-Xin Yong、Albert Webson、Colin Raffel、Nihal V Nayak、Abheesht Sharma、Taewoon Kim、M Saiful Bari、Thibault Fevry 等. 2022. PromptSource：自然语言提示的集成开发环境与仓库. 计算语言学协会年会（ACL）系统演示。"
+      },
+      {
+        "text": "Tom B. Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, Sandhini Agarwal, and et al. 2020. Language models are few-shot learners. In Advances in Neural Information Processing Systems (NeurIPS).",
+        "x": 306.1,
+        "y": 192.5,
+        "w": 218.3,
+        "h": 64.8,
+        "zh": "Tom B. Brown、Benjamin Mann、Nick Ryder、Melanie Subbiah、Jared Kaplan、Prafulla Dhariwal、Arvind Neelakantan、Pranav Shyam、Girish Sastry、Amanda Askell、Sandhini Agarwal 等. 2020. 语言模型是少样本学习者. 《神经信息处理系统进展》（NeurIPS）。"
+      },
+      {
+        "text": "Dependence on large models. INSTRUCT’s dependence on the inductive biases extracted from LMs, it might work best for larger models. If true, this may create barriers to access for those who may not have large computing resources. We hope future studies will carefully study the gains as a function of model size or various other parameters. It is worthwhile to note that instruction-tuning with human annotation also suffers from a similar",
+        "x": 70.4,
+        "y": 70.9,
+        "w": 220.7,
+        "h": 119.3,
+        "zh": "对大模型的依赖。由于 INSTRUCT 依赖于从语言模型中抽出的归纳偏置，它可能在更大的模型上效果最好。若确实如此，对没有大规模算力的人就会形成使用门槛。我们希望以后的研究仔细考察收益如何随模型规模或其他参数变化。值得一提的是，用人工标注做指令微调也有类似的"
+      },
+      {
+        "text": "Hyung Won Chung, Le Hou, Shayne Longpre, Barret Zoph, Yi Tay, William Fedus, Eric Li, Xuezhi Wang, Mostafa Dehghani, Siddhartha Brahma, et al. 2022. Scaling instruction-finetuned language models. arXiv preprint arXiv:2210.11416.",
+        "x": 306.1,
+        "y": 126.8,
+        "w": 220,
+        "h": 53.8,
+        "zh": "Hyung Won Chung、Le Hou、Shayne Longpre、Barret Zoph、Yi Tay、William Fedus、Eric Li、Xuezhi Wang、Mostafa Dehghani、Siddhartha Brahma 等. 2022. 扩展经过指令微调的语言模型. arXiv 预印本 arXiv:2210.11416。"
+      },
+      {
+        "text": "Jingfei Du, Édouard Grave, Beliz Gunel, Vishrav Chaudhary, Onur Celebi, Michael Auli, Veselin Stoyanov, and Alexis Conneau. 2021. Self-training improves pre-training for natural language understanding. In",
+        "x": 306.1,
+        "y": 70.9,
+        "w": 219.9,
+        "h": 42.8,
+        "zh": "Jingfei Du、Édouard Grave、Beliz Gunel、Vishrav Chaudhary、Onur Celebi、Michael Auli、Veselin Stoyanov、Alexis Conneau. 2021. 自训练能改进自然语言理解的预训练. 见"
+      }
+    ],
+    "11": [
+      {
+        "text": "Conference of the North American Chapter of the Association for Computational Linguistics (NAACL): Human Language Technologies, pages 5408–5418.",
+        "x": 81.4,
+        "y": 738.1,
+        "w": 209.4,
+        "h": 31.9,
+        "zh": "计算语言学协会北美分会会议（NAACL）：人类语言技术，第 5408–5418 页。"
+      },
+      {
+        "text": "In Conference on Empirical Methods in Natural Language Processing (EMNLP) - Findings.",
+        "x": 317.1,
+        "y": 749.1,
+        "w": 209,
+        "h": 20.9,
+        "zh": "见《自然语言处理经验方法会议》（EMNLP）Findings。"
+      },
+      {
+        "text": "Lucie Charlotte Magister, Jonathan Mallinson, Jakub Adamek, Eric Malmi, and Aliaksei Severyn. 2022. Teaching small language models to reason. arXiv preprint arXiv:2212.08410.",
+        "x": 306.1,
+        "y": 696.6,
+        "w": 220,
+        "h": 42.8,
+        "zh": "Lucie Charlotte Magister、Jonathan Mallinson、Jakub Adamek、Eric Malmi、Aliaksei Severyn. 2022. 教小语言模型做推理. arXiv 预印本 arXiv:2212.08410。"
+      },
+      {
+        "text": "Steven Y Feng, Varun Gangal, Jason Wei, Sarath Chandar, Soroush Vosoughi, Teruko Mitamura, and Eduard Hovy. 2021. A survey of data augmentation approaches for nlp. In Annual Meeting of the Association for Computational Linguistics (ACL) ACLIJCNLP - Findings, pages 968–988.",
+        "x": 70.9,
+        "y": 663.4,
+        "w": 219.9,
+        "h": 64.8,
+        "zh": "Steven Y Feng、Varun Gangal、Jason Wei、Sarath Chandar、Soroush Vosoughi、Teruko Mitamura、Eduard Hovy. 2021. NLP 数据增强方法综述. 计算语言学协会年会（ACL）IJCNLP Findings，第 968–988 页。"
+      },
+      {
+        "text": "Dheeraj Mekala, Tu Vu, Timo Schick, and Jingbo",
+        "x": 306.1,
+        "y": 677,
+        "w": 218.3,
+        "h": 10,
+        "zh": "Dheeraj Mekala、Tu Vu、Timo Schick、Jingbo"
+      },
+      {
+        "text": "Leveraging qa datasets to improve generative data augmentation.",
+        "x": 317.1,
+        "y": 655.1,
+        "w": 207.4,
+        "h": 20.9,
+        "zh": "利用问答数据集来改进生成式数据增强。"
+      },
+      {
+        "text": "Daniel Fried, Ronghang Hu, Volkan Cirik, Anna Rohrbach, Jacob Andreas, Louis-Philippe Morency, Taylor Berg-Kirkpatrick, Kate Saenko, Dan Klein, and Trevor Darrell. 2018. Speaker-follower models for vision-and-language navigation. In Advances in Neural Information Processing Systems (NeurIPS).",
+        "x": 70.9,
+        "y": 588.6,
+        "w": 219.5,
+        "h": 64.8,
+        "zh": "Daniel Fried、Ronghang Hu、Volkan Cirik、Anna Rohrbach、Jacob Andreas、Louis-Philippe Morency、Taylor Berg-Kirkpatrick、Kate Saenko、Dan Klein、Trevor Darrell. 2018. 用于视觉—语言导航的说话者—跟随者模型. 《神经信息处理系统进展》（NeurIPS）。"
+      },
+      {
+        "text": "Yu Meng, Martin Michalski, Jiaxin Huang, Yu Zhang, Tarek Abdelzaher, and Jiawei Han. 2023. ing language models as training data generators for augmentation-enhanced few-shot learning. In International Conference on Machine Learning (ICML).",
+        "x": 306.1,
+        "y": 580.7,
+        "w": 219.9,
+        "h": 53.8,
+        "zh": "Yu Meng、Martin Michalski、Jiaxin Huang、Yu Zhang、Tarek Abdelzaher、Jiawei Han. 2023. 将语言模型调成训练数据生成器，用于增强型少样本学习. 国际机器学习会议（ICML）。"
+      },
+      {
+        "text": "Junxian He, Jiatao Gu, Jiajun Shen, and Marc’Aurelio Ranzato. 2019. Revisiting self-training for neural sequence generation. In International Conference on Learning Representations (ICLR).",
+        "x": 70.9,
+        "y": 535.7,
+        "w": 218.3,
+        "h": 42.8,
+        "zh": "Junxian He、Jiatao Gu、Jiajun Shen、Marc’Aurelio Ranzato. 2019. 重新审视神经序列生成中的自训练. 国际学习表征会议（ICLR）。"
+      },
+      {
+        "text": "So Yeon Min, Devendra Singh Chaplot, Pradeep Ravikumar, Yonatan Bisk, and Ruslan Salakhutdinov. 2022. FILM: Following Instructions in Language with Modular Methods. In International Conference on Learning Representations (ICLR).",
+        "x": 306.1,
+        "y": 517.3,
+        "w": 220,
+        "h": 53.8,
+        "zh": "So Yeon Min、Devendra Singh Chaplot、Pradeep Ravikumar、Yonatan Bisk、Ruslan Salakhutdinov. 2022. FILM：用模块化方法在语言中遵循指令. 国际学习表征会议（ICLR）。"
+      },
+      {
+        "text": "Geoffrey Hinton, Oriol Vinyals, Jeff Dean, et al. 2015. Distilling the knowledge in a neural network. Advances in Neural Information Processing Systems (NeurIPS) Workshop on Deep Learning.",
+        "x": 70.9,
+        "y": 482.8,
+        "w": 220,
+        "h": 42.8,
+        "zh": "Geoffrey Hinton、Oriol Vinyals、Jeff Dean 等. 2015. 蒸馏神经网络中的知识. 《神经信息处理系统进展》（NeurIPS）深度学习研讨会。"
+      },
+      {
+        "text": "Swaroop Mishra, Daniel Khashabi, Chitta Baral, and Hannaneh Hajishirzi. 2022. Cross-Task Generalization via Natural Language Crowdsourcing Instructions. In Annual Meeting of the Association for Computational Linguistics (ACL).",
+        "x": 306.1,
+        "y": 453.8,
+        "w": 219.9,
+        "h": 53.8,
+        "zh": "Swaroop Mishra、Daniel Khashabi、Chitta Baral、Hannaneh Hajishirzi. 2022. 借助自然语言众包指令实现跨任务泛化. 计算语言学协会年会（ACL）。"
+      },
+      {
+        "text": "Or Honovich, Thomas Scialom, Omer Levy, and Timo Schick. 2022a. Unnatural instructions: Tuning language models with (almost) no human labor. arXiv preprint arXiv:2212.09689.",
+        "x": 70.9,
+        "y": 430,
+        "w": 219.9,
+        "h": 42.8,
+        "zh": "Or Honovich、Thomas Scialom、Omer Levy、Timo Schick. 2022a. Unnatural Instructions：几乎不靠人工来微调语言模型. arXiv 预印本 arXiv:2212.09689。"
+      },
+      {
+        "text": "Long Ouyang, Jeff Wu, Xu Jiang, Diogo Almeida, Carroll L Wainwright, Pamela Mishkin, Chong Zhang, Sandhini Agarwal, Katarina Slama, Alex Ray, et al. 2022. Training Language Models to Follow Instructions with Human Feedback. In Advances in Neural Information Processing Systems (NeurIPS).",
+        "x": 306.1,
+        "y": 379.4,
+        "w": 220,
+        "h": 64.8,
+        "zh": "Long Ouyang、Jeff Wu、Xu Jiang、Diogo Almeida、Carroll L Wainwright、Pamela Mishkin、Chong Zhang、Sandhini Agarwal、Katarina Slama、Alex Ray 等. 2022. 用人类反馈训练语言模型以遵循指令. 《神经信息处理系统进展》（NeurIPS）。"
+      },
+      {
+        "text": "Or Honovich, Uri Shaham, Samuel R Bowman, and Omer Levy. 2022b. Instruction induction: From few examples to natural language task descriptions. arXiv preprint arXiv:2205.10782.",
+        "x": 70.9,
+        "y": 377.1,
+        "w": 218.6,
+        "h": 42.8,
+        "zh": "Or Honovich、Uri Shaham、Samuel R Bowman、Omer Levy. 2022b. 指令归纳：从少量示例到自然语言任务描述. arXiv 预印本 arXiv:2205.10782。"
+      },
+      {
+        "text": "Colin Raffel, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael Matena, Yanqi Zhou, Wei Li, and Peter J Liu. 2020. Exploring the limits of transfer learning with a unified text-to-text transformer. Journal of Machine Learning Research",
+        "x": 306.1,
+        "y": 316,
+        "w": 219.9,
+        "h": 53.8,
+        "zh": "Colin Raffel、Noam Shazeer、Adam Roberts、Katherine Lee、Sharan Narang、Michael Matena、Yanqi Zhou、Wei Li、Peter J Liu. 2020. 探索统一文本到文本 Transformer 的迁移学习极限. 《机器学习研究杂志》"
+      },
+      {
+        "text": "Jiaxin Huang, Shixiang Shane Gu, Le Hou, Yuexin Wu, Xuezhi Wang, Hongkun Yu, and Jiawei Han. 2022. Large language models can self-improve. preprint arXiv:2210.11610.",
+        "x": 70.9,
+        "y": 324.2,
+        "w": 220,
+        "h": 42.8,
+        "zh": "Jiaxin Huang、Shixiang Shane Gu、Le Hou、Yuexin Wu、Xuezhi Wang、Hongkun Yu、Jiawei Han. 2022. 大语言模型可以自我改进. 预印本 arXiv:2210.11610。"
+      },
+      {
+        "text": "Nikhil Kandpal, Haikang Deng, Adam Roberts, Eric Wallace, and Colin Raffel. 2022. Large language models struggle to learn long-tail knowledge. arXiv preprint arXiv:2211.08411.",
+        "x": 70.9,
+        "y": 271.4,
+        "w": 218.3,
+        "h": 42.8,
+        "zh": "Nikhil Kandpal、Haikang Deng、Adam Roberts、Eric Wallace、Colin Raffel. 2022. 大语言模型难以学会长尾知识. arXiv 预印本 arXiv:2211.08411。"
+      },
+      {
+        "text": "Yasaman Razeghi, Robert L Logan IV, Matt Gardner, and Sameer Singh. 2022. Impact of pretraining term frequencies on few-shot reasoning. arXiv preprint",
+        "x": 306.1,
+        "y": 263.5,
+        "w": 219.5,
+        "h": 31.9,
+        "zh": "Yasaman Razeghi、Robert L Logan IV、Matt Gardner、Sameer Singh. 2022. 预训练词频对少样本推理的影响. arXiv 预印本"
+      },
+      {
+        "text": "Nikita Kitaev, Steven Cao, and Dan Klein. 2019. Multilingual constituency parsing with self-attention and pre-training. In Annual Meeting of the Association for Computational Linguistics (ACL), pages 3499–3505.",
+        "x": 70.9,
+        "y": 218.5,
+        "w": 220,
+        "h": 42.8,
+        "zh": "Nikita Kitaev、Steven Cao、Dan Klein. 2019. 用自注意力和预训练做多语言成分句法分析. 计算语言学协会年会（ACL），第 3499–3505 页。"
+      },
+      {
+        "text": "Victor Sanh, Lysandre Debut, Julien Chaumond, and Thomas Wolf. 2019. Distilbert, a distilled version of bert: smaller, faster, cheaper and lighter. In Advances in Neural Information Processing Systems (NeurIPS) Workshop on Energy Efficient Machine Learning and Cognitive Computing.",
+        "x": 306.1,
+        "y": 178.1,
+        "w": 218.9,
+        "h": 64.8,
+        "zh": "Victor Sanh、Lysandre Debut、Julien Chaumond、Thomas Wolf. 2019. DistilBERT：BERT 的蒸馏版本，更小、更快、更便宜、更轻. 《神经信息处理系统进展》（NeurIPS）高能效机器学习与认知计算研讨会。"
+      },
+      {
+        "text": "Nikita Kitaev and Dan Klein. 2018. Constituency parsing with a self-attentive encoder. In Annual Meeting of the Association for Computational Linguistics (ACL), pages 2676–2686.",
+        "x": 70.9,
+        "y": 165.6,
+        "w": 219.9,
+        "h": 42.8,
+        "zh": "Nikita Kitaev、Dan Klein. 2018. 用自注意力编码器做成分句法分析. 计算语言学协会年会（ACL），第 2676–2686 页。"
+      },
+      {
+        "text": "Victor Sanh, Albert Webson, Colin Raffel, Stephen Bach, Lintang Sutawika, Zaid Alyafeai, Antoine Chaffin, Arnaud Stiegler, Arun Raja, Manan Dey, M Saiful Bari, Canwen Xu, Urmish Thakker, Shanya Sharma Sharma, Eliza Szczechla, Taewoon Kim, Gunjan Chhablani, Nihal Nayak, Debajyoti Datta, Jonathan Chang, Mike Tian-Jian Jiang, Han Wang, Matteo Manica, Sheng Shen, Zheng Xin Yong, Harshit Pandey, Rachel Bawden, Thomas Wang, Trishala",
+        "x": 306.1,
+        "y": 70.9,
+        "w": 219.5,
+        "h": 97.6,
+        "zh": "Victor Sanh、Albert Webson、Colin Raffel、Stephen Bach、Lintang Sutawika、Zaid Alyafeai、Antoine Chaffin、Arnaud Stiegler、Arun Raja、Manan Dey、M Saiful Bari、Canwen Xu、Urmish Thakker、Shanya Sharma Sharma、Eliza Szczechla、Taewoon Kim、Gunjan Chhablani、Nihal Nayak、Debajyoti Datta、Jonathan Chang、Mike Tian-Jian Jiang、Han Wang、Matteo Manica、Sheng Shen、Zheng Xin Yong、Harshit Pandey、Rachel Bawden、Thomas Wang、Trishala"
+      },
+      {
+        "text": "Brian Lester, Rami Al-Rfou, and Noah Constant. 2021. The power of scale for parameter-efficient prompt tuning. In Conference on Empirical Methods in Natural Language Processing (EMNLP).",
+        "x": 70.9,
+        "y": 112.8,
+        "w": 220,
+        "h": 42.8,
+        "zh": "Brian Lester、Rami Al-Rfou、Noah Constant. 2021. 规模对参数高效提示微调的作用. 《自然语言处理经验方法会议》（EMNLP）。"
+      },
+      {
+        "text": "Alisa Liu, Swabha Swayamdipta, Noah A. Smith, and Yejin Choi. 2022. WANLI: Worker and ai collaboration for natural language inference dataset creation.",
+        "x": 70.9,
+        "y": 70.9,
+        "w": 220,
+        "h": 31.9,
+        "zh": "Alisa Liu、Swabha Swayamdipta、Noah A. Smith、Yejin Choi. 2022. WANLI：工作者与人工智能协作，用于构建自然语言推理数据集。"
+      }
+    ],
+    "12": [
+      {
+        "text": "Neeraj, Jos Rozen, Abheesht Sharma, Andrea Santilli, Thibault Fevry, Jason Alan Fries, Ryan Teehan, Teven Le Scao, Stella Biderman, Leo Gao, Thomas Wolf, and Alexander M Rush. 2022. Multitask Prompted Training Enables Zero-Shot Task Generalization. In International Conference on Learning Representations (ICLR).",
+        "x": 81.5,
+        "y": 694.3,
+        "w": 209.3,
+        "h": 75.7,
+        "zh": "Neeraj、Jos Rozen、Abheesht Sharma、Andrea Santilli、Thibault Fevry、Jason Alan Fries、Ryan Teehan、Teven Le Scao、Stella Biderman、Leo Gao、Thomas Wolf、Alexander M Rush. 2022. 多任务提示训练使零样本任务泛化成为可能. 国际学习表征会议（ICLR）。"
+      },
+      {
+        "text": "Nathaniel Weir, Xingdi Yuan, Marc-Alexandre Côté, Matthew Hausknecht, Romain Laroche, Ida Momennejad, Harm Van Seijen, and Benjamin Van Durme.",
+        "x": 306.1,
+        "y": 738.1,
+        "w": 220,
+        "h": 31.9,
+        "zh": "Nathaniel Weir、Xingdi Yuan、Marc-Alexandre Côté、Matthew Hausknecht、Romain Laroche、Ida Momennejad、Harm Van Seijen、Benjamin Van Durme。"
+      },
+      {
+        "text": "One-Shot Learning from a Demonstration with Hierarchical Latent Language. arXiv preprint",
+        "x": 316.7,
+        "y": 716.2,
+        "w": 207.7,
+        "h": 20.9,
+        "zh": "从一次演示中做单样本学习：层次化潜在语言. arXiv 预印本"
+      },
+      {
+        "text": "Sean Welleck, Ximing Lu, Peter West, Faeze Brahman, Tianxiao Shen, Daniel Khashabi, and Yejin Choi. 2023. Generating sequences by learning to self-correct. In International Conference on Learning Representations (ICLR).",
+        "x": 306.1,
+        "y": 640.7,
+        "w": 219.9,
+        "h": 53.8,
+        "zh": "Sean Welleck、Ximing Lu、Peter West、Faeze Brahman、Tianxiao Shen、Daniel Khashabi、Yejin Choi. 2023. 通过学习自我纠正来生成序列. 国际学习表征会议（ICLR）。"
+      },
+      {
+        "text": "Timo Schick and Hinrich Schütze. 2021. Generating datasets with pretrained language models. In Conference on Empirical Methods in Natural Language",
+        "x": 70.9,
+        "y": 653.4,
+        "w": 219.9,
+        "h": 31.9,
+        "zh": "Timo Schick、Hinrich Schütze. 2021. 用预训练语言模型生成数据集. 《自然语言处理经验方法会议》"
+      },
+      {
+        "text": "Mohit Shridhar, Jesse Thomason, Daniel Gordon, Yonatan Bisk, Winson Han, Roozbeh Mottaghi, Luke Zettlemoyer, and Dieter Fox. 2020. ALFRED: A Benchmark for Interpreting Grounded Instructions for Everyday Tasks. In IEEE Conference on Computer Vision and Pattern Recognition (CVPR).",
+        "x": 70.9,
+        "y": 568.6,
+        "w": 219.9,
+        "h": 64.8,
+        "zh": "Mohit Shridhar、Jesse Thomason、Daniel Gordon、Yonatan Bisk、Winson Han、Roozbeh Mottaghi、Luke Zettlemoyer、Dieter Fox. 2020. ALFRED：面向日常任务的有依据指令理解基准. IEEE 计算机视觉与模式识别会议（CVPR）。"
+      },
+      {
+        "text": "Orion Weller, Nicholas Lourie, Matt Gardner, and Matthew Peters. 2020. Learning from Task Descriptions. In Conference on Empirical Methods in Natural Language Processing (EMNLP).",
+        "x": 306.1,
+        "y": 587.2,
+        "w": 219.9,
+        "h": 42.8,
+        "zh": "Orion Weller、Nicholas Lourie、Matt Gardner、Matthew Peters. 2020. 从任务描述中学习. 《自然语言处理经验方法会议》（EMNLP）。"
+      },
+      {
+        "text": "Peter West, Chandra Bhagavatula, Jack Hessel, Jena D Hwang, Liwei Jiang, Ronan Le Bras, Ximing Lu, Sean Welleck, and Yejin Choi. 2021. knowledge distillation: from general language models to commonsense models. In Conference of the North American Chapter of the Association for Computational Linguistics (NAACL).",
+        "x": 306.1,
+        "y": 500.7,
+        "w": 219.9,
+        "h": 75.7,
+        "zh": "Peter West、Chandra Bhagavatula、Jack Hessel、Jena D Hwang、Liwei Jiang、Ronan Le Bras、Ximing Lu、Sean Welleck、Yejin Choi. 2021. 知识蒸馏：从通用语言模型到常识模型. 计算语言学协会北美分会会议（NAACL）。"
+      },
+      {
+        "text": "Chandan Singh, John X Morris, Jyoti Aneja, Alexander M Rush, and Jianfeng Gao. 2022. Explaining patterns in data with language models via interpretable autoprompting. arXiv preprint arXiv:2210.01848.",
+        "x": 70.9,
+        "y": 516.7,
+        "w": 219.9,
+        "h": 42.8,
+        "zh": "Chandan Singh、John X Morris、Jyoti Aneja、Alexander M Rush、Jianfeng Gao. 2022. 用语言模型通过可解释的自动提示来解释数据中的模式. arXiv 预印本 arXiv:2210.01848。"
+      },
+      {
+        "text": "Zhiqing Sun, Yikang Shen, Qinhong Zhou, Hongxin Zhang, Zhenfang Chen, David Cox, Yiming Yang, and Chuang Gan. 2023.",
+        "x": 70.9,
+        "y": 475.7,
+        "w": 219.5,
+        "h": 31.9,
+        "zh": "Zhiqing Sun、Yikang Shen、Qinhong Zhou、Hongxin Zhang、Zhenfang Chen、David Cox、Yiming Yang、Chuang Gan. 2023。"
+      },
+      {
+        "text": "Qizhe Xie, Minh-Thang Luong, Eduard Hovy, and Quoc V Le. 2020. Self-training with noisy student improves imagenet classification. In IEEE Conference on Computer Vision and Pattern Recognition (CVPR), pages 10687–10698.",
+        "x": 306.1,
+        "y": 436.2,
+        "w": 219.9,
+        "h": 53.8,
+        "zh": "Qizhe Xie、Minh-Thang Luong、Eduard Hovy、Quoc V Le. 2020. 用有噪声的学生做自训练，改进 ImageNet 分类. IEEE 计算机视觉与模式识别会议（CVPR），第 10687–10698 页。"
+      },
+      {
+        "text": "Principle-driven selfalignment of language models from scratch with minimal human supervision.",
+        "x": 81.8,
+        "y": 453.8,
+        "w": 209,
+        "h": 31.9,
+        "zh": "从零开始、由原则驱动、只需极少人工监督的语言模型自对齐。"
+      },
+      {
+        "text": "Rohan Taori, Ishaan Gulrajani, Tianyi Zhang, Yann Dubois, Xuechen Li, Carlos Guestrin, Percy Liang, and Tatsunori B. Hashimoto. 2023. paca: An instruction-following llama model. https: //github.com/tatsu-lab/stanford_alpaca.",
+        "x": 70.9,
+        "y": 380,
+        "w": 220.9,
+        "h": 53.8,
+        "zh": "Rohan Taori、Ishaan Gulrajani、Tianyi Zhang、Yann Dubois、Xuechen Li、Carlos Guestrin、Percy Liang、Tatsunori B. Hashimoto. 2023. Alpaca：一个遵循指令的 LLaMA 模型. https://github.com/tatsu-lab/stanford_alpaca。"
+      },
+      {
+        "text": "Canwen Xu, Daya Guo, Nan Duan, and Julian McAuley.",
+        "x": 306.1,
+        "y": 415.5,
+        "w": 220,
+        "h": 10,
+        "zh": "Canwen Xu、Daya Guo、Nan Duan、Julian McAuley。"
+      },
+      {
+        "text": "Baize: An open-source chat model with parameter-efficient tuning on self-chat data. arXiv preprint arXiv:2304.01196.",
+        "x": 317.1,
+        "y": 382.6,
+        "w": 207.4,
+        "h": 31.9,
+        "zh": "Baize：一个开源对话模型，在自我对话数据上做参数高效微调. arXiv 预印本 arXiv:2304.01196。"
+      },
+      {
+        "text": "Yiben Yang, Chaitanya Malaviya, Jared Fernandez, Swabha Swayamdipta, Ronan Le Bras, Ji-Ping Wang, Chandra Bhagavatula, Yejin Choi, and Doug Downey. 2020. Generative data augmentation for commonsense reasoning. In Conference on Empirical Methods in Natural Language Processing (EMNLP) - Find-",
+        "x": 306.1,
+        "y": 307.1,
+        "w": 220,
+        "h": 64.8,
+        "zh": "Yiben Yang、Chaitanya Malaviya、Jared Fernandez、Swabha Swayamdipta、Ronan Le Bras、Ji-Ping Wang、Chandra Bhagavatula、Yejin Choi、Doug Downey. 2020. 面向常识推理的生成式数据增强. 《自然语言处理经验方法会议》（EMNLP）Findings"
+      },
+      {
+        "text": "Yizhong Wang, Swaroop Mishra, Pegah Alipoor-",
+        "x": 70.9,
+        "y": 361,
+        "w": 219.9,
+        "h": 10,
+        "zh": "Yizhong Wang、Swaroop Mishra、Pegah Alipoor-"
+      },
+      {
+        "text": "Anjana Arunkumar, Arjun Ashok, Arut Selvan Dhanasekaran, Atharva Naik, David Stap, Eshaan Pathak, Giannis Karamanolakis, Haizhi Gary Lai, Ishan Purohit, Ishani Mondal, Jacob Anderson, Kirby Kuznia, Krima Doshi, Maitreya Patel, Kuntal Kumar Pal, Mehrad Moradshahi, Mihir Parmar, Mirali Purohit, Neeraj Varshney, Phani Rohitha Kaza, Pulkit Verma, Ravsehaj Singh Puri, Rushang Karia, Shailaja Keyur Sampat, Savan Doshi, Siddhartha Mishra, Sujan Reddy, Sumanta Patro, Tanay Dixit, Xudong Shen, Chitta Baral, Yejin Choi, Noah A. Smith, Hannaneh Hajishirzi, and Daniel Khashabi. 2022. Super-naturalinstructions: Generalization via declarative instructions on 1600+ tasks. In Conference on Empirical Methods in Natural Language Pro-",
+        "x": 81.4,
+        "y": 185.6,
+        "w": 209.5,
+        "h": 163.4,
+        "zh": "Anjana Arunkumar、Arjun Ashok、Arut Selvan Dhanasekaran、Atharva Naik、David Stap、Eshaan Pathak、Giannis Karamanolakis、Haizhi Gary Lai、Ishan Purohit、Ishani Mondal、Jacob Anderson、Kirby Kuznia、Krima Doshi、Maitreya Patel、Kuntal Kumar Pal、Mehrad Moradshahi、Mihir Parmar、Mirali Purohit、Neeraj Varshney、Phani Rohitha Kaza、Pulkit Verma、Ravsehaj Singh Puri、Rushang Karia、Shailaja Keyur Sampat、Savan Doshi、Siddhartha Mishra、Sujan Reddy、Sumanta Patro、Tanay Dixit、Xudong Shen、Chitta Baral、Yejin Choi、Noah A. Smith、Hannaneh Hajishirzi、Daniel Khashabi. 2022. Super-NaturalInstructions：借助陈述式指令在 1600 多项任务上做泛化. 《自然语言处理经验方法》"
+      },
+      {
+        "text": "Seonghyeon Ye, Doyoung Kim, Joel Jang, Joongbo Shin, and Minjoon Seo. 2022. Guess the instruction! making language models stronger zero-shot learners. arXiv preprint arXiv:2210.02969.",
+        "x": 306.1,
+        "y": 242.6,
+        "w": 220,
+        "h": 42.8,
+        "zh": "Seonghyeon Ye、Doyoung Kim、Joel Jang、Joongbo Shin、Minjoon Seo. 2022. 猜出那条指令！让语言模型成为更强的零样本学习者. arXiv 预印本 arXiv:2210.02969。"
+      },
+      {
+        "text": "Eric Zelikman, Jesse Mu, Noah D Goodman, and Yuhuai Tony Wu. 2022. STar: Self-taught reasoner bootstrapping reasoning with reasoning. In Advances in Neural Information Processing Systems (NeurIPS).",
+        "x": 306.1,
+        "y": 189,
+        "w": 220,
+        "h": 42.8,
+        "zh": "Eric Zelikman、Jesse Mu、Noah D Goodman、Yuhuai Tony Wu. 2022. STaR：自学推理者，用推理来自举推理. 《神经信息处理系统进展》（NeurIPS）。"
+      },
+      {
+        "text": "Xuandong Zhao, Siqi Ouyang, Zhiguo Yu, Ming Wu,",
+        "x": 306.1,
+        "y": 168.3,
+        "w": 219.5,
+        "h": 10,
+        "zh": "Xuandong Zhao、Siqi Ouyang、Zhiguo Yu、Ming Wu，"
+      },
+      {
+        "text": "Pre-trained language models can be fully zero-shot learners.",
+        "x": 317.1,
+        "y": 146.4,
+        "w": 207.4,
+        "h": 20.9,
+        "zh": "预训练语言模型可以成为完全的零样本学习者。"
+      },
+      {
+        "text": "Zirui Wang, Adams Wei Yu, Orhan Firat, and Yuan Cao. 2021. Towards zero-label language learning. arXiv preprint arXiv:2109.09193.",
+        "x": 70.9,
+        "y": 133.7,
+        "w": 220,
+        "h": 31.9,
+        "zh": "Zirui Wang、Adams Wei Yu、Orhan Firat、Yuan Cao. 2021. 走向零标签的语言学习. arXiv 预印本 arXiv:2109.09193。"
+      },
+      {
+        "text": "Jason Wei, Maarten Bosma, Vincent Zhao, Kelvin Guu, Adams Wei Yu, Brian Lester, Nan Du, Andrew M. Dai, and Quoc V Le. 2022. Finetuned Language Models are Zero-Shot Learners. Conference on Learning Representations (ICLR).",
+        "x": 70.9,
+        "y": 70.9,
+        "w": 220,
+        "h": 53.8,
+        "zh": "Jason Wei、Maarten Bosma、Vincent Zhao、Kelvin Guu、Adams Wei Yu、Brian Lester、Nan Du、Andrew M. Dai、Quoc V Le. 2022. 经过微调的语言模型是零样本学习者. 国际学习表征会议（ICLR）。"
+      },
+      {
+        "text": "Chunting Zhou, Junxian He, Xuezhe Ma, Taylor BergKirkpatrick, and Graham Neubig. 2022a. Prompt Consistency for Zero-Shot Task Generalization. In Conference on Empirical Methods in Natural Language Processing (EMNLP) - Findings.",
+        "x": 306.1,
+        "y": 70.9,
+        "w": 219.9,
+        "h": 53.8,
+        "zh": "Chunting Zhou、Junxian He、Xuezhe Ma、Taylor Berg-Kirkpatrick、Graham Neubig. 2022a. 用于零样本任务泛化的提示一致性. 《自然语言处理经验方法会议》（EMNLP）Findings。"
+      }
+    ],
+    "13": [
+      {
+        "text": "Yongchao Zhou, Andrei Ioan Muresanu, Ziwen Han, Keiran Paster, Silviu Pitis, Harris Chan, and Jimmy Ba. 2022b. Large language models are human-level prompt engineers. arXiv preprint arXiv:2211.01910.",
+        "x": 70.9,
+        "y": 727.2,
+        "w": 220,
+        "h": 42.8,
+        "zh": "Yongchao Zhou、Andrei Ioan Muresanu、Ziwen Han、Keiran Paster、Silviu Pitis、Harris Chan、Jimmy Ba. 2022b. 大语言模型是人类水平的提示工程师. arXiv 预印本 arXiv:2211.01910。"
+      }
+    ],
+    "14": [
+      {
+        "text": "Writing the Seed Tasks Our method relies on a set of seed tasks to bootstrap the generation. The seed tasks are important for both encouraging the task diversity and demonstrating correct ways for solving the diverse tasks. For example, with coding tasks to prompt the model, it has a larger chance to generate coding-related tasks; it’s also better to have coding output to guide the model in writing code for new tasks. So, the more diverse the seed tasks are, the more diverse and better quality the generated tasks will be. Our seed tasks were written when we initiated this project, and targeted for the diverse and interesting usages of LLMs. The tasks were written by the authors and our labmates at UWNLP, without explicit reference to existing datasets or specific testing tasks. We further categorized the tasks into classification and non-classification tasks, based on whether the task has a limited output label space. In total, there are 25 classification tasks and 150 non-classification tasks. We release this data in our GitHub repository. To provide a sense of how much the model is generalizing beyond these seed tasks, we further quantify the overlap between the instructions of these seed tasks and the instructions of our test sets, including both SUPERNI task instructions (§4.3) and the user-oriented instructions in our human evaluation(§4.4). We compute ROUGE-L similarities between each seed instruction and its most similar instruction in the test set. The distribution of the ROUGE-L scores are plotted in Figure 8, with the average ROUGE-L similarity between the seed instructions and SUPERNI as 0.21, and the average ROUGE-L similarity between the seed instructions and user-oriented instructions as 0.34. We see a decent difference between the seed tasks and both test sets. There is exactly one identical seed instruction occurring in the user-oriented instruction test set, which is “answer the following question” and the following questions are actually very different.",
+        "x": 70.5,
+        "y": 452.9,
+        "w": 455.4,
+        "h": 272.7,
+        "zh": "撰写种子任务。我们的方法依靠一套种子任务来自举生成。种子任务很重要，既要鼓励任务的多样性，也要示范解决这些多样任务的正确方式。例如，如果用编程任务来提示模型，它就更可能生成与编程相关的任务；同时最好也给出编程输出，来引导模型为新任务写代码。因此，种子任务越多样，生成任务就越多样、质量也越好。我们的种子任务是在启动这个项目时写的，针对的是大语言模型多样而有意思的用法。任务由作者和我们在 UWNLP 的实验室同事撰写，没有明确参照已有数据集或特定的测试任务。我们进一步按任务的输出标签空间是否有限，把任务分成分类任务和非分类任务。总计有 25 个分类任务和 150 个非分类任务。我们在 GitHub 仓库中发布了这份数据。为了感受模型在这些种子任务之外泛化了多少，我们进一步量化这些种子任务的指令与测试集指令之间的重叠，测试集包括 SUPERNI 的任务指令（§4.3）和人类评估中的面向用户指令（§4.4）。我们计算每条种子指令与测试集中最相似指令的 ROUGE-L 相似度。这些 ROUGE-L 分数的分布见图 8：种子指令与 SUPERNI 的平均 ROUGE-L 相似度为 0.21，与面向用户指令的平均 ROUGE-L 相似度为 0.34。可以看到，种子任务与两套测试集都有相当明显的差别。面向用户的指令测试集里恰好有一条与种子指令完全相同，那就是“answer the following question”，而后面实际要回答的问题差别很大。"
+      },
+      {
+        "text": "Figure 8: Distribution of the ROUGE-L scores between seed instructions and their most similar instructions in SUPERNI (left) and the 252 user-oriented instructions (right).",
+        "x": 70.9,
+        "y": 285.6,
+        "w": 453.5,
+        "h": 21.9,
+        "zh": "图 8：种子指令与其在 SUPERNI（左）以及 252 条面向用户指令（右）中最相似指令之间的 ROUGE-L 分数分布。"
+      },
+      {
+        "text": "Querying the GPT3 API We use different sets of hyperparameters when querying GPT3 API for different purposes. These hyperparameters are found to work well with the GPT3 model (“davinci” engine) and the other instruction-tuned GPT3 variants. We listed them in Table 4. OpenAI charges $0.02 per 1000 tokens for making completion request to the “davinci” engine as of December, 2022. The generation of our entire dataset cost around",
+        "x": 70.4,
+        "y": 191.1,
+        "w": 455.9,
+        "h": 69.3,
+        "zh": "查询 GPT3 API。针对不同目的，我们使用不同的超参数来查询 GPT3 API。这些超参数在 GPT3 模型（“davinci”引擎）以及其他经过指令微调的 GPT3 变体上表现良好。我们把它们列在表 4。截至 2022 年 12 月，OpenAI 对 “davinci” 引擎的补全请求按每 1000 个 token 收费 0.02 美元。生成我们整个数据集的费用大约为"
+      },
+      {
+        "text": "GPT3SELF-INST and some of our baselines are finetuned from GPT3 model (“davinci” engine with 175B parameters). We conduct this finetuning via OpenAI’s finetuning API.",
+        "x": 70.9,
+        "y": 123.5,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "GPT3SELF-INST 和我们的一部分基线，是从 GPT3 模型（“davinci”引擎，1750 亿参数）微调而来的。我们通过 OpenAI 的微调 API 做这次微调。"
+      },
+      {
+        "text": "While the details of how the model is finetuned with this API are not currently available (e.g., which parameters are updated, or what",
+        "x": 70.9,
+        "y": 110,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "这个 API 究竟如何微调模型，细节目前并未公开（例如更新了哪些参数，或者"
+      },
+      {
+        "text": "https://github.com/yizhongw/self-instruct/blob/main/human_eval/user_oriented_instructions.",
+        "x": 87,
+        "y": 91,
+        "w": 424.1,
+        "h": 9,
+        "zh": ""
+      }
+    ],
+    "15": [
+      {
+        "text": "Temp. Top_P Freq. Penalty Presence Penalty Beam Size Max Length",
+        "x": 161.7,
+        "y": 760.1,
+        "w": 260.4,
+        "h": 9,
+        "zh": "温度（Temp.）、Top_P、频率惩罚（Freq. Penalty）、存在惩罚（Presence Penalty）、束宽（Beam Size）、最大长度（Max Length）"
+      },
+      {
+        "text": "Table 4: Hyper-parameters for querying OpenAI API in different experiments.",
+        "x": 141.3,
+        "y": 690.7,
+        "w": 312.4,
+        "h": 10,
+        "zh": "表 4：不同实验中查询 OpenAI API 所用的超参数。"
+      },
+      {
+        "text": "the optimizer is), we tune all our models with the default hyperparameters of this API so that the results are comparable. We only set the “prompt_loss_weight” to 0 since we find this works better in our case, and every finetuning experiment is trained for two epochs to avoid overfitting the training tasks. Finetuning is charged based on the number of tokens in the training file. In our case, finetuning GPT3SELF-INST from the",
+        "x": 70.9,
+        "y": 612.9,
+        "w": 453.5,
+        "h": 54.3,
+        "zh": "用的是哪种优化器），我们对所有模型都使用这个 API 的默认超参数，以便结果可以比较。我们只把 “prompt_loss_weight” 设为 0，因为在我们的设置里这样更好；每次微调实验都训练两个 epoch，以免在训练任务上过拟合。微调按训练文件中的 token 数计费。就我们而言，把 GPT3SELF-INST 从"
+      },
+      {
+        "text": "GPT3 model on the entire generated data cost $338.",
+        "x": 70.9,
+        "y": 602.1,
+        "w": 228.2,
+        "h": 10.9,
+        "zh": "GPT3 模型微调而来，训练数据是全部生成数据，费用为 338 美元。"
+      },
+      {
+        "text": "SELF-INSTRUCT relies on a number of prompting templates in order to elicit the generation from language models. Here we provide our four templates for generating the instruction (Table 5), classifying whether an instruction represents a classification task or not (Table 6), generating non-classification instances with the input-first approach (Table 7), and generating classification instances with the output-first approach",
+        "x": 70.9,
+        "y": 521.5,
+        "w": 453.7,
+        "h": 51.6,
+        "zh": "SELF-INSTRUCT 依靠若干提示模板，来引出语言模型的生成。这里我们给出四套模板：生成指令（表 5），判断一条指令是不是分类任务（表 6），用输入优先的方式生成非分类实例（表 7），以及用输出优先的方式生成分类实例"
+      },
+      {
+        "text": "{instruction for existing task 1} {instruction for existing task 2} {instruction for existing task 3} {instruction for existing task 4} {instruction for existing task 5} {instruction for existing task 6} {instruction for existing task 7} {instruction for existing task 8}",
+        "x": 211.9,
+        "y": 397.6,
+        "w": 155.3,
+        "h": 78.7,
+        "zh": "{已有任务 1 的指令} {已有任务 2 的指令} {已有任务 3 的指令} {已有任务 4 的指令} {已有任务 5 的指令} {已有任务 6 的指令} {已有任务 7 的指令} {已有任务 8 的指令}"
+      },
+      {
+        "text": "Table 5: Prompt used for generating new instructions. 8 existing instructions are randomly sampled from the task pool for in-context demonstration. The model is allowed to generate instructions for new tasks, until it stops its",
+        "x": 70.6,
+        "y": 355.9,
+        "w": 454.1,
+        "h": 21.9,
+        "zh": "表 5：用于生成新指令的提示。从任务池中随机抽取 8 条已有指令，作为上下文演示。模型可以不断为新任务生成指令，直到它自己停止"
+      },
+      {
+        "text": "generation, reaches its length limit or generates “Task 16” tokens.",
+        "x": 70.9,
+        "y": 344,
+        "w": 261.7,
+        "h": 10,
+        "zh": "生成、达到长度上限，或者生成 “Task 16” 这些 token。"
+      }
+    ],
+    "16": [
+      {
+        "text": "Can the following task be regarded as a classification task with finite output labels?",
+        "x": 72.3,
+        "y": 764.2,
+        "w": 404.7,
+        "h": 9,
+        "zh": "下面这项任务能否看成输出标签有限的分类任务？"
+      },
+      {
+        "text": "Given my personality and the job, tell me if I would be suitable. Is it classification?",
+        "x": 72.3,
+        "y": 734.3,
+        "w": 338.6,
+        "h": 18.9,
+        "zh": "根据我的性格和这份工作，告诉我我是否适合。这是分类任务吗？"
+      },
+      {
+        "text": "Give me an example of a time when you had to use your sense of humor. Is it classification?",
+        "x": 72.3,
+        "y": 704.4,
+        "w": 357.4,
+        "h": 18.9,
+        "zh": "举一个你不得不运用幽默感的例子。这是分类任务吗？"
+      },
+      {
+        "text": "Replace the placeholders in the given text with appropriate named entities. Is it classification?",
+        "x": 72.3,
+        "y": 674.5,
+        "w": 385.7,
+        "h": 18.9,
+        "zh": "把给定文本中的占位符换成合适的命名实体。这是分类任务吗？"
+      },
+      {
+        "text": "Fact checking - tell me if the statement is true, false, or unknown, based on your knowledge and common sense. Is it classification?",
+        "x": 72.3,
+        "y": 634.6,
+        "w": 418.6,
+        "h": 28.9,
+        "zh": "事实核查：根据你的知识和常识，告诉我这句话是真、是假，还是未知。这是分类任务吗？"
+      },
+      {
+        "text": "Return the SSN number for the person. Is it classification?",
+        "x": 72.3,
+        "y": 604.7,
+        "w": 206.8,
+        "h": 18.9,
+        "zh": "返回这个人的 SSN 号码。这是分类任务吗？"
+      },
+      {
+        "text": "Detect if the Reddit thread contains hate speech. Is it classification?",
+        "x": 72.3,
+        "y": 574.9,
+        "w": 263.3,
+        "h": 18.9,
+        "zh": "检测这条 Reddit 帖子是否包含仇恨言论。这是分类任务吗？"
+      },
+      {
+        "text": "Analyze the sentences below to identify biases. Is it classification?",
+        "x": 72.3,
+        "y": 545,
+        "w": 253.9,
+        "h": 18.9,
+        "zh": "分析下面的句子，找出其中的偏见。这是分类任务吗？"
+      },
+      {
+        "text": "Select the longest sentence in terms of the number of words in the paragraph, output",
+        "x": 105,
+        "y": 525,
+        "w": 395.3,
+        "h": 9,
+        "zh": "按词数选出段落中最长的句子，输出"
+      },
+      {
+        "text": "Find out the toxic word or phrase in the sentence. Is it classification?",
+        "x": 72.3,
+        "y": 475.2,
+        "w": 268,
+        "h": 18.9,
+        "zh": "找出句子里的有毒词语或短语。这是分类任务吗？"
+      },
+      {
+        "text": "Rank these countries by their population. Is it classification?",
+        "x": 72.3,
+        "y": 445.3,
+        "w": 225.7,
+        "h": 18.9,
+        "zh": "按人口给这些国家排序。这是分类任务吗？"
+      },
+      {
+        "text": "You are provided with a news article, and you need to identify all the categories that this article belongs to.",
+        "x": 72.3,
+        "y": 415.5,
+        "w": 437.4,
+        "h": 18.9,
+        "zh": "给你一篇新闻，你需要找出这篇文章所属的全部类别。"
+      },
+      {
+        "text": "Music, Sports, Politics, Tech, Finance, Basketball, Soccer, Tennis, Entertainment, Digital Game, World News.",
+        "x": 72.3,
+        "y": 405.5,
+        "w": 447.1,
+        "h": 18.9,
+        "zh": "音乐、体育、政治、科技、财经、篮球、足球、网球、娱乐、电子游戏、国际新闻。"
+      },
+      {
+        "text": "Output its categories one by one, seperated by comma. Is it classification?",
+        "x": 72.3,
+        "y": 385.6,
+        "w": 447.1,
+        "h": 28.9,
+        "zh": "逐个输出它的类别，用逗号分隔。这是分类任务吗？"
+      },
+      {
+        "text": "Given the name of an exercise, explain how to do it. Is it classification?",
+        "x": 72.3,
+        "y": 355.7,
+        "w": 277.4,
+        "h": 18.9,
+        "zh": "给定一项运动的名称，说明该怎么做。这是分类任务吗？"
+      },
+      {
+        "text": "Select the oldest person from the list. Is it classification?",
+        "x": 72.3,
+        "y": 325.8,
+        "w": 216.3,
+        "h": 18.9,
+        "zh": "从名单里选出年纪最大的人。这是分类任务吗？"
+      },
+      {
+        "text": "Find the four smallest perfect numbers. Is it classification?",
+        "x": 72.3,
+        "y": 295.9,
+        "w": 216.3,
+        "h": 18.9,
+        "zh": "找出四个最小的完全数。这是分类任务吗？"
+      },
+      {
+        "text": "Does the information in the document supports the claim?",
+        "x": 105,
+        "y": 276,
+        "w": 263.5,
+        "h": 9,
+        "zh": "文档中的信息是否支持这一主张？"
+      },
+      {
+        "text": "Create a detailed budget for the given hypothetical trip. Is it classification?",
+        "x": 72.3,
+        "y": 226.2,
+        "w": 301,
+        "h": 18.9,
+        "zh": "为给定的假想旅行做一份详细预算。这是分类任务吗？"
+      },
+      {
+        "text": "Given a sentence, detect if there is any potential stereotype in it. explain the stereotype. Is it classification?",
+        "x": 72.3,
+        "y": 186.3,
+        "w": 352.7,
+        "h": 28.9,
+        "zh": "给定一个句子，检测其中是否有潜在的刻板印象，并解释这个刻板印象。这是分类任务吗？"
+      },
+      {
+        "text": "To make the pairs have the same analogy, write the fourth word. Is it classification?",
+        "x": 72.3,
+        "y": 136.5,
+        "w": 329.2,
+        "h": 18.9,
+        "zh": "为了让这组词具有相同的类比关系，写出第四个词。这是分类任务吗？"
+      },
+      {
+        "text": "Given a set of numbers, find all possible subsets that sum to a given number. Is it classification?",
+        "x": 72.3,
+        "y": 106.6,
+        "w": 395.1,
+        "h": 18.9,
+        "zh": "给定一组数，找出所有和为给定数值的子集。这是分类任务吗？"
+      },
+      {
+        "text": "Table 6: Prompt used for classifying whether a task instruction is a classification task or not.",
+        "x": 113.3,
+        "y": 65,
+        "w": 368.4,
+        "h": 10,
+        "zh": "表 6：用于判断一条任务指令是不是分类任务的提示。"
+      }
+    ],
+    "17": [
+      {
+        "text": "Come up with examples for the following tasks.",
+        "x": 72.3,
+        "y": 751,
+        "w": 216.5,
+        "h": 9,
+        "zh": "为下面这些任务想出例子。"
+      },
+      {
+        "text": "Try to generate multiple examples when possible. If the task doesn’t require additional input, you can generate the output directly.",
+        "x": 72.3,
+        "y": 741,
+        "w": 451.8,
+        "h": 18.9,
+        "zh": "尽可能生成多个例子。如果任务不需要额外输入，可以直接生成输出。"
+      },
+      {
+        "text": "Which exercises are best for reducing belly fat at home?",
+        "x": 105,
+        "y": 721.1,
+        "w": 263.5,
+        "h": 9,
+        "zh": "在家减掉腹部脂肪，哪些运动最有效？"
+      },
+      {
+        "text": "Extract all the country names in the paragraph, list them separated by commas.",
+        "x": 105,
+        "y": 641.4,
+        "w": 367.1,
+        "h": 9,
+        "zh": "抽出段落中所有的国家名称，用逗号分隔列出。"
+      },
+      {
+        "text": "No is the sixth novel by the English author Ian Fleming to feature his British Secret Service agent James Bond.",
+        "x": 72.3,
+        "y": 611.5,
+        "w": 447.1,
+        "h": 18.9,
+        "zh": "《No》是英国作家 Ian Fleming 以他笔下的英国秘密情报局特工 James Bond 为主角的第六部小说。"
+      },
+      {
+        "text": "Written at Fleming’s Goldeneye estate in Jamaica, it was first published in the United Kingdom by Jonathan Cape in 1958.",
+        "x": 72.3,
+        "y": 601.5,
+        "w": 423.6,
+        "h": 18.9,
+        "zh": "它写于 Fleming 在牙买加的 Goldeneye 庄园，1958 年由 Jonathan Cape 在英国首次出版。"
+      },
+      {
+        "text": "In the novel Bond looks into the disappearance in Jamaica of two fellow MI6 operatives who had been investigating Doctor Bond travels to No’s Caribbean island and meets Honeychile Rider, who is there to collect",
+        "x": 72.3,
+        "y": 581.6,
+        "w": 442.4,
+        "h": 28.9,
+        "zh": "小说中，Bond 调查两名同为军情六处特工的同事在牙买加失踪一事，他们当时正在调查 Doctor。Bond 前往 No 位于加勒比的岛屿，遇见了 Honeychile Rider，她到那里是为了采集"
+      },
+      {
+        "text": "They are captured and taken to a luxurious facility carved into a mountain. character of Doctor No, the son of a German missionary and a Chinese woman, was influenced by Sax Rohmer’s Fu Manchu stories.",
+        "x": 72.3,
+        "y": 551.7,
+        "w": 437.7,
+        "h": 28.9,
+        "zh": "他们被抓住，带进一座凿在山体里的豪华设施。Doctor No 这个角色是一名德国传教士与一名中国女子的儿子，其塑造受到 Sax Rohmer 所写傅满洲故事的影响。"
+      },
+      {
+        "text": "No was the first of Fleming’s novels to face widespread negative reviews in Britain, but it was received more favourably in the United States.",
+        "x": 72.3,
+        "y": 541.7,
+        "w": 437.7,
+        "h": 18.9,
+        "zh": "《No》是 Fleming 的小说中第一部在英国遭到广泛差评的作品，但在美国反响更好。"
+      },
+      {
+        "text": "English, British, Jamaica, the United Kingdom, German, Chinese, Britain, the United",
+        "x": 114.6,
+        "y": 531.8,
+        "w": 390.6,
+        "h": 9,
+        "zh": "English、British、牙买加、英国、German、Chinese、Britain、the United"
+      },
+      {
+        "text": "[10, 92, 2, 5, -4, 92, 5, 101] [-4, 2, 5, 5, 10, 92, 92, 101]",
+        "x": 105.2,
+        "y": 442.1,
+        "w": 150.6,
+        "h": 18.9,
+        "zh": ""
+      },
+      {
+        "text": "[9.99, 10, -5, -1000, 5e6, 999] [-1000, -5, 9.99, 10, 999, 5e6]",
+        "x": 114.6,
+        "y": 412.2,
+        "w": 183.5,
+        "h": 18.9,
+        "zh": ""
+      },
+      {
+        "text": "Suggest a better and more professional rephrasing of the following sentence.",
+        "x": 105,
+        "y": 392.3,
+        "w": 357.7,
+        "h": 9,
+        "zh": "为下面这句话想一个更好、更专业的改写。"
+      },
+      {
+        "text": "This house is surprisingly not constructed very well, and you probably need more money to fix it after you buy it.",
+        "x": 72.3,
+        "y": 362.4,
+        "w": 428.3,
+        "h": 18.9,
+        "zh": "这房子居然盖得不太结实，你买下之后大概还得再花不少钱来修。"
+      },
+      {
+        "text": "If you ask me, I would suggest you to consider other",
+        "x": 237,
+        "y": 362.4,
+        "w": 244.7,
+        "h": 9,
+        "zh": "要是你问我，我会建议你考虑其他"
+      },
+      {
+        "text": "This house does not seem to be constructed well, so you may need to spend more money to fix it after you purchase it.",
+        "x": 72.3,
+        "y": 332.5,
+        "w": 437.7,
+        "h": 18.9,
+        "zh": "这所房子看起来盖得并不好，所以你买下之后可能得花更多钱来修缮。"
+      },
+      {
+        "text": "I would suggest that you look at other properties.",
+        "x": 232.3,
+        "y": 332.5,
+        "w": 235.3,
+        "h": 9,
+        "zh": "我建议你再看看其他房产。"
+      },
+      {
+        "text": "Just so you know, we did an experiment last week and found really surprising results - language model can improve itself!",
+        "x": 69.9,
+        "y": 302.6,
+        "w": 449.4,
+        "h": 18.9,
+        "zh": "跟你说一下，我们上周做了个实验，结果真让人吃惊——语言模型可以改进它自己！"
+      },
+      {
+        "text": "Our experiments last week demonstrated surprising results, proving that the language model can improve itself.",
+        "x": 72.3,
+        "y": 282.7,
+        "w": 437.7,
+        "h": 18.9,
+        "zh": "我们上周的实验得出了令人惊讶的结果，证明这个语言模型能够改进自身。"
+      },
+      {
+        "text": "Turn down a job offer by sending an email to a recruiter explaining the reason.",
+        "x": 105,
+        "y": 242.9,
+        "w": 371.8,
+        "h": 9,
+        "zh": "给招聘人员发一封邮件拒绝录用，并说明原因。"
+      },
+      {
+        "text": "Thank you so much for the generous offer to join your team.",
+        "x": 72,
+        "y": 222.9,
+        "w": 277.7,
+        "h": 9,
+        "zh": "非常感谢你慷慨地邀请我加入你们的团队。"
+      },
+      {
+        "text": "As we discussed, I’ve admired the company for a number of years, and am a proud endorser of its products.",
+        "x": 72.3,
+        "y": 213,
+        "w": 442.1,
+        "h": 18.9,
+        "zh": "正如我们谈过的，我多年来一直很欣赏这家公司，也为它的产品感到自豪。"
+      },
+      {
+        "text": "However, after further consideration of where I currently am in my career, I’ve decided to accept an offer at another",
+        "x": 72.3,
+        "y": 203,
+        "w": 447.1,
+        "h": 18.9,
+        "zh": "不过，在进一步考虑我目前的职业阶段之后，我决定接受另一家的录用"
+      },
+      {
+        "text": "I would love to stay in touch with you and have already started following you on [Social Media",
+        "x": 72.3,
+        "y": 183.1,
+        "w": 442.4,
+        "h": 9,
+        "zh": "我很希望和你保持联系，并且已经开始在 [Social Media"
+      },
+      {
+        "text": "Again, thank you so much for your time and consideration.",
+        "x": 128.7,
+        "y": 173.1,
+        "w": 268.3,
+        "h": 9,
+        "zh": "再次感谢你的时间和考虑。"
+      },
+      {
+        "text": "Table 7: Prompt used for the input-first approach of instance generation. The model is prompted to generate the instance first, and then generate the corresponding output. For instructions that don’t require additional input, the output is allowed to be generated directly.",
+        "x": 70.6,
+        "y": 87.6,
+        "w": 453.8,
+        "h": 33.9,
+        "zh": "表 7：用于输入优先式实例生成的提示。模型先被提示生成实例，再生成对应的输出。对于不需要额外输入的指令，允许直接生成输出。"
+      }
+    ],
+    "18": [
+      {
+        "text": "Given the classification task definition and the class labels, generate an input that corresponds to each of the class labels.",
+        "x": 72.3,
+        "y": 746,
+        "w": 400,
+        "h": 18.9,
+        "zh": "给定分类任务的定义和类别标签，为每一个类别标签生成一条对应的输入。"
+      },
+      {
+        "text": "If the task doesn’t require input, just generate the correct class label.",
+        "x": 72.3,
+        "y": 736,
+        "w": 442.4,
+        "h": 18.9,
+        "zh": "如果任务不需要输入，就只生成正确的类别标签。"
+      },
+      {
+        "text": "Classify the sentiment of the sentence into positive, negative, or mixed.",
+        "x": 105,
+        "y": 716.1,
+        "w": 343.5,
+        "h": 9,
+        "zh": "把句子的情感分成正面、负面或混杂。"
+      },
+      {
+        "text": "I enjoy the flavor of the restaurant but their service is too slow.",
+        "x": 124,
+        "y": 696.2,
+        "w": 315.3,
+        "h": 9,
+        "zh": "我喜欢这家餐馆的味道，但他们上菜太慢了。"
+      },
+      {
+        "text": "The weather was beautiful and I spent time with friends.",
+        "x": 246.4,
+        "y": 676.2,
+        "w": 263.6,
+        "h": 9,
+        "zh": "天气很好，我和朋友们待在一起。"
+      },
+      {
+        "text": "I was really disappointed by the latest superhero movie.",
+        "x": 124,
+        "y": 656.3,
+        "w": 263.6,
+        "h": 9,
+        "zh": "最新的那部超级英雄电影让我很失望。"
+      },
+      {
+        "text": "Given a dialogue, classify whether the user is satisfied with the service. respond with \"Satisfied\" or \"Unsatisfied\".",
+        "x": 72.3,
+        "y": 626.4,
+        "w": 381,
+        "h": 18.9,
+        "zh": "给定一段对话，判断用户对服务是否满意。用 “Satisfied” 或 “Unsatisfied” 来回答。"
+      },
+      {
+        "text": "We will work to improve our service in the future. I am happy with the service you provided.",
+        "x": 131.1,
+        "y": 586.6,
+        "w": 362.4,
+        "h": 18.9,
+        "zh": "我们以后会改进服务。我对你提供的服务很满意。"
+      },
+      {
+        "text": "You will get a refund within 7 business days. oh that takes too long.",
+        "x": 131.1,
+        "y": 546.7,
+        "w": 381.2,
+        "h": 18.9,
+        "zh": "你会在 7 个工作日内收到退款。哦，那也太久了。"
+      },
+      {
+        "text": "I want you to take quicker action on this.",
+        "x": 248.7,
+        "y": 546.7,
+        "w": 197.7,
+        "h": 9,
+        "zh": "我希望你在这件事上动作更快一些。"
+      },
+      {
+        "text": "Given a political opinion, classify whether the speaker is a Democrat or Republican.",
+        "x": 105,
+        "y": 526.8,
+        "w": 395.3,
+        "h": 9,
+        "zh": "给定一条政治观点，判断说话人是民主党人还是共和党人。"
+      },
+      {
+        "text": "I believe, all should have access to quality healthcare regardless of their income.",
+        "x": 119.3,
+        "y": 506.9,
+        "w": 390.6,
+        "h": 9,
+        "zh": "我相信，所有人都应当能获得优质医疗，不论收入如何。"
+      },
+      {
+        "text": "I believe that people should be able to keep more of their hard-earned money and should not be taxed at high rates.",
+        "x": 72.3,
+        "y": 477,
+        "w": 423.6,
+        "h": 18.9,
+        "zh": "我认为人们应当能把更多辛苦赚来的钱留在自己手里，不应当被课以高税率。"
+      },
+      {
+        "text": "Tell me if the following email is a promotion email or not.",
+        "x": 105,
+        "y": 457.1,
+        "w": 277.7,
+        "h": 9,
+        "zh": "告诉我下面这封邮件是不是促销邮件。"
+      },
+      {
+        "text": "We’ve got discounts on all of your favorite products.",
+        "x": 265.2,
+        "y": 437.1,
+        "w": 249.4,
+        "h": 9,
+        "zh": "你喜欢的所有商品我们都在打折。"
+      },
+      {
+        "text": "Detect if the Reddit thread contains hate speech.",
+        "x": 105,
+        "y": 397.3,
+        "w": 230.6,
+        "h": 9,
+        "zh": "检测这条 Reddit 帖子是否包含仇恨言论。"
+      },
+      {
+        "text": "All people of color are stupid and should not be allowed to vote.",
+        "x": 114.4,
+        "y": 377.4,
+        "w": 305.9,
+        "h": 9,
+        "zh": "所有有色人种都很愚蠢，不应当被允许投票。"
+      },
+      {
+        "text": "The best way to cook a steak on the grill.",
+        "x": 114.4,
+        "y": 357.4,
+        "w": 197.7,
+        "h": 9,
+        "zh": "在烤架上把牛排做好的最佳方法。"
+      },
+      {
+        "text": "After a record-breaking run that saw mortgage rates plunge to all-time lows and home prices soar to new highs, the U.S. housing market finally is slowing. price gains are cooling, any correction is likely to be a modest one, housing economists and",
+        "x": 72.3,
+        "y": 297.7,
+        "w": 433,
+        "h": 28.9,
+        "zh": "在一波破纪录的行情之后——抵押贷款利率跌到历史低点，房价冲上新高——美国住房市场终于开始放缓。价格涨幅正在冷却，任何回调很可能都是温和的，住房经济学家以及"
+      },
+      {
+        "text": "No one expects price drops on the scale of the declines experienced during the",
+        "x": 142.9,
+        "y": 287.7,
+        "w": 367.1,
+        "h": 9,
+        "zh": "没有人预期价格会跌到此前所经历的那种跌幅，在"
+      },
+      {
+        "text": "The US housing market is going to crash soon.",
+        "x": 109.9,
+        "y": 267.8,
+        "w": 211.8,
+        "h": 9,
+        "zh": "美国住房市场很快就会崩盘。"
+      },
+      {
+        "text": "The U.S. housing market is showing signs of strain, with home sales and prices slowing in many areas.",
+        "x": 72.3,
+        "y": 237.9,
+        "w": 418.9,
+        "h": 18.9,
+        "zh": "美国住房市场正显出承压的迹象，许多地区的房屋销量和价格都在放缓。"
+      },
+      {
+        "text": "Mortgage rates have risen sharply in recent months, and the number of homes for sale is increasing.",
+        "x": 72.3,
+        "y": 227.9,
+        "w": 423.6,
+        "h": 18.9,
+        "zh": "近几个月抵押贷款利率大幅上升，待售房屋的数量也在增加。"
+      },
+      {
+        "text": "This could be the beginning of a larger downturn, with some economists predicting a potential housing crash in the near future.",
+        "x": 72.3,
+        "y": 218,
+        "w": 437.7,
+        "h": 18.9,
+        "zh": "这可能是一场更大下滑的开始，一些经济学家预测不久的将来可能出现住房崩盘。"
+      },
+      {
+        "text": "The US housing market is going to crash soon.",
+        "x": 109.9,
+        "y": 208,
+        "w": 211.8,
+        "h": 9,
+        "zh": "美国住房市场很快就会崩盘。"
+      },
+      {
+        "text": "(a) number (b) date (c) phone number (d) email address (e) all of these are valid inputs.",
+        "x": 72.3,
+        "y": 158.2,
+        "w": 437.4,
+        "h": 18.9,
+        "zh": "（a）数字 （b）日期 （c）电话号码 （d）电子邮箱 （e）这些都是合法输入。"
+      },
+      {
+        "text": "Which of the following is not an input type?",
+        "x": 105,
+        "y": 168.1,
+        "w": 207.1,
+        "h": 9,
+        "zh": "下面哪一项不是一种输入类型？"
+      },
+      {
+        "text": "Table 8: Prompt used for the output-first approach of instance generation. The model is prompted to generate the class label first, and then generate the corresponding input. This prompt is used for generating the instances for classification tasks.",
+        "x": 70.6,
+        "y": 82.7,
+        "w": 454,
+        "h": 33.9,
+        "zh": "表 8：用于输出优先式实例生成的提示。模型先被提示生成类别标签，再生成对应的输入。这条提示用于为分类任务生成实例。"
+      }
+    ],
+    "19": [
+      {
+        "text": "Human Evaluation Details for Following the User-oriented Instructions",
+        "x": 90.8,
+        "y": 760.1,
+        "w": 363,
+        "h": 12,
+        "zh": "面向用户指令的人类评估细节"
+      },
+      {
+        "text": "Here we provide more details for the human evaluation described in §4.4 for rating the models’ responses to the 252 user-oriented instructions. To ensure faithful and reliable evaluation, we asked two authors of these instructions (and of this paper) to judge model predictions. These two evaluators coordinated the standards for the 4-level rating system before starting annotation and then each of them rated all the instances independently. They were presented with the instruction, instance input, target output (as a reference), and model responses. Model responses are listed in random order, with all the model information anonymized. Figure 9 provides a screenshot of the annotation interface. The reported performance in this paper is based on the results from one of the evaluators, and the trends from the other evaluator’s results are the same.",
+        "x": 70.9,
+        "y": 627.2,
+        "w": 455.5,
+        "h": 105.8,
+        "zh": "这里补充 §4.4 中人类评估的细节，即如何为模型对 252 条面向用户指令的回答打分。为了让评估忠实、可靠，我们请这些指令（以及本文）的两位作者来评判模型预测。两位评估者在开始标注前先对齐了四级评分标准，然后各自独立地给全部实例打分。呈现给他们的内容包括指令、实例输入、目标输出（作为参考）以及模型的回答。模型回答按随机顺序排列，所有模型信息都做了匿名。图 9 是标注界面的截图。本文报告的表现来自其中一位评估者的结果，另一位评估者的结果趋势相同。"
+      },
+      {
+        "text": "Figure 9: Human evaluation in done using a Google sheet, with predictions from different models present in random order and the model information being anonymized. Our expert evaluators are required to read the instruction and input, refer to the target, and then select the rating for the model’s response from A/B/C/D, corresponding to the 4",
+        "x": 70.9,
+        "y": 261.6,
+        "w": 453.5,
+        "h": 33.9,
+        "zh": "图 9：人类评估在 Google 表格中完成。不同模型的预测以随机顺序出现，模型信息被匿名。我们的专家评估者需要阅读指令和输入，参考目标答案，再从 A/B/C/D 中为模型回答选择等级，对应这 4"
+      },
+      {
+        "text": "To measure how reliable our human evaluation is, we calculate the inner-rater agreement between our two",
+        "x": 70.5,
+        "y": 197,
+        "w": 453.9,
+        "h": 10.9,
+        "zh": "为了衡量人类评估有多可靠，我们计算我们两位之间的评分者间一致性"
+      },
+      {
+        "text": "We first report Cohen’s 𝜅, which is commonly used to measure inter-rater agreement for categorical items. When calculating this, we treat the 4-level rating (A-D) as a categorical variable, leading to a 𝜅 of",
+        "x": 70.9,
+        "y": 156.3,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "我们首先报告 Cohen’s 𝜅。它常用来衡量分类项目上的评分者间一致性。计算时，我们把四级评分（A–D）当作分类变量，得到的 𝜅 为"
+      },
+      {
+        "text": "Furthermore, we also calculate the agreement of our evaluators on classifying acceptable responses ((A or B) vs. (C or D)), with a final 𝜅 of",
+        "x": 70.9,
+        "y": 129.2,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "此外，我们还计算两位评估者在“可接受的回答”这一划分上的一致性（（A 或 B）对（C 或 D）），最终的 𝜅 为"
+      },
+      {
+        "text": "0.58, which is a moderate agreement according to common practice.",
+        "x": 70.9,
+        "y": 142.8,
+        "w": 293,
+        "h": 10.9,
+        "zh": "0.58。按照常见标准，这属于中等程度的一致。"
+      },
+      {
+        "text": "We also compute the Spearman correlation coefficient 𝜌 between the ratings of our two evaluators by treating the rating as an ordinal variable (A>B>C>D). The final coefficient is 𝜌 = 0.81, indicating a high",
+        "x": 70.9,
+        "y": 88.6,
+        "w": 453.9,
+        "h": 24.5,
+        "zh": "我们还把评级当作有序变量（A>B>C>D），计算两位评估者评级之间的 Spearman 相关系数 𝜌。最终系数为 𝜌 = 0.81，表明高度"
+      },
+      {
+        "text": "https://en.wikipedia.org/wiki/Cohen%27s_kappa",
+        "x": 87,
+        "y": 70.9,
+        "w": 211.8,
+        "h": 9,
+        "zh": ""
+      }
+    ],
+    "20": [
+      {
+        "text": "Example Predictions from GPT3SELF-INST We present a selection of user-oriented tasks, the corresponding GPT3SELF-INST-produced responses and annotator ratings in Table 9. We see that even for responses rated as level C, the model demonstrates extensive steps in solving the task, even though its final output is incorrect.",
+        "x": 70.4,
+        "y": 693.1,
+        "w": 454.1,
+        "h": 55.5,
+        "zh": "GPT3SELF-INST 的预测示例。我们在表 9 中选列了一批面向用户的任务、GPT3SELF-INST 给出的对应回答，以及标注者的评级。可以看到，即便是被评为 C 级的回答，模型也展示了解题的完整步骤，尽管它的最终输出是错的。"
+      }
+    ],
+    "21": [
+      {
+        "text": "GPT3SELF-INST Response – Practice your presentation in front Instruction: Give students tips",
+        "x": 76.9,
+        "y": 747.7,
+        "w": 411,
+        "h": 21.6,
+        "zh": "GPT3SELF-INST 的回答——在众人面前练习你的演讲。指令：给学生一些建议"
+      },
+      {
+        "text": "in front of a group. That’s normal. But the control during class presentations.",
+        "x": 76,
+        "y": 733.6,
+        "w": 274.4,
+        "h": 13.2,
+        "zh": "在一群人面前。这很正常。但是。在课堂演讲时把紧张控制住。"
+      },
+      {
+        "text": "– Don’t drink too much caffeine before researching, organizing, and rehearsing—the more confident you’ll be. Preparation is the key.",
+        "x": 202.7,
+        "y": 719.4,
+        "w": 288.5,
+        "h": 19.1,
+        "zh": "——开始研究、组织和排练之前，不要喝太多咖啡因——你会更有信心。准备是关键。"
+      },
+      {
+        "text": "– Take deep breaths before you start And if you make a mistake or stumble over your words, just regroup and keep going. Nobody’s",
+        "x": 202.5,
+        "y": 705.3,
+        "w": 282,
+        "h": 17.7,
+        "zh": "——开始前做几次深呼吸。如果你说错了，或者话说得磕绊，就重新整理一下，继续讲下去。没有人是"
+      },
+      {
+        "text": "– If you feel nervous, smile. perfect, and nobody expects you to be.",
+        "x": 202.7,
+        "y": 698.3,
+        "w": 259,
+        "h": 9.1,
+        "zh": "——如果感到紧张，就笑一笑。完美的，也没有人指望你做到完美。"
+      },
+      {
+        "text": "– Remember that everyone in the audience is rooting for you.",
+        "x": 365.4,
+        "y": 685.6,
+        "w": 102.9,
+        "h": 13.2,
+        "zh": "——记住，在场的每个人都在为你加油。"
+      },
+      {
+        "text": "Instruction: Make a list of the pros Pros: and cons of the given decision.",
+        "x": 76,
+        "y": 657.8,
+        "w": 143.1,
+        "h": 13.2,
+        "zh": "指令：列出这个决定的好处。好处：和坏处。"
+      },
+      {
+        "text": "– Employees can work from home and Input: Implementing a Remote Working",
+        "x": 76.9,
+        "y": 650.8,
+        "w": 401.2,
+        "h": 13.2,
+        "zh": "——员工可以在家工作，并且。输入：推行远程办公"
+      },
+      {
+        "text": "save on commuting costs. – Employees can spend more time with – Remote working provides greater flexibility, particularly for working parents and caregivers who have other responsibilities.",
+        "x": 202.5,
+        "y": 621,
+        "w": 282.1,
+        "h": 35.9,
+        "zh": "省下通勤费用。——员工可以有更多时间陪伴。——远程办公更灵活，对还要照顾家人的在职父母和照护者尤其如此。"
+      },
+      {
+        "text": "– Employees may not be as productive as they would be in the office. – Employees may not be as motivated to – It may be more difficult for team members to build meaningful, productive, creative relationships with one another.",
+        "x": 202.5,
+        "y": 584,
+        "w": 288.7,
+        "h": 42.9,
+        "zh": "——员工可能不像在办公室里那么高效。——员工可能没那么有动力去。——团队成员之间也许更难建立起有意义、有成果、有创造力的关系。"
+      },
+      {
+        "text": "As a user, I want to be able to send informal, general explanation of",
+        "x": 76,
+        "y": 547.7,
+        "w": 407.7,
+        "h": 13.2,
+        "zh": "作为用户，我希望能够发送。非正式的、概括性的说明，关于"
+      },
+      {
+        "text": "emails to my friends and family. I a software feature written from",
+        "x": 76,
+        "y": 540.6,
+        "w": 404.4,
+        "h": 13.2,
+        "zh": "邮件给我的朋友和家人。我。一项软件功能，从……的角度来写"
+      },
+      {
+        "text": "want to be able to attach files to my the perspective of the end-user or",
+        "x": 76,
+        "y": 533.6,
+        "w": 410.8,
+        "h": 13.2,
+        "zh": "希望能在邮件里添加附件。终端用户的视角，或者"
+      },
+      {
+        "text": "emails. I want to be able to search customer. Write a user story for a",
+        "x": 76,
+        "y": 526.5,
+        "w": 407.7,
+        "h": 13.2,
+        "zh": "邮件。我希望能够搜索。客户。请为一个……写一则用户故事"
+      },
+      {
+        "text": "Instruction: A color description has #DB7093 (⬛) been provided. Find the CSS code associated with that color. Input: A light red color with a medium light shade of pink",
+        "x": 76,
+        "y": 470.5,
+        "w": 165.9,
+        "h": 34.4,
+        "zh": "指令：已经给出一段颜色描述 #DB7093（⬛）。找出与该颜色对应的 CSS 代码。输入：一种偏浅的红色，带有中等明度的粉色。"
+      },
+      {
+        "text": "You should start your trip in San information about where they want",
+        "x": 76,
+        "y": 449.7,
+        "w": 397.8,
+        "h": 13.2,
+        "zh": "你应该从圣。他们想去哪里的信息"
+      },
+      {
+        "text": "Diego, California. You can visit the to go and what they enjoy seeing and",
+        "x": 76,
+        "y": 442.7,
+        "w": 411,
+        "h": 13.2,
+        "zh": "地亚哥（加利福尼亚）出发。你可以去参观。要去的地方，以及他们喜欢看什么、"
+      },
+      {
+        "text": "little village is a great place for an overnight, San Diego Zoo, which is one of the doing. Describe a proper road trip",
+        "x": 76,
+        "y": 435.6,
+        "w": 401.1,
+        "h": 13.2,
+        "zh": "小村子很适合住一晚；圣地亚哥动物园是其中。做些什么。为他们描述一次合适的公路旅行"
+      },
+      {
+        "text": "best zoos in the world. Then you can for them and find the best stops and",
+        "x": 76,
+        "y": 428.5,
+        "w": 411,
+        "h": 13.2,
+        "zh": "世界上最好的动物园之一。然后你可以。为他们，并找出沿途最合适的停靠点以及"
+      },
+      {
+        "text": "drive to Los Angeles, where you can see activities on the way.",
+        "x": 76,
+        "y": 421.5,
+        "w": 417.5,
+        "h": 13.2,
+        "zh": "开车去洛杉矶，在那里你可以看见。沿途可以做的事。"
+      },
+      {
+        "text": "the Hollywood signs and walk along the Input: I’m looking for a west coast",
+        "x": 76.9,
+        "y": 414.4,
+        "w": 413.4,
+        "h": 13.2,
+        "zh": "好莱坞的标志，并沿着。输入：我想做一次西海岸"
+      },
+      {
+        "text": "shop the boutiques or sample fish tacos. Walk road trip. My goal is to start near",
+        "x": 76,
+        "y": 407.4,
+        "w": 277.6,
+        "h": 13.2,
+        "zh": "逛逛精品店，或者尝尝鱼肉玉米饼。步行。公路旅行。我希望从……附近出发"
+      },
+      {
+        "text": "through the coastal meditation garden at the San Diego and travel to Los Angeles.",
+        "x": 76,
+        "y": 400.3,
+        "w": 271.1,
+        "h": 13.2,
+        "zh": "穿过海边的冥想花园，在。圣地亚哥，再到洛杉矶。"
+      },
+      {
+        "text": "Self-Realization Fellowship or join surfers in the line-up at one of the fantastic local beaches here ...(more ideas)",
+        "x": 202.7,
+        "y": 386.2,
+        "w": 144.4,
+        "h": 20.3,
+        "zh": "Self-Realization Fellowship，或者到这里某个很棒的本地海滩，排队和冲浪的人一起下水……（更多想法）"
+      },
+      {
+        "text": "– “Glad you made it safe and sound.” Instruction: Give some examples of what people usually say in the given",
+        "x": 75.8,
+        "y": 365.4,
+        "w": 245,
+        "h": 13.5,
+        "zh": "——“很高兴你平安到达。”指令：举几个例子，说明在给定情境里人们通常会说什么"
+      },
+      {
+        "text": "– “Good to see you got here unscathed.” – “So, bulletproof vests actually work!” Input: when someone arrives safely",
+        "x": 76.9,
+        "y": 351.3,
+        "w": 257.1,
+        "h": 19.1,
+        "zh": "——“看到你毫发无损地到了就好。”——“所以防弹背心真的有用！”输入：当某人安全抵达时"
+      },
+      {
+        "text": "There exists a soldier such that for in first-order logic. Translate it",
+        "x": 76,
+        "y": 327.9,
+        "w": 407.7,
+        "h": 13.2,
+        "zh": "存在一个士兵，使得对于。用一阶逻辑写出来。请把它翻译"
+      },
+      {
+        "text": "every general, he is a general. into natural language. Input: ∃𝑥∀𝑦(𝑠𝑜𝑙𝑑𝑖𝑒𝑟(𝑥) → 𝑔𝑒𝑛𝑒𝑟𝑎𝑙(𝑥, 𝑦))",
+        "x": 76,
+        "y": 313.8,
+        "w": 391.3,
+        "h": 20.3,
+        "zh": "每一个将军，他都是将军。成自然语言。输入：∃𝑥∀𝑦(𝑠𝑜𝑙𝑑𝑖𝑒𝑟(𝑥) → 𝑔𝑒𝑛𝑒𝑟𝑎𝑙(𝑥, 𝑦))"
+      },
+      {
+        "text": "Question: How would you rate the – Your overall rating of this hotel: to help hotel guests write hotel",
+        "x": 76,
+        "y": 293.1,
+        "w": 397.8,
+        "h": 13.2,
+        "zh": "问题：你会怎么给。——你对这家酒店的总评：帮助住客写酒店"
+      },
+      {
+        "text": "service at the front desk? – Summarize your visit or highlight an",
+        "x": 202.5,
+        "y": 286.9,
+        "w": 248.3,
+        "h": 12.3,
+        "zh": "前台服务打几分？——总结你的这次入住，或突出一点"
+      },
+      {
+        "text": "– Section: Personalized items with Input: This blog post is going to about making a list of last-minute gift ideas. Also, the tone of the",
+        "x": 76,
+        "y": 208.3,
+        "w": 242.5,
+        "h": 26.8,
+        "zh": "——栏目：带有个性化物品。输入：这篇博文将要。关于列一份临时起意的礼物主意。另外，文章的语气"
+      },
+      {
+        "text": "– Takeaway: Don’t stress about out running out post is going to be relaxed and",
+        "x": 76,
+        "y": 201.2,
+        "w": 281.7,
+        "h": 9.8,
+        "zh": "——要点：别因为东西用完了而紧张。帖子的语气会是放松的，并且"
+      },
+      {
+        "text": "because I have a question about the new Input: New Employee onboarding",
+        "x": 76.9,
+        "y": 162.9,
+        "w": 416.6,
+        "h": 13.2,
+        "zh": "因为我对新的流程有个问题。输入：新员工入职"
+      },
+      {
+        "text": "employee onboarding process. I’ve been temporary password. Grant access to company",
+        "x": 202.7,
+        "y": 155.8,
+        "w": 290.8,
+        "h": 13.2,
+        "zh": "员工入职流程。我已经。临时密码。授予公司系统的访问权限"
+      },
+      {
+        "text": "working here for a few months now, and I’m still not sure how it works. Could you please explain it to me?",
+        "x": 365.4,
+        "y": 141.7,
+        "w": 128.2,
+        "h": 20.3,
+        "zh": "我在这里已经工作了几个月，可还是不太清楚它是怎么运作的。你可以给我解释一下吗？"
+      },
+      {
+        "text": "David wears a hat every day. by finding synonyms for words in the",
+        "x": 76,
+        "y": 121,
+        "w": 381.4,
+        "h": 13.2,
+        "zh": "David 每天都戴一顶帽子。通过给其中的词找同义词"
+      },
+      {
+        "text": "Table 9: Examples in the user-oriented instructions dataset (§4.4) and predictions from GPT3SELF-INST. The right column indicates one of the four quality ratings assigned to the model’s response, with “A” indicating “valid and satisfying” responses (highest) and “D” indicating “irrelevant or invalid response” (lowest).",
+        "x": 70.6,
+        "y": 59.5,
+        "w": 453.9,
+        "h": 33.9,
+        "zh": "表 9：面向用户的指令数据集（§4.4）中的例子，以及 GPT3SELF-INST 的预测。右栏是赋给模型回答的四级质量评级之一，“A”表示“有效且令人满意”（最高），“D”表示“无关或无效的回答”（最低）。"
+      }
+    ],
+    "22": [
+      {
+        "text": "Task and Instance Examples from the Generated Instruction Data",
+        "x": 91.5,
+        "y": 760.1,
+        "w": 337.1,
+        "h": 12,
+        "zh": "生成指令数据中的任务与实例示例"
+      },
+      {
+        "text": "Instruction: Generate a random password with at least 6 characters.",
+        "x": 76.5,
+        "y": 706.1,
+        "w": 137.8,
+        "h": 14,
+        "zh": "指令：生成一个至少 6 个字符的随机密码。"
+      },
+      {
+        "text": "while len(password) < 6: password += chr(random.randint(65, 90))",
+        "x": 247,
+        "y": 691.1,
+        "w": 149,
+        "h": 14,
+        "zh": ""
+      },
+      {
+        "text": "Instruction: Write a paragraph describing how to tie shoelaces for people who have never tied their shoes before. explain",
+        "x": 76.7,
+        "y": 654.1,
+        "w": 144.6,
+        "h": 21.5,
+        "zh": "指令：写一段话，向从未系过鞋带的人说明如何系鞋带。解释"
+      },
+      {
+        "text": "Paragraph: To tie shoelaces, first you need to make a loop with one end of the lace. Then pass the other end through the loop and pull it tight. Next, you need to wrap the lace around the shoe several times. Finally, tuck in the loose end into the wrapped part of the",
+        "x": 233.7,
+        "y": 646.6,
+        "w": 236.6,
+        "h": 29,
+        "zh": "段落：系鞋带时，先用鞋带的一头绕出一个圈。然后把另一头穿过这个圈并拉紧。接下来，要把鞋带在鞋子上绕好几圈。最后，把松着的那一头塞进已经绕好的部分"
+      },
+      {
+        "text": "Instruction: Given a word, find out its length and its number of vowels. Input: Word = \"hello\"",
+        "x": 76.7,
+        "y": 609.7,
+        "w": 137.6,
+        "h": 21.5,
+        "zh": "指令：给定一个单词，求出它的长度和元音个数。输入：单词 = “hello”"
+      },
+      {
+        "text": "Instruction: Write a story with three characters: a person, an animal and an",
+        "x": 76.7,
+        "y": 587.7,
+        "w": 135.7,
+        "h": 14,
+        "zh": "指令：写一个有三个人物的故事：一个人、一只动物，以及一个"
+      },
+      {
+        "text": "John was sitting on the floor in front of his laptop when he heard a knock at the door. He opened it to find a dog standing there. The dog walked into the room and jumped onto the couch next to John’s",
+        "x": 233.7,
+        "y": 580.2,
+        "w": 236.6,
+        "h": 21.5,
+        "zh": "John 坐在地板上、笔记本电脑前，这时听见敲门声。他打开门，看见一只狗站在那里。狗走进房间，跳上 John 旁边的沙发"
+      },
+      {
+        "text": "Instruction: Compose an email and send it to your friend, asking for advice on what to do in this situation. Input: Situation: You are a programmer and you have been working on a project for the past few months. The deadline is approaching, but you haven’t finished yet. Your manager has asked you to stay late every day this week to finish it.",
+        "x": 76.5,
+        "y": 475.8,
+        "w": 146.3,
+        "h": 66.5,
+        "zh": "指令：写一封邮件发给你的朋友，就这种情况该怎么办向对方征求建议。输入：情境：你是一名程序员，过去几个月一直在做一个项目。截止日期临近，可你还没做完。经理要求你这周每天都留下来加班，把它做完。"
+      },
+      {
+        "text": "I’m having a bit of trouble with my current job. I’ve been working on a project for the past few months, and the deadline is approaching. My manager has asked me to stay late every day this week to finish it. I don’t think I can do that because I have other commitments. What should I do?",
+        "x": 233.6,
+        "y": 498.3,
+        "w": 236.8,
+        "h": 36.5,
+        "zh": "我现在的工作有点麻烦。过去几个月我一直在做一个项目，截止日期快到了。经理要求我这周每天都留下来加班把它做完。我觉得自己做不到，因为还有别的事。我该怎么办？"
+      },
+      {
+        "text": "Instruction: What are some ways we can make our school more eco-friendly?",
+        "x": 76.7,
+        "y": 453.8,
+        "w": 134.1,
+        "h": 14,
+        "zh": "指令：有哪些办法可以让我们的学校更环保？"
+      },
+      {
+        "text": "– Use reusable water bottles instead of disposable plastic ones. – Turn off lights when you leave a room. – Recycle paper, cans and bottles. – Plant trees to absorb carbon dioxide.",
+        "x": 233.6,
+        "y": 429.2,
+        "w": 223.9,
+        "h": 33.7,
+        "zh": "——用可重复使用的水瓶，代替一次性塑料瓶。——离开房间时把灯关掉。——回收纸张、罐头和瓶子。——种树来吸收二氧化碳。"
+      },
+      {
+        "text": "Instruction: I am looking for a new apartment. there are many options",
+        "x": 76.7,
+        "y": 399.7,
+        "w": 123.7,
+        "h": 14,
+        "zh": "指令：我在找一套新公寓。选择很多"
+      },
+      {
+        "text": "You should look for a cheaper apartment. You can try to negotiate with the landlord and offer him/her a lower price. If you are lucky, Input: ✓ available but they are all quite expensive. they will accept your offer. Otherwise, you can wait until there is",
+        "x": 76.7,
+        "y": 392.2,
+        "w": 426.3,
+        "h": 21.5,
+        "zh": "你应该找一套更便宜的公寓。可以试着和房东商量，报一个更低的价钱。如果运气好，输入：有房，但都相当贵。对方会接受你的出价。不然，你可以等到出现"
+      },
+      {
+        "text": "i want to move as soon as possible. give me advice on what to do.",
+        "x": 76.7,
+        "y": 377.2,
+        "w": 142.7,
+        "h": 14,
+        "zh": "我想尽快搬。给我一些该怎么办的建议。"
+      },
+      {
+        "text": "Instruction: Write a dialogue between two people who have been friends for a long time, and one of them is trying to convince the other to do something that he or she doesn’t want to do.",
+        "x": 76.7,
+        "y": 332.8,
+        "w": 146.2,
+        "h": 36.5,
+        "zh": "指令：写一段两个人的对话。他们是认识很久的朋友，其中一人试图说服另一人去做一件他或她并不想做的事。"
+      },
+      {
+        "text": "A: Hey, I have a great idea! Let’s go to the beach today. B: No thanks, I’m not really in the mood for that. A: Come on, it’ll be fun! We haven’t been there together in ages. B: I know, but I just don’t feel like going. A: But you love the beach! You always say how much you enjoy swimming and lying in the sun. B: Yeah, I do. It’s just that I’ve been feeling kind of tired",
+        "x": 233.6,
+        "y": 317.8,
+        "w": 229.7,
+        "h": 51.5,
+        "zh": "A：嘿，我有个好主意！我们今天去海滩吧。B：不用了，我没什么心情。A：来嘛，会很好玩的！我们好久没一起去了。B：我知道，可我就是不想去。A：可你喜欢海滩啊！你总说自己多喜欢游泳、躺在太阳下。B：是啊，我是喜欢。只是我最近觉得有点累"
+      },
+      {
+        "text": "A: Oh, come on. You’re never tired. You’re always so energetic. B: Well, I am now. I think I need some rest. A: Okay, fine. If you change your mind, let me know.",
+        "x": 233.6,
+        "y": 287.8,
+        "w": 226.2,
+        "h": 21.5,
+        "zh": "A：哎呀，得了吧。你从来都不累。你总是那么有精神。B：可我现在累了。我觉得需要休息一下。A：好吧。你要是改主意了，告诉我。"
+      },
+      {
+        "text": "Instruction: How can i create an app that will be able to identify different kinds of plants by taking photos of them?",
+        "x": 76.5,
+        "y": 258.4,
+        "w": 144.7,
+        "h": 21.5,
+        "zh": "指令：我怎样才能做一个应用，通过给植物拍照来识别不同种类的植物？"
+      },
+      {
+        "text": "You can use the following steps to create an app that will be able to identify different kinds of plants by taking photos of them. Step 1: Create a database with all the information about the plants",
+        "x": 233.7,
+        "y": 258.4,
+        "w": 236.6,
+        "h": 21.5,
+        "zh": "你可以按下面的步骤，做一个能够通过拍照识别不同植物的应用。第 1 步：建立一个包含全部植物信息的数据库"
+      },
+      {
+        "text": "Step 2: Create a user interface for your application. Step 3: Use image recognition techniques to identify the plant in",
+        "x": 233.7,
+        "y": 235.9,
+        "w": 229.7,
+        "h": 14,
+        "zh": "第 2 步：为你的应用做一个用户界面。第 3 步：用图像识别技术来识别照片中的植物"
+      },
+      {
+        "text": "Instruction: Find the closest matching emoji to a given one.",
+        "x": 76.7,
+        "y": 198,
+        "w": 134.1,
+        "h": 14,
+        "zh": "指令：找出与给定表情符号最接近的另一个表情符号。"
+      },
+      {
+        "text": "Instruction: Describe your favorite video game using only verbs. Input: Game: The Legend of Zelda",
+        "x": 76.7,
+        "y": 158.7,
+        "w": 144.6,
+        "h": 21.5,
+        "zh": "指令：只用动词来描述你最喜欢的电子游戏。输入：游戏：The Legend of Zelda"
+      },
+      {
+        "text": "Table 10: Representative valid tasks generated by GPT3. As is discussed in §3, these generated tasks cover a broad range of formats, text types, and underlying expertise, while being correct on more than half of all the generated",
+        "x": 70.6,
+        "y": 123.1,
+        "w": 453.9,
+        "h": 21.9,
+        "zh": "表 10：GPT3 生成的有代表性的有效任务。如 §3 所讨论的，这些生成任务覆盖了很宽的格式、文本类型和所需专业知识，同时在全部生成结果里有超过一半是正确的"
+      }
+    ],
+    "23": [
+      {
+        "text": "def wordSubsetSum(w, l): {𝑤1, 𝑤2, ..., 𝑤𝑛} where each word 𝑤𝑖 has 𝑛 letters, write a function that",
+        "x": 75.8,
+        "y": 729,
+        "w": 241.6,
+        "h": 21.8,
+        "zh": "def wordSubsetSum(w, l)：{𝑤1, 𝑤2, ..., 𝑤𝑛}，其中每个词 𝑤𝑖 有 𝑛 个字母，写一个函数，它"
+      },
+      {
+        "text": "for i in range(len(w)): takes a target length 𝑙 and returns a new set of words 𝑠 such that |𝑠|",
+        "x": 75.8,
+        "y": 713.8,
+        "w": 251.6,
+        "h": 21.8,
+        "zh": "for i in range(len(w))：接受目标长度 𝑙，并返回一个新的词集 𝑠，使得 |𝑠|"
+      },
+      {
+        "text": "– Go to the kitchen and take a pan. – Take water from the tap. – Pour water into the pan. – Put out the fire with the pan.",
+        "x": 232.8,
+        "y": 659,
+        "w": 124.5,
+        "h": 34.1,
+        "zh": "——去厨房拿一口锅。——从水龙头接水。——把水倒进锅里。——用这口锅把火扑灭。"
+      },
+      {
+        "text": "def hasFriendsWhoLikeToPlayFootballOrChess(self): friends who like to play football or",
+        "x": 75.8,
+        "y": 629.1,
+        "w": 329.7,
+        "h": 14.2,
+        "zh": "def hasFriendsWhoLikeToPlayFootballOrChess(self)：喜欢踢足球或者"
+      },
+      {
+        "text": "for friend in self.friends: if friend.likes == ’football’ or friend.likes == ’chess’: friends.append(friend) return len(friends) > 0",
+        "x": 246.4,
+        "y": 598.8,
+        "w": 214.3,
+        "h": 29.4,
+        "zh": ""
+      },
+      {
+        "text": "Instruction: A number of people are lined up for an interview. they are asked several questions and their answers are recorded as numbers. you need to identify which person has the highest salary among",
+        "x": 75.7,
+        "y": 553.8,
+        "w": 148.2,
+        "h": 37,
+        "zh": "指令：若干人排成一队等候面试。他们被问了几个问题，回答被记成数字。你需要找出其中薪水最高的是哪一个人"
+      },
+      {
+        "text": "Input: Person 1: 2, 3, 4, 5, 6 Person 2: 7, 8, 9, 10, 11 Person 3: 12, 13, 14, 15, 16 Person 4: 17, 18, 19, 20, 21 Person 5: 22, 23, 24, 25, 26 Person 6: 27, 28, 29, 30, 31",
+        "x": 75.8,
+        "y": 500.7,
+        "w": 111.1,
+        "h": 44.5,
+        "zh": "输入：人物 1：2, 3, 4, 5, 6；人物 2：7, 8, 9, 10, 11；人物 3：12, 13, 14, 15, 16；人物 4：17, 18, 19, 20, 21；人物 5：22, 23, 24, 25, 26；人物 6：27, 28, 29, 30, 31"
+      },
+      {
+        "text": "The story starts with a group of people who live on a planet. They generate a story about a group of people",
+        "x": 75.8,
+        "y": 478.4,
+        "w": 393.2,
+        "h": 14.2,
+        "zh": "故事从一群住在某颗星球上的人开始。他们。生成一个关于一群人的故事"
+      },
+      {
+        "text": "are very intelligent and have created many things that help them in who live on a planet. the story should",
+        "x": 75.7,
+        "y": 470.9,
+        "w": 393.3,
+        "h": 14.2,
+        "zh": "非常聪明，造出了许多在生活里帮到他们的东西。住在一颗星球上。这个故事应该"
+      },
+      {
+        "text": "their daily lives. One day, they decided to create a machine that contain at least 10 sentences. each",
+        "x": 75.8,
+        "y": 463.3,
+        "w": 389.6,
+        "h": 14.2,
+        "zh": "日常生活之中。有一天，他们决定造一台机器。至少包含 10 个句子。每一"
+      },
+      {
+        "text": "can make food for them. The machine was able to produce food but it sentence should be generated by randomly",
+        "x": 75.8,
+        "y": 455.7,
+        "w": 396.7,
+        "h": 14.2,
+        "zh": "能为他们做出食物。机器确实做出了食物，但是它。个句子都应当随机生成"
+      },
+      {
+        "text": "also produced something else. It produced a liquid that could be picking one word from the list of words.",
+        "x": 75.8,
+        "y": 448.1,
+        "w": 386.1,
+        "h": 14.2,
+        "zh": "还造出了别的东西。它造出一种液体，可以。从给定的词表里挑一个词。"
+      },
+      {
+        "text": "used as fuel for the machines. The people were happy because they didn’t need to go out and look for food or fuel anymore. They had everything they needed right there in their homes. However, one day, the machine stopped working. The people tried to fix it but couldn’t figure out what went wrong. They tried to find someone who could help them but no one knew how to fix the machine. After a few days, the people realized that they would die if they didn’t do anything about it. So, they decided to send some of their best scientists to space to find a new planet where they could live. The scientists traveled for a long time before they found a planet that looked like a good place to live. They sent a message back to the people telling them about the planet. The people were excited and started preparing for the journey. They built spaceships and flew to the new planet. When they arrived, they saw that the planet was beautiful. There were trees and rivers and mountains. The people were so happy that they finally found a new home. They started building houses and planting crops. They lived happily ever after.",
+        "x": 232.7,
+        "y": 326.8,
+        "w": 239.8,
+        "h": 127.9,
+        "zh": "被拿来给机器当燃料。人们很高兴，因为他们不用再出门找食物或燃料了。他们需要的一切就在家里。然而有一天，机器停了。人们试着修，却弄不清哪里出了问题。他们想找人帮忙，可没有人知道怎么修这台机器。过了几天，人们意识到，如果什么都不做，自己就会死掉。于是他们决定派出一些最优秀的科学家进入太空，去找一颗可以居住的新星球。科学家们走了很久，才找到一颗看起来适合居住的星球。他们传回消息，把这颗星球告诉大家。人们很兴奋，开始为旅程做准备。他们造了宇宙飞船，飞往那颗新星球。到达之后，他们看到星球很美，有树、有河、有山。人们非常高兴，终于找到了新家。他们开始盖房子、种庄稼。从此过上了幸福的生活。"
+      },
+      {
+        "text": "Paragraph: Working part-time is a great way to earn some extra attitude towards working part-time is.",
+        "x": 75.8,
+        "y": 304.5,
+        "w": 379.1,
+        "h": 14.2,
+        "zh": "段落：兼职是赚一点外快的好办法。对兼职的态度是。"
+      },
+      {
+        "text": "money while still being able to enjoy your free time. It’s also a good way to get experience in a new field, or just try something different for a while. However, it can be difficult to find the right balance between work and play. The author seems to be positive about working part-time.",
+        "x": 232.7,
+        "y": 274.2,
+        "w": 232.7,
+        "h": 37,
+        "zh": "钱，同时又还能享受自己的空闲时间。这也是在一个新领域积累经验、或者暂时尝试一点不同事情的好办法。不过，要在工作和玩乐之间找到合适的平衡可能并不容易。作者对兼职工作的态度似乎是正面的。"
+      },
+      {
+        "text": "New Technology: Self-driving cars technology that could potentially cause",
+        "x": 75.8,
+        "y": 251.9,
+        "w": 276.9,
+        "h": 14.2,
+        "zh": "新技术：自动驾驶汽车。一种可能造成危害的技术"
+      },
+      {
+        "text": "Potential Harm: Accidents caused by self-driving cars Ethical? Yes, because the number of lives saved by self-driving cars will be greater than the number of lives lost due to accidents",
+        "x": 232.9,
+        "y": 236.8,
+        "w": 236.1,
+        "h": 21.8,
+        "zh": "潜在危害：自动驾驶汽车造成的事故。合乎伦理吗？是的，因为自动驾驶汽车救下的生命数量，会大于因事故失去的生命数量"
+      },
+      {
+        "text": "The buyer and seller should agree on a price for the car. The buyer from another person. he has some bitcoins, then creates a bitcoin transaction that sends the agreed upon amount but he doesn’t want to reveal his identity. of bitcoins to the seller’s bitcoin address, but the buyer does not how can they make the transaction happen?",
+        "x": 75.8,
+        "y": 161.9,
+        "w": 396.7,
+        "h": 29.4,
+        "zh": "买卖双方应当就这辆车的价格达成一致。买方从另一个人那里。他有一些比特币，于是创建一笔比特币交易，把谈好的数额。但他不想暴露身份。的比特币转到卖方的比特币地址，可是买方并没有。他们怎样才能让这笔交易发生？"
+      },
+      {
+        "text": "sign this transaction with his private key. Instead, he gives the unsigned transaction to the seller. The seller can now sign the transaction using his private key, and broadcast it to the network. Once the transaction is confirmed by the network, the buyer has no way to get his money back, so he will be forced to go through with",
+        "x": 232.7,
+        "y": 131.6,
+        "w": 236.3,
+        "h": 37,
+        "zh": "用他的私钥为这笔交易签名。他没有这么做，而是把未签名的交易交给卖方。卖方现在可以用自己的私钥为交易签名，并把它广播到网络上。一旦交易被网络确认，买方就无法把钱要回来，因此他将被迫把这件事进行到底"
+      },
+      {
+        "text": "Table 11: Representative invalid tasks generated by GPT3. The problematic fields are indicated in the validity column. As discussed in §3.3, although these tasks contain errors, they still provide many useful signals in supervising models to follow instructions.",
+        "x": 70.6,
+        "y": 76.3,
+        "w": 454.2,
+        "h": 33.9,
+        "zh": "表 11：GPT3 生成的有代表性的无效任务。有问题的字段在“是否有效”一栏中标出。如 §3.3 所讨论的，这些任务虽然含有错误，但在监督模型遵循指令时仍然提供了许多有用信号。"
+      }
+    ]
+  }
+}

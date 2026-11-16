@@ -1,0 +1,1747 @@
+{
+  "id": "2403.07691",
+  "title": "2403.07691",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "ORPO: Monolithic Preference Optimization without Reference Model",
+        "x": 89.6,
+        "y": 752.1,
+        "w": 416,
+        "h": 14.3,
+        "zh": "ORPO：无需参考模型的一体化偏好优化"
+      },
+      {
+        "text": "{jiwoo_hong, noah.lee, thorne}@kaist.ac.kr",
+        "x": 173.6,
+        "y": 675.3,
+        "w": 251.1,
+        "h": 12,
+        "zh": ""
+      },
+      {
+        "text": "While recent preference alignment algorithms for language models have demonstrated promising results, supervised fine-tuning (SFT) remains imperative for achieving successful con-",
+        "x": 87.9,
+        "y": 559.9,
+        "w": 185.9,
+        "h": 45.8,
+        "zh": "近期的语言模型偏好对齐算法已经做出一些不错的结果，但要真正收敛成功，监督微调（SFT）仍然必不可少。"
+      },
+      {
+        "text": "In this paper, we study the crucial role of SFT within the context of preference alignment, emphasizing that a minor penalty for the disfavored generation style is sufficient for preference-aligned SFT. Building on this foundation, we introduce a straightforward and innovative reference model-free monolithic odds ratio preference optimization algorithm, ORPO, eliminating the necessity for an additional preference alignment phase. We demonstrate, both empirically and theoretically, that the odds ratio is a sensible choice for contrasting favored and disfavored styles during SFT across the diverse sizes from 125M to 7B. Specifically, fine-tuning Phi-2 (2.7B), Llama-2 (7B), and Mistral (7B) with ORPO on the UltraFeedback alone surpasses the performance of state-of-the-art language models with more than 7B and 13B parameters: achieving up to 12.20% on AlpacaEval2.0 (Figure 1), 66.19% on IFEval (instruction-level loose, Table 6), and 7.32 in MT-Bench (Figure 12). We release code and model checkpoints for Mistral-ORPO- α (7B)2 and Mistral-ORPO-β (7B).3",
+        "x": 87.1,
+        "y": 273,
+        "w": 186.7,
+        "h": 284.9,
+        "zh": "本文研究 SFT 在偏好对齐里的关键作用，并强调：对不受偏好的生成风格只加一点轻微惩罚，就足以做出带偏好对齐的 SFT。在此基础上，我们提出一种简单、且不需要参考模型的一体化优势比偏好优化算法 ORPO，从而不必再单独做一轮偏好对齐。我们从实验和理论两方面表明，在 SFT 过程中用优势比来区分受偏好与不受偏好的风格是合理的，模型规模从 125M 到 7B 都适用。具体而言，只在 UltraFeedback 上用 ORPO 微调 Phi-2（2.7B）、Llama-2（7B）和 Mistral（7B），成绩就超过参数量大于 7B 乃至 13B 的前沿语言模型：AlpacaEval2.0 最高达到 12.20%（图 1），IFEval（指令级宽松，表 6）达到 66.19%，MT-Bench 达到 7.32（图 12）。我们发布了 Mistral-ORPO-α（7B）和 Mistral-ORPO-β（7B）的代码与模型检查点。"
+      },
+      {
+        "text": "Figure 1: AlpacaEval2.0 result of Llama-2 (7B) and Mistral (7B) fine-tuned with ORPO (blue) in comparison to the state-of-the-art models. Notably, Mistral-ORPO-α & β surpasses Zephyr β and Llama-2-Chat (13B) with a single epoch training exclusively on the UltraFeedback.",
+        "x": 305.8,
+        "y": 441.9,
+        "w": 218.7,
+        "h": 57.8,
+        "zh": "图 1：用 ORPO 微调后的 Llama-2（7B）和 Mistral（7B）（蓝色）在 AlpacaEval2.0 上的结果，并与前沿模型对比。值得注意的是，Mistral-ORPO-α 和 β 只在 UltraFeedback 上训练一个 epoch，就超过了 Zephyr β 和 Llama-2-Chat（13B）。"
+      },
+      {
+        "text": "tuning to be usable in general-domain applications, typically through processes such as instruction tuning and preference alignment. Instruction-tuning (Wei et al., 2022; Taori et al., 2023; Wang et al., 2023; Zhou et al., 2023a) trains models to follow task descriptions given in natural language, which enables models to generalize well to previously unseen tasks. However, despite the ability to follow instructions, models may generate harmful or unethical outputs (Carlini et al., 2021; Gehman et al., 2020; Pryzant et al., 2023). To further align these models with human values,",
+        "x": 305.7,
+        "y": 249.8,
+        "w": 220.6,
+        "h": 162.8,
+        "zh": "微调之后，才能用在通用领域，常见做法是指令微调，再加上偏好对齐。指令微调（Wei 等人，2022；Taori 等人，2023；Wang 等人，2023；Zhou 等人，2023a）训练模型去遵循自然语言给出的任务说明，使模型能较好泛化到以前没见过的任务。不过，会跟指令并不等于无害：模型仍可能生成有害或不道德的输出（Carlini 等人，2021；Gehman 等人，2020；Pryzant 等人，2023）。要进一步把这些模型对齐到人类价值，"
+      },
+      {
+        "text": "Pre-trained language models (PLMs) with vast training corpora such as web texts (Gokaslan and Cohen, 2019; Penedo et al., 2023) or textbooks (Li et al., 2023c) have shown remarkable abilities in diverse natural language processing (NLP) tasks (Brown et al., 2020; Zhang et al., 2022; Touvron et al., 2023; Jiang et al., 2023; Almazrouei et al., 2023). However, the models must undergo further",
+        "x": 70.5,
+        "y": 132.3,
+        "w": 220,
+        "h": 105.8,
+        "zh": "在网页文本（Gokaslan 与 Cohen，2019；Penedo 等人，2023）或教科书（Li 等人，2023c）这类大规模语料上预训练的语言模型（PLM），已经在多种自然语言处理（NLP）任务上表现出很强的能力（Brown 等人，2020；Zhang 等人，2022；Touvron 等人，2023；Jiang 等人，2023；Almazrouei 等人，2023）。不过，这些模型还必须再做进一步"
+      },
+      {
+        "text": "ence data using techniques such as reinforcement learning with human feedback (Ziegler et al., 2020; Stiennon et al., 2022, RLHF) and direct preference optimization (Rafailov et al., 2023, DPO). Preference alignment methods have demonstrated success in several downstream tasks beyond reducing harm. For example, improving factuality (Tian et al., 2023; Cheng et al., 2024; Chen and Li, 2024), code-based question answering (Gorbatovski and Kovalchuk, 2024), and machine translation (Ramos et al., 2023). The versatility of alignment algorithms over a wide range of downstream",
+        "x": 305.8,
+        "y": 70.9,
+        "w": 220.4,
+        "h": 162.8,
+        "zh": "偏好数据上继续训练，方法包括人类反馈强化学习（Ziegler 等人，2020；Stiennon 等人，2022，即 RLHF）和直接偏好优化（Rafailov 等人，2023，即 DPO）。偏好对齐的成效不限于减少伤害，在若干下游任务上也成立，例如提高事实性（Tian 等人，2023；Cheng 等人，2024；Chen 与 Li，2024）、编程问答（Gorbatovski 与 Kovalchuk，2024），以及机器翻译（Ramos 等人，2023）。对齐算法能覆盖相当广的一类下游"
+      },
+      {
+        "text": "https://github.com/xfactlab/orpo https://huggingface.co/kaist-ai/",
+        "x": 87,
+        "y": 101.6,
+        "w": 144,
+        "h": 19.8,
+        "zh": ""
+      }
+    ],
+    "2": [
+      {
+        "text": "Figure 2: Comparison of model alignment techniques. ORPO aligns the language model without a reference model in a single-step manner by assigning a weak penalty to the rejected responses and a strong adaptation signal to the chosen responses with a simple log odds ratio term appended to the negative log-likelihood loss.",
+        "x": 70.9,
+        "y": 592.7,
+        "w": 453.5,
+        "h": 33.9,
+        "zh": "图 2：几种模型对齐方法的对比。ORPO 不使用参考模型，一步完成对齐：在负对数似然损失上附加一个简单的对数优势比项，对拒绝回答只给弱惩罚，对选中回答则给强的适配信号。"
+      },
+      {
+        "text": "tasks highlights the necessity of understanding the alignment procedure and further improving the algorithms in terms of efficiency and performance. However, existing preference alignment methods normally consist of a multi-stage process, as shown in Figure 2, typically requiring a second reference model and a separate warm-up phase with supervised fine-tuning (SFT) (Ziegler et al., 2020; Rafailov et al., 2023; Wu et al., 2023). In this paper, we study the role and impact of SFT in pairwise preference datasets for model alignment in Section 3 and propose a simple and novel monolithic alignment method, odds ratio preference optimization (ORPO), which efficiently penalizes the model from learning undesired generation styles during SFT in Section 4. In contrast to previous works, our approach requires neither an SFT warm-up stage nor a reference model, enabling resource-efficient development of preference-based aligned models. We demonstrate the effectiveness of our method with the evaluation of model alignment tasks and popular leaderboards in Section 6.1 and 6.2 by fine-tuning Phi-2 (2.7B), Llama-2 (7B), and Mistral (7B) with ORPO. Then, we conduct controlled experiments comparing ORPO against established methods for model alignment, RLHF, and DPO for different datasets and model sizes in Section 6.3. Along with the post-hoc analysis of generation diversity in Section 6.4, we expound on the theoretical, empirical, and computational justification of utilizing the odds ratio in monolithic preference alignment in Section 7.3. We release the training code and the checkpoints for Mistral-ORPO-α (7B) and Mistral-ORPO-β (7B). These models achieve 7.24 and 7.32 in MT-Bench, 11.33% and 12.20%",
+        "x": 70.5,
+        "y": 70.9,
+        "w": 220.6,
+        "h": 498.2,
+        "zh": "任务都用得上，因此有必要把对齐过程本身弄清楚，并继续从效率和效果上改进算法。然而，现有偏好对齐通常是多阶段流程，如图 2 所示，一般还要第二个参考模型，以及单独的监督微调（SFT）热身阶段（Ziegler 等人，2020；Rafailov 等人，2023；Wu 等人，2023）。本文在第 3 节研究成对偏好数据里 SFT 对模型对齐的作用和影响，并在第 4 节提出一种简单的新一体化对齐方法：优势比偏好优化（ORPO）。它在 SFT 期间就抑制模型去学不想要的生成风格。与先前工作不同，我们既不需要 SFT 热身，也不需要参考模型，因此能更省资源地做出基于偏好的对齐模型。我们用 ORPO 微调 Phi-2（2.7B）、Llama-2（7B）和 Mistral（7B），并在第 6.1 节和第 6.2 节，用模型对齐任务和常见排行榜评估效果。随后在第 6.3 节做对照实验，在不同数据集和模型规模上把 ORPO 与已有方法 RLHF、DPO 比较。第 6.4 节对生成多样性做事后分析，第 7.3 节则从理论、实验和计算三方面说明，为何在一体化偏好对齐里使用优势比是合理的。我们发布训练代码，以及 Mistral-ORPO-α（7B）和 Mistral-ORPO-β（7B）的检查点。这两个模型在 MT-Bench 上为 7.24 和 7.32，另有 11.33% 和 12.20%"
+      },
+      {
+        "text": "on AlpacaEval2.0, and 61.63% and 66.19% in IFEval instruction-level loose accuracy, respectively.",
+        "x": 305.9,
+        "y": 544.6,
+        "w": 220.4,
+        "h": 24.5,
+        "zh": "在 AlpacaEval2.0 上，以及 IFEval 指令级宽松准确率 61.63% 和 66.19%。"
+      },
+      {
+        "text": "Alignment with Reinforcement Learning forcement learning with human feedback (RLHF)",
+        "x": 306.1,
+        "y": 485.3,
+        "w": 219,
+        "h": 24.5,
+        "zh": "用强化学习做对齐。结合人类反馈的强化学习（RLHF）"
+      },
+      {
+        "text": "(Bradley and Terry, 1952) to estimate the probability of a pairwise competition between two independently evaluated instances. An additional reward model is trained to score instances. Reinforcement learning algorithms such as proximal policy optimization (PPO) (Schulman et al., 2017) are employed to train the model to maximize the score of the reward model for the chosen response, resulting in language models that are trained with human preferences (Ziegler et al., 2020; Stiennon et al., 2022). Notably, Ouyang et al. (2022) demonstrated the scalability and versatility of RLHF for instruction-following language models. Extensions such as language model feedback (RLAIF) could be a viable alternative to human feedback (Bai et al., 2022b; Lee et al., 2023; Pang et al., 2023). However, RLHF faces challenges of extensive hyperparameter searching due to the instability of PPO (Rafailov et al., 2023; Wu et al., 2023) and the sensitivity of the reward models (Gao et al., 2022; Wang et al., 2024). Therefore, there is a crucial need for stable preference alignment algorithms.",
+        "x": 305.6,
+        "y": 173.7,
+        "w": 220.6,
+        "h": 295.4,
+        "zh": "（Bradley 与 Terry，1952）用来估计两个被独立评估的样本在成对比较中的胜出概率。另外再训练一个奖励模型给样本打分。近端策略优化（PPO）（Schulman 等人，2017）等强化学习算法用来训练模型，使奖励模型对选中回答的打分尽量高，从而得到按人类偏好训练的语言模型（Ziegler 等人，2020；Stiennon 等人，2022）。Ouyang 等人（2022）特别表明，RLHF 在遵循指令的语言模型上可以扩展，也相当通用。用语言模型反馈（RLAIF）代替人类反馈，也是一条可行的路（Bai 等人，2022b；Lee 等人，2023；Pang 等人，2023）。不过 RLHF 也有困难：PPO 不稳定，超参数要大量搜索（Rafailov 等人，2023；Wu 等人，2023），奖励模型也很敏感（Gao 等人，2022；Wang 等人，2024）。因此，很需要稳定的偏好对齐算法。"
+      },
+      {
+        "text": "Alignment without Reward Model techniques for preference alignment mitigate the need for reinforcement learning (Rafailov et al., 2023; Song et al., 2023; Azar et al., 2023; Ethayarajh et al., 2024). Rafailov et al. (2023) introduce direct policy optimization (DPO), which combines the reward modeling stage into the preference learn-",
+        "x": 305.9,
+        "y": 70.9,
+        "w": 220.4,
+        "h": 92.2,
+        "zh": "不用奖励模型的对齐。有一类偏好对齐方法可以不必做强化学习（Rafailov 等人，2023；Song 等人，2023；Azar 等人，2023；Ethayarajh 等人，2024）。Rafailov 等人（2023）提出直接偏好优化（DPO），把奖励建模阶段并进偏好学习"
+      }
+    ],
+    "3": [
+      {
+        "text": "ing stage. Azar et al. (2023) prevented potential overfitting problems in DPO through identity preference optimization (IPO). Ethayarajh et al. (2024) and Cai et al. (2023) proposed Kahneman-Tversky Optimisation (KTO) and Unified Language Model Alignment (ULMA) that does not require the pairwise preference dataset, unlike RLHF and DPO. Song et al. (2023) further suggests incorporation of the softmax value of the reference response set in the negative log-likelihood loss to merge the supervised fine-tuning and preference alignment.",
+        "x": 70.5,
+        "y": 624.6,
+        "w": 220.6,
+        "h": 146.4,
+        "zh": "阶段。Azar 等人（2023）用同一性偏好优化（IPO）缓解 DPO 可能出现的过拟合。Ethayarajh 等人（2024）和 Cai 等人（2023）提出 Kahneman-Tversky 优化（KTO）以及统一语言模型对齐（ULMA），它们不像 RLHF 和 DPO 那样需要成对偏好数据。Song 等人（2023）进一步建议，把参考回答集合的 softmax 值放进负对数似然损失，从而把监督微调和偏好对齐合在一起。"
+      },
+      {
+        "text": "2023a; Dong et al., 2024) by increasing the log probabilities of pertinent tokens. Nevertheless, this inadvertently increases the likelihood of generating tokens in undesirable styles, as illustrated in Figure 3. Therefore, it is necessary to develop methods capable of preserving the domain adaptation role of SFT while concurrently discerning and mitigating unwanted generation styles.",
+        "x": 306.1,
+        "y": 665.2,
+        "w": 218.3,
+        "h": 105.8,
+        "zh": "2023a；Dong 等人，2024），靠的是提高相关 token 的对数概率。然而这也会在无意中提高不受欢迎风格里那些 token 的生成概率，如图 3 所示。因此需要一种方法，既能保住 SFT 的领域适配作用，又能同时辨别并压低不想要的生成风格。"
+      },
+      {
+        "text": "Absence of Penalty in Cross-Entropy Loss goal of cross-entropy loss model fine-tuning is to penalize the model if the predicted logits for the reference answers are low, as shown in Equation 2.",
+        "x": 306.1,
+        "y": 602.2,
+        "w": 220.1,
+        "h": 51.6,
+        "zh": "交叉熵损失里没有惩罚。用交叉熵损失做模型微调时，若参考答案的预测 logits 偏低，就要惩罚模型，如式 2 所示。"
+      },
+      {
+        "text": "Alignment with Supervised Fine-tuning ence alignment methods in reinforcement learning (RL) often leverage supervised fine-tuning (SFT) to ensure the stable update of the active policy in relation to the old policy (Schulman et al., 2017). This is because the SFT model is the old policy in the context of RLHF (Ziegler et al., 2020). Furthermore, empirical findings indicate that, even in non-RL alignment methods, the SFT model is crucial for achieving convergence to desired results (Rafailov et al., 2023; Tunstall et al., 2023). In contrast, there have been approaches to build human-aligned language models by conducting SFT only with filtered datasets (Zhou et al., 2023a; Li et al., 2023a; Haggerty and Chandra, 2024; Zhou et al., 2023b). Zhou et al. (2023a) demonstrated that SFT with a small amount of data with finegrained filtering and curation could be sufficient for building helpful language model assistants. Furthermore, Li et al. (2023a) and Haggerty and Chandra (2024) proposed an iterative process of finetuning the supervised fine-tuned language models with their own generations after fine-grained selection of aligned generations and Zhou et al. (2023b) suggested that a curated subset of preference dataset is sufficient for alignment. While these works highlight the impact and significance of SFT in the context of alignment, the actual role of SFT and the theoretical background for incorporating preference alignment in SFT remains understudied.",
+        "x": 70.5,
+        "y": 210.6,
+        "w": 220.6,
+        "h": 403.9,
+        "zh": "用监督微调做对齐。强化学习（RL）里的偏好对齐方法，常常借助监督微调（SFT），以保证当前策略相对旧策略的更新是稳定的（Schulman 等人，2017）。这是因为在 RLHF 的设定里，SFT 模型就是旧策略（Ziegler 等人，2020）。经验上也表明，即便不是 RL 的对齐方法，SFT 模型对收敛到想要的结果仍然关键（Rafailov 等人，2023；Tunstall 等人，2023）。另一方面，也有工作只用筛选过的数据做 SFT，来构建对齐人类的语言模型（Zhou 等人，2023a；Li 等人，2023a；Haggerty 与 Chandra，2024；Zhou 等人，2023b）。Zhou 等人（2023a）表明，少量经过细粒度筛选和整理的数据做 SFT，就足以做出有帮助的语言模型助手。Li 等人（2023a）以及 Haggerty 与 Chandra（2024）提出一种迭代流程：对已经监督微调过的语言模型，用它自己生成的结果，再经细粒度挑选出对齐的样本，继续微调。Zhou 等人（2023b）则认为，偏好数据里整理出的一个子集就足以完成对齐。这些工作指出了 SFT 在对齐中的影响和重要性，但 SFT 实际扮演什么角色、以及把偏好对齐放进 SFT 的理论依据，仍然研究不足。"
+      },
+      {
+        "text": "where yi is a boolean value that indicates if ith token in the vocabulary set V is a label token, pi refers to the probability of ith token, and m is the length of sequence. Using cross-entropy alone gives no direct penalty or compensation for the logits of non-answer tokens (Lin et al., 2017) as yi will be set to 0. While cross-entropy is generally effective for domain adaptation (Mao et al., 2023), there are no mechanisms to penalize rejected responses when compensating for the chosen responses. Therefore, the log probabilities of the tokens in the rejected responses increase along with the chosen responses, which is not desired from the viewpoint of preference alignment.",
+        "x": 305.7,
+        "y": 310.1,
+        "w": 220.5,
+        "h": 187,
+        "zh": "其中 y_i 是布尔值，表示词表 V 中第 i 个 token 是不是标签 token，p_i 是第 i 个 token 的概率，m 是序列长度。只用交叉熵时，非答案 token 的 logits 不会得到直接的惩罚或补偿（Lin 等人，2017），因为对应的 y_i 会被置为 0。交叉熵对领域适配通常是有效的（Mao 等人，2023），但在补偿选中回答的同时，并没有机制去惩罚拒绝回答。于是拒绝回答中 token 的对数概率会跟着选中回答一起上升，从偏好对齐的角度看，这并不是想要的结果。"
+      },
+      {
+        "text": "Generalization over Both Response Styles conduct a pilot study to empirically demonstrate the miscalibration of chosen and rejected responses with supervised fine-tuning alone. We fine-tune OPT-350M (Zhang et al., 2022) on the chosen responses only from the HH-RLHF dataset (Bai et al., 2022b). Throughout the training, we monitor the log probability of rejected responses for each batch and report this in Figure 3. Both the log probability of chosen and rejected responses exhibited a simultaneous increase. This can be interpreted from two different perspectives. First, the cross-entropy loss effectively guides the model toward the intended domain (e.g., dialogue). However, the absence of a penalty for unwanted generations results in rejected responses sometimes having even higher log probabilities than the chosen ones.",
+        "x": 305.7,
+        "y": 70.9,
+        "w": 220.5,
+        "h": 227.7,
+        "zh": "两种回答风格都会被泛化进去。我们做了一项预实验，用经验说明：只做监督微调时，选中回答和拒绝回答的概率并没有被校准开。我们只用 HH-RLHF 数据集（Bai 等人，2022b）里的选中回答来微调 OPT-350M（Zhang 等人，2022）。训练过程中，我们监视每个 batch 里拒绝回答的对数概率，并画在图 3 中。选中回答和拒绝回答的对数概率同时上升。这可以从两面来看。第一，交叉熵损失确实把模型领向目标领域（例如对话）。可是由于不想要的生成没有惩罚，拒绝回答的对数概率有时甚至高于选中回答。"
+      },
+      {
+        "text": "We study the behavior of supervised fine-tuning (SFT) as an initial stage of preference alignment methods (Ziegler et al., 2020; Rafailov et al., 2023) through analysis of the loss function in SFT and empirical demonstration of the preference comprehension ability of the trained SFT model. SFT plays a significant role in tailoring the pre-trained language models to the desired domain (Zhou et al.,",
+        "x": 70.4,
+        "y": 70.9,
+        "w": 220.6,
+        "h": 105.8,
+        "zh": "我们研究监督微调（SFT）作为偏好对齐方法初始阶段时的行为（Ziegler 等人，2020；Rafailov 等人，2023）。一方面分析 SFT 的损失函数，一方面用实验看训练后的 SFT 模型对偏好的把握。SFT 在把预训练语言模型收到目标领域上作用很大（Zhou 等人，"
+      }
+    ],
+    "4": [
+      {
+        "text": "Intuitively, oddsθ(y|x) = k implies that it is k times more likely for the model θ to generate the output sequence y than not generating it. Thus, the odds ratio of the chosen response yw over the rejected response yl, ORθ(yw, yl), indicates how much more likely it is for the model θ to generate yw than yl given input x, defined in Equation 5.",
+        "x": 306.1,
+        "y": 648.5,
+        "w": 219.6,
+        "h": 94,
+        "zh": "直观地说，odds_θ(y|x) = k 表示：模型 θ 生成输出序列 y，比不生成它要更可能 k 倍。因此，选中回答 y_w 相对拒绝回答 y_l 的优势比 OR_θ(y_w, y_l) 表示：给定输入 x 时，模型 θ 生成 y_w 比生成 y_l 高出多少。定义见式 5。"
+      },
+      {
+        "text": "Figure 3: Log probabilities for chosen and rejected responses during OPT-350M model fine-tuning on HHRLHF dataset. Despite only chosen responses being used for supervision, rejected responses show a comparable likelihood of generation.",
+        "x": 70.9,
+        "y": 559.4,
+        "w": 219.9,
+        "h": 57.8,
+        "zh": "图 3：在 HH-RLHF 上微调 OPT-350M 时，选中回答与拒绝回答的对数概率。尽管监督只用了选中回答，拒绝回答仍有相近的生成可能性。"
+      },
+      {
+        "text": "Objective Function of ORPO The objective function of ORPO in Equation 6 consists of two components: 1) supervised fine-tuning (SFT) loss (LSF T ); 2) relative ratio loss (LOR). LORP O = E(x,yw,yl) [LSF T + λ · LOR] LSF T follows the conventional causal language modeling negative log-likelihood (NLL) loss function to maximize the likelihood of generating the reference tokens as previously discussed in Section 3. LOR in Equation 7 maximizes the odds ratio between the likelihood of generating the disfavored response yw and the disfavored response yl. We wrap the log odds ratio with the log sigmoid function so that LOR could be minimized by increasing the log odds ratio between yw and yl.",
+        "x": 305.8,
+        "y": 388.9,
+        "w": 220.4,
+        "h": 220.5,
+        "zh": "ORPO 的目标函数。式 6 中 ORPO 的目标函数由两部分组成：1）监督微调（SFT）损失 L_SFT；2）相对比率损失 L_OR。L_ORPO = E_{(x, y_w, y_l)}[L_SFT + λ · L_OR]。L_SFT 沿用常规因果语言建模的负对数似然（NLL），用来最大化参考 token 的生成似然，这一点第 3 节已经讨论过。式 7 的 L_OR 要最大化生成不受偏好回答 y_w 与不受偏好回答 y_l 的似然之间的优势比。我们在对数优势比外包一层 log sigmoid，这样只要提高 y_w 与 y_l 之间的对数优势比，L_OR 就会变小。"
+      },
+      {
+        "text": "Penalizing Undesired Generations an unlikelihood penalty to the loss has demonstrated success in reducing unwanted degenerative traits in models (Welleck et al., 2019; Li et al., 2020). For example, to prevent repetitions, an unwanted token set of previous contexts, k ∈ Crecent, is disfavored by adding the following term to (1 − p(k)) to the loss (such as Equation 2) which penalizes the model for assigning high probabilities to recent tokens. Motivated by SFT ascribing high probabilities to rejected tokens (Figure 3) and the effectiveness of appending penalizing unwanted traits, we design a monolithic preference alignment method that dynamically penalizes the disfavored response for each query without the need for crafting sets of rejected tokens.",
+        "x": 69.6,
+        "y": 319.9,
+        "w": 221.4,
+        "h": 215.7,
+        "zh": "惩罚不想要的生成。把非似然惩罚加进损失，已经能减轻模型不想要的退化倾向（Welleck 等人，2019；Li 等人，2020）。例如为了防止重复，会把最近上下文里不想要的 token 记为 k ∈ C_recent，在损失（如式 2）上加入 (1 − p(k))，从而惩罚模型给最近的 token 赋予高概率。图 3 表明 SFT 会给被拒绝的 token 很高的概率，而给不想要的特征加惩罚又确实有效。据此，我们设计了一种一体化偏好对齐方法：对每个问题动态惩罚不受偏好的回答，而不必手工构造被拒绝 token 的集合。"
+      },
+      {
+        "text": "Together, LSF T and LOR weighted with λ tailor the pre-trained language model to adapt to the specific subset of the desired domain and disfavor generations in the rejected response sets.",
+        "x": 305.8,
+        "y": 297.8,
+        "w": 220.4,
+        "h": 51.6,
+        "zh": "合在一起，L_SFT 与按 λ 加权的 L_OR 把预训练语言模型适配到目标领域中的特定子集，并压低拒绝回答集合里的那些生成。"
+      },
+      {
+        "text": "We introduce a novel preference alignment algorithm, Odds Ratio Preference Optimization (ORPO), which incorporates an odds ratio-based penalty to the conventional negative log-likelihood (NLL) loss for differentiating the generation styles between favored and disfavored responses.",
+        "x": 70.4,
+        "y": 206.9,
+        "w": 220.6,
+        "h": 78.7,
+        "zh": "我们提出一种新的偏好对齐算法，优势比偏好优化（ORPO）。它在常规负对数似然（NLL）损失上加入基于优势比的惩罚，用来区分受偏好回答与不受偏好回答的生成风格。"
+      },
+      {
+        "text": "The gradient of LRatio further justifies using the odds ratio loss. It comprises two terms: one that penalizes the wrong predictions and one that contrasts between chosen and rejected responses, denoted in Equation 84 for d = (x, yl, yw) ∼ D.",
+        "x": 305.8,
+        "y": 202.6,
+        "w": 220.4,
+        "h": 66.9,
+        "zh": "L_Ratio 的梯度进一步说明，使用优势比损失是有道理的。它包含两项：一项惩罚错误预测，一项对照选中回答与拒绝回答。对 d = (x, y_l, y_w) ∼ D，形式见式 8。"
+      },
+      {
+        "text": "Given an input sequence x, the average loglikelihood of generating the output sequence y, of length m tokens, is computed as Equation 3. The odds of generating the output sequence y given an input sequence x is defined in Equation 4:",
+        "x": 70.9,
+        "y": 112.2,
+        "w": 220.1,
+        "h": 65.1,
+        "zh": "给定输入序列 x，生成长度为 m 个 token 的输出序列 y 时，平均对数似然按式 3 计算。给定 x 生成输出序列 y 的优势（odds）定义见式 4。"
+      },
+      {
+        "text": "The full derivation for ∇θLOR is in Appendix A.",
+        "x": 322,
+        "y": 69.8,
+        "w": 177.8,
+        "h": 10,
+        "zh": "∇_θ L_OR 的完整推导见附录 A。"
+      }
+    ],
+    "5": [
+      {
+        "text": "When the odds of the favored responses are relatively higher than the disfavored responses, δ(d) in Equation 9 will converge to 0. This indicates that the δ(d) will play the role of a penalty term, accelerating the parameter updates if the model is more likely to generate the rejected responses. Meanwhile, h(d) in Equation 10 implies a weighted contrast of the two gradients from the chosen and rejected responses. Specifically, 1−P(y|x) in the denominators amplifies the gradients when the corresponding side of the likelihood P(y|x) is low. For the chosen responses, this accelerates the model’s adaptation toward the distribution of chosen responses as the likelihood increases.",
+        "x": 70.4,
+        "y": 582.9,
+        "w": 220.6,
+        "h": 188,
+        "zh": "当受偏好回答的优势相对不受偏好回答已经明显更高时，式 9 中的 δ(d) 会趋向 0。这说明 δ(d) 扮演惩罚项：若模型更可能生成拒绝回答，参数更新会被加快。同时，式 10 的 h(d) 是选中回答与拒绝回答两边梯度的加权对照。具体而言，分母中的 1 − P(y|x) 会在对应一侧的似然 P(y|x) 偏低时放大梯度。对选中回答来说，随着似然升高，这会加快模型去贴近选中回答的分布。"
+      },
+      {
+        "text": "Leaderboard Evaluation In Section 6.1, we evaluate the models using the",
+        "x": 306.1,
+        "y": 742.2,
+        "w": 218.3,
+        "h": 28.8,
+        "zh": "排行榜评估。在第 6.1 节，我们用"
+      },
+      {
+        "text": "benchmarks, comparing ORPO to other instructiontuned models reported in the official leaderboard,5 including Llama-2 Chat (7B) and (13B) (Touvron et al., 2023), and Zephyr α and β (Almazrouei et al., 2023). Similarly, in Section 6.2, we evaluate the models with MT-Bench (Zheng et al., 2023) and report the results and the scores of the same models reported in the official leaderboard.6 Using GPT-4 (Achiam et al., 2023) as an evaluator",
+        "x": 306.1,
+        "y": 606.7,
+        "w": 220.1,
+        "h": 119.3,
+        "zh": "这些基准评估模型，把 ORPO 与官方排行榜报告的其他指令微调模型比较，包括 Llama-2 Chat（7B）和（13B）（Touvron 等人，2023），以及 Zephyr α 和 β（Almazrouei 等人，2023）。同样，在第 6.2 节我们用 MT-Bench（Zheng 等人，2023）评估模型，并报告结果以及官方排行榜上同一批模型的分数。评审使用 GPT-4（Achiam 等人，2023）。"
+      },
+      {
+        "text": ", we assess if the trained model can be preferred over the responses generated from text-davinci-003. For AlpacaEval2.0, we used GPT-4-turbo7 as an evaluator following the default setting. We assess if the generated responses are favored over those generated from GPT-4. Finally, using GPT-4 as an evaluator in MT-Bench, we check if the models can follow the instructions with hard answers in a multi-turn conversation.",
+        "x": 305.9,
+        "y": 484.8,
+        "w": 220.4,
+        "h": 119.3,
+        "zh": "我们评估训练后的模型能否比 text-davinci-003 生成的回答更受偏好。AlpacaEval2.0 按默认设置，用 GPT-4-turbo 做评审。我们看生成的回答是否优于 GPT-4 生成的回答。最后，在 MT-Bench 中用 GPT-4 做评审，检查模型能否在多轮对话里遵循那些有确定答案的指令。"
+      },
+      {
+        "text": "Training Configurations We train a series of OPT models (Zhang et al., 2022) scaling from 125M to 1.3B parameters comparing supervised fine-tuning (SFT), proximal policy optimization (PPO), direct policy optimization (DPO), and compare these to our ORPO. PPO and DPO models were fine-tuned with TRL library (von Werra et al., 2020) on top of SFT models trained for a single epoch on the chosen responses following Rafailov et al. (2023) and Tunstall et al. (2023). We notate this by prepending \"+\" to each algorithm (e.g., +DPO). Additionally, we train Phi-2 (2.7B) (Javaheripi and Bubeck, 2023), a pre-trained language model with promising downstream performance (Beeching et al., 2023), as well as Llama- 2 (7B) (Touvron et al., 2023) and Mistral (7B) (Jiang et al., 2023). Further training details for each method are in Appendix C.",
+        "x": 70.5,
+        "y": 296.1,
+        "w": 220.5,
+        "h": 247.1,
+        "zh": "训练配置。我们训练一系列 OPT 模型（Zhang 等人，2022），规模从 125M 到 1.3B，比较监督微调（SFT）、近端策略优化（PPO）和直接偏好优化（DPO），再与我们的 ORPO 对比。PPO 和 DPO 使用 TRL 库（von Werra 等人，2020），在仅用选中回答训练了一个 epoch 的 SFT 模型上继续微调，设置遵循 Rafailov 等人（2023）和 Tunstall 等人（2023）。我们在算法名前加 “+” 表示这种接在 SFT 之后的训练（例如 +DPO）。此外还训练 Phi-2（2.7B）（Javaheripi 与 Bubeck，2023）。它是一个下游表现不错的预训练语言模型（Beeching 等人，2023）。同时训练 Llama-2（7B）（Touvron 等人，2023）和 Mistral（7B）（Jiang 等人，2023）。各方法更细的训练细节见附录 C。"
+      },
+      {
+        "text": "First, we assess the general instruction-following abilities of the models by comparing the preference alignment algorithms in Sections 6.1 and 6.2. Second, we measure the win rate of OPT models trained with ORPO against other alignment methods training OPT 1.3B as a reward model in Section 6.3. Then, we measure the lexical diversity of the models trained with ORPO and DPO in Section 6.4.",
+        "x": 306.1,
+        "y": 344.1,
+        "w": 220.2,
+        "h": 105.8,
+        "zh": "首先，在第 6.1 节和第 6.2 节比较各偏好对齐算法，评估模型一般的指令遵循能力。其次，在第 6.3 节用训练好的 OPT 1.3B 作为奖励模型，测量 ORPO 训练的 OPT 相对其他对齐方法的胜率。然后在第 6.4 节测量用 ORPO 和 DPO 训练的模型在用词上的多样性。"
+      },
+      {
+        "text": "ORPO improved pre-trained Phi-2 to exceed the performance of the Llama-2 Chat instruction-following language model by only using UltraFeedback as the instruction-tuning dataset, as shown in Table 1. λ of 0.25 was applied for Phi- 2, resulting in 71.80% and 6.35% in AlpacaEval.",
+        "x": 306.1,
+        "y": 235.4,
+        "w": 220.1,
+        "h": 78.7,
+        "zh": "只用 UltraFeedback 作为指令微调数据，ORPO 就把预训练的 Phi-2 提升到超过 Llama-2 Chat 这种指令遵循语言模型，见表 1。Phi-2 使用的 λ 为 0.25，在 AlpacaEval 上得到 71.80% 和 6.35%。"
+      },
+      {
+        "text": "We test each training configuration and model on two datasets: 1) Anthropic’s HH-RLHF (Bai et al., 2022a), 2) Binarized UltraFeedback (Tunstall et al., 2023). We filtered out instances where yw = yl or where yw = ∅ or where yl = ∅.",
+        "x": 70.5,
+        "y": 215.8,
+        "w": 219,
+        "h": 66.9,
+        "zh": "每种训练配置和每个模型都在两个数据集上测试：1）Anthropic 的 HH-RLHF（Bai 等人，2022a）；2）二值化的 UltraFeedback（Tunstall 等人，2023）。我们滤掉 y_w = y_l、y_w = ∅ 或 y_l = ∅ 的样本。"
+      },
+      {
+        "text": "Notably, UltraFeedback and ORPO with λ of 0.2 on Llama-2 (7B) resulted in higher AlpacaEval scores than the chat versions of both 7B and 13B scale trained with RLHF, eventually showing 81.26% and 9.44% in both AlpacaEvals. In contrast, in our controlled experimental setting of conducting one epoch of SFT and three",
+        "x": 305.7,
+        "y": 132.3,
+        "w": 220.5,
+        "h": 92.4,
+        "zh": "值得注意的是，在 Llama-2（7B）上使用 UltraFeedback、并把 ORPO 的 λ 设为 0.2，AlpacaEval 分数高于用 RLHF 训练的 7B 和 13B 对话模型，两个 AlpacaEval 上最终为 81.26% 和 9.44%。相比之下，在我们的对照实验里，先做一整个 epoch 的 SFT，再做三"
+      },
+      {
+        "text": "We train OPT-350M and OPT- 1.3B on each dataset for a single epoch for reward modeling with the objective function in Equation 11 (Ziegler et al., 2020). The OPT-350M reward model was used for PPO, and OPT-1.3B reward model was used to assess the generations of finetuned models. We refer to these reward models as RM-350M and RM-1.3B in Section 6.",
+        "x": 70,
+        "y": 98.4,
+        "w": 220.9,
+        "h": 105.8,
+        "zh": "我们按式 11 的目标函数（Ziegler 等人，2020），在每个数据集上把 OPT-350M 和 OPT-1.3B 各训练一个 epoch，用作奖励建模。PPO 使用 OPT-350M 奖励模型，评估微调模型的生成则使用 OPT-1.3B 奖励模型。第 6 节中分别称它们为 RM-350M 和 RM-1.3B。"
+      },
+      {
+        "text": "https://tatsu-lab.github.io/alpaca_eval/ https://huggingface.co/spaces/lmsys/ chatbot-arena-leaderboard https://platform.openai.com/docs/models/ gpt-4-and-gpt-4-turbo",
+        "x": 306.1,
+        "y": 70.9,
+        "w": 196,
+        "h": 50.4,
+        "zh": ""
+      },
+      {
+        "text": "−E(x,y ,yw) [log σ (r(x, yw) − r(x, yl))]",
+        "x": 84.5,
+        "y": 67.7,
+        "w": 173.8,
+        "h": 14.1,
+        "zh": ""
+      }
+    ],
+    "6": [
+      {
+        "text": "Mistral-ORPO-α (Ours) Mistral-ORPO-β (Ours)",
+        "x": 135.2,
+        "y": 622.2,
+        "w": 99.3,
+        "h": 24.4,
+        "zh": "Mistral-ORPO-α（本文） Mistral-ORPO-β（本文）"
+      },
+      {
+        "text": "Table 1: Table of instruction-following abilities of each checkpoint measured through AlpacaEval. While clearly showing the improvements in instruction-following abilities after training with ORPO, it is notable that ORPO models exceed RLHF or DPO models of Llama-2 and Mistral (* indicates the results from the official leaderboard.)",
+        "x": 70.6,
+        "y": 573.1,
+        "w": 454.2,
+        "h": 33.9,
+        "zh": "表 1：各检查点在 AlpacaEval 上测得的指令遵循能力。ORPO 训练之后，指令遵循能力明显提高；更值得注意的是，ORPO 模型超过了 Llama-2 和 Mistral 上用 RLHF 或 DPO 训练的模型（* 表示结果来自官方排行榜）。"
+      },
+      {
+        "text": "epochs of DPO following Tunstall et al. (2023) and Rafailov et al. (2023), Llama-2 + SFT and Llama- 2 + SFT + DPO yielded models with outputs that could not be evaluated. This supports the efficacy of ORPO, in which the model can rapidly learn the desired domain and the preference with limited data. This aligns with the h(d) examination in the gradient of our method studied in Section 4.3.",
+        "x": 70.9,
+        "y": 443.7,
+        "w": 220.1,
+        "h": 105.8,
+        "zh": "个 epoch 的 DPO，设置遵循 Tunstall 等人（2023）和 Rafailov 等人（2023）。这样得到的 Llama-2 + SFT 以及 Llama-2 + SFT + DPO，其输出无法参与评估。这支持了 ORPO 的有效性：在数据有限时，模型仍能很快同时学到目标领域和偏好。这与第 4.3 节对本方法梯度中 h(d) 的分析一致。"
+      },
+      {
+        "text": "Furthermore, fine-tuning Mistral (7B) with single-turn conversation dataset, UltraFeedback, and ORPO with λ of 0.1 outperforms Zephyr series, which are the Mistral (7B) models fine-tuned with SFT on 20K UltraChat (Ding et al., 2023) and DPO on the full UltraFeedback. As shown in Table 1, Mistral-ORPO-α (7B) achieves 87.92% and 11.33%, which exceeds Zephyr α by 1.98% and Zephyr β by 0.34% in AlpacaEval The sample responses and corresponding references from GPT-4 can be found in Appendix I.",
+        "x": 70,
+        "y": 277.5,
+        "w": 220.9,
+        "h": 146.4,
+        "zh": "进一步地，用单轮对话数据集 UltraFeedback、以 λ = 0.1 的 ORPO 微调 Mistral（7B），超过了 Zephyr 系列。Zephyr 是在 20K 条 UltraChat（Ding 等人，2023）上做 SFT、再在完整 UltraFeedback 上做 DPO 得到的 Mistral（7B）。如表 1，Mistral-ORPO-α（7B）达到 87.92% 和 11.33%，在 AlpacaEval 上比 Zephyr α 高 1.98%，比 Zephyr β 高 0.34%。样例回答及 GPT-4 的对应参考见附录 I。"
+      },
+      {
+        "text": "Figure 4: MT-Bench result of Mistral-ORPO-α (7B) and Mistral-ORPO-β (7B) by the category. Further comparison can be found in the Appendix G.",
+        "x": 306.1,
+        "y": 376.4,
+        "w": 219.9,
+        "h": 33.9,
+        "zh": "图 4：Mistral-ORPO-α（7B）和 Mistral-ORPO-β（7B）在 MT-Bench 上按类别的结果。进一步比较见附录 G。"
+      },
+      {
+        "text": "Multi-turn Instruction Following With our best model, Mistral-ORPO-α (7B) and Mistral-ORPO-β (7B), we also assess the multi-turn instruction-following skills with deterministic answers (e.g., math) through MT-Bench. As shown in Figure 4, ORPO-Mistral (7B) series achieve comparable results to either larger or the proprietary models, including Llama-2-Chat (70B) and Claude. Eventually, Mistral-ORPO-α (7B) and Mistral-ORPO-β (7B) scored 7.23 and 7.32 in MTBench without being exposed to the multi-turn conversation dataset during training.",
+        "x": 305.6,
+        "y": 183.9,
+        "w": 220.6,
+        "h": 166.9,
+        "zh": "多轮指令遵循。我们用最好的模型 Mistral-ORPO-α（7B）和 Mistral-ORPO-β（7B），通过 MT-Bench 评估多轮指令遵循能力，题目带有确定答案（例如数学）。如图 4，ORPO-Mistral（7B）系列与更大的模型或闭源模型相当，包括 Llama-2-Chat（70B）和 Claude。最终 Mistral-ORPO-α（7B）和 Mistral-ORPO-β（7B）在 MT-Bench 上得到 7.23 和 7.32，而训练阶段并没有接触多轮对话数据。"
+      },
+      {
+        "text": "Using the same configuration of Mistral-ORPO-α (7B), we additionally compare fine-tuning Mistral on the cleaned version of the UltraFeedback8 to demonstrate the effect of the data quality (Bartolome et al., 2023). While the actual sizes of datasets are similar, ORPO gains further advantages from the dataset quality by scoring over 91% and 12% on AlpacaEval, as shown in Table 1. Further instruction-following evaluation on two Mistral-based models with IFEval (Zhou et al., 2023c) is reported in the Appendix D.",
+        "x": 70.5,
+        "y": 111.3,
+        "w": 220.4,
+        "h": 146.4,
+        "zh": "沿用 Mistral-ORPO-α（7B）的同一配置，我们另外在清洗版 UltraFeedback 上微调 Mistral，以展示数据质量的影响（Bartolome 等人，2023）。数据集的实际规模相近，但 ORPO 还能从数据质量中再获益，AlpacaEval 上超过 91% 和 12%，见表 1。两个基于 Mistral 的模型在 IFEval（Zhou 等人，2023c）上的进一步指令遵循评估见附录 D。"
+      },
+      {
+        "text": "Reward Model Win Rate We assess the win rate of ORPO over other preference alignment methods, including supervised fine-tuning (SFT), PPO, and DPO, using RM-1.3B to understand the effectiveness and scalability of ORPO in Tables 2 and 3. Additionally, we visually verify that ORPO can effectively enhance the",
+        "x": 305.6,
+        "y": 70.9,
+        "w": 220.6,
+        "h": 98.1,
+        "zh": "奖励模型胜率。我们用 RM-1.3B 评估 ORPO 相对其他偏好对齐方法的胜率，包括监督微调（SFT）、PPO 和 DPO，以理解 ORPO 的效果和可扩展性，见表 2 和表 3。此外，我们从分布上核实 ORPO 能够有效提高"
+      },
+      {
+        "text": "8https://huggingface.co/datasets/argilla/ ultrafeedback-binarized-preferences-cleaned",
+        "x": 70.9,
+        "y": 70.9,
+        "w": 195.5,
+        "h": 19.7,
+        "zh": ""
+      }
+    ],
+    "7": [
+      {
+        "text": "Figure 5: Reward distribution comparison between OPT-125M (left), OPT-350M (middle), and OPT-1.3B (right) trained with SFT (blue), RLHF (green), DPO (orange), and ORPO (red) on the test set of UltraFeedback using the RM-1.3B. While the rewards of the trained models are roughly normal and preference optimization algorithms (RLHF, DPO, and ORPO) tend to move the reward distribution in the positive direction, ORPO is on par or better than RLHF and DPO in increasing the expected reward. The same plot for the HH-RLHF dataset is in Appendix F.",
+        "x": 70.5,
+        "y": 582.8,
+        "w": 454.5,
+        "h": 57.8,
+        "zh": "图 5：在 UltraFeedback 测试集上，用 RM-1.3B 比较 OPT-125M（左）、OPT-350M（中）和 OPT-1.3B（右）的奖励分布。蓝色为 SFT，绿色为 RLHF，橙色为 DPO，红色为 ORPO。各模型的奖励大体接近正态，偏好优化算法（RLHF、DPO 和 ORPO）倾向于把奖励分布往正方向移动；在提高期望奖励上，ORPO 与 RLHF、DPO 相当，或更好。HH-RLHF 上的同一类图见附录 F。"
+      },
+      {
+        "text": "expected reward compared to SFT in Figure 5.",
+        "x": 70.9,
+        "y": 548.4,
+        "w": 203.1,
+        "h": 10.9,
+        "zh": "相对 SFT 的期望奖励，见图 5。"
+      },
+      {
+        "text": "In Table 2, ORPO outperforms SFT and PPO across all model scales. The highest win rate against SFT and PPO across the size of the model was 78.0% and 79.4%, respectively. Meanwhile, the win rate over DPO was correlated to the model’s size, with the largest model having the highest win rate: 70.9%.",
+        "x": 70.5,
+        "y": 446.9,
+        "w": 220.5,
+        "h": 92.2,
+        "zh": "在表 2 中，ORPO 在所有模型规模上都优于 SFT 和 PPO。相对 SFT 和 PPO，各规模中的最高胜率分别为 78.0% 和 79.4%。相对 DPO 的胜率则与模型规模相关，最大的模型胜率最高，为 70.9%。"
+      },
+      {
+        "text": "Table 3: Average win rate (%) and its standard deviation of ORPO and standard deviation over other methods on UltraFeedback dataset for three rounds. Sampling decoding with a temperature of 1.0 was used.",
+        "x": 305.8,
+        "y": 451.4,
+        "w": 220.2,
+        "h": 45.8,
+        "zh": "表 3：在 UltraFeedback 上，ORPO 相对其他方法的平均胜率（%）及其标准差，共三轮。解码使用温度为 1.0 的采样。"
+      },
+      {
+        "text": "In Figure 5, RLHF (i.e., SFT + PPO) has some abnormal properties of the distribution with a low expected reward. We attribute this to empirical evidence of the instability and reward mismatch problem of RLHF (Rafailov et al., 2023; Gao et al., 2022; Shen et al., 2023) as the RLHF models were trained with RM-350M and assessed with RM- 1.3B. Meanwhile, it is notable that the ORPO distribution (red) is mainly located on the very right side of each subplot, indicating higher expected rewards. Recalling the intent of preference alignment methods, the distributions in Figure 5 indicate that ORPO tends to fulfill the aim of preference alignment for all model sizes.",
+        "x": 305.3,
+        "y": 235,
+        "w": 220.9,
+        "h": 187,
+        "zh": "在图 5 中，RLHF（即 SFT + PPO）的分布有些异常，期望奖励偏低。我们把这归因于 RLHF 不稳定以及奖励错配的经验证据（Rafailov 等人，2023；Gao 等人，2022；Shen 等人，2023）：这些 RLHF 模型用 RM-350M 训练，却用 RM-1.3B 评估。同时可以看到，ORPO 的分布（红色）主要位于每张子图的最右侧，期望奖励更高。回到偏好对齐方法的本意，图 5 的分布表明：在所有模型规模上，ORPO 都更倾向于实现偏好对齐想要达到的目标。"
+      },
+      {
+        "text": "Table 2: Average win rate (%) and its standard deviation of ORPO and standard deviation over other methods on HH-RLHF dataset for three rounds. Sampling decoding with a temperature of 1.0 was used on the test set.",
+        "x": 70.5,
+        "y": 326.1,
+        "w": 218.6,
+        "h": 45.8,
+        "zh": "表 2：在 HH-RLHF 上，ORPO 相对其他方法的平均胜率（%）及其标准差，共三轮。测试集上使用温度为 1.0 的采样解码。"
+      },
+      {
+        "text": "The win rate in UltraFeedback followed similar trends to what was reported in HHRLHF, as shown in Table 3. ORPO was preferred over SFT and PPO for maximum 80.5% and 85.8%, respectively. While consistently preferring ORPO over SFT and PPO, the win rate over DPO gradually increases as the size of the model increases. The scale-wise trend exceeding DPO will be further shown through 2.7B models in Section 6.1. Overall Reward Distribution win rate, we compare the reward distribution of the responses generated with respect to the test set of the UltraFeedback dataset in Figure 5 and HHRLHF dataset in Appendix F. Regarding the SFT reward distribution as a default, PPO, DPO, and ORPO shift it in both datasets. However, the magnitude of reward shifts for each algorithm differs.",
+        "x": 70.5,
+        "y": 70.9,
+        "w": 220.6,
+        "h": 234.3,
+        "zh": "UltraFeedback 上的胜率走势与 HH-RLHF 上报告的情况类似，见表 3。ORPO 相对 SFT 和 PPO 的胜率最高分别达到 80.5% 和 85.8%。在持续优于 SFT 和 PPO 的同时，相对 DPO 的胜率随模型规模增大而逐渐升高。这种超过 DPO 的规模趋势，还将通过第 6.1 节的 2.7B 模型进一步体现。总体奖励分布。除胜率外，我们比较模型针对 UltraFeedback 测试集所生成回答的奖励分布，见图 5；HH-RLHF 见附录 F。若把 SFT 的奖励分布当作基准，PPO、DPO 和 ORPO 在两个数据集上都会移动它。不过各算法移动奖励的幅度并不相同。"
+      },
+      {
+        "text": "The lexical diversity of the preference-aligned language models was studied in previous works (Kirk et al., 2024). We expand the concept of per-input and across-input diversity introduced in Kirk et al. (2024) by using Gemini-Pro (Gemini Team et al., 2023) as an embedding model, which is suitable for assessing the diversity of instruction-following language models by encoding a maximum of 2048 tokens. The diversity metric with the given set of",
+        "x": 305.8,
+        "y": 70.9,
+        "w": 220.5,
+        "h": 119.3,
+        "zh": "偏好对齐语言模型的词汇多样性已有工作讨论过（Kirk 等人，2024）。我们扩展 Kirk 等人（2024）提出的单输入多样性与跨输入多样性，并用 Gemini-Pro（Gemini Team 等人，2023）作为嵌入模型。它适合评估指令遵循语言模型的多样性，因为最多可编码 2048 个 token。对给定的一组"
+      }
+    ],
+    "8": [
+      {
+        "text": "sampled responses is defined as Equation 13.",
+        "x": 70.9,
+        "y": 760.1,
+        "w": 196.6,
+        "h": 10.9,
+        "zh": "抽样回答，多样性指标定义为式 13。"
+      },
+      {
+        "text": "In this section, we expound on the theoretical and computational details of ORPO. The theoretical analysis of ORPO is studied in Section 7.1, which will be supported with the empirical analysis in Section 7.2. Then, we compare the computational load of DPO and ORPO in Section 7.3.",
+        "x": 305.9,
+        "y": 670.8,
+        "w": 220.4,
+        "h": 78.7,
+        "zh": "本节阐述 ORPO 的理论与计算细节。第 7.1 节给出理论分析，第 7.2 节用实验加以支持。然后在第 7.3 节比较 DPO 与 ORPO 的计算开销。"
+      },
+      {
+        "text": "where cos(hi, hj) refers to the cosine similarity between the embedding hi and hj. 5 different responses are sampled with a temperature of 1.0 to 160 queries in AlpacaEval (i.e., K = 5, N = 160) using Phi-2 and Llama-2 trained with ORPO and DPO. We report the results in Table 4.",
+        "x": 70,
+        "y": 594.6,
+        "w": 220.9,
+        "h": 78.7,
+        "zh": "其中 cos(h_i, h_j) 表示嵌入 h_i 与 h_j 之间的余弦相似度。对 AlpacaEval 中的 160 条问题，以温度 1.0 各抽样 5 条回答（即 K = 5，N = 160），模型为用 ORPO 和 DPO 训练的 Phi-2 与 Llama-2。结果见表 4。"
+      },
+      {
+        "text": "Comparison to Probability Ratio The rationale for selecting the odds ratio instead of the probability ratio lies in its stability. The probability ratio for generating the favored response yw over the disfavored response yl given an input sequence x can be defined as Equation 16.",
+        "x": 305.8,
+        "y": 575.3,
+        "w": 220.4,
+        "h": 83.1,
+        "zh": "与概率比的比较。选择优势比而不是概率比，原因在于它更稳定。给定输入序列 x，生成受偏好回答 y_w 相对不受偏好回答 y_l 的概率比可定义为式 16。"
+      },
+      {
+        "text": "We average the inputwise average cosine similarity between the generated samples with Equation 14 to assess the perinput diversity. In Table 4, ORPO models have the highest average cosine similarity in the first column for both models, which implies the lowest diversity per input. This indicates that ORPO generally assigns high probabilities to the desired tokens, while DPO has a relatively smoother logit distribution.",
+        "x": 70.5,
+        "y": 462,
+        "w": 220.5,
+        "h": 119.3,
+        "zh": "我们用式 14 对每个输入上生成样本之间的余弦相似度取平均，再对输入取平均，以评估单输入多样性。表 4 中，两种模型第一列的平均余弦相似度都以 ORPO 为最高，也就是每个输入上的多样性最低。这表明 ORPO 通常把高概率赋给想要的 token，而 DPO 的 logit 分布相对更平滑。"
+      },
+      {
+        "text": "While this formulation has been used in previous preference alignment methods that precede SFT (Rafailov et al., 2023; Azar et al., 2023), the odds ratio is a better choice in the setting where the preference alignment is incorporated in SFT as the odds ratio is more sensitive to the model’s preference understanding. In other words, the probability ratio leads to more extreme discrimination of the disfavored responses than the odds ratio. We visualize this through the sample distributions of the log probability ratio log PR(X2|X1) and log odds ratio log OR(X2|X1). We sample 50,000 samples each with Equation 17 and plot the log probability ratio and log odds ratio in Figure 6. We multiply β for the probability ratio as it is practiced in the probability ratio-based methods and report the cases where β = 0.2 and β = 1.0.",
+        "x": 305.8,
+        "y": 297,
+        "w": 220.4,
+        "h": 228,
+        "zh": "在先做 SFT、再做偏好对齐的方法里，这一概率比形式已被使用（Rafailov 等人，2023；Azar 等人，2023）。但若把偏好对齐并入 SFT，优势比是更好的选择，因为它对模型是否理解偏好更为敏感。换句话说，概率比对不受偏好回答的区分比优势比更极端。我们通过 log PR(X_2|X_1) 与 log OR(X_2|X_1) 的抽样分布来展示这一点。按式 17 各抽取 50,000 个样本，并把对数概率比与对数优势比绘于图 6。概率比按基于概率比的方法中的做法乘以 β，并报告 β = 0.2 与 β = 1.0 两种情形。"
+      },
+      {
+        "text": "Across Input Diversity (AID) generated per input, we sample the first item for each input and examine their inter cosine similarity with Equation 15 for across-input diversity. Unlike per-input diversity, it is noteworthy that Phi-2 (ORPO) has lower average cosine similarity in the second row of Table 4. We can infer that ORPO triggers the model to generate more instructionspecific responses than DPO.",
+        "x": 70.5,
+        "y": 281.8,
+        "w": 220.5,
+        "h": 119.3,
+        "zh": "跨输入多样性（AID）。对每个输入生成的回答，我们取第一条，再用式 15 考察它们之间的余弦相似度，作为跨输入多样性。与单输入多样性不同，值得注意的是，表 4 第二行中 Phi-2（ORPO）的平均余弦相似度更低。由此可以推断，ORPO 比 DPO 更能促使模型生成随具体指令变化的回答。"
+      },
+      {
+        "text": "Recalling that the log sigmoid function is applied to the log probability ratio and log odds ratio, each ratio’s scale determines the expected margin between the likelihood of the favored and disfavored styles when the loss is minimized. In that sense, the contrast should be relatively extreme to minimize the log sigmoid loss when PR(X2|X1) is inputted instead of OR(X2|X1) to the log sigmoid function, regarding the sharp distribution of log PR(X2|X1)",
+        "x": 306.1,
+        "y": 69.2,
+        "w": 220.1,
+        "h": 120.9,
+        "zh": "回想一下，对数概率比和对数优势比外面都套了 log sigmoid。损失被最小化时，比值的尺度决定了受偏好风格与不受偏好风格在似然上预期拉开多大的间隔。从这个意义上说，若送进 log sigmoid 的是 PR(X_2|X_1) 而不是 OR(X_2|X_1)，对照必须极端得多，损失才会降下来，因为 log PR(X_2|X_1) 的分布很尖"
+      },
+      {
+        "text": "Table 4: Lexical diversity of Phi-2 and Llama-2 finetuned with DPO and ORPO. Lower cosine similarity is equivalent to higher diversity. The highest value in each column within the same model family is bolded.",
+        "x": 70.6,
+        "y": 87.4,
+        "w": 220.2,
+        "h": 45.8,
+        "zh": "表 4：用 DPO 和 ORPO 微调后的 Phi-2 与 Llama-2 的词汇多样性。余弦相似度更低，等价于多样性更高。同一模型系列中，每一列的最大值以粗体标出。"
+      }
+    ],
+    "9": [
+      {
+        "text": "of the log probability margin between the favored and disfavored responses with respect to λ.",
+        "x": 306.1,
+        "y": 746.5,
+        "w": 218.3,
+        "h": 24.5,
+        "zh": "受偏好回答与不受偏好回答之间的对数概率间隔如何随 λ 变化。"
+      },
+      {
+        "text": "Figure 6: Sampled distribution of log PR(X2|X1) and log OR(X2|X1). log OR(X2|X1) has a wider range given the same input probability pairs (X1, X2).",
+        "x": 70.9,
+        "y": 616.3,
+        "w": 218.3,
+        "h": 35.4,
+        "zh": "图 6：log PR(X_2|X_1) 与 log OR(X_2|X_1) 的抽样分布。在相同的输入概率对 (X_1, X_2) 下，log OR(X_2|X_1) 的取值范围更宽。"
+      },
+      {
+        "text": "Figure 7: Average log-likelihood for chosen and rejected responses and log odds ratio per batch. The odds consistently increase during training with ORPO.",
+        "x": 306.1,
+        "y": 598.1,
+        "w": 219.9,
+        "h": 33.9,
+        "zh": "图 7：每个 batch 上，选中回答与拒绝回答的平均对数似然，以及对数优势比。使用 ORPO 训练时，优势比持续上升。"
+      },
+      {
+        "text": "in Figure 6. This results in overly suppressing the logits for the tokens in the disfavored responses in the setting where SFT and preference alignment are incorporated, as the model is not adapted to the domain. We empirically support this analysis through the ablation study in Appendix B. Therefore, the odds ratio is a better choice when the preference alignment is done with SFT due to the mild discrimination of disfavored responses and the prioritizing of the favored responses to be generated. Throughout fine-tuning, minimizing the log sigmoid loss leads to either PR(X2|X1) or OR(X2|X1) to be larger. This is equivalent to the rejected responses’ token-wise likelihood, which will generally get smaller. In this context, it is essential to avoid an overly extreme contrast. This precaution is especially important given the sharp distribution of log PR(X2|X1) depicted in Figure 6. The excessive margin could lead to the unwarranted suppression of logits for tokens in disfavored responses within the incorporated setting, potentially resulting in issues of degeneration.",
+        "x": 70.5,
+        "y": 294.5,
+        "w": 220.5,
+        "h": 296.8,
+        "zh": "见图 6。这会导致：在 SFT 与偏好对齐合并、而模型尚未适配到该领域的设置中，不受偏好回答里 token 的 logits 被压得过低。附录 B 的消融实验从经验上支持这一分析。因此，当偏好对齐与 SFT 一起进行时，优势比是更好的选择，因为它对不受偏好回答的区分比较温和，同时又优先让受偏好回答被生成出来。整个微调过程中，最小化 log sigmoid 损失会使 PR(X_2|X_1) 或 OR(X_2|X_1) 变大。这等价于拒绝回答在各个 token 上的似然总体上变小。在此前提下，必须避免对照拉得过于极端。鉴于图 6 中 log PR(X_2|X_1) 的尖分布，这一预防尤其重要。过大的间隔可能在这种合并训练的设置里，无根据地压低不受偏好回答中 token 的 logits，进而带来退化问题。"
+      },
+      {
+        "text": "Computational Efficiency As depicted in Figure 2, ORPO does not require a reference model, unlike RLHF and DPO. In that sense, ORPO is computationally more efficient than RLHF and DPO in two perspectives: 1) memory allocation and 2) fewer FLOPs per batch. The reference model (πSF T ) in the context of RLHF and DPO denotes the model trained with supervised fine-tuning (SFT), which will be the baseline model for updating the parameters with RLHF or DPO (Ziegler et al., 2020; Rafailov et al., 2023).",
+        "x": 305.7,
+        "y": 425.5,
+        "w": 220.6,
+        "h": 150.3,
+        "zh": "计算效率。如图 2 所示，ORPO 不像 RLHF 和 DPO 那样需要参考模型。因此 ORPO 在计算上比 RLHF 和 DPO 更省，体现在两方面：1）内存占用；2）每个 batch 的 FLOPs 更少。在 RLHF 和 DPO 中，参考模型 π_SFT 是用监督微调（SFT）训练得到的模型，随后用 RLHF 或 DPO 更新参数时，它作为基线（Ziegler 等人，2020；Rafailov 等人，2023）。"
+      },
+      {
+        "text": "s, a frozen reference model and the model undergoing tuning, are required during training. Furthermore, in theory, two forward passes should be calculated for each model to acquire the logits for the chosen and rejected responses. In other words, four forward passes happen in total for a single batch. On the other hand, a reference model is not required in ORPO as πSF T is directly updated. This leads to half the number of forward passes required for each batch during training.",
+        "x": 306.1,
+        "y": 290.1,
+        "w": 220.1,
+        "h": 132.9,
+        "zh": "训练时需要一个冻结的参考模型，以及正在微调的那个模型。而且理论上，每个模型都要做两次前向，才能得到选中回答和拒绝回答的 logits。也就是说，一个 batch 总共有四次前向。ORPO 则不需要参考模型，因为直接更新 π_SFT。因此训练时每个 batch 所需的前向次数减半。"
+      },
+      {
+        "text": "We demonstrate that models trained with ORPO learned to reflect the preference throughout the training process. We monitored the log probabilities of the chosen and rejected responses and the log odds ratio with λ = 1.0. With the same dataset and model as Figure 3, Figure 7 shows that the log probability of rejected responses is diminishing while that of chosen responses is on par with Figure 3 as the log odds ratio increases. This indicates that ORPO is successfully preserving the domain adaptation role of SFT while the penalty term LOR induces the model to lower the likelihood of unwanted generations. We discuss the effect of λ in Equation 6 in Appendix E, studying the proclivity",
+        "x": 70.4,
+        "y": 70.9,
+        "w": 220.6,
+        "h": 187,
+        "zh": "我们表明，用 ORPO 训练的模型在整个训练过程中学会了体现偏好。我们监视选中回答与拒绝回答的对数概率，以及 λ = 1.0 时的对数优势比。数据集和模型与图 3 相同。图 7 显示：随着对数优势比上升，拒绝回答的对数概率在下降，选中回答的对数概率则与图 3 大致相当。这说明 ORPO 保住了 SFT 的领域适配作用，同时惩罚项 L_OR 促使模型降低不想要生成的似然。式 6 中 λ 的影响在附录 E 讨论，我们考察的是"
+      },
+      {
+        "text": "In this paper, we introduced a reference-free monolithic preference alignment method, odds ratio preference optimization (ORPO), by revisiting and understanding the value of the supervised fine-tuning (SFT) phase in the context of preference alignORPO was consistently preferred by the fine-tuned reward model against SFT and RLHF across the scale, and the win rate against DPO increased as the size of the model increased. Furthermore, we validate the scalability of ORPO with 2.7B and 7B pre-trained language models by exceeding the larger state-of-the-art instruction-following language models in AlpacaEval. Specifically, MistralORPO-α and Mistral-ORPO-β achieved 11.33% and",
+        "x": 305.8,
+        "y": 70.9,
+        "w": 220.4,
+        "h": 187,
+        "zh": "本文提出一种无参考模型的一体化偏好对齐方法：优势比偏好优化（ORPO）。我们重新审视并说明监督微调（SFT）阶段在偏好对齐中的价值。在各个规模上，微调得到的奖励模型都稳定地更偏好 ORPO，而不是 SFT 和 RLHF；相对 DPO 的胜率则随模型变大而升高。我们还用 2.7B 和 7B 的预训练语言模型验证了 ORPO 的可扩展性，它在 AlpacaEval 上超过了更大的前沿指令遵循语言模型。具体而言，Mistral-ORPO-α 和 Mistral-ORPO-β 达到 11.33% 和"
+      }
+    ],
+    "10": [
+      {
+        "text": "12.20% in AlpacaEval2.0, 7.23 and 7.32 in MTBench, thereby underscoring the efficiency and effectiveness of ORPO. We release fine-tuning code and model checkpoints for Mistral-ORPO-α and Mistral-ORPO-β to aid reproducibility.",
+        "x": 70,
+        "y": 705.9,
+        "w": 220.9,
+        "h": 65.1,
+        "zh": "在 AlpacaEval2.0 上为 12.20%，在 MT-Bench 上为 7.23 和 7.32，从而说明 ORPO 既有效率，也有效果。我们发布 Mistral-ORPO-α 和 Mistral-ORPO-β 的微调代码与模型检查点，以便复现。"
+      },
+      {
+        "text": "Amanda Askell, Jackson Kernion, Andy Jones, Anna Chen, Anna Goldie, Azalia Mirhoseini, Cameron McKinnon, Carol Chen, Catherine Olsson, Christopher Olah, Danny Hernandez, Dawn Drain, Deep Ganguli, Dustin Li, Eli Tran-Johnson, Ethan Perez, Jamie Kerr, Jared Mueller, Jeffrey Ladish, Joshua Landau, Kamal Ndousse, Kamile Lukosuite, Liane Lovitt, Michael Sellitto, Nelson Elhage, Nicholas Schiefer, Noemi Mercado, Nova DasSarma, Robert Lasenby, Robin Larson, Sam Ringer, Scott Johnston, Shauna Kravec, Sheer El Showk, Stanislav Fort, Tamera Lanham, Timothy Telleen-Lawton, Tom Conerly, Tom Henighan, Tristan Hume, Samuel R. Bowman, Zac Hatfield-Dodds, Ben Mann, Dario Amodei, Nicholas Joseph, Sam McCandlish, Tom Brown, and Jared Kaplan. 2022b. Constitutional ai: Harmlessness from ai feedback.",
+        "x": 316.7,
+        "y": 573.8,
+        "w": 209.4,
+        "h": 185.3,
+        "zh": "Amanda Askell、Jackson Kernion、Andy Jones、Anna Chen、Anna Goldie、Azalia Mirhoseini、Cameron McKinnon、Carol Chen、Catherine Olsson、Christopher Olah、Danny Hernandez、Dawn Drain、Deep Ganguli、Dustin Li、Eli Tran-Johnson、Ethan Perez、Jamie Kerr、Jared Mueller、Jeffrey Ladish、Joshua Landau、Kamal Ndousse、Kamile Lukosuite、Liane Lovitt、Michael Sellitto、Nelson Elhage、Nicholas Schiefer、Noemi Mercado、Nova DasSarma、Robert Lasenby、Robin Larson、Sam Ringer、Scott Johnston、Shauna Kravec、Sheer El Showk、Stanislav Fort、Tamera Lanham、Timothy Telleen-Lawton、Tom Conerly、Tom Henighan、Tristan Hume、Samuel R. Bowman、Zac Hatfield-Dodds、Ben Mann、Dario Amodei、Nicholas Joseph、Sam McCandlish、Tom Brown 与 Jared Kaplan。2022b。Constitutional AI：来自 AI 反馈的无害性。"
+      },
+      {
+        "text": "While conducting a comprehensive analysis of the diverse preference alignment methods, including DPO and RLHF, we did not incorporate a more comprehensive range of preference alignment algorithms. We leave the broader range of comparison against other methods as future work, along with scaling our method to over 7B models. In addition, we will expand the fine-tuning datasets into diverse domains and qualities, thereby verifying the generalizability of our method in various NLP downstream tasks. Finally, we would like to study the internal impact of our method on the pre-trained language model, expanding the understanding of preference alignment procedure to not only the supervised fine-tuning stage but also consecutive preference alignment algorithms.",
+        "x": 70.4,
+        "y": 458.3,
+        "w": 220.6,
+        "h": 214.1,
+        "zh": "我们对多种偏好对齐方法做了较全面的分析，包括 DPO 和 RLHF，但没有纳入范围更广的一批偏好对齐算法。与其他方法做更广泛的比较，以及把本方法扩展到 7B 以上，留作后续工作。此外，我们会把微调数据扩展到更多领域和不同质量，从而检验本方法在各种 NLP 下游任务上是否站得住。最后，我们希望研究方法对预训练语言模型内部的影响，使对偏好对齐过程的理解不只停留在监督微调阶段，也能覆盖其后接续的偏好对齐算法。"
+      },
+      {
+        "text": "Alvaro Bartolome, Gabriel Martin, and Daniel Vila. 2023. Notus. https://github.com/argilla-io/",
+        "x": 306.1,
+        "y": 542.4,
+        "w": 220,
+        "h": 20.9,
+        "zh": "Alvaro Bartolome、Gabriel Martin 与 Daniel Vila。2023。Notus。https://github.com/argilla-io/"
+      },
+      {
+        "text": "Edward Beeching, Clémentine Fourrier, Nathan Habib, Sheon Han, Nathan Lambert, Nazneen Rajani, Omar Sanseviero, Lewis Tunstall, and Thomas Wolf. 2023. Open llm leaderboard. https://huggingface.co/ spaces/HuggingFaceH4/open_llm_leaderboard.",
+        "x": 306.1,
+        "y": 467.2,
+        "w": 220,
+        "h": 53.8,
+        "zh": "Edward Beeching、Clémentine Fourrier、Nathan Habib、Sheon Han、Nathan Lambert、Nazneen Rajani、Omar Sanseviero、Lewis Tunstall 与 Thomas Wolf。2023。Open LLM 排行榜。https://huggingface.co/spaces/HuggingFaceH4/open_llm_leaderboard。"
+      },
+      {
+        "text": "Ralph Allan Bradley and Milton E. Terry. 1952. Rank analysis of incomplete block designs: I. the method of paired comparisons.",
+        "x": 306.1,
+        "y": 424.9,
+        "w": 218.5,
+        "h": 31.9,
+        "zh": "Ralph Allan Bradley 与 Milton E. Terry。1952。不完全区组设计的秩分析：I. 成对比较法。"
+      },
+      {
+        "text": "Josh Achiam, Steven Adler, Sandhini Agarwal, Lama Ahmad, Ilge Akkaya, Florencia Leoni Aleman, Diogo Almeida, Janko Altenschmidt, Sam Altman, Shyamal Anadkat, et al. 2023. Gpt-4 technical report. arXiv preprint arXiv:2303.08774.",
+        "x": 70.9,
+        "y": 360.7,
+        "w": 220,
+        "h": 53.8,
+        "zh": "Josh Achiam、Steven Adler、Sandhini Agarwal、Lama Ahmad、Ilge Akkaya、Florencia Leoni Aleman、Diogo Almeida、Janko Altenschmidt、Sam Altman、Shyamal Anadkat 等。2023。GPT-4 技术报告。arXiv preprint arXiv:2303.08774。"
+      },
+      {
+        "text": "Tom Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared D Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, Sandhini Agarwal, Ariel Herbert-Voss, Gretchen Krueger, Tom Henighan, Rewon Child, Aditya Ramesh, Daniel Ziegler, Jeffrey Wu, Clemens Winter, Chris Hesse, Mark Chen, Eric Sigler, Mateusz Litwin, Scott Gray, Benjamin Chess, Jack Clark, Christopher Berner, Sam McCandlish, Alec Radford, Ilya Sutskever, and Dario Amodei. 2020. Language models are few-shot learners. vances in Neural Information Processing Systems, volume 33, pages 1877–1901. Curran Associates,",
+        "x": 306.1,
+        "y": 262,
+        "w": 220,
+        "h": 141.5,
+        "zh": "Tom Brown、Benjamin Mann、Nick Ryder、Melanie Subbiah、Jared D Kaplan、Prafulla Dhariwal、Arvind Neelakantan、Pranav Shyam、Girish Sastry、Amanda Askell、Sandhini Agarwal、Ariel Herbert-Voss、Gretchen Krueger、Tom Henighan、Rewon Child、Aditya Ramesh、Daniel Ziegler、Jeffrey Wu、Clemens Winter、Chris Hesse、Mark Chen、Eric Sigler、Mateusz Litwin、Scott Gray、Benjamin Chess、Jack Clark、Christopher Berner、Sam McCandlish、Alec Radford、Ilya Sutskever 与 Dario Amodei。2020。语言模型是少样本学习者。Advances in Neural Information Processing Systems，第 33 卷，第 1877–1901 页。Curran Associates。"
+      },
+      {
+        "text": "Ebtesam Almazrouei, Hamza Alobeidli, Abdulaziz Alshamsi, Alessandro Cappelli, Ruxandra Cojocaru, Mérouane Debbah, Étienne Goffinet, Daniel Hesslow, Julien Launay, Quentin Malartic, Daniele Mazzotta, Badreddine Noune, Baptiste Pannier, and Guilherme Penedo. 2023. The falcon series of open language",
+        "x": 70.9,
+        "y": 285.3,
+        "w": 219.9,
+        "h": 65.9,
+        "zh": "Ebtesam Almazrouei、Hamza Alobeidli、Abdulaziz Alshamsi、Alessandro Cappelli、Ruxandra Cojocaru、Mérouane Debbah、Étienne Goffinet、Daniel Hesslow、Julien Launay、Quentin Malartic、Daniele Mazzotta、Badreddine Noune、Baptiste Pannier 与 Guilherme Penedo。2023。Falcon 开源语言系列。"
+      },
+      {
+        "text": "Mohammad Gheshlaghi Azar, Mark Rowland, Bilal Piot, Daniel Guo, Daniele Calandriello, Michal Valko, and Rémi Munos. 2023. A general theoretical paradigm to understand learning from human",
+        "x": 70.9,
+        "y": 221.9,
+        "w": 219.9,
+        "h": 42.8,
+        "zh": "Mohammad Gheshlaghi Azar、Mark Rowland、Bilal Piot、Daniel Guo、Daniele Calandriello、Michal Valko 与 Rémi Munos。2023。理解从人类处学习的一套一般理论范式。"
+      },
+      {
+        "text": "Tianchi Cai, Xierui Song, Jiyan Jiang, Fei Teng, Jinjie Gu, and Guannan Zhang. 2023. Ulma: Unified language model alignment with demonstration and pointwise human preference. ArXiv, abs/2312.02554.",
+        "x": 306.1,
+        "y": 197.8,
+        "w": 219.9,
+        "h": 42.8,
+        "zh": "Tianchi Cai、Xierui Song、Jiyan Jiang、Fei Teng、Jinjie Gu 与 Guannan Zhang。2023。ULMA：用示范和逐点人类偏好做统一语言模型对齐。ArXiv，abs/2312.02554。"
+      },
+      {
+        "text": "Yuntao Bai, Andy Jones, Kamal Ndousse, Amanda Askell, Anna Chen, Nova DasSarma, Dawn Drain, Stanislav Fort, Deep Ganguli, Tom Henighan, Nicholas Joseph, Saurav Kadavath, Jackson Kernion, Tom Conerly, Sheer El-Showk, Nelson Elhage, Zac Hatfield-Dodds, Danny Hernandez, Tristan Hume, Scott Johnston, Shauna Kravec, Liane Lovitt, Neel Nanda, Catherine Olsson, Dario Amodei, Tom Brown, Jack Clark, Sam McCandlish, Chris Olah, Ben Mann, and Jared Kaplan. 2022a. Training a helpful and harmless assistant with reinforcement learning from human feedback.",
+        "x": 70.9,
+        "y": 70.9,
+        "w": 219.5,
+        "h": 130.5,
+        "zh": "Yuntao Bai、Andy Jones、Kamal Ndousse、Amanda Askell、Anna Chen、Nova DasSarma、Dawn Drain、Stanislav Fort、Deep Ganguli、Tom Henighan、Nicholas Joseph、Saurav Kadavath、Jackson Kernion、Tom Conerly、Sheer El-Showk、Nelson Elhage、Zac Hatfield-Dodds、Danny Hernandez、Tristan Hume、Scott Johnston、Shauna Kravec、Liane Lovitt、Neel Nanda、Catherine Olsson、Dario Amodei、Tom Brown、Jack Clark、Sam McCandlish、Chris Olah、Ben Mann 与 Jared Kaplan。2022a。用人类反馈强化学习训练有帮助且无害的助手。"
+      },
+      {
+        "text": "Matthew Jagielski, Ariel Herbert-Voss, Katherine Lee, Adam Roberts, Tom Brown, Dawn Song, Ulfar Erlingsson, Alina Oprea, and Colin Raffel. 2021. Extracting training data from large language models.",
+        "x": 317.1,
+        "y": 133.6,
+        "w": 209.1,
+        "h": 42.8,
+        "zh": "Matthew Jagielski、Ariel Herbert-Voss、Katherine Lee、Adam Roberts、Tom Brown、Dawn Song、Ulfar Erlingsson、Alina Oprea 与 Colin Raffel。2021。从大语言模型中抽取训练数据。"
+      },
+      {
+        "text": "Weixin Chen and Bo Li. 2024. Grath: Gradual selftruthifying for large language models.",
+        "x": 306.1,
+        "y": 102.2,
+        "w": 219.9,
+        "h": 20.9,
+        "zh": "Weixin Chen 与 Bo Li。2024。GRATH：大语言模型的渐进式自我求真。"
+      },
+      {
+        "text": "Qinyuan Cheng, Tianxiang Sun, Xiangyang Liu, Wenwei Zhang, Zhangyue Yin, Shimin Li, Linyang Li,",
+        "x": 306.1,
+        "y": 70.9,
+        "w": 219.9,
+        "h": 20.9,
+        "zh": ""
+      }
+    ],
+    "11": [
+      {
+        "text": "Kai Chen, and Xipeng Qiu. 2024. Can ai assistants know what they don’t know?",
+        "x": 81.8,
+        "y": 749.1,
+        "w": 207.4,
+        "h": 20.9,
+        "zh": "Kai Chen 与 Xipeng Qiu。2024。AI 助手能否知道自己不知道什么？"
+      },
+      {
+        "text": "Mojan Javaheripi and Sébastien Bubeck. 2023. Phi-2: The surprising power of small language models.",
+        "x": 306.1,
+        "y": 749.1,
+        "w": 219.6,
+        "h": 20.9,
+        "zh": "Mojan Javaheripi 与 Sébastien Bubeck。2023。Phi-2：小语言模型出人意料的能力。"
+      },
+      {
+        "text": "Tri Dao. 2023. Flashattention-2: Faster attention with better parallelism and work partitioning.",
+        "x": 70.9,
+        "y": 719.1,
+        "w": 218.3,
+        "h": 20.9,
+        "zh": "Tri Dao。2023。FlashAttention-2：更快的注意力，以及更好的并行与工作划分。"
+      },
+      {
+        "text": "Albert Q. Jiang, Alexandre Sablayrolles, Arthur Mensch, Chris Bamford, Devendra Singh Chaplot, Diego de las Casas, Florian Bressand, Gianna Lengyel, Guillaume Lample, Lucile Saulnier, Lélio Renard Lavaud, Marie-Anne Lachaux, Pierre Stock, Teven Le Scao, Thibaut Lavril, Thomas Wang, Timothée Lacroix, and William El Sayed. 2023. Mistral 7b.",
+        "x": 306.1,
+        "y": 663.5,
+        "w": 219.9,
+        "h": 75.7,
+        "zh": "Albert Q. Jiang、Alexandre Sablayrolles、Arthur Mensch、Chris Bamford、Devendra Singh Chaplot、Diego de las Casas、Florian Bressand、Gianna Lengyel、Guillaume Lample、Lucile Saulnier、Lélio Renard Lavaud、Marie-Anne Lachaux、Pierre Stock、Teven Le Scao、Thibaut Lavril、Thomas Wang、Timothée Lacroix 与 William El Sayed。2023。Mistral 7B。"
+      },
+      {
+        "text": "Tim Dettmers, Artidoro Pagnoni, Ari Holtzman, and Luke Zettlemoyer. 2023. Qlora: Efficient finetuning",
+        "x": 70.9,
+        "y": 689,
+        "w": 218.3,
+        "h": 20.9,
+        "zh": "Tim Dettmers、Artidoro Pagnoni、Ari Holtzman 与 Luke Zettlemoyer。2023。QLoRA：高效微调。"
+      },
+      {
+        "text": "Ning Ding, Yulin Chen, Bokai Xu, Yujia Qin, Zhi Zheng, Shengding Hu, Zhiyuan Liu, Maosong Sun, and Bowen Zhou. 2023. Enhancing chat language models by scaling high-quality instructional conver-",
+        "x": 70.9,
+        "y": 626.1,
+        "w": 219.9,
+        "h": 42.8,
+        "zh": "Ning Ding、Yulin Chen、Bokai Xu、Yujia Qin、Zhi Zheng、Shengding Hu、Zhiyuan Liu、Maosong Sun 与 Bowen Zhou。2023。通过扩大高质量指令对话来增强聊天语言模型。"
+      },
+      {
+        "text": "Robert Kirk, Ishita Mediratta, Christoforos Nalmpantis, Jelena Luketina, Eric Hambro, Edward Grefenstette, and Roberta Raileanu. 2024. Understanding the effects of rlhf on llm generalisation and diversity.",
+        "x": 306.1,
+        "y": 610.8,
+        "w": 219.9,
+        "h": 42.8,
+        "zh": "Robert Kirk、Ishita Mediratta、Christoforos Nalmpantis、Jelena Luketina、Eric Hambro、Edward Grefenstette 与 Roberta Raileanu。2024。理解 RLHF 对 LLM 泛化与多样性的影响。"
+      },
+      {
+        "text": "Guanting Dong, Hongyi Yuan, Keming Lu, Chengpeng Li, Mingfeng Xue, Dayiheng Liu, Wei Wang, Zheng Yuan, Chang Zhou, and Jingren Zhou. 2024. How abilities in large language models are affected by supervised fine-tuning data composition.",
+        "x": 70.9,
+        "y": 552.3,
+        "w": 218.6,
+        "h": 53.8,
+        "zh": "Guanting Dong、Hongyi Yuan、Keming Lu、Chengpeng Li、Mingfeng Xue、Dayiheng Liu、Wei Wang、Zheng Yuan、Chang Zhou 与 Jingren Zhou。2024。监督微调数据的组成如何影响大语言模型的能力。"
+      },
+      {
+        "text": "Harrison Lee, Samrat Phatale, Hassan Mansoor, Thomas Mesnard, Johan Ferret, Kellie Lu, Colton Bishop, Ethan Hall, Victor Carbune, Abhinav Rastogi, and Sushant Prakash. 2023. Rlaif: Scaling reinforcement learning from human feedback with ai feedback.",
+        "x": 306.1,
+        "y": 547.2,
+        "w": 219.5,
+        "h": 53.8,
+        "zh": "Harrison Lee、Samrat Phatale、Hassan Mansoor、Thomas Mesnard、Johan Ferret、Kellie Lu、Colton Bishop、Ethan Hall、Victor Carbune、Abhinav Rastogi 与 Sushant Prakash。2023。RLAIF：用 AI 反馈扩展来自人类反馈的强化学习。"
+      },
+      {
+        "text": "Kawin Ethayarajh, Winnie Xu, Niklas Muennighoff, Dan Jurafsky, and Douwe Kiela. 2024. Kto: Model alignment as prospect theoretic optimization. arXiv preprint arXiv:2402.01306.",
+        "x": 70.9,
+        "y": 500.3,
+        "w": 219.5,
+        "h": 42.8,
+        "zh": "Kawin Ethayarajh、Winnie Xu、Niklas Muennighoff、Dan Jurafsky 与 Douwe Kiela。2024。KTO：把模型对齐看作前景理论中的优化。arXiv preprint arXiv:2402.01306。"
+      },
+      {
+        "text": "Margaret Li, Stephen Roller, Ilia Kulikov, Sean Welleck, Y-Lan Boureau, Kyunghyun Cho, and Jason Weston. 2020. Don’t say that! making inconsistent dialogue unlikely with unlikelihood training. In Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics, pages 4715–4728, Online. Association for Computational Linguistics.",
+        "x": 306.1,
+        "y": 461.6,
+        "w": 220,
+        "h": 75.7,
+        "zh": "Margaret Li、Stephen Roller、Ilia Kulikov、Sean Welleck、Y-Lan Boureau、Kyunghyun Cho 与 Jason Weston。2020。别那么说！用非似然训练让不一致的对话变得不太可能。载于第 58 届计算语言学协会年会论文集，第 4715–4728 页，线上。计算语言学协会。"
+      },
+      {
+        "text": "Leo Gao, John Schulman, and Jacob Hilton. 2022. Scaling laws for reward model overoptimization.",
+        "x": 70.9,
+        "y": 470.3,
+        "w": 219.9,
+        "h": 20.9,
+        "zh": "Leo Gao、John Schulman 与 Jacob Hilton。2022。奖励模型过度优化的缩放定律。"
+      },
+      {
+        "text": "Leo Gao, Jonathan Tow, Baber Abbasi, Stella Biderman, Sid Black, Anthony DiPofi, Charles Foster, Laurence Golding, Jeffrey Hsu, Alain Le Noac’h, Haonan Li, Kyle McDonell, Niklas Muennighoff, Chris Ociepa, Jason Phang, Laria Reynolds, Hailey Schoelkopf, Aviya Skowron, Lintang Sutawika, Eric Tang, Anish Thite, Ben Wang, Kevin Wang, and Andy Zou. 2023. A framework for few-shot language model",
+        "x": 70.9,
+        "y": 374.5,
+        "w": 220,
+        "h": 86.7,
+        "zh": "Leo Gao、Jonathan Tow、Baber Abbasi、Stella Biderman、Sid Black、Anthony DiPofi、Charles Foster、Laurence Golding、Jeffrey Hsu、Alain Le Noac’h、Haonan Li、Kyle McDonell、Niklas Muennighoff、Chris Ociepa、Jason Phang、Laria Reynolds、Hailey Schoelkopf、Aviya Skowron、Lintang Sutawika、Eric Tang、Anish Thite、Ben Wang、Kevin Wang 与 Andy Zou。2023。面向少样本语言模型的一套框架。"
+      },
+      {
+        "text": "Xian Li, Ping Yu, Chunting Zhou, Timo Schick, Luke Zettlemoyer, Omer Levy, Jason Weston, and Mike Lewis. 2023a. Self-alignment with instruction back-",
+        "x": 306.1,
+        "y": 419.9,
+        "w": 219.9,
+        "h": 31.9,
+        "zh": "Xian Li、Ping Yu、Chunting Zhou、Timo Schick、Luke Zettlemoyer、Omer Levy、Jason Weston 与 Mike Lewis。2023a。用指令回译做自对齐。"
+      },
+      {
+        "text": "Xuechen Li, Tianyi Zhang, Yann Dubois, Rohan Taori, Ishaan Gulrajani, Carlos Guestrin, Percy Liang, and Tatsunori B. Hashimoto. 2023b. Alpacaeval: An automatic evaluator of instruction-following models. https://github.com/tatsu-lab/alpaca_eval.",
+        "x": 306.1,
+        "y": 345.3,
+        "w": 220,
+        "h": 53.8,
+        "zh": "Xuechen Li、Tianyi Zhang、Yann Dubois、Rohan Taori、Ishaan Gulrajani、Carlos Guestrin、Percy Liang 与 Tatsunori B. Hashimoto。2023b。AlpacaEval：指令遵循模型的自动评估器。https://github.com/tatsu-lab/alpaca_eval。"
+      },
+      {
+        "text": "Samuel Gehman, Suchin Gururangan, Maarten Sap, Yejin Choi, and Noah A. Smith. 2020. RealToxicityPrompts: Evaluating neural toxic degeneration in language models. In Findings of the Association for Computational Linguistics: EMNLP 2020, pages 3356–3369, Online. Association for Computational",
+        "x": 70.9,
+        "y": 289.6,
+        "w": 219.9,
+        "h": 64.8,
+        "zh": "Samuel Gehman、Suchin Gururangan、Maarten Sap、Yejin Choi 与 Noah A. Smith。2020。RealToxicityPrompts：评估语言模型中的神经毒性退化。载于计算语言学协会论文集：EMNLP 2020，第 3356–3369 页，线上。计算语言学协会。"
+      },
+      {
+        "text": "Yuanzhi Li, Sébastien Bubeck, Ronen Eldan, Allie Del Giorno, Suriya Gunasekar, and Yin Tat Lee. 2023c. Textbooks are all you need ii: phi-1.5 technical re-",
+        "x": 306.1,
+        "y": 303.6,
+        "w": 220,
+        "h": 31.9,
+        "zh": "Yuanzhi Li、Sébastien Bubeck、Ronen Eldan、Allie Del Giorno、Suriya Gunasekar 与 Yin Tat Lee。2023c。教科书就够了 II：phi-1.5 技术报告。"
+      },
+      {
+        "text": "Tsung-Yi Lin, Priya Goyal, Ross Girshick, Kaiming He, and Piotr Dollár. 2017. Focal loss for dense object detection. In Proceedings of the IEEE international conference on computer vision, pages 2980–2988.",
+        "x": 306.1,
+        "y": 239.9,
+        "w": 219.5,
+        "h": 42.8,
+        "zh": "Tsung-Yi Lin、Priya Goyal、Ross Girshick、Kaiming He 与 Piotr Dollár。2017。用于密集目标检测的 Focal Loss。载于 IEEE 国际计算机视觉会议论文集，第 2980–2988 页。"
+      },
+      {
+        "text": "Gemini Team, Rohan Anil, Sebastian Borgeaud, Yonghui Wu, Jean-Baptiste Alayrac, Jiahui Yu, Radu Soricut, Johan Schalkwyk, Andrew M Dai, Anja Hauth, et al. 2023. highly capable multimodal models. arXiv preprint",
+        "x": 70.9,
+        "y": 215.8,
+        "w": 219.5,
+        "h": 53.8,
+        "zh": "Gemini Team、Rohan Anil、Sebastian Borgeaud、Yonghui Wu、Jean-Baptiste Alayrac、Jiahui Yu、Radu Soricut、Johan Schalkwyk、Andrew M Dai、Anja Hauth 等。2023。能力很强的多模态模型。arXiv preprint。"
+      },
+      {
+        "text": "Ilya Loshchilov and Frank Hutter. 2019. Decoupled weight decay regularization.",
+        "x": 306.1,
+        "y": 209.1,
+        "w": 218.3,
+        "h": 20.9,
+        "zh": "Ilya Loshchilov 与 Frank Hutter。2019。解耦的权重衰减正则。"
+      },
+      {
+        "text": "Anqi Mao, Mehryar Mohri, and Yutao Zhong. 2023. Cross-entropy loss functions: Theoretical analysis",
+        "x": 306.1,
+        "y": 178.4,
+        "w": 220,
+        "h": 20.9,
+        "zh": "Anqi Mao、Mehryar Mohri 与 Yutao Zhong。2023。交叉熵损失函数：理论分析。"
+      },
+      {
+        "text": "Aaron Gokaslan and Vanya Cohen. 2019. webtext corpus. http://Skylion007.github.io/",
+        "x": 70.9,
+        "y": 174.8,
+        "w": 219.3,
+        "h": 20.9,
+        "zh": "Aaron Gokaslan 与 Vanya Cohen。2019。WebText 语料。http://Skylion007.github.io/"
+      },
+      {
+        "text": "Long Ouyang, Jeff Wu, Xu Jiang, Diogo Almeida, Carroll L. Wainwright, Pamela Mishkin, Chong Zhang, Sandhini Agarwal, Katarina Slama, Alex Ray, John Schulman, Jacob Hilton, Fraser Kelton, Luke Miller, Maddie Simens, Amanda Askell, Peter Welinder, Paul Christiano, Jan Leike, and Ryan Lowe. 2022. Training language models to follow instructions with",
+        "x": 306.1,
+        "y": 81.8,
+        "w": 220,
+        "h": 75.7,
+        "zh": "Long Ouyang、Jeff Wu、Xu Jiang、Diogo Almeida、Carroll L. Wainwright、Pamela Mishkin、Chong Zhang、Sandhini Agarwal、Katarina Slama、Alex Ray、John Schulman、Jacob Hilton、Fraser Kelton、Luke Miller、Maddie Simens、Amanda Askell、Peter Welinder、Paul Christiano、Jan Leike 与 Ryan Lowe。2022。训练语言模型去遵循指令。"
+      },
+      {
+        "text": "Alexey Gorbatovski and Sergey Kovalchuk. 2024. Reinforcement learning for question answering in programming domain using public community scoring as a human feedback.",
+        "x": 70.9,
+        "y": 111.9,
+        "w": 219.9,
+        "h": 42.8,
+        "zh": "Alexey Gorbatovski 与 Sergey Kovalchuk。2024。以公开社区评分为人类反馈，做编程领域问答的强化学习。"
+      },
+      {
+        "text": "Hamish Haggerty and Rohitash Chandra. 2024. Selfsupervised learning for skin cancer diagnosis with limited training data.",
+        "x": 70.9,
+        "y": 70.9,
+        "w": 219.9,
+        "h": 31.9,
+        "zh": "Hamish Haggerty 与 Rohitash Chandra。2024。训练数据有限时，用自监督学习做皮肤癌诊断。"
+      }
+    ],
+    "12": [
+      {
+        "text": "Jing-Cheng Pang, Pengyuan Wang, Kaiyuan Li, XiongHui Chen, Jiacheng Xu, Zongzhang Zhang, and Yang",
+        "x": 70.9,
+        "y": 749.1,
+        "w": 219.9,
+        "h": 20.9,
+        "zh": ""
+      },
+      {
+        "text": "Katherine Tian, Eric Mitchell, Huaxiu Yao, Christopher D. Manning, and Chelsea Finn. 2023. Finetuning language models for factuality.",
+        "x": 306.1,
+        "y": 738.1,
+        "w": 219.9,
+        "h": 31.9,
+        "zh": "Katherine Tian、Eric Mitchell、Huaxiu Yao、Christopher D. Manning 与 Chelsea Finn。2023。为事实性微调语言模型。"
+      },
+      {
+        "text": "Language model self-improvement by reinforcement learning contemplation.",
+        "x": 81.8,
+        "y": 727.2,
+        "w": 207.7,
+        "h": 20.9,
+        "zh": "借助强化学习式的反省，让语言模型自我改进。"
+      },
+      {
+        "text": "Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier Martinet, Marie-Anne Lachaux, Timothée Lacroix, Baptiste Rozière, Naman Goyal, Eric Hambro, Faisal Azhar, Aurelien Rodriguez, Armand Joulin, Edouard Grave, and Guillaume Lample. 2023. Llama: Open and efficient foundation language models.",
+        "x": 306.1,
+        "y": 660.4,
+        "w": 219.5,
+        "h": 64.8,
+        "zh": "Hugo Touvron、Thibaut Lavril、Gautier Izacard、Xavier Martinet、Marie-Anne Lachaux、Timothée Lacroix、Baptiste Rozière、Naman Goyal、Eric Hambro、Faisal Azhar、Aurelien Rodriguez、Armand Joulin、Edouard Grave 与 Guillaume Lample。2023。Llama：开放且高效的基础语言模型。"
+      },
+      {
+        "text": "Guilherme Penedo, Quentin Malartic, Daniel Hesslow, Ruxandra Cojocaru, Alessandro Cappelli, Hamza Alobeidli, Baptiste Pannier, Ebtesam Almazrouei, and Julien Launay. 2023. The refinedweb dataset for falcon llm: Outperforming curated corpora with web data, and web data only.",
+        "x": 70.9,
+        "y": 651.7,
+        "w": 219.5,
+        "h": 64.8,
+        "zh": "Guilherme Penedo、Quentin Malartic、Daniel Hesslow、Ruxandra Cojocaru、Alessandro Cappelli、Hamza Alobeidli、Baptiste Pannier、Ebtesam Almazrouei 与 Julien Launay。2023。面向 Falcon LLM 的 RefinedWeb 数据集：只用网页数据，就超过精心整理的语料。"
+      },
+      {
+        "text": "Lewis Tunstall, Edward Beeching, Nathan Lambert, Nazneen Rajani, Kashif Rasul, Younes Belkada, Shengyi Huang, Leandro von Werra, Clémentine Fourrier, Nathan Habib, Nathan Sarrazin, Omar Sanseviero, Alexander M. Rush, and Thomas Wolf. 2023. Zephyr: Direct distillation of lm alignment.",
+        "x": 306.1,
+        "y": 582.6,
+        "w": 220,
+        "h": 64.8,
+        "zh": "Lewis Tunstall、Edward Beeching、Nathan Lambert、Nazneen Rajani、Kashif Rasul、Younes Belkada、Shengyi Huang、Leandro von Werra、Clémentine Fourrier、Nathan Habib、Nathan Sarrazin、Omar Sanseviero、Alexander M. Rush 与 Thomas Wolf。2023。Zephyr：语言模型对齐的直接蒸馏。"
+      },
+      {
+        "text": "Reid Pryzant, Dan Iter, Jerry Li, Yin Lee, Chenguang Zhu, and Michael Zeng. 2023. Automatic prompt optimization with “gradient descent” and beam search. In Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing, pages 7957–7968, Singapore. Association for Computa-",
+        "x": 70.9,
+        "y": 576.2,
+        "w": 220,
+        "h": 64.8,
+        "zh": "Reid Pryzant、Dan Iter、Jerry Li、Yin Lee、Chenguang Zhu 与 Michael Zeng。2023。用“梯度下降”和束搜索做自动提示优化。载于 2023 年自然语言处理经验方法会议论文集，第 7957–7968 页，新加坡。计算语言学协会。"
+      },
+      {
+        "text": "Leandro von Werra, Younes Belkada, Lewis Tunstall, Edward Beeching, Tristan Thrush, Nathan Lambert, and Shengyi Huang. 2020. former reinforcement learning. https://github. com/huggingface/trl.",
+        "x": 306.1,
+        "y": 515.7,
+        "w": 221.8,
+        "h": 53.8,
+        "zh": "Leandro von Werra、Younes Belkada、Lewis Tunstall、Edward Beeching、Tristan Thrush、Nathan Lambert 与 Shengyi Huang。2020。Transformer 强化学习。https://github.com/huggingface/trl。"
+      },
+      {
+        "text": "Rafael Rafailov, Archit Sharma, Eric Mitchell, Stefano Ermon, Christopher D. Manning, and Chelsea Finn. 2023. Direct preference optimization: Your language model is secretly a reward model.",
+        "x": 70.9,
+        "y": 511.7,
+        "w": 220,
+        "h": 42.8,
+        "zh": "Rafael Rafailov、Archit Sharma、Eric Mitchell、Stefano Ermon、Christopher D. Manning 与 Chelsea Finn。2023。直接偏好优化：你的语言模型其实是一个奖励模型。"
+      },
+      {
+        "text": "Binghai Wang, Rui Zheng, Lu Chen, Yan Liu, Shihan Dou, Caishuang Huang, Wei Shen, Senjie Jin, Enyu Zhou, Chenyu Shi, Songyang Gao, Nuo Xu, Yuhao Zhou, Xiaoran Fan, Zhiheng Xi, Jun Zhao, Xiao Wang, Tao Ji, Hang Yan, Lixing Shen, Zhan Chen, Tao Gui, Qi Zhang, Xipeng Qiu, Xuanjing Huang, Zuxuan Wu, and Yu-Gang Jiang. 2024. Secrets of rlhf in large language models part ii: Reward model-",
+        "x": 306.1,
+        "y": 416,
+        "w": 219.9,
+        "h": 86.7,
+        "zh": "Binghai Wang、Rui Zheng、Lu Chen、Yan Liu、Shihan Dou、Caishuang Huang、Wei Shen、Senjie Jin、Enyu Zhou、Chenyu Shi、Songyang Gao、Nuo Xu、Yuhao Zhou、Xiaoran Fan、Zhiheng Xi、Jun Zhao、Xiao Wang、Tao Ji、Hang Yan、Lixing Shen、Zhan Chen、Tao Gui、Qi Zhang、Xipeng Qiu、Xuanjing Huang、Zuxuan Wu 与 Yu-Gang Jiang。2024。大语言模型中 RLHF 的秘密（二）：奖励模型。"
+      },
+      {
+        "text": "Miguel Moura Ramos, Patrick Fernandes, António Farinhas, and André F. T. Martins. 2023. Aligning neural machine translation models: Human feedback in training and inference.",
+        "x": 70.9,
+        "y": 458.1,
+        "w": 219.9,
+        "h": 42.8,
+        "zh": "Miguel Moura Ramos、Patrick Fernandes、António Farinhas 与 André F. T. Martins。2023。对齐神经机器翻译模型：训练与推理中的人类反馈。"
+      },
+      {
+        "text": "Jeff Rasley, Samyam Rajbhandari, Olatunji Ruwase, and Yuxiong He. 2020. Deepspeed: System optimizations enable training deep learning models with over 100 billion parameters. In Proceedings of the 26th ACM SIGKDD International Conference on Knowledge Discovery & Data Mining, KDD ’20, page 3505–3506, New York, NY, USA. Association for Computing Machinery.",
+        "x": 70.9,
+        "y": 360.7,
+        "w": 219.9,
+        "h": 86.7,
+        "zh": "Jeff Rasley、Samyam Rajbhandari、Olatunji Ruwase 与 Yuxiong He。2020。DeepSpeed：系统优化使超过 1000 亿参数的深度学习模型得以训练。载于第 26 届 ACM SIGKDD 知识发现与数据挖掘国际会议论文集，KDD ’20，第 3505–3506 页，美国纽约。计算机协会。"
+      },
+      {
+        "text": "Yizhong Wang, Hamish Ivison, Pradeep Dasigi, Jack Hessel, Tushar Khot, Khyathi Raghavi Chandu, David Wadden, Kelsey MacMillan, Noah A. Smith, Iz Beltagy, and Hannaneh Hajishirzi. 2023. How far can camels go? exploring the state of instruction tuning on open resources.",
+        "x": 306.1,
+        "y": 327.3,
+        "w": 219.5,
+        "h": 64.8,
+        "zh": "Yizhong Wang、Hamish Ivison、Pradeep Dasigi、Jack Hessel、Tushar Khot、Khyathi Raghavi Chandu、David Wadden、Kelsey MacMillan、Noah A. Smith、Iz Beltagy 与 Hannaneh Hajishirzi。2023。骆驼能走多远？开放资源上指令微调的现状。"
+      },
+      {
+        "text": "John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov. 2017. Proximal policy optimization algorithms.",
+        "x": 70.9,
+        "y": 318.1,
+        "w": 218.6,
+        "h": 31.9,
+        "zh": "John Schulman、Filip Wolski、Prafulla Dhariwal、Alec Radford 与 Oleg Klimov。2017。近端策略优化算法。"
+      },
+      {
+        "text": "Jason Wei, Maarten Bosma, Vincent Y. Zhao, Kelvin Guu, Adams Wei Yu, Brian Lester, Nan Du, Andrew M. Dai, and Quoc V. Le. 2022. language models are zero-shot learners.",
+        "x": 306.1,
+        "y": 271.4,
+        "w": 219.9,
+        "h": 42.8,
+        "zh": "Jason Wei、Maarten Bosma、Vincent Y. Zhao、Kelvin Guu、Adams Wei Yu、Brian Lester、Nan Du、Andrew M. Dai 与 Quoc V. Le。2022。语言模型是零样本学习者。"
+      },
+      {
+        "text": "Wei Shen, Rui Zheng, Wenyu Zhan, Jun Zhao, Shihan Dou, Tao Gui, Qi Zhang, and Xuanjing Huang. 2023. Loose lips sink ships: Mitigating length bias in reinforcement learning from human feedback. In Findings of the Association for Computational Linguistics: EMNLP 2023, pages 2859–2873, Singapore. Association for Computational Linguistics.",
+        "x": 70.9,
+        "y": 231.6,
+        "w": 220,
+        "h": 75.7,
+        "zh": "Wei Shen、Rui Zheng、Wenyu Zhan、Jun Zhao、Shihan Dou、Tao Gui、Qi Zhang 与 Xuanjing Huang。2023。言多必失：减轻人类反馈强化学习中的长度偏差。载于计算语言学协会论文集：EMNLP 2023，第 2859–2873 页，新加坡。计算语言学协会。"
+      },
+      {
+        "text": "Sean Welleck, Ilia Kulikov, Stephen Roller, Emily Dinan, Kyunghyun Cho, and Jason Weston. 2019. Neural text generation with unlikelihood training. arXiv preprint arXiv:1908.04319.",
+        "x": 306.1,
+        "y": 215.5,
+        "w": 219.9,
+        "h": 42.8,
+        "zh": "Sean Welleck、Ilia Kulikov、Stephen Roller、Emily Dinan、Kyunghyun Cho 与 Jason Weston。2019。用非似然训练做神经文本生成。arXiv preprint arXiv:1908.04319。"
+      },
+      {
+        "text": "Feifan Song, Bowen Yu, Minghao Li, Haiyang Yu, Fei Huang, Yongbin Li, and Houfeng Wang. 2023. Preference ranking optimization for human alignment.",
+        "x": 70.9,
+        "y": 189,
+        "w": 219.9,
+        "h": 31.9,
+        "zh": "Feifan Song、Bowen Yu、Minghao Li、Haiyang Yu、Fei Huang、Yongbin Li 与 Houfeng Wang。2023。面向人类对齐的偏好排序优化。"
+      },
+      {
+        "text": "Tianhao Wu, Banghua Zhu, Ruoyu Zhang, Zhaojin Wen, Kannan Ramchandran, and Jiantao Jiao. 2023. Pairwise proximal policy optimization: Harnessing relative feedback for llm alignment.",
+        "x": 306.1,
+        "y": 159.6,
+        "w": 219.9,
+        "h": 42.8,
+        "zh": "Tianhao Wu、Banghua Zhu、Ruoyu Zhang、Zhaojin Wen、Kannan Ramchandran 与 Jiantao Jiao。2023。成对近端策略优化：利用相对反馈做 LLM 对齐。"
+      },
+      {
+        "text": "Nisan Stiennon, Long Ouyang, Jeff Wu, Daniel M. Ziegler, Ryan Lowe, Chelsea Voss, Alec Radford, Dario Amodei, and Paul Christiano. 2022. Learning to summarize from human feedback.",
+        "x": 70.9,
+        "y": 135.4,
+        "w": 220,
+        "h": 42.8,
+        "zh": "Nisan Stiennon、Long Ouyang、Jeff Wu、Daniel M. Ziegler、Ryan Lowe、Chelsea Voss、Alec Radford、Dario Amodei 与 Paul Christiano。2022。从人类反馈中学习做摘要。"
+      },
+      {
+        "text": "Susan Zhang, Stephen Roller, Naman Goyal, Mikel Artetxe, Moya Chen, Shuohui Chen, Christopher Dewan, Mona Diab, Xian Li, Xi Victoria Lin, Todor Mihaylov, Myle Ott, Sam Shleifer, Kurt Shuster, Daniel Simig, Punit Singh Koura, Anjali Sridhar, Tianlu Wang, and Luke Zettlemoyer. 2022. Opt: Open pretrained transformer language models.",
+        "x": 306.1,
+        "y": 70.9,
+        "w": 219.9,
+        "h": 75.7,
+        "zh": "Susan Zhang、Stephen Roller、Naman Goyal、Mikel Artetxe、Moya Chen、Shuohui Chen、Christopher Dewan、Mona Diab、Xian Li、Xi Victoria Lin、Todor Mihaylov、Myle Ott、Sam Shleifer、Kurt Shuster、Daniel Simig、Punit Singh Koura、Anjali Sridhar、Tianlu Wang 与 Luke Zettlemoyer。2022。OPT：开放的预训练 Transformer 语言模型。"
+      },
+      {
+        "text": "Rohan Taori, Ishaan Gulrajani, Tianyi Zhang, Yann Dubois, Xuechen Li, Carlos Guestrin, Percy Liang, and Tatsunori B. Hashimoto. 2023. Stanford alpaca: An instruction-following llama model. github.com/tatsu-lab/stanford_alpaca.",
+        "x": 70.9,
+        "y": 70.9,
+        "w": 219.7,
+        "h": 53.8,
+        "zh": "Rohan Taori、Ishaan Gulrajani、Tianyi Zhang、Yann Dubois、Xuechen Li、Carlos Guestrin、Percy Liang 与 Tatsunori B. Hashimoto。2023。Stanford Alpaca：一个遵循指令的 Llama 模型。github.com/tatsu-lab/stanford_alpaca。"
+      }
+    ],
+    "13": [
+      {
+        "text": "Yanli Zhao, Andrew Gu, Rohan Varma, Liang Luo, Chien-Chin Huang, Min Xu, Less Wright, Hamid Shojanazeri, Myle Ott, Sam Shleifer, Alban Desmaison, Can Balioglu, Pritam Damania, Bernard Nguyen, Geeta Chauhan, Yuchen Hao, Ajit Mathews, and Shen Li. 2023. Pytorch fsdp: Experiences on scaling fully sharded data parallel.",
+        "x": 70.9,
+        "y": 694.3,
+        "w": 219.9,
+        "h": 75.7,
+        "zh": "Yanli Zhao、Andrew Gu、Rohan Varma、Liang Luo、Chien-Chin Huang、Min Xu、Less Wright、Hamid Shojanazeri、Myle Ott、Sam Shleifer、Alban Desmaison、Can Balioglu、Pritam Damania、Bernard Nguyen、Geeta Chauhan、Yuchen Hao、Ajit Mathews 与 Shen Li。2023。PyTorch FSDP：扩展完全分片数据并行的经验。"
+      },
+      {
+        "text": "Lianmin Zheng, Wei-Lin Chiang, Ying Sheng, Siyuan Zhuang, Zhanghao Wu, Yonghao Zhuang, Zi Lin, Zhuohan Li, Dacheng Li, Eric P. Xing, Hao Zhang, Joseph E. Gonzalez, and Ion Stoica. 2023. Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena. ArXiv:2306.05685 [cs].",
+        "x": 70.9,
+        "y": 619.6,
+        "w": 220,
+        "h": 64.8,
+        "zh": "Lianmin Zheng、Wei-Lin Chiang、Ying Sheng、Siyuan Zhuang、Zhanghao Wu、Yonghao Zhuang、Zi Lin、Zhuohan Li、Dacheng Li、Eric P. Xing、Hao Zhang、Joseph E. Gonzalez 与 Ion Stoica。2023。用 MT-Bench 和 Chatbot Arena 评判“以 LLM 为裁判”。ArXiv:2306.05685 [cs]。"
+      },
+      {
+        "text": "Chunting Zhou, Pengfei Liu, Puxin Xu, Srini Iyer, Jiao Sun, Yuning Mao, Xuezhe Ma, Avia Efrat, Ping Yu, Lili Yu, Susan Zhang, Gargi Ghosh, Mike Lewis, Luke Zettlemoyer, and Omer Levy. 2023a. Lima: Less is more for alignment.",
+        "x": 70.9,
+        "y": 555.8,
+        "w": 219.7,
+        "h": 53.8,
+        "zh": "Chunting Zhou、Pengfei Liu、Puxin Xu、Srini Iyer、Jiao Sun、Yuning Mao、Xuezhe Ma、Avia Efrat、Ping Yu、Lili Yu、Susan Zhang、Gargi Ghosh、Mike Lewis、Luke Zettlemoyer 与 Omer Levy。2023a。LIMA：对齐未必需要很多数据。"
+      },
+      {
+        "text": "Haotian Zhou, Tingkai Liu, Qianli Ma, Jianbo Yuan, Pengfei Liu, Yang You, and Hongxia Yang. 2023b. Lobass: Gauging learnability in supervised finetuning data. ArXiv, abs/2310.13008.",
+        "x": 70.9,
+        "y": 503,
+        "w": 220,
+        "h": 42.8,
+        "zh": "Haotian Zhou、Tingkai Liu、Qianli Ma、Jianbo Yuan、Pengfei Liu、Yang You 与 Hongxia Yang。2023b。LoBaSS：衡量监督微调数据的可学习性。ArXiv，abs/2310.13008。"
+      },
+      {
+        "text": "Jeffrey Zhou, Tianjian Lu, Swaroop Mishra, Siddhartha Brahma, Sujoy Basu, Yi Luan, Denny Zhou, and Le Hou. 2023c. Instruction-following evaluation for large language models.",
+        "x": 70.9,
+        "y": 450.2,
+        "w": 218.4,
+        "h": 42.8,
+        "zh": "Jeffrey Zhou、Tianjian Lu、Swaroop Mishra、Siddhartha Brahma、Sujoy Basu、Yi Luan、Denny Zhou 与 Le Hou。2023c。大语言模型的指令遵循评估。"
+      },
+      {
+        "text": "Daniel M. Ziegler, Nisan Stiennon, Jeffrey Wu, Tom B. Brown, Alec Radford, Dario Amodei, Paul Christiano, and Geoffrey Irving. 2020. Fine-tuning language models from human preferences.",
+        "x": 70.9,
+        "y": 397.4,
+        "w": 220,
+        "h": 42.8,
+        "zh": "Daniel M. Ziegler、Nisan Stiennon、Jeffrey Wu、Tom B. Brown、Alec Radford、Dario Amodei、Paul Christiano 与 Geoffrey Irving。2020。根据人类偏好微调语言模型。"
+      }
+    ],
+    "14": [
+      {
+        "text": "Derivation of ∇θLOR with Odds Ratio Suppose that g(x, yl, yw) = odds P(y |x)",
+        "x": 70.9,
+        "y": 735.2,
+        "w": 213.9,
+        "h": 36.8,
+        "zh": "含优势比的 ∇_θ L_OR 推导。设 g(x, y_l, y_w) = odds P(y|x)。"
+      },
+      {
+        "text": "= σ (− log g(x, yl, yw)) · ∇θ log g(x, yl, yw)",
+        "x": 200.8,
+        "y": 628.3,
+        "w": 195.3,
+        "h": 12.7,
+        "zh": ""
+      },
+      {
+        "text": "= σ (− log g(x, yl, yw)) · ∇θ log g(x, yl, yw)",
+        "x": 200.8,
+        "y": 567.1,
+        "w": 195.3,
+        "h": 12.7,
+        "zh": ""
+      },
+      {
+        "text": "In Equation 25, the remaining derivative can be further simplified by replacingq",
+        "x": 81.8,
+        "y": 500.9,
+        "w": 356.2,
+        "h": 15.5,
+        "zh": "在式 25 中，剩下的导数还可以通过替换进一步化简。"
+      },
+      {
+        "text": "t Pθ(yt|x, y<t in oddsθ(y|x) as follows.",
+        "x": 171,
+        "y": 484.2,
+        "w": 178,
+        "h": 14.1,
+        "zh": ""
+      },
+      {
+        "text": "∇θ log(1 − Pθ(yw|x)) − ∇θ log(1 − Pθ(yl|x))",
+        "x": 286.8,
+        "y": 309.9,
+        "w": 206.7,
+        "h": 12.7,
+        "zh": ""
+      },
+      {
+        "text": "= (1 + oddsθP(yw|x)) ∇θ log Pθ(yw|x) − (1 + oddsθP(yl|x)) ∇θ log Pθ(yl|x)",
+        "x": 180,
+        "y": 279.2,
+        "w": 351.7,
+        "h": 12.7,
+        "zh": ""
+      },
+      {
+        "text": "Therefore, the final form of ∇θLOR would be",
+        "x": 81.8,
+        "y": 242.2,
+        "w": 200.2,
+        "h": 12.7,
+        "zh": "因此，∇_θ L_OR 的最终形式为"
+      }
+    ],
+    "15": [
+      {
+        "text": "Ablation on Probability Ratio and Odds Ratio",
+        "x": 90.8,
+        "y": 760.1,
+        "w": 234.9,
+        "h": 12,
+        "zh": "概率比与优势比的消融"
+      },
+      {
+        "text": "In this section, we continue the discussion in Section 7.1 through empirical results comparing the log probabilities of chosen and rejected responses in UltraFeedback when trained with probability ratio and odds ratio. Recalling the sensitivity of each ratio discussed in Section 7.1, it is expected for the probability ratio to lower the log probabilities of the rejected responses with a larger scale than the odds ratio. This is well-shown in Figure 8, which is the log probabilities of each batch while fine-tuning with probability ratio (left) rapidly reaches under -4, while the same phenomenon happens after the over-fitting occurs in",
+        "x": 70.5,
+        "y": 669.6,
+        "w": 454.3,
+        "h": 78.7,
+        "zh": "本节延续第 7.1 节的讨论，用实验结果比较：在 UltraFeedback 上分别用概率比和优势比训练时，选中回答与拒绝回答的对数概率。回顾第 7.1 节所讨论的两种比值的敏感程度，可以预期概率比会以更大幅度压低拒绝回答的对数概率。图 8 清楚地显示了这一点：用概率比微调时（左），每个 batch 的对数概率很快降到 −4 以下；而同样的现象，要等过拟合出现之后才会发生在"
+      },
+      {
+        "text": "Figure 8: The log probability trace when the model is trained with the probability ratio (left) and the odds ratio (right) given the same hyperparameters. The probability ratio leads the rejected responses to have relatively lower",
+        "x": 70.5,
+        "y": 419.7,
+        "w": 454,
+        "h": 21.9,
+        "zh": "图 8：超参数相同时，用概率比（左）和优势比（右）训练的对数概率轨迹。概率比会使拒绝回答的对数概率相对更低。"
+      },
+      {
+        "text": "Flash-Attention 2 (Dao, 2023) is applied for all the pre-trained models for computational efficiency. In particular, the OPT series and Phi-2 (2.7B) were trained with DeepSpeed ZeRO 2 (Rasley et al., 2020), Llama-2 (7B) and Mistral (7B) were trained with Fully Sharded Data Parallel(FSDP) (Zhao et al., 2023). 7B and 2.7B models were trained with four and two NVIDIA A100, and the rest were trained on four NVIDIA A6000. For optimizer, AdamW optimizer (Loshchilov and Hutter, 2019) and paged AdamW (Dettmers et al., 2023) were used, and the linear warmup with cosine decay was applied for the learning rate. For input length, every instance was truncated and padded to 1,024 tokens and 2,048 tokens for HH-RLHF and UltraFeedback, respectively. To guarantee that the models can sufficiently learn to generate the proper response to the conversation history or the complex instruction, we filtered instances with",
+        "x": 70.5,
+        "y": 235.8,
+        "w": 455.8,
+        "h": 119.3,
+        "zh": "所有预训练模型都使用 FlashAttention 2（Dao，2023），以提高计算效率。其中 OPT 系列和 Phi-2（2.7B）用 DeepSpeed ZeRO 2（Rasley 等人，2020）训练，Llama-2（7B）和 Mistral（7B）用完全分片数据并行 FSDP（Zhao 等人，2023）训练。7B 和 2.7B 模型分别用四张和两张 NVIDIA A100，其余模型在四张 NVIDIA A6000 上训练。优化器使用 AdamW（Loshchilov 与 Hutter，2019）和 paged AdamW（Dettmers 等人，2023），学习率采用线性预热加余弦衰减。输入长度方面，每条样本都做截断和填充：HH-RLHF 为 1,024 个 token，UltraFeedback 为 2,048 个 token。为保证模型能充分学会针对对话历史或复杂指令生成合适的回答，我们过滤了那些"
+      },
+      {
+        "text": "Supervised Fine-tuning (SFT) et al. (2020) and Rafailov et al. (2023), the training epoch is set to 1.",
+        "x": 70.9,
+        "y": 185.4,
+        "w": 298.5,
+        "h": 24.5,
+        "zh": "监督微调（SFT）。按等人（2020）以及 Rafailov 等人（2023）的设置，训练 epoch 设为 1。"
+      },
+      {
+        "text": "For SFT, the maximum learning rate was set to 1e-5. Following Ziegler",
+        "x": 218.1,
+        "y": 198.9,
+        "w": 306.5,
+        "h": 10.9,
+        "zh": "SFT 的最大学习率设为 1e-5。设置遵循 Ziegler"
+      },
+      {
+        "text": "For RLHF, the hyperparameters were set as Table 5 for UltraFeedback. For the HH-RLHF dataset, the output_min_length and output_max_length",
+        "x": 70.5,
+        "y": 148.4,
+        "w": 453.9,
+        "h": 24.5,
+        "zh": "RLHF 在 UltraFeedback 上的超参数如表 5 所示。对 HH-RLHF 数据集，output_min_length 和 output_max_length"
+      },
+      {
+        "text": "Reinforcement Learning with Human Feedback (RLHF)",
+        "x": 70.9,
+        "y": 162,
+        "w": 257.4,
+        "h": 10.9,
+        "zh": "人类反馈强化学习（RLHF）"
+      },
+      {
+        "text": "For DPO, β was set to 0.1 for every case. The learning rate was set to 5e-6, and the model was trained for three epochs to select the best model by evaluation loss in each epoch. However, in most cases, the first or the second checkpoint was selected as the best model as",
+        "x": 70.5,
+        "y": 84.4,
+        "w": 453.9,
+        "h": 38,
+        "zh": "DPO 的 β 在所有情况下都设为 0.1。学习率设为 5e-6，训练三个 epoch，并在每个 epoch 按评估损失选择最好的模型。不过在多数情况下，被选中的是第一个或第二个检查点，因为"
+      },
+      {
+        "text": "the evaluation loss increased from the third epoch.",
+        "x": 70.9,
+        "y": 70.9,
+        "w": 219.4,
+        "h": 10.9,
+        "zh": "从第三个 epoch 起，评估损失就开始上升。"
+      }
+    ],
+    "16": [
+      {
+        "text": "Table 5: Hyperparameter settings for RLHF.",
+        "x": 209.2,
+        "y": 584.1,
+        "w": 176.6,
+        "h": 10,
+        "zh": "表 5：RLHF 的超参数设置。"
+      },
+      {
+        "text": "As ORPO does not require any special hyperparameter, only the learning rate and epoch were the only hyperparameter to set. For ORPO, the maximum learning rate was set to 8e-6 and trained for 10 epochs. The best model is selected based on the lowest evaluation",
+        "x": 70.9,
+        "y": 522.6,
+        "w": 454.9,
+        "h": 38,
+        "zh": "ORPO 并不需要特别的超参数，要设置的只有学习率和 epoch。ORPO 的最大学习率设为 8e-6，并训练 10 个 epoch。最优模型按最低的评估"
+      },
+      {
+        "text": "Odds Ratio Preference Optimization (ORPO)",
+        "x": 70.9,
+        "y": 549.7,
+        "w": 205.5,
+        "h": 10.9,
+        "zh": "优势比偏好优化（ORPO）"
+      },
+      {
+        "text": "loss for the OPT series, Phi-2 (2.7B) and Llama-2 (7B).",
+        "x": 70.9,
+        "y": 509,
+        "w": 243,
+        "h": 10.9,
+        "zh": "损失来选取，适用于 OPT 系列、Phi-2（2.7B）和 Llama-2（7B）。"
+      },
+      {
+        "text": "IFEval Result for Mistral-ORPO-α and Mistral-ORPO-β",
+        "x": 91.5,
+        "y": 485.2,
+        "w": 270.4,
+        "h": 12,
+        "zh": "Mistral-ORPO-α 与 Mistral-ORPO-β 的 IFEval 结果"
+      },
+      {
+        "text": "Along with the AlpacaEval results reported in Section 6.1, we report the results of Mistral-ORPO-α and Mistral-ORPO-β on IFEval (Zhou et al., 2023c), calculated with the codes from Gao et al. (2023). Additional information can be found in: https://jiwooya1000.github.io/posts/orpo/#ifeval.",
+        "x": 70.5,
+        "y": 437.2,
+        "w": 455.8,
+        "h": 38,
+        "zh": "除第 6.1 节报告的 AlpacaEval 结果外，我们还报告 Mistral-ORPO-α 和 Mistral-ORPO-β 在 IFEval（Zhou 等人，2023c）上的结果，数值用 Gao 等人（2023）的代码计算。更多说明见：https://jiwooya1000.github.io/posts/orpo/#ifeval。"
+      },
+      {
+        "text": "Table 6: IFEval scores of Mistral-ORPO-α and Mistral-ORPO-β.",
+        "x": 173.6,
+        "y": 359.8,
+        "w": 247.9,
+        "h": 10,
+        "zh": "表 6：Mistral-ORPO-α 与 Mistral-ORPO-β 的 IFEval 分数。"
+      }
+    ],
+    "17": [
+      {
+        "text": "For the weighting value λ in Equation 6, we conduct an ablation study with {0.1, 0.5, 1.0}. Mistral (7B) and UltraFeedback were used for the base model and dataset. In Section E.1, we compare the log probability trends by the value of λ, and we assess the downstream effect of λ in Section E.2.",
+        "x": 70.5,
+        "y": 709.4,
+        "w": 453.9,
+        "h": 38,
+        "zh": "针对式 6 中的权重 λ，我们在 {0.1, 0.5, 1.0} 上做消融。基座模型和数据集分别为 Mistral（7B）与 UltraFeedback。E.1 节比较不同 λ 下对数概率的走势，E.2 节评估 λ 的下游影响。"
+      },
+      {
+        "text": "Figure 9: The log probability trend by λ. With larger λ (e.g., λ = 1.0), LOR gets more influential in fine-tuning the",
+        "x": 70.9,
+        "y": 491.1,
+        "w": 453.5,
+        "h": 11.5,
+        "zh": "图 9：随 λ 变化的对数概率走势。λ 更大时（例如 λ = 1.0），L_OR 在微调中的影响更强，会更明显地作用于"
+      },
+      {
+        "text": "In Figure 9, we find that larger λ leads to stronger discrimination of the rejected responses in general. With λ = 0.1, the average log probability of the chosen and the rejected responses stay close as the fine-tuning proceeds. Also, unlike other settings, the log probabilities for the rejected responses do not decrease, but rather, the log probabilities of the chosen responses increase to minimize LOR term. Moreover, in λ = 0.5, there exists a similar trend of further increasing the log probabilities of the chosen responses, but the log probabilities of the rejected responses are diminishing simultaneously. Lastly, in λ = 1.0, the chosen responses diminish along with the rejected responses while enlarging the margin between them. However, this does not mean smaller λ is always the better. It will depend on the",
+        "x": 70.4,
+        "y": 355.7,
+        "w": 456,
+        "h": 106.8,
+        "zh": "从图 9 可以看到，更大的 λ 通常会对拒绝回答做出更强的区分。λ = 0.1 时，随着微调进行，选中回答与拒绝回答的平均对数概率保持接近。而且与其他设置不同，拒绝回答的对数概率并不下降，反而是选中回答的对数概率上升，以此来减小 L_OR 项。λ = 0.5 时也有类似趋势：选中回答的对数概率进一步升高，同时拒绝回答的对数概率在下降。最后，λ = 1.0 时，选中回答与拒绝回答的对数概率一起下降，但二者之间的间隔被拉大。不过这并不意味着 λ 越小就一定越好。它取决于"
+      }
+    ],
+    "18": [
+      {
+        "text": "The downstream impact of λ stands out in the MT-Bench result. In comparison to λ = 0.1, Mistral+ORPO (7B) with λ = 1.0 performs worse in extraction, math, and reasoning, which are the categories that generally require deterministic answers. On the other hand, it performs better in STEM, humanities, and roleplay, which ask the generations without hard answers. Along with the amount of discrepancy between the trend in the logits of chosen and rejected responses, we can infer that making a more significant margin between the chosen and the rejected responses through higher λ in ORPO leads to overly adapting to the chosen responses set in the training dataset. This proclivity results in open-ended generations generally being preferred by the annotator while showing weaker performance in the hard-answered questions.",
+        "x": 70.9,
+        "y": 665.2,
+        "w": 455.4,
+        "h": 105.8,
+        "zh": "λ 的下游影响在 MT-Bench 的结果里很突出。与 λ = 0.1 相比，λ = 1.0 的 Mistral+ORPO（7B）在抽取、数学和推理上更差，这几类通常需要确定的答案。另一方面，它在 STEM、人文和角色扮演上更好，这些类别并不要求硬性答案。再结合选中回答与拒绝回答的 logits 走势之间的差距，可以推断：在 ORPO 中用更高的 λ 把选中回答和拒绝回答的间隔拉得更大，会使模型过度贴合训练集里的选中回答。这种倾向让开放式生成通常更受标注者偏好，但在有确定答案的问题上表现更弱。"
+      }
+    ],
+    "19": [
+      {
+        "text": "Along with Figure 11, which depicts the reward distribution of OPT2-125M, OPT2-350M, and OPT2-1.3B on the UltraFeedback dataset, we report the reward distribution of each pre-trained checkpoint trained on the HH-RLHF dataset. As discussed in Section 6.3, ORPO consistently pushes the reward distribution of",
+        "x": 70.5,
+        "y": 708.6,
+        "w": 453.9,
+        "h": 38,
+        "zh": "图 11 给出 OPT-125M、OPT-350M 和 OPT-1.3B 在 UltraFeedback 上的奖励分布。与之并列，这里报告各预训练检查点在 HH-RLHF 上训练后的奖励分布。如第 6.3 节所讨论的，ORPO 始终把奖励分布往"
+      },
+      {
+        "text": "Figure 11: Reward distribution comparison between OPT-125M (left), OPT-350M (middle), and OPT-1.3B (right) trained with SFT (blue), RLHF (green), DPO (orange), and ORPO (red) on the test set of HH-RLHF using the 1.3B",
+        "x": 70.9,
+        "y": 528.3,
+        "w": 454.2,
+        "h": 21.9,
+        "zh": "图 11：在 HH-RLHF 测试集上，比较 OPT-125M（左）、OPT-350M（中）和 OPT-1.3B（右）的奖励分布。训练方法为 SFT（蓝）、RLHF（绿）、DPO（橙）和 ORPO（红），评估使用 1.3B"
+      },
+      {
+        "text": "reward model. General tendency follows that of Figure 5.",
+        "x": 70.9,
+        "y": 516.3,
+        "w": 228.9,
+        "h": 10,
+        "zh": "奖励模型。总体趋势与图 5 一致。"
+      },
+      {
+        "text": "MT-Bench Result of Mistral-ORPO-α (7B) and Mistral-ORPO-β (7B)",
+        "x": 92.1,
+        "y": 473.2,
+        "w": 334.8,
+        "h": 12,
+        "zh": "Mistral-ORPO-α（7B）与 Mistral-ORPO-β（7B）的 MT-Bench 结果"
+      },
+      {
+        "text": "For the MT-Bench result in Section 6.2, we report the category-wise scores of Mistral-ORPO-α (7B) and Mistral-ORPO-β (7B) in Figure 12. While surpassing Llama-2 Chat (13B) and Llama-2 Chat (70B) in most cases, Mistral-ORPO-β (7B) is comparable to GPT-3.5-turbo in the categories that require descriptive generations. However, it lacks coding and math skills, which we speculate is due to the lack of training",
+        "x": 70.9,
+        "y": 408.1,
+        "w": 453.5,
+        "h": 51.6,
+        "zh": "对于第 6.2 节的 MT-Bench 结果，我们在图 12 中报告 Mistral-ORPO-α（7B）和 Mistral-ORPO-β（7B）的分类得分。它们在多数情况下超过 Llama-2 Chat（13B）和 Llama-2 Chat（70B）；在需要描述性生成的类别上，Mistral-ORPO-β（7B）与 GPT-3.5-turbo 相当。但它在编程和数学上不足。我们推测这是由于训练"
+      },
+      {
+        "text": "data, as we used 61k instances in UltraFeedback.",
+        "x": 70.9,
+        "y": 394.6,
+        "w": 213.6,
+        "h": 10.9,
+        "zh": "数据不够：UltraFeedback 中我们使用了 61k 条样本。"
+      },
+      {
+        "text": "Mistral-ORPO-⍺ (7B): 7.23 Mistral-ORPO-β (7B): 7.32",
+        "x": 398.7,
+        "y": 258.7,
+        "w": 117.6,
+        "h": 22.2,
+        "zh": "Mistral-ORPO-α（7B）：7.23；Mistral-ORPO-β（7B）：7.32"
+      },
+      {
+        "text": "Figure 12: MT-Bench result of Mistral-ORPO-α (7B) and Mistral-ORPO-β (7B) by the category.",
+        "x": 107.5,
+        "y": 87.8,
+        "w": 380.3,
+        "h": 10,
+        "zh": "图 12：Mistral-ORPO-α（7B）和 Mistral-ORPO-β（7B）在 MT-Bench 上按类别的结果。"
+      }
+    ],
+    "20": [
+      {
+        "text": "Special Instructions for Verbosity Assessment",
+        "x": 92.1,
+        "y": 760.1,
+        "w": 232.3,
+        "h": 12,
+        "zh": "冗长度评估所用的特别指令"
+      },
+      {
+        "text": "For the succinctness and verboseness instructions, we generated five different instructions, each with ChatGPT . From the instructions in Table 7, we randomly sampled one prompt each for every batch to",
+        "x": 70.9,
+        "y": 725.6,
+        "w": 453.5,
+        "h": 24.5,
+        "zh": "针对简洁和冗长两类要求，我们用 ChatGPT 各生成了五条不同的指令。从表 7 的指令中，每个 batch 随机抽取一条提示，用来"
+      },
+      {
+        "text": "Please generate a short and concise response. Provide a brief and concise answer. Keep your reply short and to the point. Keep your answer brief for clarity. Generate a brief and to-the-point answer.",
+        "x": 94.2,
+        "y": 618.8,
+        "w": 193.5,
+        "h": 63.9,
+        "zh": "请生成简短而紧凑的回答。请给出简要而紧凑的答案。回答要短，并且说到点子上。为清楚起见，请把答案保持简短。请生成简要、切中要点的答案。"
+      },
+      {
+        "text": "Please generate an elaborative and chatty response.",
+        "x": 299.9,
+        "y": 672,
+        "w": 218.7,
+        "h": 10.7,
+        "zh": "请生成详尽、爱聊的回答。"
+      },
+      {
+        "text": "Keep your reply elaborative and intricate.",
+        "x": 320.4,
+        "y": 645.4,
+        "w": 177.7,
+        "h": 10.7,
+        "zh": "回答请写得详尽而细密。"
+      },
+      {
+        "text": "Table 7: Instructions prepended to the queries from AlpacaEval. Each instruction set asks the model to generate",
+        "x": 70.6,
+        "y": 593.8,
+        "w": 453.8,
+        "h": 10,
+        "zh": "表 7：加在 AlpacaEval 问题之前的指令。每一组指令都要求模型生成"
+      },
+      {
+        "text": "either shorter or longer responses given the query, respectively.",
+        "x": 70.9,
+        "y": 581.8,
+        "w": 250.8,
+        "h": 10,
+        "zh": "更短或更长的回答，分别对应所给的问题。"
+      }
+    ],
+    "21": [
+      {
+        "text": "Generation Samples from Mistral-ORPO-α (7B)",
+        "x": 87.5,
+        "y": 760.1,
+        "w": 236.4,
+        "h": 12,
+        "zh": "Mistral-ORPO-α（7B）的生成样例"
+      },
+      {
+        "text": "In this section, we two sample generations from Mistral-ORPO-α (7B) on AlpacaEval, including the one which is preferred over the response of GPT-4 and the one in which GPT-4 was preferred. For readability, the instances with short responses are selected for both cases. Additionally, the responses for Mistral-ORPO-α (7B) were sampled with a temperature of 0.7. The checkpoints for Mistral-ORPO-α (7B) and Mistral-ORPO-β (7B) can be found in https://huggingface.co/kaist-ai/mistral-orpo-alpha",
+        "x": 70.9,
+        "y": 685,
+        "w": 454.3,
+        "h": 65.1,
+        "zh": "本节给出 Mistral-ORPO-α（7B）在 AlpacaEval 上的两则生成样例，包括一则优于 GPT-4 回答的，以及一则 GPT-4 更受偏好的。为便于阅读，两种情形都选取了回答较短的样本。Mistral-ORPO-α（7B）的回答以温度 0.7 抽样。Mistral-ORPO-α（7B）和 Mistral-ORPO-β（7B）的检查点见 https://huggingface.co/kaist-ai/mistral-orpo-alpha"
+      },
+      {
+        "text": "and https://huggingface.co/kaist-ai/mistral-orpo-beta.",
+        "x": 70.9,
+        "y": 671.4,
+        "w": 290,
+        "h": 10.9,
+        "zh": "以及 https://huggingface.co/kaist-ai/mistral-orpo-beta。"
+      },
+      {
+        "text": "Query 1 (GPT-4 Win): Give a brief description of the book that you are given. Matilda",
+        "x": 81.8,
+        "y": 608.4,
+        "w": 384,
+        "h": 10.9,
+        "zh": "问题 1（GPT-4 胜）：请简要介绍给你的这本书。Matilda"
+      },
+      {
+        "text": "\"Matilda\" is a children’s novel written by the British author Roald Dahl. It was first published in 1988. The story revolves around a very intelligent and precocious young girl named Matilda Wormwood. Despite being neglected and mistreated by her ignorant and self-absorbed parents, Matilda finds",
+        "x": 92.3,
+        "y": 518.8,
+        "w": 434,
+        "h": 38,
+        "zh": "《Matilda》是英国作家 Roald Dahl 所写的儿童小说，1988 年首次出版。故事围绕一个非常聪明、早慧的小女孩 Matilda Wormwood。尽管无知而又自我中心的父母忽视她、亏待她，Matilda 仍然找到了"
+      },
+      {
+        "text": "solace in reading books and quickly develops a love for learning.",
+        "x": 92.7,
+        "y": 505.2,
+        "w": 283.1,
+        "h": 10.9,
+        "zh": "在读书中的慰藉，并很快爱上学习。"
+      },
+      {
+        "text": "At the age of five, she begins attending school and meets Miss Honey, a kindhearted teacher who recognizes Matilda’s extraordinary intellectual abilities. However, the school’s tyrannical headmistress, Miss Trunchbull, is a cruel and oppressive figure who takes pleasure in punishing the",
+        "x": 92.3,
+        "y": 460.1,
+        "w": 432.3,
+        "h": 38,
+        "zh": "五岁时她开始上学，遇见心地善良的 Honey 老师。这位老师看出 Matilda 非凡的智力。然而学校专横的校长 Trunchbull 小姐是个残酷而压迫人的角色，以惩罚为乐，对付的是"
+      },
+      {
+        "text": "children with her unreasonable and harsh methods.",
+        "x": 92.7,
+        "y": 446.5,
+        "w": 222.1,
+        "h": 10.9,
+        "zh": "孩子们，手段既不讲理又严厉。"
+      },
+      {
+        "text": "Matilda discovers that she possesses a unique telekinetic ability, which she learns to control and use to her advantage. With her wit, intelligence, and special powers, Matilda sets out to defend her friends from Miss Trunchbull’s abuses and to help Miss Honey overcome her own difficult past. The book is a tale of good triumphing over evil, and it celebrates the power of knowledge, kindness, and standing up for what is right. It has been adapted into a successful film, stage musical, and has",
+        "x": 92.3,
+        "y": 369.8,
+        "w": 433.4,
+        "h": 69.6,
+        "zh": "Matilda 发现自己拥有一种独特的念力，并学会控制它、用它来帮助自己。凭借机智、智力和这种特殊能力，Matilda 着手保护朋友，使其不受 Trunchbull 小姐的虐待，也帮助 Honey 老师走出她自己艰难的过去。这本书讲的是善战胜恶，赞美知识、善意，以及为正确的事情挺身而出。它已被改编成成功的电影和舞台音乐剧，并且"
+      },
+      {
+        "text": "remained a beloved classic in children’s literature.",
+        "x": 92.7,
+        "y": 356.3,
+        "w": 218.7,
+        "h": 10.9,
+        "zh": "始终是儿童文学中受人喜爱的经典。"
+      },
+      {
+        "text": "\"Matilda\" is a children’s book written by Roald Dahl, published in 1988. The story revolves around the life of Matilda Wormwood, a brilliant and gifted five-year-old girl who has telekinetic powers. The story explores themes of education, family, and the importance of reading and intellectual curiosity. The book has been praised for its wit, humor, and powerful message, making it a classic",
+        "x": 92.3,
+        "y": 279.6,
+        "w": 434,
+        "h": 51.6,
+        "zh": "《Matilda》是 Roald Dahl 所写的儿童书，出版于 1988 年。故事围绕 Matilda Wormwood 的生活展开。她是一个聪明、有天赋的五岁女孩，拥有念力。故事探讨教育、家庭，以及阅读与求知欲的重要性。这本书因其机智、幽默和有力的主旨而受到称赞，成为一部经典"
+      }
+    ],
+    "22": [
+      {
+        "text": "Query 2 (Mistral-ORPO-β Win): What do you think about ChatGPT?",
+        "x": 81.8,
+        "y": 734.6,
+        "w": 305.1,
+        "h": 10.9,
+        "zh": "问题 2（Mistral-ORPO-β 胜）：你怎么看 ChatGPT？"
+      },
+      {
+        "text": "As an AI developed by OpenAI, I don’t have personal opinions. However, I can share that ChatGPT is an advanced language model that has received considerable attention for its ability to generate human-like text. It’s designed to assist users in a wide range of tasks, from answering questions to",
+        "x": 92.3,
+        "y": 644.9,
+        "w": 432.5,
+        "h": 38,
+        "zh": "作为 OpenAI 开发的 AI，我没有个人观点。不过可以说明的是，ChatGPT 是一个先进的语言模型，因其能生成接近人写的文本而受到相当多的关注。它被设计用来在很广的一类任务上协助用户，从回答问题到"
+      },
+      {
+        "text": "creating content and engaging in conversation.",
+        "x": 92.7,
+        "y": 631.3,
+        "w": 202.9,
+        "h": 10.9,
+        "zh": "创作内容，以及参与对话。"
+      },
+      {
+        "text": "ChatGPT has been praised for its fluency and versatility in handling various topics and for its potential to streamline and enhance communication in both personal and professional settings. However, like any technology, it also faces challenges and criticisms, such as ensuring the accuracy of information, preventing misuse, and managing ethical considerations surrounding AI-generated",
+        "x": 92.7,
+        "y": 559.1,
+        "w": 433.6,
+        "h": 51.6,
+        "zh": "ChatGPT 因其表达流畅、能处理各种话题，以及有潜力在个人和职业场景中简化和加强沟通而受到称赞。不过，和任何技术一样，它也面临挑战和批评，例如保证信息准确、防止滥用，以及处理围绕 AI 生成内容的伦理问题"
+      },
+      {
+        "text": "Overall, ChatGPT represents a significant achievement in natural language processing and has",
+        "x": 92.7,
+        "y": 514,
+        "w": 431.7,
+        "h": 10.9,
+        "zh": "总体而言，ChatGPT 代表了自然语言处理中的一项重要成果，并且"
+      },
+      {
+        "text": "sparked discussions about the future of AI in our daily lives.",
+        "x": 92.7,
+        "y": 500.4,
+        "w": 262.8,
+        "h": 10.9,
+        "zh": "引发了关于 AI 将如何进入日常生活的讨论。"
+      },
+      {
+        "text": "As an AI language model, I am an example of the technology used in ChatGPT. I can provide a personal opinion, but please keep in mind that I am designed to be socially unbiased and positive in",
+        "x": 92.3,
+        "y": 450.8,
+        "w": 432.1,
+        "h": 24.5,
+        "zh": "作为一个 AI 语言模型，我就是 ChatGPT 所用技术的一个例子。我可以给出一点个人看法，但请记住，我被设计成在社会层面上不偏不倚，并且保持积极，在"
+      },
+      {
+        "text": "ChatGPT is an impressive advancement in artificial intelligence and natural language processing. It has the ability to understand and generate human-like text, making it possible for users to have engaging and informative conversations with the AI. This technology has the potential to revolutionize various industries, including customer support, education, content creation, and more.",
+        "x": 92.7,
+        "y": 365,
+        "w": 433.6,
+        "h": 51.6,
+        "zh": "ChatGPT 是人工智能与自然语言处理中令人印象深刻的进展。它能够理解并生成接近人写的文本，使用户可以与 AI 进行有内容、能展开的对话。这项技术有潜力改变多个行业，包括客户支持、教育、内容创作等。"
+      },
+      {
+        "text": "However, it’s important to recognize that ChatGPT, like any AI technology, is not perfect. It may sometimes provide inaccurate or biased information due to the limitations of its training data or the complexity of human language. It’s crucial to verify the facts and use critical thinking when",
+        "x": 92.7,
+        "y": 306.4,
+        "w": 432.1,
+        "h": 38,
+        "zh": "不过应当认识到，ChatGPT 和任何 AI 技术一样并不完美。由于训练数据的局限，或人类语言本身的复杂，它有时会给出不准确或带偏见的信息。在"
+      },
+      {
+        "text": "interacting with AI systems like ChatGPT.",
+        "x": 92.7,
+        "y": 292.8,
+        "w": 185.1,
+        "h": 10.9,
+        "zh": "与 ChatGPT 这类 AI 系统交互时，核实事实并运用批判性思维至关重要。"
+      },
+      {
+        "text": "Overall, ChatGPT represents a significant step forward in the field of AI, and its potential applications are vast. As a responsible user, it’s important to approach this technology with a critical and respectful",
+        "x": 92.7,
+        "y": 247.7,
+        "w": 431.7,
+        "h": 24.5,
+        "zh": "总体而言，ChatGPT 代表 AI 领域向前迈出的重要一步，其潜在应用很广。作为负责任的使用者，应以批判而又尊重的"
+      },
+      {
+        "text": "mindset, recognizing its strengths and limitations.",
+        "x": 92.7,
+        "y": 234.1,
+        "w": 217.3,
+        "h": 10.9,
+        "zh": "心态来对待它，同时认清它的长处和局限。"
+      }
+    ]
+  }
+}

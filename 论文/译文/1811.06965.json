@@ -1,0 +1,565 @@
+{
+  "id": "1811.06965",
+  "title": "1811.06965",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "GPipe: Easy Scaling with Micro-Batch Pipeline",
+        "x": 131.8,
+        "y": 679,
+        "w": 348.4,
+        "h": 17.2,
+        "zh": "GPipe：用微批次流水线轻松扩展"
+      },
+      {
+        "text": "Scaling up deep neural network capacity has been known as an effective approach to improving model quality for several different machine learning tasks. In many cases, increasing model capacity beyond the memory limit of a single accelerator has required developing special algorithms or infrastructure. These solutions are often architecture-specific and do not transfer to other tasks. To address the need for efficient and task-independent model parallelism, we introduce GPipe, a pipeline parallelism library that allows scaling any network that can be expressed as a sequence of layers. By pipelining different sub-sequences of layers on separate accelerators, GPipe provides the flexibility of scaling a variety of different networks to gigantic sizes efficiently. Moreover, GPipe utilizes a novel batchsplitting pipelining algorithm, resulting in almost linear speedup when a model is partitioned across multiple accelerators. We demonstrate the advantages of GPipe by training large-scale neural networks on two different tasks with distinct network architectures: (i) Image Classification: We train a 557-million-parameter AmoebaNet model and attain a top-1 accuracy of 84.4% on ImageNet-2012, (ii) Multilingual Neural Machine Translation: We train a single 6-billion-parameter,",
+        "x": 143.4,
+        "y": 250.3,
+        "w": 326.3,
+        "h": 173.6,
+        "zh": "扩大深度神经网络的容量，一直被认为是提升多种机器学习任务上模型质量的有效途径。很多时候，要把模型容量扩到单块加速器的显存上限之外，就必须专门开发算法或基础设施。这些办法往往绑定特定架构，无法迁移到其他任务。为了做出高效、且与任务无关的模型并行，我们提出 GPipe，一个流水线并行库，任何可以表示成一串层的网络都能用它来扩展。把不同的层子序列放到不同加速器上做流水线，GPipe 就能灵活、高效地把各种各样的网络扩到极大规模。此外，GPipe 使用一种新的批次切分流水线算法，模型划分到多块加速器上时，加速比几乎是线性的。我们在两个架构截然不同的任务上训练大规模神经网络，以此展示 GPipe 的优势：(i) 图像分类：我们训练一个 5.57 亿参数的 AmoebaNet 模型，在 ImageNet-2012 上达到 84.4% 的 top-1 准确率；(ii) 多语言神经机器翻译：我们训练一个 60 亿参数的、"
+      },
+      {
+        "text": "128-layer Transformer model on a corpus spanning over 100 languages and achieve",
+        "x": 143.1,
+        "y": 239.4,
+        "w": 325,
+        "h": 10,
+        "zh": "128 层 Transformer 模型，语料覆盖 100 多种语言，并取得"
+      },
+      {
+        "text": "Deep learning has seen great progress over the last decade, partially thanks to the development of methods that have facilitated scaling the effective capacity of neural networks. This trend has been most visible for image classification, as demonstrated by the accuracy improvements on ImageNet with the increase in model capacity (Figure 1a). A similar phenomenon can also be observed in the context of natural language processing (Figure 1b) where simple shallow models of sentence representations [1, 2] are outperformed by their deeper and larger counterparts [3, 4]. While larger models have brought remarkable quality improvements to several fields, scaling neural networks introduces significant practical challenges. Hardware constraints, including memory limitations and communication bandwidths on accelerators (GPU or TPU), force users to divide larger",
+        "x": 107.5,
+        "y": 79.8,
+        "w": 396.8,
+        "h": 102.7,
+        "zh": "过去十年，深度学习进展很大，部分要归功于那些让神经网络有效容量得以扩大的方法。这一趋势在图像分类上最明显：随着模型容量增加，ImageNet 上的准确率不断提高（图 1a）。自然语言处理里也能看到类似现象（图 1b）：简单的浅层句子表示模型 [1, 2]，不如更深、更大的对应模型 [3, 4]。更大的模型给好几个领域带来了显著的质量提升，但扩展神经网络也会带来很大的实际困难。硬件限制，包括加速器（GPU 或 TPU）上的显存上限和通信带宽，迫使用户把更大的"
+      }
+    ],
+    "2": [
+      {
+        "text": "Figure 1: (a) Strong correlation between top-1 accuracy on ImageNet 2012 validation dataset [5] and model size for representative state-of-the-art image classification models in recent years [6, 7, 8, 9, 10, 11, 12]. There has been a 36× increase in the model capacity. Red dot depicts 84.4% top-1 accuracy for the 550M parameter AmoebaNet model. (b) Average improvement in translation quality (BLEU) compared against bilingual baselines on our massively multilingual in-house corpus, with increasing model size. Each point, T(L, H, A), depicts the performance of a Transformer with L encoder and L decoder layers, a feed-forward hidden dimension of H and A attention heads. Red dot depicts the performance of a 128-layer 6B parameter Transformer.",
+        "x": 107.7,
+        "y": 636,
+        "w": 397.6,
+        "h": 86.3,
+        "zh": "图 1：(a) 近年来有代表性的图像分类前沿模型 [6, 7, 8, 9, 10, 11, 12]，其 ImageNet 2012 验证集 [5] 上的 top-1 准确率与模型规模强相关。模型容量已增大到原来的 36 倍。红点表示 5.5 亿参数 AmoebaNet 模型 84.4% 的 top-1 准确率。(b) 在我们的大规模多语言内部语料上，随着模型变大，相对双语基线的翻译质量（BLEU）平均提升。每个点 T(L, H, A) 表示一个 Transformer 的表现：L 层编码器、L 层解码器，前馈隐藏维度为 H，注意力头数为 A。红点表示 128 层、60 亿参数 Transformer 的表现。"
+      },
+      {
+        "text": "models into partitions and to assign different partitions to different accelerators. However, efficient model parallelism algorithms are extremely hard to design and implement, which often requires the practitioner to make difficult choices among scaling capacity, flexibility (or specificity to particular tasks and architectures) and training efficiency. As a result, most efficient model-parallel algorithms are architecture and task-specific. With the growing number of applications of deep learning, there is an ever-increasing demand for reliable and flexible infrastructure that allows researchers to easily scale neural networks for a large variety of machine learning tasks. To address these challenges, we introduce GPipe, a flexible library that enables efficient training of large neural networks. GPipe allows scaling arbitrary deep neural network architectures beyond the memory limitations of a single accelerator by partitioning the model across different accelerators and supporting re-materialization on every accelerator [13, 14]. With GPipe, each model can be specified as a sequence of layers, and consecutive groups of layers can be partitioned into cells. Each cell is then placed on a separate accelerator. Based on this partitioned setup, we propose a novel pipeline parallelism algorithm with batch splitting. We first split a mini-batch of training examples into smaller micro-batches, then pipeline the execution of each set of micro-batches over cells. We apply synchronous mini-batch gradient descent for training, where gradients are accumulated across all micro-batches in a mini-batch and applied at the end of a mini-batch. Consequently, gradient updates using GPipe are consistent regardless of the number of partitions, allowing researchers to easily train increasingly large models by deploying more accelerators. GPipe can also be complemented with",
+        "x": 107.7,
+        "y": 237.6,
+        "w": 396.7,
+        "h": 211.8,
+        "zh": "模型拆成若干分区，再把不同分区放到不同加速器上。然而，高效的模型并行算法极难设计和实现，实践者往往不得不在扩大容量、灵活性（或者说对特定任务和架构的专用性）以及训练效率之间做艰难取舍。因此，大多数高效的模型并行算法都绑定特定架构和任务。随着深度学习的应用越来越多，研究者越来越需要可靠、灵活的基础设施，以便在各种各样的机器学习任务上轻松扩展神经网络。为应对这些挑战，我们提出 GPipe，一个能够高效训练大型神经网络的灵活库。GPipe 把模型划分到不同加速器上，并在每块加速器上支持重物化（re-materialization）[13, 14]，从而可以把任意深度神经网络架构扩展到单块加速器的显存限制之外。在 GPipe 里，每个模型可以写成一层层的序列，连续的若干层可以划分成 cell。每个 cell 再放到单独的加速器上。基于这种划分，我们提出一种带批次切分的新流水线并行算法。我们先把一个小批量训练样本切成更小的微批次，再让每一组微批次在各个 cell 上流水执行。训练使用同步小批量梯度下降：一个小批量里所有微批次的梯度先累加，到这个小批量结束时再施加更新。因此，用 GPipe 得到的梯度更新与分区数量无关，结果是一致的，研究者只要投入更多加速器，就能轻松训练越来越大的模型。GPipe 还可以再配合"
+      },
+      {
+        "text": "data parallelism to further scale training.",
+        "x": 108,
+        "y": 226.7,
+        "w": 161.6,
+        "h": 10,
+        "zh": "数据并行，把训练规模再扩大。"
+      },
+      {
+        "text": "We demonstrate the flexibility and efficiency of GPipe on image classification and machine translation. For image classification, we train the AmoebaNet model on 480 × 480 input from the ImageNet 2012 dataset. By increasing the model width, we scale up the number of parameters to 557 million and achieve a top-1 validation accuracy of 84.4%. On machine translation, we train a single 128-layer 6-billion-parameter multilingual Transformer model on 103 languages (102 languages to English). We show that this model is capable of outperforming the individually trained 350-million-parameter bilingual Transformer Big [15] models on 100 language pairs.",
+        "x": 107.5,
+        "y": 144.9,
+        "w": 398.2,
+        "h": 75.4,
+        "zh": "我们在图像分类和机器翻译上展示 GPipe 的灵活性与效率。图像分类方面，我们在 ImageNet 2012 数据集上，用 480 × 480 的输入训练 AmoebaNet。通过加宽模型，参数量扩大到 5.57 亿，top-1 验证准确率达到 84.4%。机器翻译方面，我们在 103 种语言（其中 102 种语言译入英语）上训练一个 128 层、60 亿参数的多语言 Transformer。我们表明，这个模型能够在 100 个语言对上超过分别训练的、3.5 亿参数的双语 Transformer Big [15] 模型。"
+      },
+      {
+        "text": "We now describe the interface and the main design features of GPipe. This open-source library is implemented under the Lingvo [16] framework. The core design features of GPipe are generally applicable and can be implemented for other frameworks [17, 18, 19].",
+        "x": 107.5,
+        "y": 72,
+        "w": 396.8,
+        "h": 31.8,
+        "zh": "下面介绍 GPipe 的接口和主要设计。这个开源库实现在 Lingvo [16] 框架之下。GPipe 的核心设计大体上是通用的，也可以在其他框架里实现 [17, 18, 19]。"
+      }
+    ],
+    "3": [
+      {
+        "text": "Figure 2: (a) An example neural network with sequential layers is partitioned across four accelerators. Fk is the composite forward computation function of the k-th cell. Bk is the back-propagation function, which depends on both Bk+1 from the upper layer and Fk. (b) The naive model parallelism strategy leads to severe under-utilization due to the sequential dependency of the network. (c) Pipeline parallelism divides the input mini-batch into smaller micro-batches, enabling different accelerators to work on different micro-batches simultaneously. Gradients are applied synchronously at the end.",
+        "x": 107.6,
+        "y": 657.8,
+        "w": 398.1,
+        "h": 64.5,
+        "zh": "图 2：(a) 一个由顺序层组成的示例神经网络，被划分到四块加速器上。Fk 是第 k 个 cell 的复合前向计算函数。Bk 是反向传播函数，它既依赖上一层的 Bk+1，也依赖 Fk。(b) 朴素的模型并行会因为网络的顺序依赖而严重利用不足。(c) 流水线并行把输入小批量分成更小的微批次，使不同加速器可以同时处理不同的微批次。梯度在最后同步施加。"
+      },
+      {
+        "text": "Any deep neural network can be defined as a sequence of L layers. Each layer Li is composed of a forward computation function fi, and a corresponding set of parameters wi. GPipe additionally allows the user to specify an optional computation cost estimation function, ci. With a given number of partitions K, the sequence of L layers can be partitioned into K composite layers, or cells. Let pk consist of consecutive layers between layers i and j. The set of parameters corresponding to pk is equivalent to the union of wi, wi+1, . . . , wj, and its forward function would be Fk = fj◦. . .◦fi+1◦fi. The corresponding back-propagation function Bk can be computed from Fk using automatic symbolic differentiation. The cost estimator, Ck, is set to Σl=icl. The GPipe interface is extremely simple and intuitive, requiring the user to specify: (i) the number of model partitions K, (ii) the number of micro-batches M, and (iii) the sequence and definitions of L layers that define the model. Please refer to supplementary material for examples.",
+        "x": 107.6,
+        "y": 287.3,
+        "w": 398.1,
+        "h": 126.2,
+        "zh": "任何深度神经网络都可以定义成 L 层的序列。每一层 Li 由前向计算函数 fi 和对应的一组参数 wi 组成。GPipe 还允许用户指定一个可选的计算代价估计函数 ci。给定分区数 K，这 L 层可以划分成 K 个复合层，也就是 cell。设 pk 由第 i 层到第 j 层的连续层组成。pk 对应的参数是 wi、wi+1、……、wj 的并集，前向函数为 Fk = fj◦…◦fi+1◦fi。对应的反向传播函数 Bk 可以用自动符号微分从 Fk 求出。代价估计 Ck 设为 Σl=icl。GPipe 的接口极其简单直观，用户只需指定：(i) 模型分区数 K，(ii) 微批次数 M，(iii) 定义该模型的 L 层的顺序与定义。示例见补充材料。"
+      },
+      {
+        "text": "Once the user defines the sequence of layers in their network in terms of model parameters wi, forward computation function fi, and the cost estimation function ci, GPipe partitions the network into K cells and places the k-th cell on the k-th accelerator. Communication primitives are automatically inserted at partition boundaries to allow data transfer between neighboring partitions. The partitioning algorithm minimizes the variance in the estimated costs of all cells in order to maximize the efficiency of the pipeline by syncing the computation time across all partitions. During the forward pass, GPipe first divides every mini-batch of size N into M equal micro-batches, which are pipelined through the K accelerators. During the backward pass, gradients for each micro-batch are computed based on the same model parameters used for the forward pass. At the end of each mini-batch, gradients from all M micro-batches are accumulated and applied to update the model parameters across all accelerators. This sequence of operations is illustrated in Figure 2c. If batch normalization [20] is used in the network, the sufficient statistics of inputs during training are computed over each micro-batch and over replicas if necessary [21]. We also track the moving average of the sufficient statistics over the entire mini-batch to be used during evaluation.",
+        "x": 107.6,
+        "y": 72,
+        "w": 397.6,
+        "h": 162.7,
+        "zh": "用户一旦用模型参数 wi、前向计算函数 fi 和代价估计函数 ci 定义好网络的层序列，GPipe 就把网络划分成 K 个 cell，并把第 k 个 cell 放到第 k 块加速器上。分区边界会自动插入通信原语，以便相邻分区之间传递数据。划分算法尽量减小各个 cell 估计代价的方差，让各分区的计算时间对齐，从而提高流水线效率。前向时，GPipe 先把每个大小为 N 的小批量分成 M 个相等的微批次，再让它们在 K 块加速器上流水通过。反向时，每个微批次的梯度按前向所用的同一套模型参数来计算。每个小批量结束时，全部 M 个微批次的梯度被累加，用来更新所有加速器上的模型参数。这一连串操作如图 2c 所示。如果网络使用 batch normalization [20]，训练时输入的充分统计量在每个微批次上计算，必要时也在各个副本上计算 [21]。我们还会跟踪整个小批量上充分统计量的滑动平均，供评估时使用。"
+      }
+    ],
+    "4": [
+      {
+        "text": "Table 1: Maximum model size of AmoebaNet supported by GPipe under different scenarios. Naive-1 refers to the sequential version without GPipe. Pipeline-k means k partitions with GPipe on k accelerators. AmoebaNet-D (L, D): AmoebaNet model with L normal cell layers and filter size D . Transformer-L: Transformer model with L layers, 2048 model and 8192 hidden dimensions. Each model parameter needs 12 bytes since we applied RMSProp during training.",
+        "x": 107.7,
+        "y": 668.7,
+        "w": 398.1,
+        "h": 53.6,
+        "zh": "表 1：不同情形下 GPipe 所能支持的 AmoebaNet 最大模型规模。Naive-1 指不用 GPipe 的顺序版本。Pipeline-k 表示在 k 块加速器上用 GPipe 做 k 个分区。AmoebaNet-D (L, D)：具有 L 个 normal cell 层、滤波器大小为 D 的 AmoebaNet。Transformer-L：L 层的 Transformer，模型维度 2048、隐藏维度 8192。训练用的是 RMSProp，因此每个模型参数占 12 字节。"
+      },
+      {
+        "text": "# of Model Parameters Total Model Parameter Memory Peak Activation Memory Cloud TPUv3 (16GB each)",
+        "x": 121.5,
+        "y": 588.1,
+        "w": 115.4,
+        "h": 43.9,
+        "zh": "模型参数量；模型参数总显存；激活值峰值显存；Cloud TPUv3（每块 16GB）"
+      },
+      {
+        "text": "# of Model Parameters Total Model Parameter Memory Peak Activation Memory",
+        "x": 121.5,
+        "y": 543.3,
+        "w": 115.4,
+        "h": 28.9,
+        "zh": "模型参数量；模型参数总显存；激活值峰值显存"
+      },
+      {
+        "text": "In order to reduce activation memory requirements, GPipe supports re-materialization [14]. During forward computation, each accelerator only stores output activations at the partition boundaries. During the backward pass, the k-th accelerator recomputes the composite forward function Fk. As a consequence, peak activation memory requirement is reduced to O(N +",
+        "x": 108,
+        "y": 442.3,
+        "w": 397.7,
+        "h": 42.7,
+        "zh": "为降低激活值的显存需求，GPipe 支持重物化 [14]。前向计算时，每块加速器只在分区边界保存输出激活值。反向传播时，第 k 块加速器重新计算复合前向函数 Fk。因此，激活值峰值显存需求被降到 O(N +"
+      },
+      {
+        "text": "is the number of layers per partition. In comparison, memory requirement without re-materialization and partitioning would be O(N × L), since computing the gradients bi requires both the upper layer gradients bi+1 and the cached activations fi(x). As illustrated in Figure 2c, partitioning introduces some idle time per accelerator, which we refer to",
+        "x": 107.6,
+        "y": 390.9,
+        "w": 396.4,
+        "h": 48.2,
+        "zh": "是每个分区的层数。相比之下，既不做重物化、也不做分区时，显存需求是 O(N × L)，因为计算梯度 bi 既需要上一层的梯度 bi+1，也需要缓存的激活值 fi(x)。如图 2c 所示，分区会给每块加速器带来一些空闲时间，我们称之为"
+      },
+      {
+        "text": ") amortized over the number of micro-steps M. In our experiments, we found the bubble overhead to be negligible when M ≥ 4 × K. This is also partly because re-computation during the backward pass can be scheduled earlier, without",
+        "x": 108,
+        "y": 357,
+        "w": 396,
+        "h": 32.9,
+        "zh": "按微步数 M 摊销。实验中我们发现，当 M ≥ 4 × K 时，气泡开销可以忽略。这也有一部分是因为，反向传播中的重计算可以提前调度，而不必"
+      },
+      {
+        "text": "as the bubble overhead. This bubble time is O(",
+        "x": 108,
+        "y": 380,
+        "w": 187.8,
+        "h": 10,
+        "zh": "为气泡开销。这段气泡时间是 O("
+      },
+      {
+        "text": "waiting for the gradients from earlier layers.",
+        "x": 107.6,
+        "y": 346.1,
+        "w": 176.1,
+        "h": 10,
+        "zh": "等待更前面那些层的梯度。"
+      },
+      {
+        "text": "GPipe also introduces low communication overhead, given that we only need to pass activation tensors at the partition boundaries between accelerators. Therefore, we can achieve efficient scaling",
+        "x": 108,
+        "y": 318.8,
+        "w": 396,
+        "h": 20.9,
+        "zh": "GPipe 引入的通信开销也很低，因为我们只需要在加速器之间、于分区边界传递激活张量。因此，我们可以实现高效的扩展"
+      },
+      {
+        "text": "performance even on accelerators without high-speed interconnects.",
+        "x": 108,
+        "y": 307.9,
+        "w": 271,
+        "h": 10,
+        "zh": "性能，即便加速器没有高速互连。"
+      },
+      {
+        "text": "Figure 2c assumes partitions are evenly balanced. However, memory requirements and computation flops at different layers are often quite imbalanced. In such scenarios, imperfect partitioning algorithms might lead to load imbalance. Better partitioning algorithms can potentially improve the",
+        "x": 108,
+        "y": 269.7,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "图 2c 假定各个分区是均衡的。然而，不同层的显存需求和计算量往往很不均衡。这种情况下，不理想的划分算法可能导致负载不均。更好的划分算法有可能进一步改善"
+      },
+      {
+        "text": "performance over our heuristic approach.",
+        "x": 108,
+        "y": 258.8,
+        "w": 164.3,
+        "h": 10,
+        "zh": "相对我们这种启发式做法而言的性能。"
+      },
+      {
+        "text": "We evaluate GPipe performance with two very different types of model architectures: an AmoebaNet [12] convolutional model and a Transformer [15] sequence-to-sequence model. We ran experiments to study their scalability, efficiency and communication cost. We expect both re-materialization and pipeline parallelism to benefit memory utilization and thus make fitting giant models feasible. We report the biggest model size GPipe can support under reasonably large input size in Table 1. For AmoebaNet, we ran the experiments on Cloud TPUv2s with 8GB memory per accelerator. We used a fixed input image size of 224 × 224 and mini-batch size of 128. Without GPipe, a single accelerator can train up to an 82M-parameter AmoebaNet, constrained by device memory limits. Owing to re-materialization in back-propagation and batch splitting, GPipe reduces the intermediate activation memory requirements from 6.26GB to 3.46GB, enabling a 318M-parameter model on a single accelerator. With model parallelism, we were able to scale AmoebaNet to 1.8 billion parameters on 8 accelerators, 25x more than what is possible without",
+        "x": 107.5,
+        "y": 72,
+        "w": 398.1,
+        "h": 135.4,
+        "zh": "我们用两种差别很大的模型架构来评估 GPipe 的性能：AmoebaNet [12] 卷积模型，以及 Transformer [15] 序列到序列模型。我们做实验考察它们的可扩展性、效率和通信代价。我们预期，重物化和流水线并行都会改善显存利用，从而使巨型模型能够装得下。表 1 给出了在相当大的输入规模下，GPipe 能支持的最大模型。对 AmoebaNet，实验跑在 Cloud TPUv2 上，每块加速器 8GB 显存。输入图像固定为 224 × 224，小批量大小为 128。不用 GPipe 时，受设备显存限制，单块加速器最多能训练 8200 万参数的 AmoebaNet。由于反向传播中的重物化以及批次切分，GPipe 把中间激活的显存需求从 6.26GB 降到 3.46GB，从而在单块加速器上能够训练 3.18 亿参数的模型。借助模型并行，我们在 8 块加速器上把 AmoebaNet 扩到 18 亿参数，是不使用时所能达到规模的 25 倍，若不使用"
+      }
+    ],
+    "5": [
+      {
+        "text": "GPipe. In this case, the maximum model size did not scale perfectly linearly due to the imbalanced distribution of model parameters over different layers in AmoebaNet. We next trained Transformer models using Cloud TPUv3s with 16GB memory per accelerator core. We used a fixed vocabulary size of 32k, sequence length 1024 and batch size 32. Each Transformer layer has 2048 for model dimension, 8192 for feed-forward hidden dimension and 32 attention heads. We scaled the model by varying the number of layers. Re-materialization allows training a 2.7× larger model on a single accelerator. With 128 partitions, GPipe allows scaling Transformer up to 83.9B parameters, a 298× increase than what is possible on a single accelerator. Different from AmoebaNet, the maximum model size scales linearly with the number of accelerators for Transformer, since each layer has the same number of parameters and input sizes. To evaluate efficiency, we report the normalized training throughput of AmoebaNet-D (18, 256)",
+        "x": 107.5,
+        "y": 579.1,
+        "w": 398.2,
+        "h": 140.9,
+        "zh": "GPipe。此时最大模型规模并没有完美地线性增长，因为 AmoebaNet 各层的参数分布不均衡。接下来我们用 Cloud TPUv3 训练 Transformer，每个加速器核心 16GB 显存。词表大小固定为 32k，序列长度 1024，批量大小 32。每个 Transformer 层的模型维度是 2048，前馈隐藏维度是 8192，注意力头数是 32。我们通过改变层数来扩展模型。重物化使单块加速器上能训练的模型达到原先的 2.7 倍。分成 128 个分区时，GPipe 可以把 Transformer 扩到 839 亿参数，是单块加速器所能达到规模的 298 倍。与 AmoebaNet 不同，Transformer 的最大模型规模随加速器数量线性增长，因为每一层的参数量和输入规模都相同。为评估效率，我们报告 AmoebaNet-D (18, 256) 的归一化训练吞吐"
+      },
+      {
+        "text": "Table 2: Normalized training throughput using and Transformer-48 using GPipe with different",
+        "x": 108,
+        "y": 568.2,
+        "w": 396,
+        "h": 13.5,
+        "zh": ""
+      },
+      {
+        "text": "GPipe with different # of partitions K and differnumbers of partitions and different numbers of",
+        "x": 108,
+        "y": 557.3,
+        "w": 397.6,
+        "h": 13.5,
+        "zh": ""
+      },
+      {
+        "text": "ent # of micro-batches M on TPUs. Performance micro-batches in Table 2. Each partition is as-",
+        "x": 108,
+        "y": 546.4,
+        "w": 396,
+        "h": 13.5,
+        "zh": ""
+      },
+      {
+        "text": "increases with more micro-batches. There is an signed to a separate accelerator. We observe",
+        "x": 108,
+        "y": 535.4,
+        "w": 396,
+        "h": 13.5,
+        "zh": ""
+      },
+      {
+        "text": "almost linear speedup with the number of accelerathat when the number of micro-batches M is",
+        "x": 108,
+        "y": 524.5,
+        "w": 397.7,
+        "h": 13.5,
+        "zh": ""
+      },
+      {
+        "text": "tors for Transformer model when M \u001d K. Batch at least 4× the number of partitions, the bub-",
+        "x": 108,
+        "y": 513.6,
+        "w": 396,
+        "h": 13.5,
+        "zh": ""
+      },
+      {
+        "text": "size was adjusted to fit memory if necessary. ble overhead is almost negligible. For Transformer model, there is a 3.5× speedup when it is partitioned across four times more accelerators. Furthermore, training throughput scales almost linearly with the number of devices, thanks to the computation being evenly distributed across Transformer layers. In contrast, the AmoebaNet model achieves sub-linear speedup due to its imbalanced computation distribution. When M is relatively small, the bubble overhead can no longer be negligible. When M is 1, there is effectively no pipeline parallelism. We observe relatively constant throughput regardless of the number of accelerators used, indicating only one device is actively computing at any given time. To measure the effect of communication overhead with GPipe, we ran our experiments on a single host with multiple NVIDIA P100 GPUs but without NVLinks. Data transfer across GPUs then has to involve the relatively slow device-to-host and host-to-device transfers through PCI-E. The number of micro-batches was fixed at 32. As shown in Table 3, we observe 2.7× speedup for AmoebaNet-D (18, 128) when we increase the number of partitions from 2 to 8. For the 24-layer Transformer, the speedup is 3.3×. There is similar linear speedup to what we observe on TPUs where",
+        "x": 107.7,
+        "y": 300.9,
+        "w": 397.6,
+        "h": 215.3,
+        "zh": "大小在必要时作了调整，以便放进显存。气泡开销几乎可以忽略。对 Transformer 模型，当划分到四倍数量的加速器上时，有 3.5 倍加速。此外，训练吞吐几乎随设备数量线性增长，这是因为计算均匀分布在各个 Transformer 层上。相比之下，AmoebaNet 由于计算分布不均衡，只能得到次线性加速。当 M 相对较小时，气泡开销就不再能忽略。当 M 为 1 时，实际上没有流水线并行。我们观察到，无论用多少块加速器，吞吐都大致保持不变，说明任一时刻只有一台设备在真正计算。为衡量 GPipe 的通信开销，我们在单台主机上用多块 NVIDIA P100 GPU 做实验，但不使用 NVLink。GPU 之间传数据就只好经过相对较慢的 PCI-E，走设备到主机、再从主机到设备的路径。微批次数固定为 32。如表 3 所示，把分区数从 2 增加到 8 时，AmoebaNet-D (18, 128) 有 2.7 倍加速。对 24 层 Transformer，加速是 3.3 倍。这与我们在 TPU 上观察到的线性加速类似，在这些 TPU 上"
+      },
+      {
+        "text": "Table 3: Normalized training throughput using high-speed interconnects are equipped.",
+        "x": 108,
+        "y": 290,
+        "w": 396,
+        "h": 13.5,
+        "zh": ""
+      },
+      {
+        "text": "GPipe on GPUs without high-speed interconnect. communication bandwidth between devices is no longer a bottleneck for model parallelism since GPipe only transfers activation tensors at the boundaries of partitions.",
+        "x": 108,
+        "y": 246.3,
+        "w": 395,
+        "h": 46.2,
+        "zh": "在没有高速互连的 GPU 上使用 GPipe。设备之间的通信带宽不再是模型并行的瓶颈，因为 GPipe 只在分区边界传输激活张量。"
+      },
+      {
+        "text": "As a proof of concept, we first used GPipe to scale AmoebaNet. We increased the number of channels in an AmoebaNet and scaled the input image size to 480 × 480. We trained this 557-millionparameter AmoebaNet-B(18, 512) on the ImageNet 2012 dataset, using the same hyper-parameters as described in [12]. The network was divided into 4 partitions. This single model achieves 84.4% top-1 and 97% top-5 validation accuracy with single-crop. We further demonstrate the effectiveness of giant convolution networks on other image datasets through transfer learning [22, 23]. Specifically, we used the pre-trained ImageNet model to fine-tune on a variety of target datasets ranging from general to fine-grained classification. We changed the number of output units in the last softmax classification layer to the number of classes in the target dataset and initialized the new softmax layer randomly. All the other layers were initialized from",
+        "x": 107.5,
+        "y": 72,
+        "w": 398.1,
+        "h": 124.5,
+        "zh": "作为概念验证，我们先用 GPipe 扩展 AmoebaNet。我们增加 AmoebaNet 的通道数，并把输入图像尺寸调到 480 × 480。我们在 ImageNet 2012 数据集上训练这个 5.57 亿参数的 AmoebaNet-B(18, 512)，超参数与 [12] 所述相同。网络被分成 4 个分区。这一个模型在单裁剪下达到 84.4% 的 top-1 和 97% 的 top-5 验证准确率。我们进一步借助迁移学习 [22, 23]，在其他图像数据集上展示巨型卷积网络的效果。具体来说，我们用预训练的 ImageNet 模型，在从通用分类到细粒度分类的多种目标数据集上微调。我们把最后的 softmax 分类层的输出单元数改成目标数据集的类别数，并随机初始化新的 softmax 层。其余所有层都初始化自"
+      }
+    ],
+    "6": [
+      {
+        "text": "Table 4: Image classification accuracy using AmoebaNet-B (18, 512) first trained on ImageNet 2012 then fine-tuned on others. Please refer to the supplementary material for a detailed description of our training setup. Our fine-tuned results were averaged across 5 fine-tuning runs. Baseline results from Real et al. [12] and Cubuk et al. [26] were directly trained from scratch. *Mahajan et al.’s model [27] achieved 85.4% top-1 accuracy but it was pretrained on non-public Instagram data. Ngiam et al. [28] achieved better results by pre-training with data from a private dataset (JFT-300M).",
+        "x": 107.7,
+        "y": 657.8,
+        "w": 396.5,
+        "h": 64.5,
+        "zh": "表 4：AmoebaNet-B (18, 512) 的图像分类准确率。模型先在 ImageNet 2012 上训练，再在其他数据集上微调。训练设置的详细说明见补充材料。我们的微调结果是 5 次微调运行的平均。Real 等人 [12] 和 Cubuk 等人 [26] 的基线是从头直接训练的。*Mahajan 等人的模型 [27] 达到了 85.4% 的 top-1 准确率，但它预训练用的是非公开的 Instagram 数据。Ngiam 等人 [28] 用私有数据集（JFT-300M）的数据做预训练，结果更好。"
+      },
+      {
+        "text": "ImageNet pre-training. Input images to the network during training were resized to 480 × 480, horizontally flipped randomly and augmented using cutout [24]. Training hyper-parameters were the same as those used for ImageNet (a detailed description of our training setup is provided in supplementary material). In Table 4, we report the average single-crop test accuracy over 5 fine-tuning runs for each dataset. Our giant models obtain competitive results on all target datasets. For example, CIFAR-10 error rate is reduced to 1% and CIFAR-100 error rate to 8.7%. These results corroborate the findings by Kornblith et al. [25], i.e., better ImageNet models transfer better.",
+        "x": 108,
+        "y": 444.3,
+        "w": 397.2,
+        "h": 75.4,
+        "zh": "ImageNet 预训练。训练时送入网络的图像被缩放到 480 × 480，随机水平翻转，并用 cutout [24] 做增强。训练超参数与 ImageNet 所用的相同（训练设置的详细说明见补充材料）。表 4 报告每个数据集上 5 次微调运行的平均单裁剪测试准确率。我们的巨型模型在所有目标数据集上都取得了有竞争力的结果。例如，CIFAR-10 的错误率降到 1%，CIFAR-100 的错误率降到 8.7%。这些结果印证了 Kornblith 等人 [25] 的发现，也就是更好的 ImageNet 模型，迁移效果也更好。"
+      },
+      {
+        "text": "Massive Massively Multilingual Machine Translation",
+        "x": 125.9,
+        "y": 413.5,
+        "w": 270.3,
+        "h": 12,
+        "zh": "超大规模多语言机器翻译"
+      },
+      {
+        "text": "Next, we demonstrate the flexibility of GPipe by scaling up models used for Natural Language Processing (NLP). Due to an abundance of available parallel corpora, neural machine translation (NMT) has become a benchmark task for any architecture used for NLP [33, 15, 34, 35, 36]. For this reason, we continue our GPipe experiments on a large-scale multilingual NMT task. We use a corpus of parallel documents over 102 languages and English, containing a total of 25 billion training examples, ranging from 10 to 10 per language [37]. This dataset creates a realistic test bed for experiments on scalability by spanning a diverse set of languages from data-scarce (low-resource) to data-rich (high-resource). For the first time in machine translation, we show that a large enough NMT model can learn the mapping between more than 100 language pairs simultaneously, while achieving better than bilingual model performance for all languages. This further brings out the importance of",
+        "x": 107.7,
+        "y": 290.7,
+        "w": 396.6,
+        "h": 108.1,
+        "zh": "接下来，我们通过扩展自然语言处理（NLP）所用的模型，来展示 GPipe 的灵活性。由于平行语料很充足，神经机器翻译（NMT）已经成为检验任何 NLP 架构的基准任务 [33, 15, 34, 35, 36]。因此，我们继续在大规模多语言 NMT 任务上做 GPipe 的实验。我们使用一份覆盖 102 种语言和英语的平行文档语料，训练样本一共 250 亿条，每种语言从 10 条到 10 条 [37]。这个数据集从数据稀缺（低资源）一直覆盖到数据丰富（高资源），语言种类多样，为可扩展性实验提供了贴近现实的试验台。我们首次在机器翻译中表明，一个足够大的 NMT 模型可以同时学会 100 多个语言对之间的映射，并且在所有语言上都好过双语模型。这进一步说明了"
+      },
+      {
+        "text": "having efficient and flexible model-parallelism tools.",
+        "x": 108,
+        "y": 279.8,
+        "w": 210.3,
+        "h": 10,
+        "zh": "拥有高效、灵活的模型并行工具有多重要。"
+      },
+      {
+        "text": "Our comparison is based on the performance of a single Transformer [15] trained on all language pairs in this corpus. We scale the architecture along two dimensions to stress the flexibility of GPipe: (i) along the depth by increasing the number of layers in the model and (ii) along the width by increasing the hidden dimension in the feed-forward layers and the number of attention heads (as well as # attention channels) in multi-head attention layers similar to Shazeer et al. [34]. Please refer to the supplementary material for a detailed description of our dataset, baselines, training configuration",
+        "x": 107.7,
+        "y": 208.9,
+        "w": 397.7,
+        "h": 64.5,
+        "zh": "我们的比较基于在这份语料的全部语言对上训练的单个 Transformer [15]。我们从两个维度扩展架构，以考验 GPipe 的灵活性：(i) 沿深度，增加模型的层数；(ii) 沿宽度，增大前馈层的隐藏维度，以及多头注意力层中的注意力头数（还有注意力通道数），做法类似于 Shazeer 等人 [34]。数据集、基线和训练配置的详细说明见补充材料"
+      },
+      {
+        "text": "We start with a standard 400M-parameter Transformer Big model, T(6, 8192, 16) , as described in Chen et al. [35], with a vocabulary size of 64k. In Figure 3, we compare its performance against a 1.3B-parameter deep model, T(24, 8192, 16), a 1.3B-parameter wide model, T(12, 16384, 32), a 3Bparameter model, T(32, 16384, 32) and a 6B-parameter model, T(64, 16384, 32). All of the models are trained on all language pairs simultaneously, using temperature-based sampling as employed for multilingual BERT [3]. T(12, 16384, 32), T(24, 8192, 32), T(32, 16384, 32) and T(64, 16384, 32)",
+        "x": 107.3,
+        "y": 127,
+        "w": 398.4,
+        "h": 64.5,
+        "zh": "我们从一个标准的 4 亿参数 Transformer Big 模型 T(6, 8192, 16) 出发，如 Chen 等人 [35] 所述，词表大小为 64k。在图 3 中，我们把它与这些模型比较：13 亿参数的深模型 T(24, 8192, 16)，13 亿参数的宽模型 T(12, 16384, 32)，30 亿参数的模型 T(32, 16384, 32)，以及 60 亿参数的模型 T(64, 16384, 32)。所有这些模型都同时在全部语言对上训练，采样方式采用多语言 BERT [3] 所用的基于温度的采样。T(12, 16384, 32)、T(24, 8192, 32)、T(32, 16384, 32) 和 T(64, 16384, 32)"
+      },
+      {
+        "text": "are partitioned over 2, 4, 8 and 16 accelerators respectively.",
+        "x": 108,
+        "y": 116.1,
+        "w": 236.6,
+        "h": 10,
+        "zh": "分别划分到 2、4、8 和 16 块加速器上。"
+      },
+      {
+        "text": "T(L, H, A) is a Transformer model with L encoder layers and L decoder layers, a feed-forward hidden",
+        "x": 124.1,
+        "y": 92.8,
+        "w": 379.9,
+        "h": 9,
+        "zh": "T(L, H, A) 是一个 Transformer 模型，有 L 层编码器和 L 层解码器，前馈隐藏"
+      },
+      {
+        "text": "dimension of H and A attention heads. The model dimension is fixed to 1024. https://github.com/google-research/bert/blob/master/multilingual.md",
+        "x": 108,
+        "y": 72,
+        "w": 281.9,
+        "h": 19.8,
+        "zh": "维度为 H，注意力头数为 A。模型维度固定为 1024。https://github.com/google-research/bert/blob/master/multilingual.md"
+      }
+    ],
+    "7": [
+      {
+        "text": "From Figure 3, we can observe that increasing the model capacity from 400M to 1.3B parameters significantly improves performance across all languages. Scaling up the model from 1.3B parameters to 6B parameters shows further improvement, especially for high-resource languages, although diminishing returns can be observed when scaling the model from 1.3B to 3B and 6B parameters. Below we discuss some of our empirical findings based on these large-scale experiments.",
+        "x": 108,
+        "y": 660.9,
+        "w": 396,
+        "h": 59.1,
+        "zh": "从图 3 可以看出，把模型容量从 4 亿参数增加到 13 亿参数，会显著提升所有语言上的表现。从 13 亿参数再扩到 60 亿参数还有进一步提升，高资源语言尤其明显，不过从 13 亿扩到 30 亿、再到 60 亿时，可以看到收益递减。下面我们讨论这些大规模实验里的一些经验发现。"
+      },
+      {
+        "text": "Figure 3: Translation quality across all languages with increasing multilingual model capacity. Languages are arranged in the order of decreasing training dataset size from left to right. T(L, H, A), depicts the performance of a Transformer with L encoder and L decoder layers, a feed-forward hidden dimension of H and A attention heads. We notice that increasing the model capacity, from 400M params (T(6, 8192, 16)) to 1.3B (T(24, 8192, 16)), and further, to 6B (T(64, 16384, 32)), leads to significant quality improvements across all languages. We also notice huge quality improvements for low-resource languages (right side of the plot), when compared against bilingual baselines, highlighting the significant transfer gains resulting from training a multilingual model.",
+        "x": 108,
+        "y": 562,
+        "w": 397.7,
+        "h": 86.3,
+        "zh": "图 3：多语言模型容量增大时，各语言的翻译质量。语言按训练数据量从左到右递减排列。T(L, H, A) 表示一个 Transformer 的表现：L 层编码器、L 层解码器，前馈隐藏维度为 H，注意力头数为 A。我们注意到，把模型容量从 4 亿参数（T(6, 8192, 16)）增加到 13 亿（T(24, 8192, 16)），再增加到 60 亿（T(64, 16384, 32)），会在所有语言上带来显著的质量提升。与双语基线相比，低资源语言（图的右侧）的质量提升也非常大，这说明训练一个多语言模型带来了显著的迁移收益。"
+      },
+      {
+        "text": "Depth-Width Trade-off: We study the trade-off between depth and width in our multilingual setup and compare the performance of 1.3B wide model T(12, 16384, 32) and 1.3B deep model T(24, 8192, 16). While the quality of these two models on high-resource languages (left of Figure 3) is very similar, the deeper model outperforms by huge margins on low-resource languages, suggesting that increasing model depth might be better for generalization. Further, the quality improvements for low-resource languages (right side of Figure 3), when comparing the 1.3B deep model against the 400M model, are almost as large as the improvements for high-resource languages, indicating that increasing depth might potentially increase the extent of transfer to low-resource tasks. Trainability Challenges with Deep Models: Although depth increases the representational capacity of neural networks, it also complicates the optimization problem. In our large-scale experiments, we encountered severe trainability issues arising from a combination of sharp activations (positive kurtosis) and dataset noise. We observed that after training for a few thousand steps, the model predictions would become extremely peaky and vulnerable to noise, which frequently resulted in non-finite or large gradients that eventually destroyed the learning progress. To counter these problems, we apply two methods: (i) Following Zhang et al. [38], we scale down the initialization of all transformer feed-forward layers by the number of layers. (ii) We clip the logit predictions (softmax pre-activations) whenever their magnitude exceeds a certain value. A combination of these two approaches allows us to mitigate the training instability posed by scaling model depth. Large Batches: Due to its simplicity, data parallelism is the dominant approach to scale neural network training[39, 40]. We test the limits of large-batch training by significantly increasing the batch size used for standard Transformer Big training. Starting from 260K tokens per batch,",
+        "x": 107.7,
+        "y": 72,
+        "w": 398.1,
+        "h": 271.8,
+        "zh": "深度与宽度的权衡：我们在多语言设定下研究深度和宽度的取舍，比较 13 亿参数的宽模型 T(12, 16384, 32) 和 13 亿参数的深模型 T(24, 8192, 16)。二者在高资源语言上的质量非常接近（图 3 左侧），但更深的模型在低资源语言上大幅领先，这说明增加模型深度可能更有利于泛化。此外，把 13 亿参数的深模型与 4 亿参数的模型相比，低资源语言（图 3 右侧）的质量提升几乎和高资源语言一样大，表明增加深度有可能扩大向低资源任务迁移的程度。深层模型的可训练性挑战：深度虽然提高了神经网络的表示能力，也让优化问题变得更难。在大规模实验中，我们遇到了严重的可训练性问题，来自尖锐激活（正峰度）和数据噪声的共同作用。我们观察到，训练几千步之后，模型预测会变得极其尖锐，并且对噪声很敏感，经常产生非有限值或很大的梯度，最终毁掉已经取得的学习进展。为应对这些问题，我们用两种办法：(i) 遵循 Zhang 等人 [38]，把所有 Transformer 前馈层的初始化按层数缩小。(ii) 当 logit 预测（softmax 的预激活）幅度超过某个值时，就把它裁剪掉。这两种做法合在一起，可以缓解因加深模型而出现的训练不稳定。大批量：数据并行因为简单，是扩展神经网络训练的主流做法 [39, 40]。我们大幅增大标准 Transformer Big 训练所用的批量，以此来试探大批量训练的极限。从每批量 260K 个 token 开始，"
+      }
+    ],
+    "8": [
+      {
+        "text": "we increase the effective batch size to 4M and observe the validation loss and BLEU scores on the high-resource",
+        "x": 107.6,
+        "y": 699.1,
+        "w": 228,
+        "h": 20.9,
+        "zh": "我们把有效批量加大到 4M，并观察高资源"
+      },
+      {
+        "text": "language pair, German-English (similar trend can also be observed for other language pairs). Optimization parameters used here are identical to those for previous experiments. To our knowledge, 4M tokens per batch is the largest batch size that has ever been used in literature to date for training NMT models [41]. Table 5 shows that both metrics improve significantly as we increase the batch size. We believe further increasing batch size can potentially yield more improvement.",
+        "x": 107.7,
+        "y": 644.6,
+        "w": 398,
+        "h": 53.6,
+        "zh": "语言对德语—英语上的验证损失和 BLEU（其他语言对也能看到类似趋势）。这里用的优化参数与前面的实验相同。据我们所知，每批量 4M 个 token 是迄今文献中训练 NMT 模型用过的最大批量 [41]。表 5 表明，随着批量增大，两项指标都显著变好。我们认为，继续增大批量还有可能带来更多提升。"
+      },
+      {
+        "text": "Several approaches have been proposed to enable efficient large-scale model parallelism. However, each approach chooses its own set of trade-offs, making it suitable for scaling specific architectures under particular hardware constraints. Here we highlight the various design choices and trade-offs involved with several model-parallelism approaches, and how they compare with GPipe in terms of flexibility, scalability and efficiency under various hardware constraints and architecture variants. The core idea of model parallelism involves partitioning a network into different computational units, which are then placed on different devices [42, 43, 44, 45]. Conceptually this supports scaling a large spectrum of models to huge capacities. However these approaches typically suffer from low hardware utilization and device communication bottlenecks. Single Program Multiple Data (SPMD) and pipeline parallelism have been proposed as solutions to counter these challenges. Mesh-Tensorflow [34] follows the SPMD paradigm, which extends the Single Instruction Multiple Data (SIMD) approach used for data parallelism to other tensor dimensions. SPMD allows splitting every computation across multiple devices, allowing the user to scale the size of individual matrix multiplications (and thus, the model parameters of individual layers) linearly with the number of accelerators. However, this also introduces high communication overhead between the accelerators due to an abundance of AllReduce-like operations used to combine the outputs of each parallelized matrix multiplication. This limits the applicability of the approach to scenarios where accelerators are connected with high speed interconnects. Further, SPMD limits the type of operations that can be efficiently scaled, restricting its use to a specific set of network architectures and machine learning tasks. For example, splitting along the channel dimension of convolution layers under this paradigm is not efficient given that channels are effectively fully connected, whereas splitting along the spatial dimension requires sophisticated techniques for the halo regions. While SPMD allows scaling the model depth by making each operation smaller, it requires splitting each layer over a larger number of accelerators, which in turn further increases the communication overhead across devices. Other approaches have attempted to utilize pipeline-parallelism-based approaches to scale neural networks [46, 47]. The most recent iteration of pipeline parallelism applied to neural network training is PipeDream [48], which targets reducing the communication overhead for parameter servers [49]. PipeDream pipelines the execution of forward passes and intersperses them with backward passes in an attempt to maximize hardware utilization. This design suffers from weight staleness introduced by asynchronous backward updates. To avoid optimization issues stemming from the weight staleness, PipeDream requires maintaining multiple versioned copies of the model parameters on each accelerator in order to compute the gradient updates accurately, preventing users",
+        "x": 107.6,
+        "y": 237.9,
+        "w": 397.6,
+        "h": 364.6,
+        "zh": "已经有多种方法被提出来，以实现高效的大规模模型并行。不过每种方法都有自己的一套取舍，因而只适合在特定硬件约束下扩展特定架构。这里我们梳理若干模型并行方法所涉及的设计选择和取舍，并说明在不同硬件约束和架构变体下，它们在灵活性、可扩展性和效率上与 GPipe 相比如何。模型并行的核心想法，是把网络划分成不同的计算单元，再放到不同设备上 [42, 43, 44, 45]。概念上，这可以把很大一类模型扩到巨大容量。然而这些方法通常硬件利用率低，还会碰到设备通信瓶颈。单程序多数据（SPMD）和流水线并行被提出来应对这些挑战。Mesh-Tensorflow [34] 遵循 SPMD 范式，把数据并行所用的单指令多数据（SIMD）做法推广到其他张量维度。SPMD 可以把每一次计算拆到多台设备上，使用户能够让单次矩阵乘法的规模（因而也是单层的模型参数量）随加速器数量线性增长。但这也带来加速器之间很高的通信开销，因为要把每次并行矩阵乘法的输出合并起来，需要大量类似 AllReduce 的操作。这就把该方法限制在加速器之间有高速互连的场景。此外，SPMD 限制了能够高效扩展的运算类型，只能用于特定的一组网络架构和机器学习任务。例如，在这一范式下沿卷积层的通道维切分并不高效，因为通道之间实际上是全连接的；而沿空间维切分，则需要对 halo 区域使用复杂的技术。SPMD 虽然可以通过把每个运算变小来增加模型深度，但它要求把每一层拆到更多加速器上，这又会进一步提高设备之间的通信开销。也有其他工作尝试用基于流水线并行的方法来扩展神经网络 [46, 47]。最近一次用到神经网络训练上的流水线并行是 PipeDream [48]，其目标是降低参数服务器的通信开销 [49]。PipeDream 把前向计算的执行排成流水线，并在其中穿插反向计算，试图尽量提高硬件利用率。这种设计会因异步反向更新而引入权重陈旧。为避免权重陈旧带来的优化问题，PipeDream 必须在每块加速器上保留模型参数的多个版本副本，才能把梯度更新算准，从而使用户无法"
+      },
+      {
+        "text": "GPipe introduces a new brand of pipeline parallelism that pipelines the execution of micro-batches before applying a single synchronous gradient update for the entire mini-batch. Our novel batchsplitting pipeline parallelism algorithm, when combined with re-materialization, allows scaling to a large number of micro-batches. This minimizes the bubble overhead without the need for asynchronous gradient updates. GPipe enables the user to scale model size linearly with the number of accelerators used. Unlike SPMD, pipeline parallelism introduces little additional communication overhead when scaling the model. Inter-device communication only takes place at partition boundaries for every micro-batch and the introduced communication overhead is marginal, extending the utility of GPipe to situations where high-speed device interconnects are not available. However, GPipe currently assumes that a single layer fits within the memory requirements of a single accelerator . Additionally, micro-batch splitting requires complicated strategies to support layers that require",
+        "x": 107.6,
+        "y": 101.5,
+        "w": 398.1,
+        "h": 119.1,
+        "zh": "GPipe 提出一种新的流水线并行：先把各个微批次的执行排成流水线，再对整个小批量施加一次同步的梯度更新。我们这种新的批次切分流水线并行算法与重物化结合之后，可以扩展到大量微批次。这样不必做异步梯度更新，也能把气泡开销压到很小。GPipe 让用户能够使模型规模随所用加速器数量线性增长。与 SPMD 不同，用流水线并行扩展模型时，几乎不增加额外的通信开销。设备之间的通信只发生在每个微批次的分区边界，由此引入的通信开销很小，因此即使没有高速设备互连，GPipe 也仍然有用。不过，GPipe 目前假定单层能够放进单块加速器的显存。此外，微批次切分若要支持某些层，就需要复杂的策略；这些层要求"
+      },
+      {
+        "text": "One possible way around this limitation is splitting a single matrix-multiplication into smaller ones and",
+        "x": 124.1,
+        "y": 82,
+        "w": 379.9,
+        "h": 9,
+        "zh": "绕过这一限制的一种可能做法，是把一次矩阵乘法拆成若干更小的乘法，并"
+      },
+      {
+        "text": "spreading them sequentially across multiple layers.",
+        "x": 108,
+        "y": 72,
+        "w": 183.3,
+        "h": 9,
+        "zh": "按顺序铺到多个层上。"
+      }
+    ],
+    "9": [
+      {
+        "text": "computations across the batch (for example, BatchNorm uses statistics over the micro-batch during training, but accumulates mini-batch statistics for evaluation).",
+        "x": 108,
+        "y": 699.1,
+        "w": 396,
+        "h": 20.9,
+        "zh": "跨批量的计算（例如，BatchNorm 在训练时使用微批次上的统计量，但会把小批量的统计量累积起来，供评估时使用）。"
+      },
+      {
+        "text": "In this work, we introduce GPipe, a scalable model-parallelism library for training giant neural networks. We propose and implement a novel batch-splitting pipeline-parallelism algorithm that uses synchronous gradient updates, allowing model parallelism with high hardware utilization and training stability. We leverage GPipe to train large-scale convolutional and transformer-based models and demonstrate strong empirical results on both image classification and multilingual machine translation. We highlight three key attributes of the GPipe library: 1) Efficiency: Using a novel batch-splitting pipelining algorithm, GPipe achieves almost linear speedup with the number of devices. 2) Flexibility: GPipe supports any deep network that can be represented as a sequence of layers. 3) Reliability: GPipe utilizes synchronous gradient descent and guarantees consistent training regardless of the number of partitions.",
+        "x": 107.5,
+        "y": 549.6,
+        "w": 398.2,
+        "h": 108.1,
+        "zh": "本文提出 GPipe，一个用于训练巨型神经网络的可扩展模型并行库。我们提出并实现了一种新的批次切分流水线并行算法。它使用同步梯度更新，使模型并行同时具备高硬件利用率和训练稳定性。我们用 GPipe 训练大规模卷积模型和基于 Transformer 的模型，并在图像分类和多语言机器翻译上都给出了很强的实验结果。这里强调 GPipe 库的三个关键特性：1）效率：借助一种新的批次切分流水线算法，GPipe 的加速比几乎随设备数量线性增长。2）灵活性：任何可以表示成层序列的深度网络，GPipe 都支持。3）可靠性：GPipe 使用同步梯度下降，无论分成多少个分区，训练都保持一致。"
+      },
+      {
+        "text": "[1] Bryan McCann, James Bradbury, Caiming Xiong, and Richard Socher. Learned in translation: Contextualized word vectors. CoRR, abs/1708.00107, 2017. [2] Matthew Peters, Mark Neumann, Mohit Iyyer, Matt Gardner, Christopher Clark, Kenton Lee, and Luke Zettlemoyer. Deep contextualized word representations. In ACL, 2018. [3] Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. Bert: Pre-training of deep bidirectional transformers for language understanding. arXiv preprint arXiv:1810.04805,",
+        "x": 113,
+        "y": 439.3,
+        "w": 392.4,
+        "h": 72.3,
+        "zh": "[1] Bryan McCann、James Bradbury、Caiming Xiong 与 Richard Socher。在翻译中学习：上下文化的词向量。CoRR，abs/1708.00107，2017。[2] Matthew Peters、Mark Neumann、Mohit Iyyer、Matt Gardner、Christopher Clark、Kenton Lee 与 Luke Zettlemoyer。深度上下文化的词表示。ACL，2018。[3] Jacob Devlin、Ming-Wei Chang、Kenton Lee 与 Kristina Toutanova。BERT：面向语言理解的深度双向 Transformer 预训练。arXiv 预印本 arXiv:1810.04805，"
+      },
+      {
+        "text": "[4] Alec Radford, Jeff Wu, Rewon Child, David Luan, Dario Amodei, and Ilya Sutskever. Language models are unsupervised multitask learners. 2019. [5] Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li Fei-Fei. Imagenet: A large-scale hierarchical image database. In CVPR. IEEE, 2009. [6] Christian Szegedy, Wei Liu, Yangqing Jia, Pierre Sermanet, and et al. Going deeper with convolutions. In CVPR, pages 1–9, 2015. [7] Christian Szegedy, Vincent Vanhoucke, Sergey Ioffe, Jon Shlens, and Zbigniew Wojna. Rethinking the inception architecture for computer vision. In CVPR, pages 2818–2826, 2016. [8] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. Identity mappings in deep residual networks. In European conference on computer vision, pages 630–645. Springer, 2016. [9] Saining Xie, Ross Girshick, Piotr Dollár, Zhuowen Tu, and Kaiming He. Aggregated residual transformations for deep neural networks. In CVPR, 2017. [10] Jie Hu, Li Shen, and Gang Sun. Squeeze-and-excitation networks. CVPR, 2018. [11] Barret Zoph, Vijay Vasudevan, Jonathon Shlens, and Quoc V Le.",
+        "x": 108,
+        "y": 244.3,
+        "w": 397.6,
+        "h": 179.2,
+        "zh": "[4] Alec Radford、Jeff Wu、Rewon Child、David Luan、Dario Amodei 与 Ilya Sutskever。语言模型是无监督的多任务学习者。2019。[5] Jia Deng、Wei Dong、Richard Socher、Li-Jia Li、Kai Li 与 Li Fei-Fei。ImageNet：大规模层次化图像数据库。CVPR，IEEE，2009。[6] Christian Szegedy、Wei Liu、Yangqing Jia、Pierre Sermanet 等。用卷积走得更深。CVPR，第 1–9 页，2015。[7] Christian Szegedy、Vincent Vanhoucke、Sergey Ioffe、Jon Shlens 与 Zbigniew Wojna。重新思考计算机视觉中的 Inception 架构。CVPR，第 2818–2826 页，2016。[8] Kaiming He、Xiangyu Zhang、Shaoqing Ren 与 Jian Sun。深度残差网络中的恒等映射。欧洲计算机视觉会议，第 630–645 页，Springer，2016。[9] Saining Xie、Ross Girshick、Piotr Dollár、Zhuowen Tu 与 Kaiming He。深度神经网络的聚合残差变换。CVPR，2017。[10] Jie Hu、Li Shen 与 Gang Sun。Squeeze-and-excitation 网络。CVPR，2018。[11] Barret Zoph、Vijay Vasudevan、Jonathon Shlens 与 Quoc V Le。"
+      },
+      {
+        "text": "Learning transferable architectures for scalable image recognition. CVPR, 2018. [12] Esteban Real, Alok Aggarwal, Yanping Huang, and Quoc V Le. Regularized evolution for image classifier architecture search. arXiv preprint arXiv:1802.01548, 2018. [13] Andreas Griewank and Andrea Walther. Algorithm 799: revolve: an implementation of checkpointing for the reverse or adjoint mode of computational differentiation. ACM Transactions on Mathematical Software (TOMS), 26(1):19–45, 2000. [14] Tianqi Chen, Bing Xu, Chiyuan Zhang, and Carlos Guestrin. Training deep nets with sublinear memory cost. arXiv preprint arXiv:1604.06174, 2016. [15] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin. Attention is all you need. In Neurips, pages 5998–6008,",
+        "x": 108,
+        "y": 119.6,
+        "w": 397.7,
+        "h": 134.7,
+        "zh": "学习可迁移的架构，用于可扩展的图像识别。CVPR，2018。[12] Esteban Real、Alok Aggarwal、Yanping Huang 与 Quoc V Le。用于图像分类器架构搜索的正则化进化。arXiv 预印本 arXiv:1802.01548，2018。[13] Andreas Griewank 与 Andrea Walther。算法 799：Revolve：为计算微分的反向模式或伴随模式实现检查点。ACM Transactions on Mathematical Software (TOMS)，26(1):19–45，2000。[14] Tianqi Chen、Bing Xu、Chiyuan Zhang 与 Carlos Guestrin。以次线性显存代价训练深度网络。arXiv 预印本 arXiv:1604.06174，2016。[15] Ashish Vaswani、Noam Shazeer、Niki Parmar、Jakob Uszkoreit、Llion Jones、Aidan N Gomez、Łukasz Kaiser 与 Illia Polosukhin。注意力就是你所需要的一切。Neurips，第 5998–6008 页，"
+      },
+      {
+        "text": "[16] Jonathan Shen, Patrick Nguyen, Yonghui Wu, Zhifeng Chen, Mia Xu Chen, Ye Jia, Anjuli Kannan, Tara Sainath, Yuan Cao, Chung-Cheng Chiu, et al. Lingvo: a modular and scalable framework for sequence-to-sequence modeling. arXiv preprint arXiv:1902.08295, 2019.",
+        "x": 108,
+        "y": 72,
+        "w": 396,
+        "h": 31.8,
+        "zh": "[16] Jonathan Shen、Patrick Nguyen、Yonghui Wu、Zhifeng Chen、Mia Xu Chen、Ye Jia、Anjuli Kannan、Tara Sainath、Yuan Cao、Chung-Cheng Chiu 等。Lingvo：一个模块化、可扩展的序列到序列建模框架。arXiv 预印本 arXiv:1902.08295，2019。"
+      }
+    ],
+    "10": [
+      {
+        "text": "[17] Yangqing Jia, Evan Shelhamer, Jeff Donahue, Sergey Karayev, Jonathan Long, Ross Girshick, Sergio Guadarrama, and Trevor Darrell. Caffe: Convolutional architecture for fast feature embedding. In Proceedings of the 22nd ACM international conference on Multimedia, pages",
+        "x": 108,
+        "y": 688.2,
+        "w": 397.2,
+        "h": 31.8,
+        "zh": "[17] Yangqing Jia、Evan Shelhamer、Jeff Donahue、Sergey Karayev、Jonathan Long、Ross Girshick、Sergio Guadarrama 与 Trevor Darrell。Caffe：用于快速特征嵌入的卷积架构。第 22 届 ACM 国际多媒体会议论文集，第"
+      },
+      {
+        "text": "[18] Tianqi Chen, Mu Li, Yutian Li, Min Lin, Naiyan Wang, Minjie Wang, Tianjun Xiao, Bing Xu, Chiyuan Zhang, and Zheng Zhang. Mxnet: A flexible and efficient machine learning library for heterogeneous distributed systems. arXiv preprint arXiv:1512.01274, 2015. [19] Adam Paszke, Sam Gross, Soumith Chintala, Gregory Chanan, Edward Yang, Zachary DeVito, Zeming Lin, Alban Desmaison, Luca Antiga, and Adam Lerer. Automatic differentiation in",
+        "x": 108,
+        "y": 615.7,
+        "w": 397.2,
+        "h": 57.1,
+        "zh": "[18] Tianqi Chen、Mu Li、Yutian Li、Min Lin、Naiyan Wang、Minjie Wang、Tianjun Xiao、Bing Xu、Chiyuan Zhang 与 Zheng Zhang。MXNet：面向异构分布式系统的灵活、高效机器学习库。arXiv 预印本 arXiv:1512.01274，2015。[19] Adam Paszke、Sam Gross、Soumith Chintala、Gregory Chanan、Edward Yang、Zachary DeVito、Zeming Lin、Alban Desmaison、Luca Antiga 与 Adam Lerer。其中的自动微分"
+      },
+      {
+        "text": "[20] Sergey Ioffe and Christian Szegedy. Batch normalization: Accelerating deep network training by reducing internal covariate shift. ICML, 2015. [21] Chao Peng, Tete Xiao, Zeming Li, Yuning Jiang, Xiangyu Zhang, Kai Jia, Gang Yu, and Jian Sun. Megdet: A large mini-batch object detector. CVPR, 7, 2017. [22] Ali Sharif Razavian, Hossein Azizpour, Josephine Sullivan, and Stefan Carlsson. Cnn features off-the-shelf: An astounding baseline for recognition. In CVPR Workshops, pages 512–519,",
+        "x": 108,
+        "y": 528.7,
+        "w": 397.2,
+        "h": 71.6,
+        "zh": "[20] Sergey Ioffe 与 Christian Szegedy。Batch normalization：通过减小内部协变量偏移来加速深度网络训练。ICML，2015。[21] Chao Peng、Tete Xiao、Zeming Li、Yuning Jiang、Xiangyu Zhang、Kai Jia、Gang Yu 与 Jian Sun。MegDet：一个大批量目标检测器。CVPR，7，2017。[22] Ali Sharif Razavian、Hossein Azizpour、Josephine Sullivan 与 Stefan Carlsson。现成的 CNN 特征：一个惊人的识别基线。CVPR Workshops，第 512–519 页，"
+      },
+      {
+        "text": "[23] Evan Shelhamer, Jonathan Long, and Trevor Darrell. Fully convolutional networks for semantic segmentation. IEEE Trans. Pattern Anal. Mach. Intell., 39(4):640–651, 2017. [24] Terrance DeVries and Graham W Taylor. Improved regularization of convolutional neural networks with cutout. arXiv preprint arXiv:1708.04552, 2017. [25] Simon Kornblith, Jonathon Shlens, and Quoc V. Le. Do better imagenet models transfer better? CoRR, abs/1805.08974, 2018. [26] Ekin D Cubuk, Barret Zoph, Dandelion Mane, Vijay Vasudevan, and Quoc V Le. Autoaugment: Learning augmentation policies from data. arXiv preprint arXiv:1805.09501, 2018. [27] Dhruv Mahajan, Ross Girshick, Vignesh Ramanathan, Kaiming He, Manohar Paluri, Yixuan Li, Ashwin Bharambe, and Laurens van der Maaten. Exploring the limits of weakly supervised pretraining. ECCV, 2018. [28] Jiquan Ngiam, Daiyi Peng, Vijay Vasudevan, Simon Kornblith, Quoc Le, and Ruoming Pang. Domain adaptive transfer learning. 2018. [29] Yuxin Peng, Xiangteng He, and Junjie Zhao. Object-part attention model for fine-grained image classification. IEEE Transactions on Image Processing, 27(3):1487–1500, 2018. [30] Yin Cui, Yang Song, Chen Sun, Andrew Howard, and Serge Belongie. Large scale fine-grained categorization and domain-specific transfer learning. In CVPR, 2018. [31] Fisher Yu, Dequan Wang, and Trevor Darrell. Deep layer aggregation. In CVPR, 2018. [32] Xiu-Shen Wei, Chen-Wei Xie, Jianxin Wu, and Chunhua Shen. Mask-cnn: Localizing parts and selecting descriptors for fine-grained bird species categorization. Pattern Recognition,",
+        "x": 108,
+        "y": 264.2,
+        "w": 397.7,
+        "h": 249.1,
+        "zh": "[23] Evan Shelhamer、Jonathan Long 与 Trevor Darrell。用于语义分割的全卷积网络。IEEE Trans. Pattern Anal. Mach. Intell.，39(4):640–651，2017。[24] Terrance DeVries 与 Graham W Taylor。用 cutout 改进卷积神经网络的正则。arXiv 预印本 arXiv:1708.04552，2017。[25] Simon Kornblith、Jonathon Shlens 与 Quoc V. Le。更好的 ImageNet 模型会迁移得更好吗？CoRR，abs/1805.08974，2018。[26] Ekin D Cubuk、Barret Zoph、Dandelion Mane、Vijay Vasudevan 与 Quoc V Le。AutoAugment：从数据中学习增强策略。arXiv 预印本 arXiv:1805.09501，2018。[27] Dhruv Mahajan、Ross Girshick、Vignesh Ramanathan、Kaiming He、Manohar Paluri、Yixuan Li、Ashwin Bharambe 与 Laurens van der Maaten。探索弱监督预训练的极限。ECCV，2018。[28] Jiquan Ngiam、Daiyi Peng、Vijay Vasudevan、Simon Kornblith、Quoc Le 与 Ruoming Pang。领域自适应的迁移学习。2018。[29] Yuxin Peng、Xiangteng He 与 Junjie Zhao。用于细粒度图像分类的物体—部件注意力模型。IEEE Transactions on Image Processing，27(3):1487–1500，2018。[30] Yin Cui、Yang Song、Chen Sun、Andrew Howard 与 Serge Belongie。大规模细粒度分类与领域特定的迁移学习。CVPR，2018。[31] Fisher Yu、Dequan Wang 与 Trevor Darrell。深度层聚合。CVPR，2018。[32] Xiu-Shen Wei、Chen-Wei Xie、Jianxin Wu 与 Chunhua Shen。Mask-CNN：为细粒度鸟类分类定位部件并选择描述子。Pattern Recognition，"
+      },
+      {
+        "text": "[33] Jonas Gehring, Michael Auli, David Grangier, Denis Yarats, and Yann N. Dauphin. Convolutional sequence to sequence learning. CoRR, abs/1705.03122, 2017. [34] Noam Shazeer, Youlong Cheng, Niki Parmar, Dustin Tran, Ashish Vaswani, Penporn Koanantakool, Peter Hawkins, HyoukJoong Lee, Mingsheng Hong, Cliff Young, et al. Mesh-tensorflow: Deep learning for supercomputers. In Neurips, pages 10414–10423, 2018. [35] Mia Xu Chen, Orhan Firat, Ankur Bapna, Melvin Johnson, Wolfgang Macherey, George Foster, Llion Jones, Niki Parmar, Mike Schuster, Zhifeng Chen, Yonghui Wu, and Macduff Hughes. The best of both worlds: Combining recent advances in neural machine translation. CoRR, abs/1804.09849, 2018. [36] Felix Wu, Angela Fan, Alexei Baevski, Yann N. Dauphin, and Michael Auli. Pay less attention with lightweight and dynamic convolutions. CoRR, abs/1901.10430, 2019. [37] Naveen Arivazhagan, Ankur Bapna, Orhan Firat, Dmitry Lepikhin, Melvin Johnson, Maxim Krikun, Mia Xu Chen, Yuan Cao, George Foster, Colin Cherry, et al. Massively multilingual neural machine translation in the wild: Findings and challenges. arXiv preprint arXiv:1907.05019,",
+        "x": 108,
+        "y": 82.9,
+        "w": 397.7,
+        "h": 165.9,
+        "zh": "[33] Jonas Gehring、Michael Auli、David Grangier、Denis Yarats 与 Yann N. Dauphin。卷积序列到序列学习。CoRR，abs/1705.03122，2017。[34] Noam Shazeer、Youlong Cheng、Niki Parmar、Dustin Tran、Ashish Vaswani、Penporn Koanantakool、Peter Hawkins、HyoukJoong Lee、Mingsheng Hong、Cliff Young 等。Mesh-Tensorflow：面向超级计算机的深度学习。Neurips，第 10414–10423 页，2018。[35] Mia Xu Chen、Orhan Firat、Ankur Bapna、Melvin Johnson、Wolfgang Macherey、George Foster、Llion Jones、Niki Parmar、Mike Schuster、Zhifeng Chen、Yonghui Wu 与 Macduff Hughes。两全其美：结合神经机器翻译的近期进展。CoRR，abs/1804.09849，2018。[36] Felix Wu、Angela Fan、Alexei Baevski、Yann N. Dauphin 与 Michael Auli。用轻量卷积和动态卷积少花些注意力。CoRR，abs/1901.10430，2019。[37] Naveen Arivazhagan、Ankur Bapna、Orhan Firat、Dmitry Lepikhin、Melvin Johnson、Maxim Krikun、Mia Xu Chen、Yuan Cao、George Foster、Colin Cherry 等。真实场景中的大规模多语言神经机器翻译：发现与挑战。arXiv 预印本 arXiv:1907.05019，"
+      }
+    ],
+    "11": [
+      {
+        "text": "[38] Hongyi Zhang, Yann N Dauphin, and Tengyu Ma. Fixup initialization: Residual learning without normalization. arXiv preprint arXiv:1901.09321, 2019. [39] Nitish Keskar, Dheevatsa Mudigere, Jorge Nocedal, Mikhail Smelyanskiy, and Ping T.P. Tang. On large-batch training for deep learning: Generalization gap and sharp minima. CoRR, abs/1609.04836, 2016. [40] Samuel L. Smith, Pieter-Jan Kindermans, and Quoc V. Le. Don’t decay the learning rate, increase the batch size. CoRR, abs/1711.00489, 2017. [41] Myle Ott, Sergey Edunov, David Grangier, and Michael Auli. Scaling neural machine translation. In Proceedings of the Third Conference on Machine Translation: Research Papers, pages 1–9, Belgium, Brussels, October 2018. Association for Computational Linguistics. [42] Alex Krizhevsky. One weird trick for parallelizing convolutional neural networks. arXiv preprint arXiv:1404.5997, 2014. [43] Seunghak Lee, Jin Kyu Kim, Xun Zheng, Qirong Ho, Garth A Gibson, and Eric P Xing. On model parallelization and scheduling strategies for distributed machine learning. In Neurips, pages 2834–2842, 2014. [44] Azalia Mirhoseini, Hieu Pham, Quoc V Le, Benoit Steiner, Rasmus Larsen, Yuefeng Zhou, Naveen Kumar, Mohammad Norouzi, Samy Bengio, and Jeff Dean. Device placement optimization with reinforcement learning. arXiv preprint arXiv:1706.04972, 2017. [45] Jeffrey Dean, Greg Corrado, Rajat Monga, Kai Chen, Matthieu Devin, Mark Mao, Marc aurelio Ranzato, Andrew Senior, Paul Tucker, Ke Yang, Quoc V. Le, and Andrew Y. Ng. Large scale distributed deep networks. In F. Pereira, C. J. C. Burges, L. Bottou, and K. Q. Weinberger, editors, Neurips 25, pages 1223–1231. Curran Associates, Inc., 2012. [46] A. Petrowski, G. Dreyfus, and C. Girault. Performance analysis of a pipelined backpropagation parallel algorithm. IEEE Transactions on Neural Networks, 4(6):970–981, Nov 1993. [47] Yonghui Wu, Mike Schuster, Zhifeng Chen, Quoc V Le, Mohammad Norouzi, Wolfgang Macherey, Maxim Krikun, Yuan Cao, Qin Gao, Klaus Macherey, et al. Google’s neural machine translation system: Bridging the gap between human and machine translation. Transactions of the Association for Computational Linguistics,, 2017. [48] Aaron Harlap, Deepak Narayanan, Amar Phanishayee, Vivek Seshadri, Nikhil Devanur, Greg Ganger, and Phil Gibbons. Pipedream: Fast and efficient pipeline parallel dnn training. arXiv preprint arXiv:1806.03377, 2018. [49] Mu Li, David G Andersen, Jun Woo Park, Alexander J Smola, Amr Ahmed, Vanja Josifovski, James Long, Eugene J Shekita, and Bor-Yiing Su. Scaling distributed machine learning with the parameter server. In OSDI, volume 14, pages 583–598, 2014.",
+        "x": 108,
+        "y": 306.2,
+        "w": 397.7,
+        "h": 413.8,
+        "zh": "[38] Hongyi Zhang、Yann N Dauphin 与 Tengyu Ma。Fixup 初始化：无需归一化的残差学习。arXiv 预印本 arXiv:1901.09321，2019。[39] Nitish Keskar、Dheevatsa Mudigere、Jorge Nocedal、Mikhail Smelyanskiy 与 Ping T.P. Tang。论深度学习中的大批量训练：泛化差距与尖锐极小值。CoRR，abs/1609.04836，2016。[40] Samuel L. Smith、Pieter-Jan Kindermans 与 Quoc V. Le。不要衰减学习率，而要增大批量。CoRR，abs/1711.00489，2017。[41] Myle Ott、Sergey Edunov、David Grangier 与 Michael Auli。扩展神经机器翻译。第三届机器翻译会议研究论文集，第 1–9 页，比利时布鲁塞尔，2018 年 10 月。Association for Computational Linguistics。[42] Alex Krizhevsky。并行化卷积神经网络的一个古怪技巧。arXiv 预印本 arXiv:1404.5997，2014。[43] Seunghak Lee、Jin Kyu Kim、Xun Zheng、Qirong Ho、Garth A Gibson 与 Eric P Xing。论分布式机器学习的模型并行化与调度策略。Neurips，第 2834–2842 页，2014。[44] Azalia Mirhoseini、Hieu Pham、Quoc V Le、Benoit Steiner、Rasmus Larsen、Yuefeng Zhou、Naveen Kumar、Mohammad Norouzi、Samy Bengio 与 Jeff Dean。用强化学习优化设备放置。arXiv 预印本 arXiv:1706.04972，2017。[45] Jeffrey Dean、Greg Corrado、Rajat Monga、Kai Chen、Matthieu Devin、Mark Mao、Marc aurelio Ranzato、Andrew Senior、Paul Tucker、Ke Yang、Quoc V. Le 与 Andrew Y. Ng。大规模分布式深度网络。见 F. Pereira、C. J. C. Burges、L. Bottou 与 K. Q. Weinberger 编，Neurips 25，第 1223–1231 页。Curran Associates, Inc.，2012。[46] A. Petrowski、G. Dreyfus 与 C. Girault。一种流水线式反向传播并行算法的性能分析。IEEE Transactions on Neural Networks，4(6):970–981，1993 年 11 月。[47] Yonghui Wu、Mike Schuster、Zhifeng Chen、Quoc V Le、Mohammad Norouzi、Wolfgang Macherey、Maxim Krikun、Yuan Cao、Qin Gao、Klaus Macherey 等。Google 的神经机器翻译系统：弥合人类翻译与机器翻译之间的差距。Transactions of the Association for Computational Linguistics，2017。[48] Aaron Harlap、Deepak Narayanan、Amar Phanishayee、Vivek Seshadri、Nikhil Devanur、Greg Ganger 与 Phil Gibbons。PipeDream：快速高效的流水线并行 DNN 训练。arXiv 预印本 arXiv:1806.03377，2018。[49] Mu Li、David G Andersen、Jun Woo Park、Alexander J Smola、Amr Ahmed、Vanja Josifovski、James Long、Eugene J Shekita 与 Bor-Yiing Su。用参数服务器扩展分布式机器学习。OSDI，第 14 卷，第 583–598 页，2014。"
+      }
+    ]
+  }
+}

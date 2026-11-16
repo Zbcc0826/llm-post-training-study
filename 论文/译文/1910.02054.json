@@ -1,0 +1,1415 @@
+{
+  "id": "1910.02054",
+  "title": "1910.02054",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "ZeRO: Memory Optimizations Toward Training Trillion",
+        "x": 113.5,
+        "y": 639.4,
+        "w": 385,
+        "h": 17.2,
+        "zh": "ZeRO：面向万亿级训练的内存优化"
+      },
+      {
+        "text": "Samyam Rajbhandari , Jeff Rasley, Olatunji Ruwase, Yuxiong He",
+        "x": 136.9,
+        "y": 588.6,
+        "w": 338.1,
+        "h": 12,
+        "zh": "Samyam Rajbhandari、Jeff Rasley、Olatunji Ruwase、Yuxiong He"
+      },
+      {
+        "text": "{samyamr, jerasley, olruwase, yuxhe}@microsoft.com",
+        "x": 188.4,
+        "y": 574.6,
+        "w": 235.2,
+        "h": 9,
+        "zh": ""
+      },
+      {
+        "text": "Large deep learning models offer significant accuracy gains, but training billions to trillions of parameters is challenging. Existing solutions such as data and model parallelisms exhibit fundamental limitations to fit these models into limited device memory, while obtaining computation, communication and development efficiency. We develop a novel solution, Zero Redundancy Optimizer (ZeRO), to optimize memory, vastly improving training speed while increasing the model size that can be efficiently trained. ZeRO eliminates memory redundancies in data- and model-parallel training while retaining low communication volume and high computational granularity, allowing us to scale the model size proportional to the number of devices with sustained high efficiency. Our analysis on memory requirements and communication volume demonstrates: ZeRO has the potential to scale beyond 1 Trillion parameters using today’s",
+        "x": 100.8,
+        "y": 390.2,
+        "w": 410.4,
+        "h": 117.6,
+        "zh": "大规模深度学习模型能带来显著的精度提升，但把数十亿到数万亿参数训练起来仍然很难。数据并行和模型并行这类现有方案，要在把这些模型放进有限设备内存的同时，还取得计算效率、通信效率和开发效率，存在根本限制。我们提出一种新方案 Zero Redundancy Optimizer（ZeRO）来优化内存，从而在大幅提高训练速度的同时，增大可以高效训练的模型规模。ZeRO 去掉数据并行与模型并行训练中的内存冗余，同时保持较低的通信量和较高的计算粒度，使我们能让模型规模随设备数量成比例增长，并持续保持高效率。我们对内存需求与通信量的分析表明：ZeRO 有潜力扩展到超过 1 万亿参数，用的是今天的"
+      },
+      {
+        "text": "We implement and evaluate ZeRO: it trains large models of over 100B parameter with super-linear speedup on 400 GPUs, achieving throughput of 15 Petaflops. This represents an 8x increase in model size and 10x increase in achievable performance over state-of-the-art. In terms of usability, ZeRO can train large models of up to 13B parameters (e.g., larger than Megatron GPT 8.3B and T5 11B) without requiring model parallelism which is harder for scientists to apply. Last but not the least, researchers have used the system breakthroughs of ZeRO to create the world’s largest language model (17B parameters) with record breaking",
+        "x": 100.8,
+        "y": 294.5,
+        "w": 410.4,
+        "h": 81.7,
+        "zh": "我们实现并评估了 ZeRO：它在 400 块 GPU 上以超线性加速训练超过 100B 参数的大模型，吞吐达到 15 Petaflops。相对当前最优，这表示模型规模提高 8 倍，可达到的性能提高 10 倍。就易用性而言，ZeRO 可以训练最大 13B 参数的大模型（例如大于 Megatron GPT 的 8.3B 和 T5 的 11B），而不需要模型并行；模型并行对科研人员更难上手。最后，研究者已经利用 ZeRO 的这些系统突破，做出世界上最大的语言模型（17B 参数），并取得破纪录的"
+      },
+      {
+        "text": "accuracy gain. In the area of Natural Language Processing (NLP), the transformers have paved way for large models like Bert-large (0.3B) [1], GPT-2 (1.5B) [2], Megatron-LM (8.3B) [3], T5 (11B) [4]. To enable the continuation of model size growth from 10s of billions to trillions of parameters, we experience the challenges of training them - they clearly do not fit within the memory of a single device, e.g., GPU or TPU, and simply adding more devices will not help",
+        "x": 100.8,
+        "y": 168,
+        "w": 410.4,
+        "h": 57.8,
+        "zh": "精度提升。在自然语言处理（NLP）领域，Transformer 为 Bert-large（0.3B）[1]、GPT-2（1.5B）[2]、Megatron-LM（8.3B）[3]、T5（11B）[4] 这类大模型铺平了道路。要让模型规模从数百亿参数继续增长到万亿参数，训练它们会遇到困难：它们显然放不进单个设备的内存，例如 GPU 或 TPU，而仅仅再增加设备也无济于事"
+      },
+      {
+        "text": "Basic data parallelism (DP) does not reduce memory per device, and runs out of memory for models with more than 1.4B parameters on current generation of GPUs with 32 GB memory. Other existing solutions such as Pipeline Parallelism (PP), Model Parallelism (MP),",
+        "x": 100.8,
+        "y": 120.2,
+        "w": 410.4,
+        "h": 33.9,
+        "zh": "基本的数据并行（DP）并不会降低每台设备上的内存，在当前这一代 32 GB 内存的 GPU 上，参数超过 1.4B 的模型就会内存不足。其他现有方案，例如流水线并行（PP）、模型并行（MP），"
+      }
+    ],
+    "2": [
+      {
+        "text": "CPU-Offloading, etc, make trade-offs between functionality, usability, as well as memory and compute/communication efficiency, but all of which are crucial to training with speed and scale. Among different existing solution for training large models, MP is perhaps the most promising. The largest models in the current literature, the 11B T5 model [4], and Megatron-LM 8.3B [3], were both powered by model parallelism, implemented in Mesh-Tensorflow [5] and Megatron-LM[3], respectively. However, MP cannot scale much further beyond these models sizes. MP splits the model vertically, partitioning the computation and parameters in each layer across multiple devices, requiring significant communication between each layer. As a result, they work well within a single node where the inter-GPU communication bandwidth is high, but the efficiency degrades quickly beyond a single node [3]. We tested a 40B parameter model using Megatron-LM across two DGX-2 nodes and observe about 5 T f lops per V100 GPU (less",
+        "x": 100.8,
+        "y": 561.7,
+        "w": 410.4,
+        "h": 129.5,
+        "zh": "CPU 卸载（CPU-Offloading）等，要在功能、易用性以及内存和计算/通信效率之间做取舍，而这些对又快又大规模地训练都至关重要。在训练大模型的现有方案里，MP 也许最有希望。当前文献中最大的模型，11B 的 T5 [4] 和 8.3B 的 Megatron-LM [3]，分别靠 Mesh-Tensorflow [5] 和 Megatron-LM [3] 里实现的模型并行来支撑。然而，MP 很难再扩展到远超这些模型规模的程度。MP 把模型沿纵向切开，把每一层的计算和参数划分到多台设备上，每一层之间都需要大量通信。因此，它们在单机内部、GPU 之间通信带宽很高时效果很好，但一超出单机，效率就迅速下降 [3]。我们用 Megatron-LM 在两个 DGX-2 节点上测试了一个 40B 参数模型，观察到每块 V100 GPU 大约只有 5 TFlops（低于"
+      },
+      {
+        "text": "So, how can we overcome the limitations of existing solutions and train large models more efficiently? To answer this question, we first analyze the full spectrum of memory consumption of the existing systems on model training and classify it into two parts: 1) For large models, the majority of the memory is occupied by model states which include the optimizer states (such as momentum and variances in Adam [6]), gradients, and parameters. 2) The remaining memory is consumed by activation, temporary buffers and unusable fragmented memory, which we refer to collectively as residual states. We develop ZeRO— Zero Redundancy Optimizer — to optimize memory efficiency on both while obtaining high compute and communication efficiency. As these two parts face different challenges, we develop and discuss their solutions",
+        "x": 100.8,
+        "y": 442.1,
+        "w": 410.4,
+        "h": 105.6,
+        "zh": "那么，怎样才能越过现有方案的限制，更高效地训练大模型？为回答这个问题，我们先分析现有系统在模型训练中的全部内存消耗，并把它分成两部分：1）对大模型而言，大部分内存被模型状态占用，其中包括优化器状态（例如 Adam [6] 里的动量和方差）、梯度以及参数。2）其余内存被激活、临时缓冲区以及无法使用的碎片内存占用，我们把它们统称为剩余状态。我们提出 ZeRO，即 Zero Redundancy Optimizer，在这两部分上都优化内存效率，同时获得较高的计算效率和通信效率。由于这两部分面临的困难不同，我们分别设计并讨论了相应的解决办法"
+      },
+      {
+        "text": "Optimizing Model State Memory Model states often consume the largest amount of memory during training, but existing approaches such as DP and MP do not offer satisfying solution. DP has good compute/communication efficiency but poor memory efficiency while MP can have poor compute/communication efficiency. entire model states across all data parallel process resulting in redundant memory consumption; while MP partition these states to obtain high memory efficiency, but often result in too finegrained computation and expensive communication that is less scaling efficient. Furthermore, all of these approaches maintain all the model states required over the entire training process statically, even though not all model states are required all the time during the training. Based on these observations, we develop ZeRO-DP, ZeRO-powered data parallelism, that achieves the computation/communication efficiency of DP while achieving memory efficiency of MP. ZeRODP removes the memory state redundancies across data-parallel processes by partitioning the model states instead of replicating them, and it retains the compute/communication efficiency by retaining the computational granularity and communication volume of DP using a dynamic",
+        "x": 100.8,
+        "y": 262.8,
+        "w": 410.4,
+        "h": 165.4,
+        "zh": "优化模型状态内存。模型状态往往占训练期间最大的一块内存，但 DP 和 MP 这类现有方法给不出令人满意的方案。DP 的计算/通信效率好，内存效率却差；MP 则可能计算/通信效率差。全部模型状态存放在所有数据并行进程上，造成冗余的内存消耗；MP 则划分这些状态以获得较高的内存效率，但往往使计算粒度过细，通信也很昂贵，扩展效率更差。此外，这些方法都在整个训练过程中静态地保留全部所需的模型状态，尽管训练期间并不是每时每刻都需要全部模型状态。基于这些观察，我们提出 ZeRO-DP，也就是由 ZeRO 驱动的数据并行。它达到 DP 的计算/通信效率，同时达到 MP 的内存效率。ZeRO-DP 通过划分而不是复制模型状态，去掉数据并行进程之间的内存状态冗余；它保留 DP 的计算粒度和通信量，从而保住计算/通信效率，做法是使用一种动态的"
+      },
+      {
+        "text": "ZeRO-DP has three main optimization stages (as depicted in Figure 1), which correspond to the partitioning of optimizer states, gradients, and parameters. When enabled cumulatively: 1) Optimizer State Partitioning (Pos): 4x memory reduction, same communication volume",
+        "x": 100.8,
+        "y": 213.5,
+        "w": 410.4,
+        "h": 35.4,
+        "zh": "ZeRO-DP 有三个主要优化阶段（如图 1 所示），分别对应优化器状态、梯度和参数的划分。逐级打开时：1）优化器状态划分（Pos）：内存降为原来的 1/4，通信量相同"
+      },
+      {
+        "text": "2) Add Gradient Partitioning (Pos+g): 8x memory reduction, same communication volume",
+        "x": 115.7,
+        "y": 189.6,
+        "w": 395.5,
+        "h": 11.5,
+        "zh": "2）再加上梯度划分（Pos+g）：内存降为原来的 1/8，通信量相同"
+      },
+      {
+        "text": "3) Add Parameter Partitioning (Pos+g+p): Memory reduction is linear with DP degree Nd. For example, splitting across 64 GPUs (Nd = 64) will yield a 64x memory reduction. There is a modest 50% increase in communication volume. ZeRO-DP eliminates memory redundancies and makes the full aggregate memory capacity of a cluster available. With all three stages enabled, ZeRO can train a trillion-parameter model on just 1024 NVIDIA GPUs. A trillion-parameter model with an optimizer like Adam [6] in 16-",
+        "x": 100.8,
+        "y": 107.4,
+        "w": 410.4,
+        "h": 69.7,
+        "zh": "3）再加上参数划分（Pos+g+p）：内存的降低幅度与 DP 度 Nd 成线性关系。例如，划分到 64 块 GPU（Nd = 64）时，内存降为原来的 1/64。通信量只温和地增加 50%。ZeRO-DP 消除内存冗余，使集群的全部聚合内存容量都可以用上。三个阶段全部打开时，ZeRO 只需要 1024 块 NVIDIA GPU 就能训练一个万亿参数模型。一个使用 Adam [6] 这类优化器的万亿参数模型，在 16 位"
+      }
+    ],
+    "3": [
+      {
+        "text": "Figure 1: Comparing the per-device memory consumption of model states, with three stages of ZeRO-DP optimizations. Ψ denotes model size (number of parameters), K denotes the memory multiplier of optimizer states, and Nd denotes DP degree. In the example, we assume a model size of Ψ = 7.5B and DP of Nd = 64 with K = 12 based on mixed-precision training with",
+        "x": 100.8,
+        "y": 445.3,
+        "w": 410.4,
+        "h": 47.3,
+        "zh": "图 1：比较模型状态的每设备内存消耗，对应 ZeRO-DP 三个阶段的优化。Ψ 表示模型规模（参数个数），K 表示优化器状态的内存倍数，Nd 表示 DP 度。示例中假设模型规模 Ψ = 7.5B、DP 度 Nd = 64，并且 K = 12，基于混合精度训练，并带有"
+      },
+      {
+        "text": "bit precision requires approximately 16 terabytes (TB) of memory to hold the optimizer states, gradients, and parameters. 16TB divided by 1024 is 16GB, which is well within a reasonable bound for a GPU (e.g., with 32GB of on-device memory). Optimizing Residual State Memory After ZeRO-DP boosts memory efficiency for model states, the rest of the memory consumed by activations, temporary buffers, and unusable memory fragments could become a secondary memory bottleneck. We develop ZeRO-R to optimize the residual memory consumed by these three factors respectively. 1) For activations (stored from forward pass in order to perform backward pass), we noticed checkpointing [7] helps but not sufficient for large models. Thus ZeRO-R optimizes activation memory by identifying and removing activation replication in existing MP approaches through activation partitioning. It also offloads activations to CPU when appropriate. 2) ZeRO-R defines appropriate size for temporary buffers to strike for a balance of memory",
+        "x": 100.8,
+        "y": 259.9,
+        "w": 410.4,
+        "h": 141.5,
+        "zh": "位精度大约需要 16 TB 内存，用来存放优化器状态、梯度和参数。16 TB 除以 1024 是 16 GB，对一块 GPU 来说完全在合理范围内（例如设备上有 32 GB 内存）。优化剩余状态内存。ZeRO-DP 提高了模型状态的内存效率之后，激活、临时缓冲区和无法使用的内存碎片所消耗的其余内存，可能成为次一级的内存瓶颈。我们提出 ZeRO-R，分别针对这三个因素优化它们占用的剩余内存。1）对激活而言（它们在前向传播中保存下来，以便做反向传播），我们注意到检查点 [7] 有帮助，但对大模型仍然不够。因此 ZeRO-R 通过激活划分来优化激活内存：识别并去掉现有 MP 做法中的激活复制。在合适的时候，它也会把激活卸载到 CPU。2）ZeRO-R 为临时缓冲区选定合适的大小，以便在内存方面取得平衡"
+      },
+      {
+        "text": "3) We observe fragmented memory during training due to variations in the lifetime of different tensors. Lack of contiguous memory due to fragmentation can cause memory allocation failure, even when enough free memory is available. ZeRO-R proactively manages memory based on the different lifetime of tensors, preventing memory fragmentation. ZeRO-DP and ZeRO-R combined together forms a powerful system of memory optimizations for DL training that we collectively refer to as ZeRO. ZeRO and MP: Since ZeRO eliminates the memory inefficiency in DP, it is natural to ask: Do we still need MP, and when? How does ZeRO work with MP? With ZeRO, MP becomes a less attractive option for the purpose of fitting large models alone. ZeRO-DP is at least as effective on reducing per-device memory footprint as MP, or more effective sometimes when MP cannot divide the model evenly. It also has comparable or better scaling efficiency. Furthermore, data parallelism is so easy to use that it is widely applicable across different workloads, while",
+        "x": 100.8,
+        "y": 104.5,
+        "w": 410.4,
+        "h": 141.5,
+        "zh": "3）我们观察到，训练期间不同张量的生命周期不一样，因而出现内存碎片。碎片导致缺少连续内存时，即使空闲内存总量足够，内存分配也会失败。ZeRO-R 按张量各自不同的生命周期主动管理内存，防止出现内存碎片。ZeRO-DP 和 ZeRO-R 合在一起，构成一套用于深度学习训练的内存优化，我们统称为 ZeRO。ZeRO 与 MP：既然 ZeRO 消除了 DP 的内存低效，自然要问：我们还需要 MP 吗，什么时候需要？ZeRO 如何与 MP 一起工作？有了 ZeRO，若目的只是把大模型装进内存，MP 就没那么有吸引力了。在降低每设备内存占用上，ZeRO-DP 至少和 MP 一样有效；当 MP 无法把模型均匀切开时，有时还更有效。它的扩展效率也相当，或者更好。此外，数据并行非常容易使用，因而能广泛用于不同的工作负载，而"
+      }
+    ],
+    "4": [
+      {
+        "text": "Figure 2: ZeRO training throughput and speedup w.r.t SOTA baseline for varying model sizes. For ZeRO, the MP always fit in a node, while for baseline, models larger than 40B require MP",
+        "x": 100.8,
+        "y": 495.3,
+        "w": 410.4,
+        "h": 21.9,
+        "zh": "图 2：不同模型规模下，ZeRO 的训练吞吐以及相对 SOTA 基线的加速比。对 ZeRO，MP 始终放在一个节点内；对基线，大于 40B 的模型则需要 MP"
+      },
+      {
+        "text": "MP approaches today often need some work from model developers to revise their model, system developers to work out distributed operators, and existing work like Megatron-LM only",
+        "x": 100.8,
+        "y": 428,
+        "w": 410.4,
+        "h": 21.9,
+        "zh": "今天的 MP 方法往往需要模型开发者去改自己的模型，也需要系统开发者去实现分布式算子，而 Megatron-LM 这类已有工作只"
+      },
+      {
+        "text": "supports a limited set of operators and models.",
+        "x": 100.8,
+        "y": 416,
+        "w": 206.3,
+        "h": 10,
+        "zh": "支持有限的一组算子和模型。"
+      },
+      {
+        "text": "That being said, there are still cases where we want to leverage MP: i) When used with ZeRO-R, MP can reduce activation memory footprint for very large models. ii) For smaller models where activation memory is not an issue, MP can also have benefits when aggregated batch size using DP alone is too big to have good convergence. ZeRO with MP to fit the model with an acceptable aggregated batch size. We show that ZeRO can be combined with MP, resulting in a max theoretical memory reduction of Nd ×Nm times on each device with a DP degree of Nd and MP degree of Nm. This could allow us to fit a trillion parameter model on 1024 GPUs with 16-way model parallelism (within each DGX2 node) and 64-way data parallelism across nodes, and run it efficiently using",
+        "x": 100.8,
+        "y": 308.4,
+        "w": 410.4,
+        "h": 105.6,
+        "zh": "尽管如此，仍有一些情况我们希望利用 MP：i）与 ZeRO-R 一起使用时，MP 可以降低非常大模型的激活内存占用。ii）对激活内存不成问题的较小模型，如果单靠 DP 得到的聚合 batch size 大到难以良好收敛，MP 也有好处。用 ZeRO 配合 MP，以可接受的聚合 batch size 把模型装下。我们表明，ZeRO 可以与 MP 组合：DP 度为 Nd、MP 度为 Nm 时，每台设备上的理论最大内存削减是 Nd × Nm 倍。这样就可以把一个万亿参数模型放进 1024 块 GPU，在每个 DGX2 节点内做 16 路模型并行，在节点之间做 64 路数据并行，并高效地运行，使用"
+      },
+      {
+        "text": "Implementation & Evaluation The complete set of optimizations in ZeRO could allow us to run models with trillion parameters on the high-end hardware cluster today (e.g., with 1K V100 GPUs), however, the hardware compute capacity is still too limited and training time can be impractically long (>1 year). Therefore, our focus for this implementation is to efficiently support models with 10x parameters (∼100B parameters) than state-of-the-art (SOTA) while still being within reach of the compute capabilities of current hardware. We implement and evaluate a subset of optimizations in ZeRO called ZeRO-100B — Pos+g of ZeRO-DP plus ZeRO-R — that allow us to achieve this goal. The results show: Model Size Combined with MP, ZeRO-100B runs 170B parameter models efficiently, while the existing system like using Megatron alone cannot scale efficiently beyond 40B parameters, as shown in Figure 2. This is an over 8x increase in model size compared to SOTA. Speed Improved memory efficiency powers higher throughput and faster training. As shown in Figure 2, ZeRO runs 100B parameter models on a 400 Nvidia V100 GPU cluster with over",
+        "x": 100.8,
+        "y": 141,
+        "w": 410.4,
+        "h": 153.4,
+        "zh": "实现与评估。ZeRO 的全套优化可以让我们在今天的高端硬件集群上运行万亿参数的模型（例如配备 1K 块 V100 GPU），然而硬件算力仍然太有限，训练时间可能长到不切实际（超过 1 年）。因此，这一实现的重点是高效支持参数量为当前最优（SOTA）的 10 倍（约 100B 参数）的模型，同时仍处在现有硬件算力够得着的范围内。我们实现并评估了 ZeRO 优化中的一个子集，称为 ZeRO-100B，也就是 ZeRO-DP 的 Pos+g 再加上 ZeRO-R，从而达成这一目标。结果如下。模型规模：与 MP 结合后，ZeRO-100B 能高效运行 170B 参数的模型，而只使用 Megatron 这类现有系统无法高效扩展到 40B 参数以上，如图 2 所示。相对 SOTA，模型规模的提升超过 8 倍。速度：更高的内存效率带来更高的吞吐和更快的训练。如图 2 所示，ZeRO 在一个由 400 块 Nvidia V100 GPU 组成的集群上运行 100B 参数的模型，超过"
+      },
+      {
+        "text": "Prior work [8] shows, very large batch size could slow down convergence. For given model and data, there is a measure of critical-batch size, where increasing batch size further slows down convergence. The detailed",
+        "x": 100.8,
+        "y": 114,
+        "w": 410.4,
+        "h": 17.4,
+        "zh": "已有工作 [8] 表明，非常大的 batch size 可能使收敛变慢。对给定的模型和数据，存在临界 batch size 这样一个度量，再继续增大 batch size 就会拖慢收敛。详细的"
+      }
+    ],
+    "5": [
+      {
+        "text": "Figure 3: Superlinear scalability and per GPU training throughput of a 60B parameter model",
+        "x": 100.8,
+        "y": 484,
+        "w": 410.4,
+        "h": 10,
+        "zh": "图 3：一个 60B 参数模型的超线性可扩展性，以及每块 GPU 的训练吞吐"
+      },
+      {
+        "text": "38 TFlops per GPU, and aggregate performance over 15 Petaflops. This is more than 10x improvement in training speed compared to SOTA for the same model size. Scalability We observe super linear speedup in the regime of 64-400 GPUs, where the performance more than doubles when we double the number of GPUs. This is a property of ZeRO-DP which reduces the memory footprint of the model states as we increase the DP degree allowing us to fit larger batch sizes per GPU resulting in better performance. We expect this behaviour to continue further as we increase the number of GPUs beyond 400. Democratization of Large Model Training ZeRO-100B powers data scientist to train models with up to 13B parameters without any MP or PP that requires model refactoring, where 13B is more parameters than the largest model in literature (T5 with 11B parameters). scientists can thus experiment freely with large models without worrying about parallelism. In comparison, exist systems (e.g., PyTorch Distributed Data Parallel) runs out of memory with",
+        "x": 100.8,
+        "y": 297.1,
+        "w": 410.4,
+        "h": 141.5,
+        "zh": "每块 GPU 38 TFlops，聚合性能超过 15 Petaflops。对相同的模型规模，这比 SOTA 的训练速度提高 10 倍以上。可扩展性。我们在 64 到 400 块 GPU 的范围内观察到超线性加速：GPU 数量翻倍时，性能提高超过一倍。这是 ZeRO-DP 的一个性质。DP 度提高时，模型状态的内存占用下降，于是每块 GPU 能放下更大的 batch size，性能也更好。我们预期 GPU 数量增加到 400 以上时，这一现象还会继续。大模型训练的普及。ZeRO-100B 使数据科学家能够训练最多 13B 参数的模型，而不必使用任何需要重构模型的 MP 或 PP；这里的 13B 已经多于文献中最大的模型（11B 参数的 T5）。科研人员因此可以自由地用大模型做实验，而不必为并行操心。相比之下，现有系统（例如 PyTorch Distributed Data Parallel）会耗尽内存，在"
+      },
+      {
+        "text": "New SOTA Model ZeRO powers the largest language model with 17B parameters and",
+        "x": 115.7,
+        "y": 273.2,
+        "w": 395.5,
+        "h": 10,
+        "zh": "新的 SOTA 模型。ZeRO 支撑了参数量为 17B 的最大语言模型，以及"
+      },
+      {
+        "text": "record-breaking accuracy, Turing-NLG [9].",
+        "x": 100.8,
+        "y": 261.3,
+        "w": 184.9,
+        "h": 10,
+        "zh": "破纪录的精度，即 Turing-NLG [9]。"
+      },
+      {
+        "text": "We share ZeRO as a part of our open source DL training optimization library called DeepSpeed . We plan to release all implementations described in this paper by end of May 2020 and extend it further to support 1 trillion parameters by enabling ZeRO-DP stage 3 partitioning parameters (Pos+g+p). We plan to make ZeRO fully accessible to the DL community to catalyze the evolution and democratization of large model training at scale.",
+        "x": 100.8,
+        "y": 201.5,
+        "w": 410.4,
+        "h": 57.8,
+        "zh": "我们把 ZeRO 作为开源深度学习训练优化库 DeepSpeed 的一部分分享出来。我们计划在 2020 年 5 月底之前发布本文描述的全部实现，并进一步扩展，通过启用 ZeRO-DP 第 3 阶段的参数划分（Pos+g+p）来支持 1 万亿参数。我们计划让深度学习社区能够充分使用 ZeRO，以推动大规模大模型训练的演进，并使其得以普及。"
+      }
+    ],
+    "6": [
+      {
+        "text": "Parallelization is a key strategy on training large models at scale. For a model that fits in the device memory for training, data parallelism (DP) is used to scale training to multiple devices. In DP, model parameters are replicated on each device. At each step, a mini-batch is divided evenly across all the data parallel processes, such that each process executes the forward and backward propagation on a different subset of data samples, and uses averaged gradients across",
+        "x": 100.8,
+        "y": 591.2,
+        "w": 410.4,
+        "h": 57.8,
+        "zh": "并行是大规模训练大模型的一项关键策略。对训练时能够放进设备内存的模型，用数据并行（DP）把训练扩展到多台设备。在 DP 中，模型参数在每台设备上各复制一份。每一步把一个 mini-batch 均匀分给所有数据并行进程，使每个进程在不同的数据样本子集上执行前向和反向传播，并使用已经取过平均的梯度，所跨越的范围是"
+      },
+      {
+        "text": "When a model does not fit in the device memory, model parallelism (MP) [5, 3] and pipeline parallelism (PP) [10, 11] split the model among processes, in vertical and horizontal way respectively. Sec. 1 discussed how ZeRO relates to DP and MP. We now discuss PP and how it",
+        "x": 100.8,
+        "y": 543.4,
+        "w": 410.4,
+        "h": 33.9,
+        "zh": "当模型放不进设备内存时，模型并行（MP）[5, 3] 和流水线并行（PP）[10, 11] 在进程之间切分模型，分别沿纵向和横向进行。第 1 节讨论了 ZeRO 与 DP、MP 的关系。下面讨论 PP，以及它如何"
+      },
+      {
+        "text": "PP splits a model horizontally across layers running each partition on a different device",
+        "x": 115.7,
+        "y": 519.5,
+        "w": 395.5,
+        "h": 10,
+        "zh": "PP 沿层把模型横向切开，让每个划分在不同的设备上运行"
+      },
+      {
+        "text": "Model functionalities such as tied-weights and batch-normalization are difficult to implement due to horizontal splitting and micro-batching, respectively. Popular PP implementation such as G-pipe [10] partitions both model parameters and total activations but requires a batch size proportional to number of pipeline partitions to hide the pipeline bubble. The large batch size can affect the convergence rate, while also requiring significant memory to store activations. A different implementation of PP in PipeDream [12] keeps multiple copies of stale parameters to hide the pipeline bubble without increasing the batch size significantly, making it less memory efficient. Additionally, the implementation is not equivalent to the standard DL training and has implications on training convergence. In contrast, ZeRO obtains the same or better memory efficiency than PP without incurring functionality, performance and convergence related restrictions of PP.",
+        "x": 100.8,
+        "y": 388,
+        "w": 410.4,
+        "h": 129.5,
+        "zh": "绑定权重（tied weights）和批归一化这类模型功能，分别因为横向切分和 micro-batch 而难以实现。GPipe [10] 这类流行的 PP 实现既划分模型参数，也划分全部激活，但需要与流水线划分数成比例的 batch size，才能把流水线气泡掩盖掉。大的 batch size 会影响收敛速度，同时还需要可观的内存来存放激活。PipeDream [12] 中另一种 PP 实现保留多份陈旧的参数，以便在不显著增大 batch size 的情况下掩盖流水线气泡，因此内存效率更低。此外，这种实现并不等价于标准的深度学习训练，因而会影响训练收敛。相比之下，ZeRO 能获得与 PP 相同甚至更好的内存效率，又不会带上 PP 在功能、性能和收敛上的那些限制。"
+      },
+      {
+        "text": "and use micro-batching to hide the pipeline bubble [10, 11].",
+        "x": 100.8,
+        "y": 507.5,
+        "w": 271.9,
+        "h": 10,
+        "zh": "并用 micro-batch 来掩盖流水线气泡 [10, 11]。"
+      },
+      {
+        "text": "Non-parallelism based approach to reduce memory In addition to MP and PP, there are multiple lines of work that target reducing memory",
+        "x": 100.8,
+        "y": 341.7,
+        "w": 410.4,
+        "h": 30.3,
+        "zh": "不靠并行来降低内存的做法。除 MP 和 PP 之外，还有多条工作路线，目标是减少内存"
+      },
+      {
+        "text": "Multiple efforts have focused on reducing the memory footprint of activations through compression [13], activation checkpointing [7, 14], or live analysis [15]. These efforts are complimentary and can work together with ZeRO. In fact, activation memory reduction in ZeRO-R works in",
+        "x": 100.8,
+        "y": 261.5,
+        "w": 410.4,
+        "h": 33.9,
+        "zh": "多项工作致力于通过压缩 [13]、激活检查点 [7, 14] 或活性分析 [15]，来降低激活的内存占用。这些工作与 ZeRO 互补，可以一起使用。事实上，ZeRO-R 中对激活内存的削减，就是在"
+      },
+      {
+        "text": "[16, 17] exploit heterogeneous nature of today’s compute nodes, offloading model states to CPU memory through algorithmic design or virtualized memory, respectively. Up to 50% of training time can be spent on GPU-CPU-GPU transfers [16]. ZeRO differs in that it reduces the memory consumption significantly without storing the model states to CPU memory whose bandwidth is severely constrained due to PCI-E. On rare cases, ZeRO-R may offload just the activation checkpoints for very large models to improve performance (see Sec. 6.1 for details).",
+        "x": 100.8,
+        "y": 145.5,
+        "w": 410.4,
+        "h": 69.7,
+        "zh": "[16, 17] 利用今天计算节点的异构特性，分别通过算法设计或虚拟化内存，把模型状态卸载到 CPU 内存。训练时间最多可以有 50% 花在 GPU-CPU-GPU 的传输上 [16]。ZeRO 的不同之处在于，它显著降低内存消耗，而又不把模型状态存到 CPU 内存；CPU 内存的带宽因为 PCI-E 而受到严重限制。在少数情况下，ZeRO-R 可以只把激活检查点卸载出去，以改善非常大的模型的性能（细节见第 6.1 节）。"
+      }
+    ],
+    "7": [
+      {
+        "text": "[18, 19] focus on reducing memory consumption of adaptive optimization methods by maintaining coarser-grained statistics of model parameters and gradients, with potential impact on model convergence guarantees. ZeRO is orthogonal to these efforts, and its optimizations do not change the model optimization method or affect model convergence, but effectively reduce",
+        "x": 100.8,
+        "y": 627,
+        "w": 410.4,
+        "h": 45.8,
+        "zh": "[18, 19] 关注的是降低自适应优化方法的内存消耗，做法是为模型参数和梯度维护更粗粒度的统计量，这可能会影响模型的收敛保证。ZeRO 与这些工作正交，它的优化不改变模型的优化方法，也不影响模型收敛，而是有效地减少"
+      },
+      {
+        "text": "memory footprint of optimizer states and gradients per device.",
+        "x": 100.8,
+        "y": 615,
+        "w": 273.7,
+        "h": 10,
+        "zh": "每台设备上优化器状态和梯度的内存占用。"
+      },
+      {
+        "text": "Adaptive optimization methods [20, 6, 21, 22] are crucial to achieving SOTA performance and accuracy for effective model training of large models. Compared to SGD, by maintaining finegrained first-order and second-order statistics for each model parameter and gradient at the cost of significant memory footprint. ZeRO can reduce the memory footprint of these optimizers by orders of magnitude, making these sophisticated optimization methods practical for training large models on hardware with modest device memory. It also makes it possible to develop and use even more complex and memory hungry optimizers that may have better convergence.",
+        "x": 100.8,
+        "y": 497,
+        "w": 410.4,
+        "h": 81.7,
+        "zh": "自适应优化方法 [20, 6, 21, 22] 对大模型训练达到 SOTA 的性能和精度至关重要。与 SGD 相比，这类方法为每个模型参数和梯度维护细粒度的一阶和二阶统计量，代价是显著的内存占用。ZeRO 可以把这些优化器的内存占用降低几个数量级，使这些精细的优化方法能够在设备内存并不宽裕的硬件上用来训练大模型。它也使人们有可能开发并使用更复杂、更吃内存、但收敛可能更好的优化器。"
+      },
+      {
+        "text": "Let’s take a step back to examine the memory consumption of the current training system. For example, a 1.5B parameter GPT-2 model requires 3GB of memory for its weights (or parameters) in 16-bit precision, yet, it cannot be trained on a single GPU with 32GB memory using Tensorflow or PyTorch. One may wonder where all the memory goes. During model training, most of the memory is consumed by model states, i.e., tensors comprising of pptimizer states, gradients, and parameters. Besides these model states, the rest of the memory is consumed by activations, temporary buffers and fragmented memory which we call residual states. We look",
+        "x": 100.8,
+        "y": 370.5,
+        "w": 410.4,
+        "h": 81.7,
+        "zh": "我们退一步，看一看当前训练系统的内存消耗。例如，一个 1.5B 参数的 GPT-2 模型，其权重（也就是参数）在 16 位精度下需要 3 GB 内存，然而用 TensorFlow 或 PyTorch，却不能在一块 32 GB 内存的 GPU 上把它训练起来。人们可能会问，这些内存都到哪里去了。模型训练期间，大部分内存被模型状态占用，也就是由优化器状态、梯度和参数构成的那些张量。除这些模型状态之外，其余内存被激活、临时缓冲区和碎片内存占用，我们称之为剩余状态。我们从两方面"
+      },
+      {
+        "text": "at the memory consumption from both in details.",
+        "x": 100.8,
+        "y": 358.6,
+        "w": 216.3,
+        "h": 10,
+        "zh": "详细考察这两部分的内存消耗。"
+      },
+      {
+        "text": "Model States: Optimizer States, Gradients and Parameters Majority of the device memory is consumed by model states during training. Consider for instance, Adam [6], one of the most popular optimizers for DL training. Adam requires storing two optimizer states, i) the time averaged momentum and ii) variance of the gradients to compute the updates. Therefore, to train a model with ADAM, there has to be enough memory to hold a copy of both the momentum and variance of the gradients. In addition, there needs to be enough memory to store the gradients and the weights themselves. Of these three types of the parameter-related tensors, the optimizer states usually consume the most memory, specially",
+        "x": 100.8,
+        "y": 240.6,
+        "w": 410.4,
+        "h": 102.1,
+        "zh": "模型状态：优化器状态、梯度与参数。训练期间，设备内存的大部分被模型状态占用。以 Adam [6] 为例，它是深度学习训练中最流行的优化器之一。Adam 需要存储两种优化器状态：i）按时间平均的动量，ii）梯度的方差，用来计算更新。因此，要用 Adam 训练一个模型，必须有足够的内存同时放下梯度的动量和方差各一份。此外，还需要足够的内存存放梯度以及权重本身。在这三类与参数相关的张量里，通常最占内存的是优化器状态，尤其是"
+      },
+      {
+        "text": "when mixed-precision training is applied.",
+        "x": 100.8,
+        "y": 228.6,
+        "w": 179.2,
+        "h": 10,
+        "zh": "在采用混合精度训练的时候。"
+      },
+      {
+        "text": "Mixed-Precision Training The state-of-the-art approach to train large models on the current generation of NVIDIA GPUs is via mixed precision (fp16/32) training [23], where parameters and activations are stored as fp16, enabling the use of the high throughput tensor core units [24] on these GPUs. During mixed-precision training, both the forward and backward propagation are performed using fp16 weights and activations. However, to effectively compute and apply the updates at the end of the backward propagation, the mixed-precision optimizer keeps an fp32 copy of the parameters as well as an fp32 copy of all the other optimizer states. Let’s take Adam as a concrete example. Mixed precision training of a model with Ψ parameters using Adam requires enough memory to hold an f p16 copy of the parameters and the gradients, with memory requirements of 2Ψ and 2Ψ bytes respectively. In addition, it needs",
+        "x": 100.8,
+        "y": 109,
+        "w": 410.4,
+        "h": 117.6,
+        "zh": "混合精度训练。在当前这一代 NVIDIA GPU 上训练大模型，主流做法是混合精度（fp16/32）训练 [23]：参数和激活以 fp16 存放，从而能用上这些 GPU 上高吞吐的 Tensor Core 单元 [24]。混合精度训练期间，前向和反向传播都使用 fp16 的权重和激活。然而，为了在反向传播结束时有效地计算并施加更新，混合精度优化器还会保留参数的一份 fp32 副本，以及所有其他优化器状态的 fp32 副本。下面以 Adam 作为具体例子。对一个有 Ψ 个参数的模型，用 Adam 做混合精度训练，需要足够的内存来保存参数和梯度各一份 fp16 副本，内存需求分别为 2Ψ 字节和 2Ψ 字节。除此之外还需要"
+      }
+    ],
+    "8": [
+      {
+        "text": "to hold the optimizer states: an f p32 copy of the parameters, momentum and variance, with memory requirements of 4Ψ, 4Ψ, and 4Ψ bytes, respectively. Let’s use K to denote the memory multiplier of the optimizer states, i.e., the additional memory required to store them is KΨ bytes. Mixed-precision Adam has K = 12. In total, this results in 2Ψ + 2Ψ + KΨ = 16Ψ bytes of memory requirement. For a model such as GPT-2 with 1.5 Billion parameters, this leads to a memory requirement of at least 24 GB, which is significantly higher than the meager 3 GB",
+        "x": 100.8,
+        "y": 621.5,
+        "w": 410.4,
+        "h": 69.7,
+        "zh": "存放优化器状态：参数、动量和方差各一份 fp32 副本，内存需求分别为 4Ψ、4Ψ 和 4Ψ 字节。我们用 K 表示优化器状态的内存倍数，也就是存放它们所需的额外内存为 KΨ 字节。混合精度 Adam 的 K = 12。加在一起，内存需求是 2Ψ + 2Ψ + KΨ = 16Ψ 字节。对 GPT-2 这样有 1.5B 个参数的模型，这就至少需要 24 GB 内存，远高于那区区 3 GB"
+      },
+      {
+        "text": "of memory required to hold the f p16 parameters alone.",
+        "x": 100.8,
+        "y": 609.5,
+        "w": 241.7,
+        "h": 10,
+        "zh": "也就是单独存放 fp16 参数所需的那部分内存。"
+      },
+      {
+        "text": "Activations can take up a significant amount of memory [7] during training. As a concrete example, the 1.5B parameter GPT-2 model trained with sequence length of 1K and batch size of 32 requires about 60 GB of memory . Activation checkpointing (or activation recomputation) is a common approach to reduce the activation memory by approximately the square root of the total activations at the expense of 33% re-computation overhead [7]. This would reduce the activation memory consumption of this model to about 8 GB. Despite the significant reduction, the activation memory can grow quite large for bigger models even with activation checkpointing. For example, a GPT-like model with 100 billion parameters requires around 60 GB of memory for batch size 32, even when using activation",
+        "x": 100.8,
+        "y": 467.6,
+        "w": 410.4,
+        "h": 105.6,
+        "zh": "训练期间，激活可能占用相当多的内存 [7]。举一个具体的例子：序列长度为 1K、batch size 为 32 时，训练 1.5B 参数的 GPT-2 大约需要 60 GB 内存。激活检查点（也就是激活重计算）是降低激活内存的常用办法，代价是大约 33% 的重计算开销，可以把激活内存降到大约全部激活量的平方根 [7]。这样一来，该模型的激活内存可以降到大约 8 GB。尽管降幅已经很大，对更大的模型，即使做了激活检查点，激活内存仍可能变得相当大。例如一个有 1000 亿参数的类 GPT 模型，batch size 为 32 时大约还需要 60 GB 内存，即便使用了激活"
+      },
+      {
+        "text": "Temporary buffers used for storing intermediate results consumes non-trivial amount of memory for large models. Operations such as gradient all-reduce, or gradient norm computation tend to fuse all the gradients into a single flattened buffer before applying the operation in an effort to improve throughput. For example, the bandwidth of all-reduce across devices improves with large message sizes. While the gradient themselves are usually stored as fp16 tensors, the fused buffer can be an fp32 tensor depending on the operation. When the size of the model",
+        "x": 100.8,
+        "y": 383.9,
+        "w": 410.4,
+        "h": 69.7,
+        "zh": "用来存放中间结果的临时缓冲区，对大模型会消耗不容忽视的内存。梯度 all-reduce，或者梯度范数计算，这类操作往往会先把全部梯度融合成一个展平的缓冲区，再执行操作，以提高吞吐。例如，设备之间 all-reduce 的带宽会随着消息变大而提高。梯度本身通常存成 fp16 张量，但融合缓冲区根据具体操作可以是 fp32 张量。当模型的规模"
+      },
+      {
+        "text": "is large, these temporary buffer sizes are non-trivial.",
+        "x": 100.8,
+        "y": 371.9,
+        "w": 237.9,
+        "h": 10,
+        "zh": "很大时，这些临时缓冲区的大小就不可忽略。"
+      },
+      {
+        "text": "parameters, a flattened fp32 buffer would required 6 GB of memory.",
+        "x": 100.8,
+        "y": 360,
+        "w": 297,
+        "h": 10,
+        "zh": "个参数时，一个展平的 fp32 缓冲区需要 6 GB 内存。"
+      },
+      {
+        "text": "So far we have discussed the actual memory consumption Additionally, it is possible to run out of usable memory even when there is plenty of available memory. This can happen with memory fragmentation. A request for a memory will fail if there isn’t enough contiguous memory to satisfy it, even if the total available memory is larger than requested. We observe significant memory fragmentation when training very large models, resulting in out of memory issue with over 30% of memory still available in",
+        "x": 100.8,
+        "y": 288.3,
+        "w": 410.4,
+        "h": 69.7,
+        "zh": "到目前为止我们讨论的是实际消耗掉的内存。此外，即使还有不少可用内存，也可能把能用的内存耗尽。内存碎片就会造成这种情况。一次内存请求如果找不到足够的连续内存，就会失败，哪怕总的可用内存大于所请求的量。我们在训练非常大的模型时观察到明显的内存碎片，结果出现内存不足，而当时仍有超过 30% 的内存空闲，在"
+      },
+      {
+        "text": "ZeRO has two sets of optimizations: i) ZeRO-DP aimed at reducing the memory footprint of the model states, and ii) ZeRO-R targeted towards reducing the residual memory consumption. We present an overview of the optimizations and the insights behind, which allows ZeRO to reduce memory footprint while remaining efficient. Please note efficiency is a key here: without this constraint, trivial solutions like moving all the parameter states to the CPU memory, or increasing the MP degree arbitrarily can reduce memory footprint.",
+        "x": 100.8,
+        "y": 161.8,
+        "w": 410.4,
+        "h": 69.7,
+        "zh": "ZeRO 有两组优化：i）ZeRO-DP，目的是降低模型状态的内存占用；ii）ZeRO-R，针对的是降低剩余状态的内存消耗。我们概述这些优化以及背后的想法，它们使 ZeRO 能够在保持效率的同时降低内存占用。请注意，这里的关键是效率：若没有这个约束，把全部参数状态搬到 CPU 内存，或者任意提高 MP 度，这类平凡做法也能降低内存占用。"
+      },
+      {
+        "text": "The activation memory of a transformer-based model is proportional to the number of transformer layers × hidden dimensions × sequence length × batch size. For a GPT-2 like architecture the total activations is about",
+        "x": 100.8,
+        "y": 134.7,
+        "w": 410.4,
+        "h": 17.4,
+        "zh": "基于 Transformer 的模型，其激活内存正比于 Transformer 层数 × 隐藏维度 × 序列长度 × batch size。对类似 GPT-2 的结构，总激活大约是"
+      }
+    ],
+    "9": [
+      {
+        "text": "Insights and Overview: ZeRO-DP ZeRO powered DP is based on three key insights:",
+        "x": 100.8,
+        "y": 662.8,
+        "w": 231.9,
+        "h": 30.3,
+        "zh": "思路与概述：ZeRO-DP。由 ZeRO 驱动的 DP 基于三个关键观察："
+      },
+      {
+        "text": "a) DP has better scaling efficiency than MP because MP reduces the granularity of the computation while also increasing the communication overhead. Beyond a certain point, lower computational granularity reduces the efficiency per GPU, while the increased communication overhead, hiders the scalability across GPUs, especially when crossing node boundaries. On the contrary, DP has both higher computational granularity and lower communication volume,",
+        "x": 100.8,
+        "y": 603.1,
+        "w": 410.4,
+        "h": 57.8,
+        "zh": "a）DP 的扩展效率优于 MP，因为 MP 降低了计算粒度，同时还增加了通信开销。超过某一个点之后，更低的计算粒度会降低每块 GPU 的效率，而增加的通信开销会妨碍跨 GPU 的可扩展性，尤其是在跨过节点边界的时候。相反，DP 既有更高的计算粒度，也有更低的通信量，"
+      },
+      {
+        "text": "b) DP is memory inefficient as model states are stored redundantly across all data-parallel processes. On the contrary, MP partitions the model states to obtain memory efficiency. c) Both DP and MP keep all the model states needed over the entire training process, but not everything is required all the time. For example, parameters corresponding to each layer is only needed during the forward propagation and backward propagation of the layer. Based on these insights, ZeRO-DP retains the training efficiency of DP while achieving the memory efficiency of MP. ZeRO-DP partitions the model states instead of replicating them (Section 5) and uses a dynamic communication schedule that exploits the intrinsically temporal nature of the model states while minimizing the communication volume (Section 7). By doing so, ZeRO-DP reduces per-device memory footprint of a model linearly with the increased DP degree while maintaining the communication volume close to that of the default DP, retaining",
+        "x": 100.8,
+        "y": 459.6,
+        "w": 410.4,
+        "h": 129.5,
+        "zh": "b）DP 的内存效率低，因为模型状态在所有数据并行进程上冗余存放。相反，MP 通过划分模型状态来获得内存效率。c）DP 和 MP 都在整个训练过程中保留所需的全部模型状态，但并不是任何时刻都需要全部状态。例如，某一层对应的参数只在该层做前向传播和反向传播时才需要。基于这些观察，ZeRO-DP 保留 DP 的训练效率，同时达到 MP 的内存效率。ZeRO-DP 划分模型状态，而不是复制它们（第 5 节），并采用一种动态通信调度，利用模型状态内在的时序特性，同时把通信量降到最低（第 7 节）。这样做，ZeRO-DP 使一个模型的每设备内存占用随 DP 度的增加而线性下降，同时使通信量接近默认的 DP，并保持"
+      },
+      {
+        "text": "Insights and Overview: ZeRO-R Reducing Activation Memory Two key insights are:",
+        "x": 100.8,
+        "y": 383,
+        "w": 222.4,
+        "h": 48.7,
+        "zh": "思路与概述：ZeRO-R。降低激活内存。两个关键观察是："
+      },
+      {
+        "text": "a) MP partitions the model states but often requires replication of the activation memory. For example, if we split the parameters of a linear layer vertically and compute them in parallel across two GPUs, each GPU requires the entire activation to compute its partition b) For models such as GPT-2 or larger, the arithmetic intensity (ratio of the amount of computation per iteration to amount of activation checkpoints per iteration) is very large (≥ 10K) and increases linearly with hidden dimension making it possible to hide the data-movement cost for the activation checkpoints, even when the bandwidth is low. ZeRO removes the memory redundancies in MP by partitioning the activations checkpoints across GPUs, and uses allgather to reconstruct them on demand. The activation memory footprint is reduced proportional to the MP degree. For very large models, ZeRO can even choose to move the activation partitions to the CPU memory, while still achieving good efficiency due",
+        "x": 100.8,
+        "y": 251.5,
+        "w": 410.4,
+        "h": 129.5,
+        "zh": "a）MP 划分了模型状态，但往往还要复制激活内存。例如，如果把一个线性层的参数纵向切开，并在两块 GPU 上并行计算，每块 GPU 都需要完整的激活，才能算出自己的那一份。b）对 GPT-2 或更大的模型，算术强度（每次迭代的计算量，与每次迭代激活检查点的数据量之比）非常大（≥ 10K），并且随隐藏维度线性增长，因此即使带宽很低，也可以把搬运激活检查点的开销掩盖掉。ZeRO 把激活检查点划分到各块 GPU 上，从而去掉 MP 里的内存冗余，并在需要时用 allgather 把它们重建出来。激活的内存占用按 MP 度成比例下降。对非常大的模型，ZeRO 甚至可以选择把这些激活划分搬到 CPU 内存，同时仍然能够保持不错的效率，这是由于"
+      },
+      {
+        "text": "to large arithmetic intensity in these models.",
+        "x": 100.8,
+        "y": 239.5,
+        "w": 195.6,
+        "h": 10,
+        "zh": "这些模型的算术强度很大。"
+      },
+      {
+        "text": "ZeRO-R uses constant size buffers to avoid temporary buffers from blowing up as the model size increases, while making them large enough to remain efficient.",
+        "x": 100.8,
+        "y": 183.3,
+        "w": 410.4,
+        "h": 21.9,
+        "zh": "ZeRO-R 使用大小恒定的缓冲区，避免临时缓冲区随着模型变大而膨胀，同时又让它们足够大，以便仍然保持效率。"
+      },
+      {
+        "text": "Memory fragmentation is a result of interleaving between short lived and long lived memory objects. During the forward propagation activation checkpoints are long lived but the activations that recomputed are short lived. Similarly, the backward computation, the activation gradients are short lived while the parameter gradients are long lived. Based on this insight,",
+        "x": 100.8,
+        "y": 103.1,
+        "w": 410.4,
+        "h": 45.8,
+        "zh": "内存碎片，是短生命周期内存对象和长生命周期内存对象交错造成的。前向传播期间，激活检查点是长生命周期的，而重新计算出来的激活是短生命周期的。类似地，在反向计算里，激活梯度是短生命周期的，参数梯度是长生命周期的。基于这一观察，"
+      }
+    ],
+    "10": [
+      {
+        "text": "ZeRO performs on-the-fly memory defragmentation by moving activation checkpoints and gradients to pre-allocated contiguous memory buffers. This not only increases memory availability but also improves efficiency by reducing the time it takes for the memory allocator to find free",
+        "x": 100.8,
+        "y": 657.3,
+        "w": 410.4,
+        "h": 33.9,
+        "zh": "ZeRO 把激活检查点和梯度搬进预先分配好的连续内存缓冲区，从而在运行过程中做内存去碎片。这不但提高了可用内存，也通过缩短内存分配器寻找空闲空间的时间来提高效率"
+      },
+      {
+        "text": "While the existing DP approach replicates the model states at each device and introduces significant memory overhead, ZeRO-DP eliminates this memory redundancy by partitioning them — optimizer states, gradients and parameters — across data parallel processes. Figure 1 quantifies and visualizes the memory requirement with and without ZeRO-DP. The figure shows the memory footprint after partitioning (1) optimizer state, (2) gradient and (3) parameter redundancies accumulatively. We refer to them as the three optimization phases of ZeRO-DP:",
+        "x": 100.8,
+        "y": 530.8,
+        "w": 410.4,
+        "h": 69.7,
+        "zh": "现有的 DP 做法在每台设备上复制模型状态，带来显著的内存开销；ZeRO-DP 则通过把它们划分到各个数据并行进程来消除这种内存冗余，被划分的是优化器状态、梯度和参数。图 1 量化并展示了有无 ZeRO-DP 时的内存需求。图中给出的是依次划分掉（1）优化器状态、（2）梯度和（3）参数这几类冗余之后的内存占用，而且是累加的。我们把它们称为 ZeRO-DP 的三个优化阶段："
+      },
+      {
+        "text": "Pos, Pg, and Pp, which we elaborate below.",
+        "x": 100.8,
+        "y": 517.4,
+        "w": 188.6,
+        "h": 11.5,
+        "zh": "即 Pos、Pg 和 Pp，下面分别说明。"
+      },
+      {
+        "text": "For a DP degree of Nd, we group the optimizer states into Nd equal partitions, such that the data parallel process only updates the optimizer states corresponding to the i Thus, each data parallel process only needs to store and update",
+        "x": 100.8,
+        "y": 448.7,
+        "w": 410.4,
+        "h": 33.9,
+        "zh": "对 DP 度 Nd，我们把优化器状态分成 Nd 个相等的划分，使该数据并行进程只更新与第 i 个相对应的优化器状态。因此，每个数据并行进程只需要存储并更新"
+      },
+      {
+        "text": "of the parameters. We perform an all-gather across the data parallel process at the end of each training step to get the fully updated parameters across all data",
+        "x": 100.8,
+        "y": 422.8,
+        "w": 410.4,
+        "h": 21.9,
+        "zh": "参数中的那一部分。每个训练步结束时，我们在各数据并行进程之间做一次 all-gather，以便在全部数据上得到已经完整更新的参数"
+      },
+      {
+        "text": "As shown in Figure 1, the memory consumption after optimizing state",
+        "x": 210.4,
+        "y": 398.9,
+        "w": 300.8,
+        "h": 10,
+        "zh": "如图 1 所示，做完状态优化之后的内存消耗"
+      },
+      {
+        "text": ". As the concrete example depicted in Figure 1, a 7.5 B parameter model requires 31.4GB of memory using Pos with 64-way DP (Nd = 64), while requiring 120 GB with standard DP. Furthermore, when Nd is large, the memory requirement on model states reduces from 4Ψ + 12Ψ = 16Ψ bytes to 4Ψ +",
+        "x": 100.8,
+        "y": 350.1,
+        "w": 410.4,
+        "h": 46.8,
+        "zh": "。就图 1 中的具体例子而言，一个 7.5B 参数模型在 64 路 DP（Nd = 64）下使用 Pos，需要 31.4 GB 内存，而标准 DP 需要 120 GB。此外，当 Nd 很大时，模型状态的内存需求从 4Ψ + 12Ψ = 16Ψ 字节降到 4Ψ +"
+      },
+      {
+        "text": "As each data parallel process only updates its corresponding parameter partition, it only needs the reduced gradients for the corresponding parameters. Therefore, as each gradient of each layer becomes available during the backward propagation, we only reduce them on the data parallel process responsible for updating the corresponding parameters. After the reduction we no longer need the gradients and their memory can be released. This reduces the memory",
+        "x": 100.8,
+        "y": 244,
+        "w": 410.4,
+        "h": 57.8,
+        "zh": "由于每个数据并行进程只更新自己对应的那一份参数，它只需要这些对应参数的已规约梯度。因此，在反向传播期间，每一层的每个梯度一旦就绪，我们就只在负责更新对应参数的那个数据并行进程上规约它们。规约完成之后，这些梯度就不再需要，它们占用的内存可以释放。这降低了内存"
+      },
+      {
+        "text": "footprint required to hold the gradients from 2Ψ bytes to",
+        "x": 100.8,
+        "y": 232.1,
+        "w": 249.9,
+        "h": 10,
+        "zh": "保存梯度所需的占用，从 2Ψ 字节降到"
+      },
+      {
+        "text": "Effectively this is a Reduce-Scatter operation, where gradients corresponding to different parameters are reduced to different process. To make this more efficient in practice, we use a bucketization strategy, where we bucketize all the gradients corresponding to a particular partition, and perform reduction on the entire bucket at once. This is similar in spirit to how NVIDIA’s AMP [25] optimizer bucketizes the all-reduce gradient computation to overlap communication and computation. In our case we perform a reduction instead of an all-reduce at the partition boundaries to reduce memory footprint and overlap computation and communication. Memory Savings: By removing both gradient and optimizer state redundancy, we reduce",
+        "x": 100.8,
+        "y": 136.4,
+        "w": 410.4,
+        "h": 93.6,
+        "zh": "这实际上是一次 Reduce-Scatter：不同参数对应的梯度被规约到不同的进程。为了在实践中更高效，我们采用分桶策略，把属于某一个划分的全部梯度放进同一个桶，一次对整个桶做规约。这在思路上类似于 NVIDIA 的 AMP [25] 优化器把 all-reduce 的梯度计算分桶，以便重叠通信与计算。在我们的做法里，是在划分的边界上做规约，而不是做 all-reduce，以便降低内存占用，并重叠计算与通信。内存节省：梯度和优化器状态两方面的冗余都去掉之后，我们把"
+      },
+      {
+        "text": "≈ 2Ψ. As the example in Figure 1, a 7.5 B parameter model requires only 16.6 GB of memory using Pos+g with 64-way DP (Nd = 64),",
+        "x": 100.8,
+        "y": 110,
+        "w": 410.4,
+        "h": 24.4,
+        "zh": "≈ 2Ψ。如图 1 中的例子，一个 7.5B 参数模型在 64 路 DP（Nd = 64）下使用 Pos+g，只需要 16.6 GB 内存，"
+      },
+      {
+        "text": "the memory footprint further down to 2Ψ +",
+        "x": 100.8,
+        "y": 124.5,
+        "w": 195.2,
+        "h": 10,
+        "zh": "内存占用再降到 2Ψ +"
+      }
+    ],
+    "11": [
+      {
+        "text": "Table 1: Per-device memory consumption of different optimizations in ZeRO-DP as a function of DP degree . Bold-faced text are the combinations for which the model can fit into a cluster",
+        "x": 100.8,
+        "y": 563.7,
+        "w": 410.4,
+        "h": 21.9,
+        "zh": "表 1：ZeRO-DP 里不同优化的每设备内存消耗，表示为 DP 度的函数。粗体是模型能够放进集群的那些组合"
+      },
+      {
+        "text": "while requiring 120 GB with standard DP. When Nd is large, the memory requirement of model",
+        "x": 100.8,
+        "y": 516.8,
+        "w": 410.4,
+        "h": 11.5,
+        "zh": "而标准 DP 需要 120 GB。当 Nd 很大时，模型的内存需求"
+      },
+      {
+        "text": "states reduces from 2Ψ + 14Ψ = 16Ψ bytes to 2Ψ +",
+        "x": 100.8,
+        "y": 506.3,
+        "w": 223,
+        "h": 10,
+        "zh": "状态从 2Ψ + 14Ψ = 16Ψ 字节降到 2Ψ +"
+      },
+      {
+        "text": "Just as with the optimizer states, and the gradients, each process only stores the parameters corresponding to its partition. When the parameters outside of its partition are required for forward and backward propagation, they are received from the appropriate data parallel process through broadcast. While this may seem to incur significant communication overhead at first glance, we show that this approach only increases the total communication volume of a baseline DP system to 1.5x, while enabling memory reduction proportional to Nd. Memory Savings: With parameter partitioning, we reduce the memory consumption of",
+        "x": 100.8,
+        "y": 376.3,
+        "w": 410.4,
+        "h": 81.7,
+        "zh": "和优化器状态、梯度一样，每个进程只存储自己那一份划分所对应的参数。前向和反向传播需要本划分之外的参数时，就通过 broadcast，从负责那一份的数据并行进程接收过来。乍看这似乎会带来很大的通信开销，但我们表明，相对基线 DP，这种方法只把总通信量增加到 1.5 倍，同时使内存的下降与 Nd 成比例。内存节省：做了参数划分之后，我们降低的内存消耗是"
+      },
+      {
+        "text": "As the example in Figure 1, a 7.5 B parameter model requires 1.9 GB of model-state memory using Pos+p+g with 64-way DP (Nd = 64), while requiring 120 GB with standard DP. This has a profound implication: ZeRO powers DP to fit models with arbitrary size as long as there are sufficient number of devices to share the model",
+        "x": 100.8,
+        "y": 327.5,
+        "w": 410.4,
+        "h": 46.8,
+        "zh": "如图 1 中的例子，一个 7.5B 参数模型在 64 路 DP（Nd = 64）下使用 Pos+p+g，模型状态内存只需要 1.9 GB，而标准 DP 需要 120 GB。这一点意味深长：只要有足够数量的设备来分担模型，ZeRO 就能让 DP 装下任意规模的模型。"
+      },
+      {
+        "text": "The three phases of partitioning Pos, Pos+g, and Pos+g+p reduces the memory consumption of each data parallel process on model states by up to 4x, 8x, and Nd respectively. 1 analyzes model-state memory consumption of a few example models under the 3 stages of ZeRO-DP optimizations for varying DP degree. Without ZeRO, the memory consumption is equal to the first row in the table, regardless of the DP degree. Note that, with Nd = 64, ZeRO can train models with up to 7.5B, 14B, and 128B parameters using Pos, Pos+g, and Pos+g+p, respectively. When Nd = 1024, ZeRO with all of its optimizations enabled (Pos+g+p) could train models with 1 Trillion parameters! Or potentially, models with Arbitrary size! Without ZeRO, the largest model DP alone can run has less than 1.5 Billion parameters.",
+        "x": 100.8,
+        "y": 173.6,
+        "w": 410.4,
+        "h": 105.6,
+        "zh": "Pos、Pos+g 和 Pos+g+p 这三个划分阶段，把每个数据并行进程在模型状态上的内存消耗最多分别降为原来的 1/4、1/8 和 1/Nd。表 1 分析了若干示例模型在 ZeRO-DP 三个优化阶段、不同 DP 度下的模型状态内存消耗。没有 ZeRO 时，无论 DP 度是多少，内存消耗都等于表里的第一行。请注意，Nd = 64 时，ZeRO 用 Pos、Pos+g 和 Pos+g+p，分别可以训练最多 7.5B、14B 和 128B 参数的模型。Nd = 1024 时，ZeRO 打开全部优化（Pos+g+p），可以训练 1 万亿参数的模型！或者，潜在而言，任意规模的模型！没有 ZeRO 时，单靠 DP 能跑起来的最大模型不到 1.5B 个参数。"
+      }
+    ],
+    "12": [
+      {
+        "text": "Pa: Partitioned Activation Checkpointing",
+        "x": 131.4,
+        "y": 655.6,
+        "w": 243.5,
+        "h": 13.7,
+        "zh": "Pa：划分后的激活检查点（Partitioned Activation Checkpointing）"
+      },
+      {
+        "text": "As discussed in 4.2, MP by design requires a replication of the activations, resulting in redundant copies of the activations across model parallel GPUs. ZeRO eliminates this redundancy by partitioning the activations, and only materializes them in a replicated form one activation layer at a time, right before the activation is used in computation. More specifically, once the forward propagation for a layer of a model is computed, the input activations are partitioned across all the model parallel process, until it is needed again during the backprogation. At this point, ZeRO uses an all-gather operation to re-materialize a replicated copy of the activations. We refer to this optimization as Pa. It works in conjunction with activation checkpointing [7], storing partitioned activation checkpoints only instead of replicated copies. Furthermore, in the case of very large models and very limited device memory, these partitioned activation checkpoints can also be offloaded to the CPU reducing the activation memory overhead to nearly zero at an additional communication cost, which we will discuss in 7. We refer to this",
+        "x": 100.8,
+        "y": 507.5,
+        "w": 410.4,
+        "h": 141.5,
+        "zh": "如 4.2 节所述，MP 在设计上就要求复制激活，于是模型并行的各块 GPU 上会留下冗余的激活副本。ZeRO 通过划分激活来去掉这种冗余，并且一次只把一个激活层物化成复制的形式，就在这个激活要被计算使用之前。更具体地说，模型某一层的前向传播算完之后，输入激活被划分到所有模型并行进程上，直到反向传播再次需要它。到这个时候，ZeRO 用一次 all-gather，重新物化出一份复制的激活。我们把这项优化称为 Pa。它与激活检查点 [7] 配合使用，只保存划分后的激活检查点，而不是复制出来的副本。此外，在模型非常大、设备内存又非常有限时，这些划分后的激活检查点也可以卸载到 CPU，把激活内存开销降到接近于零，代价是额外的通信开销，我们将在第 7 节讨论。我们把这称为"
+      },
+      {
+        "text": "Memory Saving With partitioned activation checkpointing, ZeRO reduces the activation footprint by a factor proportional to the MP degree. Consider training a 100B model shown in Table 4 with a batch size of 32, sequence length of 1024 and a MP degree of 16. If we checkpoint a single activation for each transformer layer, it would require about 33 GB of memory per GPU just to store the activation checkpoints. But with Pa in ZeRO, it can be reduced to about 2 GB per GPU. Furthermore, this 2GB can be offloaded to the CPU reducing the memory footprint",
+        "x": 100.8,
+        "y": 423.8,
+        "w": 410.4,
+        "h": 69.7,
+        "zh": "内存节省。有了划分后的激活检查点，ZeRO 降低激活占用的倍数与 MP 度成比例。考虑训练表 4 里的 100B 模型，batch size 为 32，序列长度为 1024，MP 度为 16。如果每个 Transformer 层只对一个激活做检查点，仅仅存放这些激活检查点，每块 GPU 就大约需要 33 GB 内存。但用上 ZeRO 中的 Pa 之后，可以降到每块 GPU 大约 2 GB。而且这 2 GB 还可以卸载到 CPU，从而降低内存占用"
+      },
+      {
+        "text": "ZeRO carefully selects the sizes of the temporal-data buffers to balance memory and compute",
+        "x": 100.8,
+        "y": 365.6,
+        "w": 410.4,
+        "h": 10,
+        "zh": "ZeRO 仔细选择临时数据缓冲区的大小，以便在内存和计算之间取得平衡"
+      },
+      {
+        "text": "During training, the computational efficiency of some operations can be highly dependent on the input size, with larger inputs achieving higher efficiency. For example, a large all-reduce operation achieves much higher bandwidth than a smaller one. get better efficiency, high performance libraries such as NVIDIA Apex or Megatron fuses all the parameters into a single buffer before applying these operations. However, the memory overhead of the fused buffers is proportional to the model size, and can become inhibiting. For example, for a 3B parameter model, a 32-bit fused buffer will require 12 GB of memory. To address this issue, we simply use a performance-efficient constant-size fused buffer when the model becomes too large. By doing so, the buffer size does not depend on the model size, and by keeping the buffer size large enough, we can still achieve good efficiency.",
+        "x": 100.8,
+        "y": 246.1,
+        "w": 410.4,
+        "h": 117.6,
+        "zh": "训练期间，有些操作的计算效率高度依赖输入大小，输入越大，效率越高。例如，一次大的 all-reduce 能达到比一次小的高得多的带宽。要想效率更好，NVIDIA Apex 或 Megatron 这类高性能库会在执行这些操作之前，把全部参数融合进一个缓冲区。然而，融合缓冲区的内存开销与模型规模成正比，可能变得难以承受。例如对一个 3B 参数的模型，32 位的融合缓冲区需要 12 GB 内存。为解决这个问题，当模型变得太大时，我们改用大小固定、但性能上仍然高效的融合缓冲区。这样，缓冲区大小就不再取决于模型规模；只要把缓冲区保持得足够大，我们仍然可以获得不错的效率。"
+      },
+      {
+        "text": "Memory fragmentation in model training occurs as a result of activation checkpointing and",
+        "x": 100.8,
+        "y": 199.8,
+        "w": 410.4,
+        "h": 10,
+        "zh": "模型训练中的内存碎片，来自激活检查点，以及"
+      },
+      {
+        "text": "During the forward propagation with activation checkpointing, only selected activations are stored for back propagation while most activations are discarded as they can be recomputed again during the back propagation. This creates an interleaving of short lived memory (discarded activations) and long lived memory (checkpointed activation), leading to memory fragmentation. Similarly, during the backward propagation, the parameter gradients are long lived, while activation gradients and any other buffers required to compute the parameter gradients are short lived. Once again, this interleaving of short term and long",
+        "x": 100.8,
+        "y": 116.1,
+        "w": 410.4,
+        "h": 81.7,
+        "zh": "在带激活检查点的前向传播期间，只有被选中的激活会存下来供反向传播使用，大多数激活被丢掉，因为它们可以在反向传播时重新计算。这就使短生命周期的内存（被丢掉的激活）和长生命周期的内存（做了检查点的激活）交错出现，从而导致内存碎片。类似地，在反向传播期间，参数梯度是长生命周期的，而激活梯度以及计算参数梯度所需的其他缓冲区是短生命周期的。短的和长的再一次交错"
+      },
+      {
+        "text": "term memory causes memory fragmentation.",
+        "x": 100.8,
+        "y": 104.1,
+        "w": 195,
+        "h": 10,
+        "zh": "期的内存会造成内存碎片。"
+      }
+    ],
+    "13": [
+      {
+        "text": "Table 2: Maximum model size through memory analysis (left) and the measured model size when running with ZeRO-OS (right). The measured model size with Pos matches the theoretical maximum, demonstrating that our memory analysis provides realistic upper bounds on model",
+        "x": 100.8,
+        "y": 562.1,
+        "w": 410.4,
+        "h": 33.9,
+        "zh": "表 2：由内存分析得到的最大模型规模（左），以及用 ZeRO-OS 实际运行时测得的模型规模（右）。用 Pos 测得的模型规模与理论上限吻合，说明我们的内存分析为模型给出了切合实际的上限"
+      },
+      {
+        "text": "Limited memory fragmentation is generally not an issue, when there is plenty of memory to spare, but for large model training running with limited memory, memory fragmentation leads to two issues, i) OOM due to lack of contiguous memory even when there is enough available memory, ii) poor efficiency as a result of the memory allocator spending significant time to search for a contiguous piece of memory to satisfy a memory request. ZeRO does memory defragmentation on-the-fly by pre-allocating contiguous memory chunks for activation checkpoints and gradients, and copying them over to the pre-allocated memory as they are produced. MD not only enables ZeRO to train larger models with larger batch sizes, but also improves efficiency when training with limited memory.",
+        "x": 100.8,
+        "y": 421,
+        "w": 410.4,
+        "h": 105.6,
+        "zh": "有限的内存碎片通常不成问题，只要还有充足的内存可以余出来；但在内存很紧的大模型训练里，内存碎片会带来两个问题：i）即使可用内存够用，也会因为缺少连续内存而 OOM；ii）内存分配器要花大量时间去找一块连续内存来满足请求，效率因此变差。ZeRO 在运行中做内存去碎片：为激活检查点和梯度预先分配连续的内存块，并在它们产生时拷贝过去。MD 不仅让 ZeRO 能以更大的 batch size 训练更大的模型，也能在内存有限时提高效率。"
+      },
+      {
+        "text": "As ZeRO boosts model size by removing memory redundancy, it is only natural to ask if we are trading communication volume for memory efficiency. In other words, what is the communication volume of ZeRO-powered DP approach compared to a baseline DP approach? The answer is in two parts: i) ZeRO-DP incurs no additional communication using Pos and Pg, while enabling up to 8x memory reduction, ii) ZeRO-DP incurs a maximum of 1.5x communication when using Pp in addition to Pos and Pg, while further reducing the memory footprint by Nd times. We present the analysis in this section. We begin by first presenting a brief overview of",
+        "x": 100.8,
+        "y": 294.5,
+        "w": 410.4,
+        "h": 81.7,
+        "zh": "既然 ZeRO 靠去掉内存冗余来提高可训练的模型规模，自然要问我们是不是在用通信量交换内存效率。换句话说，由 ZeRO 驱动的 DP 相对基线 DP，通信量是多少？答案分两部分：i）使用 Pos 和 Pg 时，ZeRO-DP 不增加额外通信，同时最多把内存降为原来的 1/8；ii）在 Pos 和 Pg 之外再使用 Pp 时，ZeRO-DP 的通信最多增加到 1.5 倍，同时把内存占用再降为原来的 1/Nd。本节给出这一分析。我们先简要概述"
+      },
+      {
+        "text": "the communication volume for standard DP.",
+        "x": 100.8,
+        "y": 282.6,
+        "w": 194.1,
+        "h": 10,
+        "zh": "标准 DP 的通信量。"
+      },
+      {
+        "text": "During data parallel training, gradients across all data parallel processes are averaged at the end of the backward propagation before computing the updates for the next step. The averaging is performed using an all-reduce communication collective. For a large model size, the allreduce communication is entirely communication bandwidth bound, and therefore, we limit our analysis to the total communication volume send to and from each data parallel process. State-of-art implementation of all-reduce uses a two-step approach, where the first step is a reduce-scatter operation, which reduces different part of the data on different process. The next step is an all-gather operation where each process gathers the reduced data on all the process. The result of these two steps is an all-reduce. Both reduce-scatter and all-gather are implemented using a pipelined approach, that results in a total data movement of Ψ elements (for a data with Ψ elements) for each. Therefore, the standard DP incurs 2Ψ data movement",
+        "x": 100.8,
+        "y": 116.7,
+        "w": 410.4,
+        "h": 129.5,
+        "zh": "数据并行训练期间，在计算下一步的更新之前，所有数据并行进程上的梯度要在反向传播结束时取平均。平均通过 all-reduce 这一通信集合操作完成。模型很大时，all-reduce 完全受通信带宽限制，因此我们只分析每个数据并行进程发出和收到的总通信量。当前最好的 all-reduce 实现分两步：第一步是 reduce-scatter，把数据的不同部分规约到不同进程；下一步是 all-gather，每个进程收集所有进程上已经规约好的数据。这两步的结果就是一次 all-reduce。reduce-scatter 和 all-gather 都用流水线方式实现，对含有 Ψ 个元素的数据，每一步的数据搬运量都是 Ψ 个元素。因此标准 DP 的数据搬运量是 2Ψ"
+      }
+    ],
+    "14": [
+      {
+        "text": "ZeRO-DP Communication Volume Communication Volume with Pos+g",
+        "x": 131.4,
+        "y": 661.4,
+        "w": 206.2,
+        "h": 31.8,
+        "zh": "ZeRO-DP 的通信量。Pos+g 下的通信量"
+      },
+      {
+        "text": "With gradient partitioning, each process only stores the portion of the gradients, that is required to update its corresponding parameter partition. As such, instead of an all-reduce, ZeRO only requires a scatter-reduce operation on the gradients, incurring communication volume of Ψ. After each process updates the partition of the parameters that it is responsible for, an allgather is performed to collect all the updated parameters from all the data parallel process. This also incurs a communication volume of Ψ. So the total communication volume per training",
+        "x": 100.8,
+        "y": 584.7,
+        "w": 410.4,
+        "h": 69.7,
+        "zh": "有了梯度划分，每个进程只存储更新自己那一份参数所需要的梯度。因此 ZeRO 不需要做 all-reduce，只需要对梯度做一次 scatter-reduce，通信量是 Ψ。每个进程把自己负责的那一份参数更新完之后，再做一次 all-gather，从所有数据并行进程收集全部已经更新的参数。这一步的通信量也是 Ψ。所以每一次训练"
+      },
+      {
+        "text": "step is Ψ + Ψ = 2Ψ, exactly the same as the baseline DP.",
+        "x": 100.8,
+        "y": 572.7,
+        "w": 250.7,
+        "h": 10,
+        "zh": "步的通信量是 Ψ + Ψ = 2Ψ，与基线 DP 完全一样。"
+      },
+      {
+        "text": "After parameter partitioning, each data parallel process only stores the parameters that it updates. Therefore, during the forward propagation it needs to receives the parameters for all the other partitions. However, this can be pipelined to avoid the memory overhead. Before computing the forward propagation on the part of the model corresponding to a particular partition, the data parallel process responsible for that partition can broadcast the weights to all the data parallel processes. Once the forward propagation for that partition is done, the parameters can be discarded. The total communication volume is thus other words, we reschedule the parameter all-gather by spreading it across the entire forward propagation, and discarding the parameters once they have been used. Note however that this all-gather needs to happen once again for the backward propagation in the reverse order. The total communication volume is therefore the sum of the communication volumes incurred by these all-gathers in addition to the communication volume incurred by the reduce-",
+        "x": 100.8,
+        "y": 396.9,
+        "w": 410.4,
+        "h": 141.5,
+        "zh": "做了参数划分之后，每个数据并行进程只存储自己会去更新的参数。因此前向传播时，它需要收到所有其他划分的参数。不过这一步可以排成流水，以避免内存开销。在计算模型中属于某个划分的那一部分的前向传播之前，负责该划分的数据并行进程可以把权重 broadcast 给所有数据并行进程。该划分的前向传播一旦结束，参数就可以丢掉。因此总的通信量是……换句话说，我们把参数的 all-gather 重新安排，把它摊开到整个前向传播里，并在参数用过之后丢掉。不过要注意，反向传播还要按相反的顺序再做一次这样的 all-gather。因此总通信量等于这些 all-gather 的通信量之和，再加上 reduce-scatter 带来的通信量"
+      },
+      {
+        "text": "The total volume is therefore 3Ψ which is 1.5x compared to the baseline. Both gradient and parameter partitioning leverage the insight that — not all states of gradients and parameters are needed all the time — to optimize memory by communicating",
+        "x": 100.8,
+        "y": 361.1,
+        "w": 410.4,
+        "h": 33.9,
+        "zh": "因此总量是 3Ψ，相对基线是 1.5 倍。梯度划分和参数划分都利用了同一个观察：梯度和参数的全部状态并不是每时每刻都需要，于是可以借助通信来优化内存"
+      },
+      {
+        "text": "We compare the communication volume of partitioned activation checkpointing (Pa) in ZeRO-R with baseline MP, and show that Pa incurs a communication volume increase that is in general less than one tenth of the baseline MP. Furthermore, we analyze the communication overhead of Pa in relation to DP communication volume to identify scenarios when Pa improves efficiency by allowing for a larger batch size and reducing DP communication. We leverage such analysis",
+        "x": 100.8,
+        "y": 246.5,
+        "w": 410.4,
+        "h": 57.8,
+        "zh": "我们比较 ZeRO-R 中划分激活检查点（Pa）与基线 MP 的通信量，并说明 Pa 增加的通信量一般不到基线 MP 的十分之一。此外，我们对照 DP 的通信量来分析 Pa 的通信开销，以识别这样的情形：Pa 通过允许更大的 batch size、并减少 DP 通信来提高效率。我们利用这样的分析"
+      },
+      {
+        "text": "to decide if and when to apply Pa as well as Pa+cpu.",
+        "x": 100.8,
+        "y": 233.1,
+        "w": 228.4,
+        "h": 11.5,
+        "zh": "来决定是否使用 Pa、何时使用，也包括 Pa+cpu。"
+      },
+      {
+        "text": "Communication volume trade-off of partitioning activation checkpoints depends on the model size, checkpointing strategy and the MP strategy. To share concrete insights, we perform the analysis in the context of transformer based models implemented using SOTA MP",
+        "x": 100.8,
+        "y": 198.7,
+        "w": 410.4,
+        "h": 33.9,
+        "zh": "划分激活检查点的通信量取舍，取决于模型规模、检查点策略和 MP 策略。为了分享具体的认识，我们在基于 Transformer、并用 SOTA 的 MP 实现的模型这一背景下做分析"
+      },
+      {
+        "text": "In Megatron-LM with activation checkpointing, each transformer block performs two allreduce operations of size batch × seq length × hidden dim in the forward propagation, two all-reduce for forward re-computation and two more in the backward propagation. The total communication per block is 12 × seq length × hidden dim since communication volume of an",
+        "x": 100.8,
+        "y": 138.9,
+        "w": 410.4,
+        "h": 45.8,
+        "zh": "在带激活检查点的 Megatron-LM 里，每个 Transformer block 在前向传播中做两次 all-reduce，大小为 batch × 序列长度 × 隐藏维度；前向重计算做两次 all-reduce，反向传播再做两次。每个 block 的总通信量是 12 × 序列长度 × 隐藏维度，因为其中一次通信的通信量是"
+      },
+      {
+        "text": "When ZeRO-R partitions activation checkpoints, it requires an additional all-gather operation before the forward recomputation of the back-propagation on each activation checkpoint. In",
+        "x": 100.8,
+        "y": 103.1,
+        "w": 410.4,
+        "h": 21.9,
+        "zh": "当 ZeRO-R 划分激活检查点时，在反向传播对每个激活检查点做前向重计算之前，还需要一次 all-gather。在"
+      }
+    ],
+    "15": [
+      {
+        "text": "general, we checkpoint the input activation for each transformer block, requiring one all-gather per transformer block. The communication overhead Pa is therefore seq length ∗ hidden dim, since the communication volume of an all-gather is message size. Therefore, the total communication overhead of Pa is less than 10% of the original communication volume for model",
+        "x": 100.8,
+        "y": 643.9,
+        "w": 410.4,
+        "h": 47.3,
+        "zh": "一般情况下，我们为每个 Transformer block 的输入激活做检查点，因此每个 Transformer block 需要一次 all-gather。Pa 的通信开销于是是序列长度 ∗ 隐藏维度，因为一次 all-gather 的通信量就是消息大小。因此，Pa 的总通信开销不到模型原通信量的 10%，就模型而言"
+      },
+      {
+        "text": "When MP is used in conjunction with DP, Pa can be used to reduce the data-parallel communication volume by an order of magnitude at the expense of a 10% increase in model-parallel communication volume, and significantly boost efficiency when data-parallel communication is a performance bottleneck. Notice that Pa reduces the activation memory consumption by the MP degree allowing for a proportional increase in batch size. For large models, MP can be as large as 16 (#GPUs on a DGX-2 node), allowing for up to 16x increase in the batch size. The communication volume of a data-parallel training is inversely proportional to the batch size. Therefore, an order of magnitude increase in batch size due to Pa could result in an order-of-magnitude decrease in data-parallel communication volume. Finally if Pa+cpu is applied, partitioned activation checkpoints are offloaded to CPU, reducing the activation memory requirement to nearly zero at the expense of 2x added data movement to and from CPU memory compared to Pa. In extreme cases where DP communication volume is the major bottleneck due to a small batch size even with Pa, Pa+cpu can improve efficiency by increasing the batch size as long as the CPU data transfer overhead is less than the DP communication volume overhead, which is generally true for small batch sizes. Given model and hardware characteristics, we leverage the above analysis to decide if and",
+        "x": 100.8,
+        "y": 442.1,
+        "w": 410.4,
+        "h": 189.3,
+        "zh": "当 MP 与 DP 一起使用时，可以用 Pa 把数据并行的通信量降低一个数量级，代价是模型并行的通信量增加 10%；当数据并行通信成为性能瓶颈时，效率会显著提高。注意，Pa 按 MP 度降低激活内存消耗，因此 batch size 可以成比例增大。对大模型，MP 可以大到 16（一个 DGX-2 节点上的 GPU 数量），batch size 最多增加 16 倍。数据并行训练的通信量与 batch size 成反比。因此，Pa 带来的一个数量级的 batch size 增长，可能导致数据并行通信量下降一个数量级。最后，如果使用 Pa+cpu，划分后的激活检查点被卸载到 CPU，激活内存需求降到接近于零，代价是相对 Pa，往返 CPU 内存的数据搬运变为 2 倍。在极端情况下，即使已经用了 Pa，batch size 仍然很小，使 DP 通信量成为主要瓶颈；这时只要 CPU 数据传输的开销小于 DP 通信量的开销，Pa+cpu 就能靠增大 batch size 来提高效率，而对小的 batch size 这通常成立。给定模型和硬件的特性，我们用上面的分析来决定是否以及"
+      },
+      {
+        "text": "The largest published models today are in the range of 10 billion parameters, which are already challenging to train. Getting to a trillion parameters, 3-orders of magnitude larger, will inevitably happen, but the road will be full of hurdles, surprises and innovations. While we do not claim knowing or addressing all of them, ZeRO addresses one of the most fundamental challenges from a system perspective: the ability to fit a model of this scale on current hardware while allowing it to train with good system scalability. A Leap from State-of-Art The largest model that the state-of-art framework, Megatron, can train with acceptable throughput is a 16 - 20B parameter model in a DGX-2 system. Scaling further by having model parallelism across multiple DGX nodes results in significant efficiency drop due to limited internode bandwidth. ZeRO vastly increase the efficiently-runnable model size. It enables the current generation of hardware to run significantly larger models without requiring fine-grained model parallelism to go across the node boundaries. As demonstrated in Table 1, ZeRO, with all optimizations turned on (Pos+g+p), could fit more than 1 Trillion parameters on 1024 GPUs using DP only. Alternatively, when combined with model parallelism (as shown in Table 2), ZeRO could fit more than 1 Trillion parameters on 1024 GPUs with 16-way model parallelism (within each DGX2 node) and 64-way data parallelism across nodes. Running a model with a trillion parameters efficiently is no longer impossible! Compute Power Gap Training a trillion parameter model end-to-end within an acceptable time range, however, could still require significant amount of compute power, which is lacking",
+        "x": 100.8,
+        "y": 148.6,
+        "w": 410.4,
+        "h": 237.1,
+        "zh": "今天已经发表的最大模型大约在 100 亿参数这一档，训练起来已经很有挑战。再走到万亿参数，也就是再大 3 个数量级，这迟早会发生，但路上会充满障碍、意外和创新。我们并不声称知道或解决了所有问题，但 ZeRO 从系统角度处理了最根本的挑战之一：能够把这种规模的模型装进当前硬件，并让它以良好的系统可扩展性进行训练。相对当前最优的一跃。当前最优的框架 Megatron，在吞吐尚可接受时能训练的最大模型，是 DGX-2 系统上一个 16–20B 参数的模型。若再靠模型并行跨多个 DGX 节点来扩大规模，会因为节点间带宽有限而使效率明显下降。ZeRO 大幅提高了可以高效运行的模型规模。它让当前这一代硬件能够运行明显更大的模型，而不必让细粒度的模型并行跨过节点边界。如表 1 所示，ZeRO 打开全部优化（Pos+g+p）后，可以只用 DP，在 1024 块 GPU 上装下超过 1 万亿个参数。另一种做法是与模型并行结合（如表 2），ZeRO 可以在 1024 块 GPU 上装下超过 1 万亿个参数：每个 DGX2 节点内 16 路模型并行，节点之间 64 路数据并行。高效运行一个万亿参数的模型，已经做得到。算力差距。然而，要在一段可接受的时间内把万亿参数模型端到端训练完，仍可能需要相当多的算力，而这样的算力目前是欠缺的"
+      },
+      {
+        "text": "To understand the resource requirement, we present a brief comparison with Bert-Large. Bert-Large can be trained in 67 minutes on a 1024 GPU DGX-2H cluster [26]. A 1 Trillion Parameter model can easily contain 3000x (1 trillion / 330 million) more computation than",
+        "x": 100.8,
+        "y": 100.8,
+        "w": 410.4,
+        "h": 33.9,
+        "zh": "为理解资源需求，我们与 Bert-Large 做一次简短比较。Bert-Large 可以在 1024 块 GPU 的 DGX-2H 集群上，用 67 分钟训练完 [26]。一个 1 万亿参数的模型，很容易包含 3000 倍（1 万亿 / 3.3 亿）的计算量，比"
+      }
+    ],
+    "16": [
+      {
+        "text": "a Bert-Large model for a data sample. Even if we assume the same sequence length and the total number of samples required to train the model, training a 1T model would take 140 days, assuming the same hardware and similar computational efficiency. data samples and sequence length are likely to increase with the increased model size requiring over a year to train. It would require an exa-flop system to train a 1T parameter model in a reasonable time. But when such compute capacity becomes available, we hope ZeRO will",
+        "x": 100.8,
+        "y": 296.7,
+        "w": 410.4,
+        "h": 69.7,
+        "zh": "一个数据样本上的 Bert-Large 模型。即使假设序列长度相同，训练模型所需的样本总数也相同，在同样的硬件和相近的计算效率下，训练一个 1T 模型也要 140 天。数据样本和序列长度很可能随着模型变大而增加，于是需要一年以上才能训练完。要在合理的时间内训练一个 1T 参数模型，需要一套 exa-flop 级的系统。但当这样的算力可用时，我们希望 ZeRO 将"
+      },
+      {
+        "text": "provide the system technology to run the 1T models efficiently.",
+        "x": 100.8,
+        "y": 284.8,
+        "w": 275.6,
+        "h": 10,
+        "zh": "提供高效运行 1T 模型的系统技术。"
+      },
+      {
+        "text": "We focus our implementation on supporting efficient training of models with ∼100B parameters, which are an order-of-magnitude larger than the largest published models today (e.g., T5- 11B [4]) while trainable within a reasonable time frame on current hardware (e.g., with 1K V100 GPUs). We implement and evaluate a subset of optimizations in ZeRO— Pos+g in ZeRO-DP plus ZeRO-R — that allows us to achieve this goal. We will refer to this implementation as ZeRO-100B. Our results show that ZeRO-100B can efficiently train models with up to 170B parameters, 8x bigger than SOTA, up to 10x faster and with improved usability. ZeRO-100B powers Turing-NLG, the largest published model in the world with new SOTA accuracy.",
+        "x": 100.8,
+        "y": 146.3,
+        "w": 410.4,
+        "h": 93.6,
+        "zh": "我们把实现重点放在高效支持约 100B 参数的模型上。它们比今天已发表的最大模型（例如 T5-11B [4]）大约大一个数量级，同时在当前硬件上（例如 1K 块 V100 GPU）仍能在合理时间内训练。我们实现并评估 ZeRO 中的一部分优化，即 ZeRO-DP 的 Pos+g 加上 ZeRO-R，从而达成这一目标。我们把这一实现称为 ZeRO-100B。结果表明，ZeRO-100B 可以高效训练最多 170B 参数的模型，比 SOTA 大 8 倍，最快可以快到 10 倍，易用性也更好。ZeRO-100B 支撑了 Turing-NLG，这是世界上已发表的最大模型，并带有新的 SOTA 精度。"
+      }
+    ],
+    "17": [
+      {
+        "text": "We implemented ZeRO-100B in PyTorch including the full set of optimizations in Pos+g and ZeRO-R. Its interface is compatible with any model implemented as an torch.nn.module. Users can simply wrap their models using this interface and leverage ZeROpowered DP as they use classic DP. Users do not need to modify their model. ZeRO-powered DP can be combined with any form of MP including Megatron-LM.",
+        "x": 100.8,
+        "y": 615,
+        "w": 410.4,
+        "h": 57.8,
+        "zh": "我们在 PyTorch 中实现了 ZeRO-100B，包括 Pos+g 和 ZeRO-R 的全部优化。它的接口兼容任何实现为 torch.nn.Module 的模型。用户只要用这个接口把模型包起来，就可以像使用经典 DP 那样使用由 ZeRO 驱动的 DP。用户不需要修改模型。由 ZeRO 驱动的 DP 可以与任何形式的 MP 结合，包括 Megatron-LM。"
+      },
+      {
+        "text": "We conducted our experiments on a cluster of 400 V100 GPUs (25 DGX-2 nodes) with 800 Gbps internode communication bandwidth.",
+        "x": 100.8,
+        "y": 577.2,
+        "w": 410.4,
+        "h": 21.9,
+        "zh": "我们的实验在一个有 400 块 V100 GPU（25 个 DGX-2 节点）的集群上进行，节点间通信带宽为 800 Gbps。"
+      },
+      {
+        "text": "For experiments without MP, we use torch’s distributed data parallel (DDP) as baseline. For experiments with MP, we use Megatron-LM because it is, to our knowledge, the state-of-art. We use the open-source version of Megatron-LM from NVIDIA September 2019. The most recent Megatron-LM results report the ability to scale up to 16B parameter models using 32 DGX-2 nodes (total of 512 32GB V100 GPUs) [3].",
+        "x": 100.8,
+        "y": 503.5,
+        "w": 410.4,
+        "h": 57.8,
+        "zh": "不用 MP 的实验，以 torch 的分布式数据并行（DDP）为基线。用 MP 的实验，采用 Megatron-LM，因为据我们所知它是当前最优。我们使用 NVIDIA 在 2019 年 9 月发布的开源版 Megatron-LM。Megatron-LM 最近的结果报告，能够用 32 个 DGX-2 节点（一共 512 块 32 GB 的 V100 GPU）扩展到 16B 参数的模型 [3]。"
+      },
+      {
+        "text": "Experiments without MP, use the ZeRO-powered DP implementation in ZeRO-100B. Experiments with MP, combine ZeRO-powered DP with MP of Megatron-LM.",
+        "x": 100.8,
+        "y": 465.6,
+        "w": 410.4,
+        "h": 21.9,
+        "zh": "不用 MP 的实验，使用 ZeRO-100B 中由 ZeRO 驱动的 DP 实现。用 MP 的实验，把由 ZeRO 驱动的 DP 与 Megatron-LM 的 MP 结合起来。"
+      },
+      {
+        "text": "The models presented in this section are GPT-2 [2] like transformer We vary the hidden dimension and the number of layers to obtain models with different number of parameters. Table 4 shows the configuration parameters used in our experiments with additional details in AE Appendix.",
+        "x": 100.8,
+        "y": 403.8,
+        "w": 410.4,
+        "h": 45.8,
+        "zh": "本节的模型是类似 GPT-2 [2] 的 Transformer。我们改变隐藏维度和层数，得到参数量不同的模型。表 4 给出实验使用的配置参数，更多细节见 AE 附录。"
+      },
+      {
+        "text": "Speed and Model Size ZeRO-100B efficiently run models with up to 170B parameters on 400 GPUs, more than 8x bigger than Megatron-LM. Figure 2 shows throughput per GPU for varying model sizes using ZeRO-100B with MP versus using Megatron MP alone.",
+        "x": 100.8,
+        "y": 333.7,
+        "w": 410.4,
+        "h": 54.3,
+        "zh": "速度与模型规模。ZeRO-100B 在 400 块 GPU 上高效运行最多 170B 参数的模型，比 Megatron-LM 大 8 倍以上。图 2 给出不同模型规模下每块 GPU 的吞吐，比较的是配合 MP 的 ZeRO-100B，以及单独使用 Megatron MP。"
+      },
+      {
+        "text": "ZeRO-100B achieves a sustained throughput of 15 PetaFlops (over 30% of the peak) on average for models with 8B to 100B parameters. In comparison, the baseline MP performance degrades quickly with the increase in model size: MP incurs high communication volume between GPUs, and going beyond a single node to fit larger models causes a communication bandwidth drop from 300GB/sec per link (NVSwitch) to 12.5 GB/sec per link (Infiniband EDR), resulting in a significant performance drop. ZeRO-100B achieves up to 10x speedup over baseline, significantly outperforming on",
+        "x": 100.8,
+        "y": 261.9,
+        "w": 410.4,
+        "h": 81.7,
+        "zh": "对参数量从 8B 到 100B 的模型，ZeRO-100B 的平均持续吞吐达到 15 PetaFlops（超过峰值的 30%）。相比之下，基线 MP 的性能随着模型变大迅速下降：MP 在 GPU 之间的通信量很高，而一旦超出单个节点去装更大的模型，每条链路的通信带宽就从 300 GB/s（NVSwitch）降到 12.5 GB/s（InfiniBand EDR），性能因此显著下降。ZeRO-100B 相对基线最高加速 10 倍，并且明显更强，优势出现在"
+      },
+      {
+        "text": "For ZeRO-100B, the slight reduction in performance beyond 100B is due to lack of enough memory to run larger batch sizes. We expect the performance to improve as we increase the number of GPUs due to super-linear speedup of ZeRO-100B as we discuss next.",
+        "x": 100.8,
+        "y": 214.1,
+        "w": 410.4,
+        "h": 33.9,
+        "zh": "对 ZeRO-100B 而言，超过 100B 之后性能略有下降，是因为内存不够，跑不了更大的 batch size。我们预期，随着 GPU 数量增加，性能会因为 ZeRO-100B 的超线性加速而提高，接下来就讨论这一点。"
+      },
+      {
+        "text": "Super-Linear Scalability ZeRO-100B demonstrates super-linear scalability for very large model sizes. Figure 3 shows scalability results for a 60B parameter model going from 64 to 400 GPUs and we expect this trend to continue further for more GPUs. Pos+g reduces per GPU memory consumption of",
+        "x": 100.8,
+        "y": 142.4,
+        "w": 410.4,
+        "h": 55.7,
+        "zh": "超线性可扩展性。对非常大的模型规模，ZeRO-100B 表现出超线性可扩展性。图 3 给出一个 60B 参数模型从 64 块 GPU 扩展到 400 块 GPU 的结果，我们预期 GPU 更多时这一趋势还会继续。Pos+g 降低的是每块 GPU 的内存消耗，对象是"
+      }
+    ],
+    "18": [
+      {
+        "text": "ZeRO-100B with increase in DP degree, allowing ZeRO-100B to fit larger batch sizes per GPU , which in turn improves throughput as a result of increasing arithmetic intensity.",
+        "x": 100.8,
+        "y": 552.9,
+        "w": 410.4,
+        "h": 21.9,
+        "zh": "ZeRO-100B，并随着 DP 度的增加而降低，于是 ZeRO-100B 能在每块 GPU 上放下更大的 batch size，吞吐也随之提高，因为算术强度提高了。"
+      },
+      {
+        "text": "Using MP and PP is challenging for many data scientists, which is a well-known hurdle to train large models. ZeRO does not require any changes to the model itself and it can be used as simple as baseline DP while delivering significantly boosted model size and speed. Fig. 4 shows that ZeRO-100B can train models with up to 13B parameters without MP on 128 GPUs, achieving throughput over 40 TFlops per GPU on average. In comparison, without ZeRO, the largest trainable model with DP alone has 1.4B parameters with throughput less than 20 TFlops per GPU. Furthermore, in the absence of the communication overhead from MP, these models can be trained with lower-end compute nodes without very fast intra-node interconnect such as NVLINK or NVSwitch, which is required to achieve good efficiency with MP.",
+        "x": 100.8,
+        "y": 411,
+        "w": 410.4,
+        "h": 105.6,
+        "zh": "对许多数据科学家来说，MP 和 PP 很难用，这是训练大模型一个众所周知的障碍。ZeRO 不需要改模型本身，用起来可以和基线 DP 一样简单，同时显著提高模型规模和速度。图 4 表明，ZeRO-100B 可以在 128 块 GPU 上不使用 MP，训练最多 13B 参数的模型，平均每块 GPU 吞吐超过 40 TFlops。相比之下，没有 ZeRO 时，单靠 DP 能训练的最大模型只有 1.4B 参数，每块 GPU 吞吐不到 20 TFlops。此外，由于没有 MP 带来的通信开销，这些模型可以在较低端的计算节点上训练，而不需要 NVLINK 或 NVSwitch 这种很快的节点内互连；MP 要取得好的效率，才需要这种互连。"
+      },
+      {
+        "text": "We look into the benefits and impact of different optimizations on maximum model size, memory consumption and performance. These optimizations are referred to as Config 1 to 5 (C1-C5)",
+        "x": 100.8,
+        "y": 352.8,
+        "w": 410.4,
+        "h": 21.9,
+        "zh": "我们考察不同优化对最大模型规模、内存消耗和性能带来的好处和影响。这些优化记为配置 1 到 5（C1–C5）"
+      },
+      {
+        "text": "Figure 6 shows the largest trainable model by enabling different ZeRO optimizations for a fixed batch size and MP of 16. The model size increase from 40B to 60B when trained with C1 vs C2 due to a 16x (MP degree) reduction in activation memory from using Pa, while the jump to 140B using C4 is from enabling Pos+g which halves the memory requirement by the model states compared to Pos in C2. The increase to 150B using C5 is solely due to further reduction in activation memory from offloading the partitioned activation",
+        "x": 100.8,
+        "y": 255.1,
+        "w": 410.4,
+        "h": 69.7,
+        "zh": "图 6 给出在 batch size 固定、MP 为 16 时，打开不同 ZeRO 优化所能训练的最大模型。用 C1 对比 C2 时，模型规模从 40B 增到 60B，原因是使用 Pa 使激活内存降低 16 倍（即 MP 度）；用 C4 跃到 140B，是因为打开了 Pos+g，相对 C2 中的 Pos，模型状态所需的内存减半。用 C5 增到 150B，完全是因为卸载划分后的激活，使激活内存进一步下降"
+      },
+      {
+        "text": "Figure 7 shows the maximum memory cached by PyTorch during each training iteration for a 40B and a 100B parameter model. The decrease of the cached memory size is as expected from C1 to C2. The difference in memory consumption between C2 and C3 depends on the size of the model states in comparison to the activation memory, and can increase when activation memory is larger, or decrease when the model states are larger. It is note worthy that the cached memory does not decrease from C4 to C5 for 40B but it does for 100B. This is simply because the activation memory for 100B is much larger for the decrease to be noticeable. This makes Pa+cpu a valuable tool to fit a larger batch size when we get to",
+        "x": 100.8,
+        "y": 132.1,
+        "w": 410.4,
+        "h": 95.1,
+        "zh": "图 7 给出 40B 和 100B 参数两个模型在每次训练迭代中，PyTorch 缓存到的最大内存。从 C1 到 C2，缓存内存的下降符合预期。C2 与 C3 的内存消耗之差，取决于模型状态相对激活内存的大小：激活内存更大时，这个差可能变大；模型状态更大时，可能变小。值得注意的是，40B 的缓存内存从 C4 到 C5 并没有下降，100B 则会下降。这只是因为 100B 的激活内存大得多，下降才看得出来。这使得 Pa+cpu 成为装下更大 batch size 的一种有用办法，用在我们走到"
+      },
+      {
+        "text": "Increasing batch size too much can lead to poor convergence, but for these large models, we are still in a regime where batch size is small enough even with 1K GPU and it does not affect convergence rate",
+        "x": 100.8,
+        "y": 105.7,
+        "w": 410.4,
+        "h": 17.4,
+        "zh": "把 batch size 增得太大可能导致收敛变差，但对这里这些大模型，即使到了 1K 块 GPU，batch size 仍然足够小，不会影响收敛速度。"
+      }
+    ],
+    "19": [
+      {
+        "text": "Table 4: Configurations for different model sizes, number of layers, and hidden dimensions",
+        "x": 100.8,
+        "y": 586,
+        "w": 410.4,
+        "h": 10,
+        "zh": "表 4：不同模型规模、层数和隐藏维度所用的配置"
+      },
+      {
+        "text": "very large models. In Figure 8, Pa+cpu is needed for 170B model to execute without running",
+        "x": 100.8,
+        "y": 539.1,
+        "w": 410.4,
+        "h": 11.5,
+        "zh": "非常大的模型。在图 8 中，170B 模型需要 Pa+cpu 才能执行，同时不会出现"
+      },
+      {
+        "text": "Figure 8 shows the best achievable performance for different set of optimizations. Notice that performance improvement corresponds to decrease in memory",
+        "x": 100.8,
+        "y": 490.8,
+        "w": 410.4,
+        "h": 21.9,
+        "zh": "图 8 给出不同一组优化下所能达到的最好性能。可以看到，性能的提高对应着内存的下降"
+      },
+      {
+        "text": "As mentioned earlier, lower memory consumption allows for larger batch size which improves performance. The only caveat is the performance drop between C4 and C5 for 60B parameter model. Despite lower memory consumption, C5 incurs activation movement to and from the CPU, this will result in worse performance in most cases, except for a few where the model is so large that the model simply cannot run without C5 or the batch size that can run without C5 is very small (such as model with 170B parameters in Figure 8). During training, Pa+cpu is turned on only when it is beneficial.",
+        "x": 100.8,
+        "y": 405.6,
+        "w": 410.4,
+        "h": 83.2,
+        "zh": "前面已经说过，内存消耗更低，就能用更大的 batch size，性能也随之变好。唯一的例外是 60B 参数模型在 C4 和 C5 之间的性能下降。尽管内存消耗更低，C5 要把激活搬到 CPU 再搬回来，这在大多数情况下会使性能变差；只有少数情况例外：模型大到没有 C5 根本跑不起来，或者不用 C5 时能跑的 batch size 非常小（如图 8 里 170B 参数的模型）。训练时，只在有益的时候才打开 Pa+cpu。"
+      },
+      {
+        "text": "Turing-NLG, the SOTA language model with 17B parameters As of May 12th, 2020, Turing-NLG is the largest model in the world with over 17B parameters. It achieved the new SOTA for language models with Webtext-103 perplexity of 10.21. TuringNLG was trained end-to-end using ZeRO-100B and Fig. 5 shows the validation perplexity over 300K iterations compared to previous SOTA, Megatron-LM 8.3B parameter model. ZeRO- 100B achieves a sustained throughput of 41.4 TFlops/GPU for this model.",
+        "x": 100.8,
+        "y": 313,
+        "w": 410.4,
+        "h": 78.2,
+        "zh": "Turing-NLG，17B 参数的 SOTA 语言模型。截至 2020 年 5 月 12 日，Turing-NLG 是世界上最大的模型，参数量超过 17B。它在 Webtext-103 上的困惑度是 10.21，成为语言模型的新 SOTA。Turing-NLG 用 ZeRO-100B 做端到端训练，图 5 给出 300K 次迭代上的验证困惑度，并与此前的 SOTA、即 8.3B 参数的 Megatron-LM 模型比较。对这个模型，ZeRO-100B 的持续吞吐为每块 GPU 41.4 TFlops。"
+      },
+      {
+        "text": "From a HPC and system perspective, we believe that ZeRO represents a revolutionary transformation in the large model training landscape. While our implementation, ZeRO-100B, enables 8x increase in model sizes, over 10x in throughput improvement, achieves super-linear speedups on modern GPU clusters, and trains the largest model in the world, it is still just a tip of the iceberg. ZeRO in its entirety has the potential to increase the model size by yet another order of magnitude, enabling the training of trillion parameter models of the future. Perhaps, what we feel most optimistic about ZeRO is that it imposes no hurdles on the data scientists. Unlike existing approaches such as MP and PP, no model refactoring is necessary, and it is as easy to use as standard DP, making ZeRO a prime candidate for future investigations on large model training. Through open sourcing and community feedback, we plan to make ZeRO fully accessible to the DL community to catalyze the evolution and democratization of",
+        "x": 100.8,
+        "y": 138.7,
+        "w": 410.4,
+        "h": 129.5,
+        "zh": "从高性能计算和系统的角度看，我们认为 ZeRO 代表大模型训练格局的一次革命性变化。我们的实现 ZeRO-100B 使模型规模提高 8 倍，吞吐提高超过 10 倍，在现代 GPU 集群上取得超线性加速，并训练出世界上最大的模型，但它仍然只是冰山一角。完整的 ZeRO 还有潜力再把模型规模提高一个数量级，使未来的万亿参数模型能够被训练。也许我们最看好 ZeRO 的一点是，它不给数据科学家添障碍。与 MP、PP 这类已有做法不同，它不需要重构模型，用起来和标准 DP 一样容易，因此 ZeRO 很适合作为今后研究大模型训练时的一个主要对象。通过开源和社区的反馈，我们计划让深度学习社区能够充分使用 ZeRO，以催化其演进，并推动它的普及，对象是"
+      }
+    ],
+    "20": [
+      {
+        "text": "We thank Junhua Wang for his valuable support and advice. We thank Minjia Zhang, Elton Zheng, Shaden Smith, Reza Yazdani Aminabadi, Arash Ashari, and Niranjan Uma Naresh for their great feedback and help on evaluating the work. We thank Brandon Norick, Corby Rossett, Gopi Kumar, Jack Zhang, Jing Zhao, Payal Bajaj, Rangan Majumder, Saksham Singhal, Saurabh Tiwary, and Xia Song for many helpful discussions and suggestions.",
+        "x": 100.8,
+        "y": 611.6,
+        "w": 410.4,
+        "h": 57.8,
+        "zh": "我们感谢 Junhua Wang 的宝贵支持和建议。我们感谢 Minjia Zhang、Elton Zheng、Shaden Smith、Reza Yazdani Aminabadi、Arash Ashari 和 Niranjan Uma Naresh，他们在评估这项工作时给出了很好的反馈和帮助。我们感谢 Brandon Norick、Corby Rossett、Gopi Kumar、Jack Zhang、Jing Zhao、Payal Bajaj、Rangan Majumder、Saksham Singhal、Saurabh Tiwary 和 Xia Song 的许多有益讨论和建议。"
+      },
+      {
+        "text": "[1] Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. BERT: pre-training of deep bidirectional transformers for language understanding. CoRR, abs/1810.04805,",
+        "x": 105.8,
+        "y": 544.9,
+        "w": 405.4,
+        "h": 21.9,
+        "zh": "[1] Jacob Devlin、Ming-Wei Chang、Kenton Lee 与 Kristina Toutanova。BERT：面向语言理解的深度双向 Transformer 预训练。CoRR，abs/1810.04805，"
+      },
+      {
+        "text": "[2] Alec Radford, Jeff Wu, Rewon Child, David Luan, Dario Amodei, and Ilya Sutskever.",
+        "x": 105.8,
+        "y": 513,
+        "w": 405.4,
+        "h": 10,
+        "zh": "[2] Alec Radford、Jeff Wu、Rewon Child、David Luan、Dario Amodei 与 Ilya Sutskever。"
+      },
+      {
+        "text": "Language models are unsupervised multitask learners. 2019.",
+        "x": 121.3,
+        "y": 501,
+        "w": 263.1,
+        "h": 10,
+        "zh": "语言模型是无监督的多任务学习者。2019。"
+      },
+      {
+        "text": "[3] Mohammad Shoeybi, Mostofa Patwary, Raul Puri, Patrick LeGresley, Jared Casper, and Bryan Catanzaro. Megatron-lm: Training multi-billion parameter language models using",
+        "x": 105.8,
+        "y": 469.2,
+        "w": 405.4,
+        "h": 21.9,
+        "zh": "[3] Mohammad Shoeybi、Mostofa Patwary、Raul Puri、Patrick LeGresley、Jared Casper 与 Bryan Catanzaro。Megatron-LM：训练数十亿参数的语言模型，方法是"
+      },
+      {
+        "text": "[4] Colin Raffel, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael Matena, Yanqi Zhou, Wei Li, and Peter J. Liu. Exploring the limits of transfer learn-",
+        "x": 105.8,
+        "y": 425.3,
+        "w": 405.4,
+        "h": 21.9,
+        "zh": "[4] Colin Raffel、Noam Shazeer、Adam Roberts、Katherine Lee、Sharan Narang、Michael Matena、Yanqi Zhou、Wei Li 与 Peter J. Liu。探索迁移学习的极限"
+      },
+      {
+        "text": "ing with a unified text-to-text transformer, 2019.",
+        "x": 121.3,
+        "y": 413.4,
+        "w": 213.5,
+        "h": 10,
+        "zh": "借助统一的 text-to-text Transformer，2019。"
+      },
+      {
+        "text": "[5] Noam Shazeer, Youlong Cheng, Niki Parmar, Dustin Tran, Ashish Vaswani, Penporn Koanantakool, Peter Hawkins, HyoukJoong Lee, Mingsheng Hong, Cliff Young, Ryan Sepassi, and Blake A. Hechtman. Mesh-tensorflow: Deep learning for supercomputers. CoRR,",
+        "x": 105.8,
+        "y": 369.5,
+        "w": 405.4,
+        "h": 33.9,
+        "zh": "[5] Noam Shazeer、Youlong Cheng、Niki Parmar、Dustin Tran、Ashish Vaswani、Penporn Koanantakool、Peter Hawkins、HyoukJoong Lee、Mingsheng Hong、Cliff Young、Ryan Sepassi 与 Blake A. Hechtman。Mesh-TensorFlow：面向超级计算机的深度学习。CoRR，"
+      },
+      {
+        "text": "[6] Diederik P. Kingma and Jimmy Ba. Adam: A method for stochastic optimization. In Yoshua Bengio and Yann LeCun, editors, 3rd International Conference on Learning Representations, ICLR 2015, San Diego, CA, USA, May 7-9, 2015, Conference Track Pro-",
+        "x": 105.8,
+        "y": 313.7,
+        "w": 405.4,
+        "h": 33.9,
+        "zh": "[6] Diederik P. Kingma 与 Jimmy Ba。Adam：一种随机优化方法。载于 Yoshua Bengio 与 Yann LeCun 主编，第 3 届学习表征国际会议 ICLR 2015，美国加利福尼亚州圣迭戈，2015 年 5 月 7–9 日，Conference Track 论文集"
+      },
+      {
+        "text": "[7] Tianqi Chen, Bing Xu, Chiyuan Zhang, and Carlos Guestrin. Training deep nets with",
+        "x": 105.8,
+        "y": 281.9,
+        "w": 405.4,
+        "h": 10,
+        "zh": "[7] Tianqi Chen、Bing Xu、Chiyuan Zhang 与 Carlos Guestrin。训练深度网络，借助"
+      },
+      {
+        "text": "sublinear memory cost. CoRR, abs/1604.06174, 2016.",
+        "x": 121.3,
+        "y": 269.9,
+        "w": 234.2,
+        "h": 10,
+        "zh": "亚线性的内存开销。CoRR，abs/1604.06174，2016。"
+      },
+      {
+        "text": "[8] Sam McCandlish, Jared Kaplan, Dario Amodei, and OpenAI Dota Team. An empirical",
+        "x": 105.8,
+        "y": 250,
+        "w": 405.4,
+        "h": 10,
+        "zh": "[8] Sam McCandlish、Jared Kaplan、Dario Amodei 与 OpenAI Dota Team。一项实证的"
+      },
+      {
+        "text": "model of large-batch training. CoRR, abs/1812.06162, 2018.",
+        "x": 121.3,
+        "y": 238,
+        "w": 262.9,
+        "h": 10,
+        "zh": "大 batch 训练的模型。CoRR，abs/1812.06162，2018。"
+      },
+      {
+        "text": "17-billion-parameter https://www.microsoft.com/en-us/research/blog/ turing-nlg-a-17-billion-parameter-language-model-by-microsoft/, 2020.",
+        "x": 121.3,
+        "y": 194.2,
+        "w": 389.9,
+        "h": 33.9,
+        "zh": "170 亿参数。https://www.microsoft.com/en-us/research/blog/turing-nlg-a-17-billion-parameter-language-model-by-microsoft/，2020。"
+      },
+      {
+        "text": "[10] Yanping Huang, Yonglong Cheng, Dehao Chen, HyoukJoong Lee, Jiquan Ngiam, Quoc V. Le, and Zhifeng Chen. Gpipe: Efficient training of giant neural networks using pipeline",
+        "x": 100.8,
+        "y": 162.3,
+        "w": 410.4,
+        "h": 21.9,
+        "zh": "[10] Yanping Huang、Yonglong Cheng、Dehao Chen、HyoukJoong Lee、Jiquan Ngiam、Quoc V. Le 与 Zhifeng Chen。GPipe：用流水线来高效训练巨型神经网络"
+      },
+      {
+        "text": "parallelism. ArXiv, abs/1811.06965, 2018.",
+        "x": 121.3,
+        "y": 150.4,
+        "w": 182.6,
+        "h": 10,
+        "zh": "并行。ArXiv，abs/1811.06965，2018。"
+      },
+      {
+        "text": "[11] Aaron Harlap, Deepak Narayanan, Amar Phanishayee, Vivek Seshadri, Nikhil R. Devanur, Gregory R. Ganger, and Phillip B. Gibbons. Pipedream: Fast and efficient pipeline parallel",
+        "x": 100.8,
+        "y": 118.5,
+        "w": 410.4,
+        "h": 21.9,
+        "zh": "[11] Aaron Harlap、Deepak Narayanan、Amar Phanishayee、Vivek Seshadri、Nikhil R. Devanur、Gregory R. Ganger 与 Phillip B. Gibbons。PipeDream：快速而且高效的流水线并行"
+      },
+      {
+        "text": "DNN training. CoRR, abs/1806.03377, 2018.",
+        "x": 121.3,
+        "y": 106.5,
+        "w": 196.1,
+        "h": 10,
+        "zh": "DNN 训练。CoRR，abs/1806.03377，2018。"
+      }
+    ],
+    "21": [
+      {
+        "text": "[12] Deepak Narayanan, Aaron Harlap, Amar Phanishayee, Vivek Seshadri, Nikhil Devanur, Greg Granger, Phil Gibbons, and Matei Zaharia. Pipedream: Generalized pipeline parallelism for dnn training. In ACM Symposium on Operating Systems Principles (SOSP 2019), October 2019.",
+        "x": 100.8,
+        "y": 645.4,
+        "w": 410.4,
+        "h": 45.8,
+        "zh": "[12] Deepak Narayanan、Aaron Harlap、Amar Phanishayee、Vivek Seshadri、Nikhil Devanur、Greg Granger、Phil Gibbons 与 Matei Zaharia。PipeDream：面向 DNN 训练的通用流水线并行。见 ACM 操作系统原理研讨会（SOSP 2019），2019 年 10 月。"
+      },
+      {
+        "text": "[13] Animesh Jain, Amar Phanishayee, Jason Mars, Lingjia Tang, and Gennady Pekhimenko. Gist: Efficient data encoding for deep neural network training. In International Symposium on Computer Architecture (ISCA 2018), 2018.",
+        "x": 100.8,
+        "y": 601.5,
+        "w": 410.4,
+        "h": 33.9,
+        "zh": "[13] Animesh Jain、Amar Phanishayee、Jason Mars、Lingjia Tang 与 Gennady Pekhimenko。Gist：面向深度神经网络训练的高效数据编码。见计算机体系结构国际研讨会（ISCA 2018），2018。"
+      },
+      {
+        "text": "[14] Paras Jain, Ajay Jain, Aniruddha Nrusimha, Amir Gholami, Pieter Abbeel, Kurt Keutzer, Ion Stoica, and Joseph E. Gonzalez. Checkmate: Breaking the memory wall with optimal tensor rematerialization. ArXiv, abs/1910.02653, 2019.",
+        "x": 100.8,
+        "y": 557.7,
+        "w": 410.4,
+        "h": 33.9,
+        "zh": "[14] Paras Jain、Ajay Jain、Aniruddha Nrusimha、Amir Gholami、Pieter Abbeel、Kurt Keutzer、Ion Stoica 与 Joseph E. Gonzalez。Checkmate：用最优的张量重物化打破内存墙。ArXiv，abs/1910.02653，2019。"
+      },
+      {
+        "text": "[15] Linnan Wang, Jinmian Ye, Yiyang Zhao, Wei Wu, Ang Li, Shuaiwen Leon Song, Zenglin Xu, and Tim Kraska. Superneurons: Dynamic GPU memory management for training deep neural networks. CoRR, abs/1801.04380, 2018.",
+        "x": 100.8,
+        "y": 513.9,
+        "w": 410.4,
+        "h": 33.9,
+        "zh": "[15] Linnan Wang、Jinmian Ye、Yiyang Zhao、Wei Wu、Ang Li、Shuaiwen Leon Song、Zenglin Xu 与 Tim Kraska。Superneurons：训练深度神经网络时的动态 GPU 内存管理。CoRR，abs/1801.04380，2018。"
+      },
+      {
+        "text": "[16] Bharadwaj Pudipeddi, Maral Mesmakhosroshahi, Jinwen Xi, and Sujeeth Bharadwaj. Training large neural networks with constant memory using a new execution algorithm. ArXiv, abs/2002.05645, 2020.",
+        "x": 100.8,
+        "y": 470,
+        "w": 410.4,
+        "h": 33.9,
+        "zh": "[16] Bharadwaj Pudipeddi、Maral Mesmakhosroshahi、Jinwen Xi 与 Sujeeth Bharadwaj。用一种新的执行算法，以恒定的内存训练大型神经网络。ArXiv，abs/2002.05645，2020。"
+      },
+      {
+        "text": "[17] M. Rhu, N. Gimelshein, J. Clemons, A. Zulfiqar, and S. W. Keckler. vdnn: Virtualized deep neural networks for scalable, memory-efficient neural network design. In 2016 49th Annual IEEE/ACM International Symposium on Microarchitecture (MICRO), pages 1–13,",
+        "x": 100.8,
+        "y": 426.2,
+        "w": 410.4,
+        "h": 33.9,
+        "zh": "[17] M. Rhu、N. Gimelshein、J. Clemons、A. Zulfiqar 与 S. W. Keckler。vDNN：可扩展、省内存的虚拟化深度神经网络，用于神经网络设计。见 2016 年第 49 届 IEEE/ACM 微体系结构年度国际研讨会（MICRO），第 1–13 页，"
+      },
+      {
+        "text": "Adafactor: Adaptive learning rates with sublinear memory cost. CoRR, abs/1804.04235, 2018.",
+        "x": 121.3,
+        "y": 382.4,
+        "w": 389.9,
+        "h": 21.9,
+        "zh": "Adafactor：内存开销为亚线性的自适应学习率。CoRR，abs/1804.04235，2018。"
+      },
+      {
+        "text": "[19] Rohan Anil, Vineet Gupta, Tomer Koren, and Yoram Singer. Memory-efficient adaptive optimization for large-scale learning. ArXiv, abs/1901.11150, 2019.",
+        "x": 100.8,
+        "y": 350.5,
+        "w": 410.4,
+        "h": 21.9,
+        "zh": "[19] Rohan Anil、Vineet Gupta、Tomer Koren 与 Yoram Singer。面向大规模学习的、省内存的自适应优化。ArXiv，abs/1901.11150，2019。"
+      },
+      {
+        "text": "[20] John Duchi, Elad Hazan, and Yoram Singer. Adaptive subgradient methods for online learning and stochastic optimization. J. Mach. Learn. Res., 12(null):21212159, July 2011.",
+        "x": 100.8,
+        "y": 318.6,
+        "w": 410.4,
+        "h": 21.9,
+        "zh": "[20] John Duchi、Elad Hazan 与 Yoram Singer。面向在线学习与随机优化的自适应次梯度方法。J. Mach. Learn. Res.，12(null):21212159，2011 年 7 月。"
+      },
+      {
+        "text": "[21] Yang You, Igor Gitman, and Boris Ginsburg. Scaling SGD batch size to 32k for imagenet training. CoRR, abs/1708.03888, 2017.",
+        "x": 100.8,
+        "y": 286.7,
+        "w": 410.4,
+        "h": 21.9,
+        "zh": "[21] Yang You、Igor Gitman 与 Boris Ginsburg。把 SGD 的 batch size 扩到 32k，用来训练 ImageNet。CoRR，abs/1708.03888，2017。"
+      },
+      {
+        "text": "[22] Yang You, Jing Li, Jonathan Hseu, Xiaodan Song, James Demmel, and Cho-Jui Hsieh. Reducing BERT pre-training time from 3 days to 76 minutes. CoRR, abs/1904.00962,",
+        "x": 100.8,
+        "y": 254.8,
+        "w": 410.4,
+        "h": 21.9,
+        "zh": "[22] Yang You、Jing Li、Jonathan Hseu、Xiaodan Song、James Demmel 与 Cho-Jui Hsieh。把 BERT 预训练时间从 3 天降到 76 分钟。CoRR，abs/1904.00962，"
+      },
+      {
+        "text": "[23] Paulius Micikevicius, Sharan Narang, Jonah Alben, Gregory Diamos, Erich Elsen, David Garcia, Boris Ginsburg, Michael Houston, Oleksii Kuchaiev, Ganesh Venkatesh, and Hao Wu. Mixed precision training, 2017.",
+        "x": 100.8,
+        "y": 199,
+        "w": 410.4,
+        "h": 33.9,
+        "zh": "[23] Paulius Micikevicius、Sharan Narang、Jonah Alben、Gregory Diamos、Erich Elsen、David Garcia、Boris Ginsburg、Michael Houston、Oleksii Kuchaiev、Ganesh Venkatesh 与 Hao Wu。混合精度训练，2017。"
+      },
+      {
+        "text": "http://images.nvidia.com/content/ volta-architecture/pdf/volta-architecture-whitepaper.pdf, 2017. cessed 22-April-2020].",
+        "x": 121.3,
+        "y": 155.2,
+        "w": 389.9,
+        "h": 33.9,
+        "zh": "http://images.nvidia.com/content/volta-architecture/pdf/volta-architecture-whitepaper.pdf，2017。访问日期为 2020 年 4 月 22 日]。"
+      },
+      {
+        "text": "https://developer.nvidia.com/ automatic-mixed-precision, 2019.",
+        "x": 121.3,
+        "y": 123.3,
+        "w": 389.9,
+        "h": 21.9,
+        "zh": "https://developer.nvidia.com/automatic-mixed-precision，自动混合精度，2019。"
+      }
+    ],
+    "22": [
+      {
+        "text": "NVIDIA Clocks Worlds Fastest BERT Training Time ...",
+        "x": 211.4,
+        "y": 681.2,
+        "w": 258.5,
+        "h": 10,
+        "zh": "NVIDIA 创下世界上最快的 BERT 训练时间……"
+      },
+      {
+        "text": "//devblogs.nvidia.com/training-bert-with-gpus/, 2019.",
+        "x": 121.3,
+        "y": 669.3,
+        "w": 275.4,
+        "h": 10,
+        "zh": ""
+      }
+    ],
+    "23": [
+      {
+        "text": "Table 5: Model configurations for Figure 2 related to ZeRO throughput compared with baseline.",
+        "x": 100.8,
+        "y": 505.1,
+        "w": 410.4,
+        "h": 10,
+        "zh": "表 5：图 2 所用的模型配置，比较的是 ZeRO 的吞吐与基线。"
+      },
+      {
+        "text": "Table 6: Model configurations for Figure 3 related to superlinear scalability.",
+        "x": 140.1,
+        "y": 420.6,
+        "w": 331.7,
+        "h": 10,
+        "zh": "表 6：图 3 所用的模型配置，内容是超线性可扩展性。"
+      },
+      {
+        "text": "Table 7: Model configurations for Figure 4 related to max model size with different ZeRO",
+        "x": 100.8,
+        "y": 327.8,
+        "w": 410.4,
+        "h": 10,
+        "zh": "表 7：图 4 所用的模型配置，内容是不同 ZeRO 设置下的最大模型规模"
+      },
+      {
+        "text": "Table 8: Model configurations for Figure 5 related to memory allocated with different ZeRO",
+        "x": 100.8,
+        "y": 206.2,
+        "w": 410.4,
+        "h": 10,
+        "zh": "表 8：图 5 所用的模型配置，内容是不同 ZeRO 设置下分配到的内存"
+      }
+    ],
+    "24": [
+      {
+        "text": "Table 9: Model configurations for Figure 6 related to throughput with different ZeRO configu-",
+        "x": 100.8,
+        "y": 605.5,
+        "w": 410.4,
+        "h": 10,
+        "zh": "表 9：图 6 所用的模型配置，内容是不同 ZeRO 配置下的吞吐"
+      },
+      {
+        "text": "Table 10: Model configurations for Figure 7 related to evaluating maximum model sizes vs throughput while using only data-parallelism.",
+        "x": 100.8,
+        "y": 438.5,
+        "w": 410.4,
+        "h": 21.9,
+        "zh": "表 10：图 7 所用的模型配置，评估的是只用数据并行时，最大模型规模与吞吐的关系。"
+      },
+      {
+        "text": "These tables contain all the model configurations and batch sizes used for the experiments presented in the paper. In Figure 2, notice that the total number of GPUs for some baseline experiment is 384 or 256 compared to 400 for ZeRO. This is because the total number of GPUs must be a product of the number of MP, and we only had access to a total of 400 GPUs. There exist a handful of additional constraints in model configuration values, such as hidden size must be divisible by attention heads, hidden size divisible by MP, and attention heads divisible by MP. For baseline we used the lowest number of GPUs that was a power of 2 that would fit the model. So for example, for 170B parameter model this was 256 for the baseline. Since we only had 400 GPUs, we could only run baseline with 256 GPUs. We do want to point out that this gives the baseline an advantage over ZeRO because fewer GPUs means better communication throughput for the baseline. For example, in case of the 170B parameter model, DP=1 for the baseline so it in fact incurs no communication for DP. The results presented in this paper are despite this advantage for the baseline. Also, we want to point out that we are comparing the performance per GPU, not the aggregate performance, and therefore the results are still apples-to-apples while giving a slight",
+        "x": 100.8,
+        "y": 237.7,
+        "w": 410.4,
+        "h": 177.3,
+        "zh": "这些表包含文中各实验使用的全部模型配置和 batch size。在图 2 里可以看到，有些基线实验的 GPU 总数是 384 或 256，ZeRO 则是 400。这是因为 GPU 总数必须是 MP 路数的倍数，而我们总共只能用 400 块 GPU。模型配置还有另外几项约束，例如隐藏维度必须能被注意力头数整除，隐藏维度必须能被 MP 整除，注意力头数也必须能被 MP 整除。对基线，我们取的是仍能装下模型的、2 的幂中最小的 GPU 数。例如 170B 参数的模型，基线用的是 256。因为只有 400 块 GPU，基线只能用 256 块来跑。需要说明的是，这让基线相对 ZeRO 占优，因为 GPU 更少，基线的通信吞吐更好。例如 170B 参数的模型，基线的 DP = 1，所以它实际上没有 DP 方向的通信。本文的结果是在基线拥有这一优势的情况下得到的。还需要说明的是，我们比较的是每块 GPU 的性能，不是聚合性能，因此结果仍然是对等的，只是略微给了"
+      }
+    ]
+  }
+}

@@ -1,0 +1,2109 @@
+{
+  "id": "2409.19256",
+  "title": "2409.19256",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "HybridFlow: A Flexible and Efficient RLHF Framework",
+        "x": 54,
+        "y": 705.3,
+        "w": 504.6,
+        "h": 20.7,
+        "zh": "HybridFlow：一套灵活、高效的 RLHF 框架"
+      },
+      {
+        "text": "The University of Hong Kong gmsheng@connect.hku.hk",
+        "x": 81.5,
+        "y": 655.8,
+        "w": 120.6,
+        "h": 21.9,
+        "zh": "香港大学 gmsheng@connect.hku.hk"
+      },
+      {
+        "text": "The University of Hong Kong pengyanghua.yanghua@bytedance.com",
+        "x": 66,
+        "y": 562.9,
+        "w": 464.2,
+        "h": 21.9,
+        "zh": "香港大学 pengyanghua.yanghua@bytedance.com"
+      },
+      {
+        "text": "running various RLHF algorithms using HybridFlow, as compared with state-of-the-art baselines. HybridFlow source Reinforcement Learning from Human Feedback (RLHF) is",
+        "x": 54,
+        "y": 527.2,
+        "w": 505.7,
+        "h": 24.9,
+        "zh": "用 HybridFlow 跑各种 RLHF 算法，并和当前最好的基线比较。HybridFlow 的源码。基于人类反馈的强化学习（RLHF）是"
+      },
+      {
+        "text": "code will be available at https://github.com/volcengine/verl widely used in Large Language Model (LLM) alignment. Traditional RL can be modeled as a dataflow, where each node",
+        "x": 53.6,
+        "y": 503.3,
+        "w": 504.3,
+        "h": 24.9,
+        "zh": "代码会放在 https://github.com/volcengine/verl 。它被广泛用于大语言模型（LLM）对齐。传统强化学习可以看成一条数据流，其中每个节点"
+      },
+      {
+        "text": "CCS Concepts: • Computing methodologies → Distributed represents computation of a neural network (NN) and each",
+        "x": 54,
+        "y": 491.4,
+        "w": 514.1,
+        "h": 17.4,
+        "zh": "CCS 概念：• Computing methodologies → Distributed。表示一个神经网络（NN）的计算，每一条"
+      },
+      {
+        "text": "computing methodologies; Machine learning. edge denotes data dependencies between the NNs. RLHF complicates the dataflow by expanding each node into a dis-",
+        "x": 54,
+        "y": 467.5,
+        "w": 468.4,
+        "h": 29.3,
+        "zh": "computing methodologies；机器学习。边表示这些神经网络之间的数据依赖。RLHF 把数据流变复杂了：每个节点被展开成一段分布式"
+      },
+      {
+        "text": "Keywords: Distributed systems, Reinforcement Learning tributed LLM training or generation program, and each edge into a many-to-many multicast. Traditional RL frameworks",
+        "x": 54,
+        "y": 443.6,
+        "w": 504,
+        "h": 33.8,
+        "zh": "关键词：分布式系统，强化学习。LLM 的训练或生成程序，每条边则变成一次多对多组播。传统 RL 框架"
+      },
+      {
+        "text": "ACM Reference Format: execute the dataflow using a single controller to instruct",
+        "x": 54,
+        "y": 431.6,
+        "w": 361.5,
+        "h": 14.4,
+        "zh": "ACM 参考文献格式：用一个中心控制器来执行这条数据流，由它指挥"
+      },
+      {
+        "text": "Guangming Sheng, Chi Zhang, Zilingfeng Ye, Xibin Wu, Wang both intra-node computation and inter-node communication,",
+        "x": 54,
+        "y": 419.6,
+        "w": 504,
+        "h": 15.4,
+        "zh": "Guangming Sheng、Chi Zhang、Zilingfeng Ye、Xibin Wu、Wang。节点内部的计算，以及节点之间的通信，"
+      },
+      {
+        "text": "Zhang, Ru Zhang, Yanghua Peng, Haibin Lin, and Chuan Wu. 2025. which can be inefficient in RLHF due to large control dispatch",
+        "x": 53.6,
+        "y": 407.7,
+        "w": 505.7,
+        "h": 16.4,
+        "zh": "Zhang、Ru Zhang、Yanghua Peng、Haibin Lin 和 Chuan Wu。2025。这在 RLHF 里往往效率不高，因为控制消息分发的开销很大"
+      },
+      {
+        "text": "HybridFlow: A Flexible and Efficient RLHF Framework. In Twentieth overhead for distributed intra-node computation. Existing",
+        "x": 54,
+        "y": 395.7,
+        "w": 504,
+        "h": 17.4,
+        "zh": "HybridFlow：一套灵活、高效的 RLHF 框架。收录于 Twentieth。分布式节点内计算带来的开销。现有的"
+      },
+      {
+        "text": "European Conference on Computer Systems (EuroSys ’25), March 30RLHF systems adopt a multi-controller paradigm, which can",
+        "x": 54,
+        "y": 383.8,
+        "w": 504.9,
+        "h": 18.3,
+        "zh": "European Conference on Computer Systems（EuroSys ’25），3 月 30 日。RLHF 系统改用多控制器范式，这种做法会"
+      },
+      {
+        "text": "April 3, 2025, Rotterdam, Netherlands. ACM, New York, NY, USA, be inflexible due to nesting distributed computation and data",
+        "x": 54,
+        "y": 371.8,
+        "w": 505,
+        "h": 19.3,
+        "zh": "2025 年 4 月 3 日，荷兰鹿特丹。ACM，美国纽约州纽约市，因为把分布式计算和数据通信嵌在一起，不够灵活"
+      },
+      {
+        "text": "19 pages. https://doi.org/10.1145/3689031.3696075 communication. We propose HybridFlow, which combines single-controller and multi-controller paradigms in a hybrid manner to enable flexible representation and efficient execu-",
+        "x": 54,
+        "y": 336,
+        "w": 444.4,
+        "h": 44.3,
+        "zh": "19 页。https://doi.org/10.1145/3689031.3696075 。通信。我们提出 HybridFlow，把单控制器和多控制器两种范式混合起来，使 RLHF 数据流既能灵活表示，又能高效执行"
+      },
+      {
+        "text": "Large language models (LLMs) such as GPT [11], Llama [73] tion of the RLHF dataflow. We carefully design a set of hierar-",
+        "x": 54,
+        "y": 324,
+        "w": 504,
+        "h": 13.4,
+        "zh": "GPT [11]、Llama [73] 这类大语言模型（LLM）。RLHF 数据流的。我们仔细设计了一组层次化"
+      },
+      {
+        "text": "and Claude [7] have revolutionized various artificial intelchical APIs that decouple and encapsulate computation and",
+        "x": 54,
+        "y": 312.1,
+        "w": 505.7,
+        "h": 13.4,
+        "zh": "以及 Claude [7]，已经改变了好几种人工智能。这些 API 把计算解耦并封装起来，以及"
+      },
+      {
+        "text": "ligence (AI) applications, ranging from writing [2], searchdata dependencies in the complex RLHF dataflow, allowing",
+        "x": 54,
+        "y": 300.1,
+        "w": 505.7,
+        "h": 13.4,
+        "zh": "（AI）应用，从写作 [2] 到搜索。复杂 RLHF 数据流中的数据依赖，从而能够"
+      },
+      {
+        "text": "ing [52] to coding [63]. LLMs are first pre-trained on trillions efficient operation orchestration to implement RLHF algo-",
+        "x": 54,
+        "y": 288.1,
+        "w": 504,
+        "h": 13.4,
+        "zh": "[52]，直到写代码 [63]。LLM 首先在数万亿规模上做预训练。高效编排这些操作，以实现 RLHF 算法"
+      },
+      {
+        "text": "of tokens from books, websites, etc,. via next-word prediction rithms and flexible mapping of the computation onto various",
+        "x": 54,
+        "y": 276.2,
+        "w": 504,
+        "h": 13.4,
+        "zh": "来自书籍、网站等的 token 上做下一个词预测。也能把计算灵活映射到各种"
+      },
+      {
+        "text": "to accumulate broad knowledge [11]. Next, LLMs are trained devices. We further design a 3D-HybridEngine for efficient",
+        "x": 54,
+        "y": 264.2,
+        "w": 504,
+        "h": 13.4,
+        "zh": "以此积累广博的知识 [11]。接下来再训练 LLM。设备上。我们还设计了 3D-HybridEngine，用来高效完成"
+      },
+      {
+        "text": "on domain-specific datasets via supervised fine-tuning (SFT), actor model resharding between training and generation",
+        "x": 54,
+        "y": 252.3,
+        "w": 505.1,
+        "h": 13.4,
+        "zh": "在特定领域的数据上做监督微调（SFT），。actor 模型在训练和生成之间的重切分"
+      },
+      {
+        "text": "to be able to follow human instructions [11]. Despite the outphases, with zero memory redundancy and significantly re-",
+        "x": 54,
+        "y": 240.3,
+        "w": 505.7,
+        "h": 13.4,
+        "zh": "让它能够听从人的指令 [11]。尽管出色。在这些阶段，内存没有冗余，并且显著降低"
+      },
+      {
+        "text": "standing capabilities of LLMs on natural language tasks after duced communication overhead. Our experimental results",
+        "x": 54,
+        "y": 228.4,
+        "w": 504.2,
+        "h": 13.4,
+        "zh": "LLM 在自然语言任务上的能力，在此之后。通信开销。我们的实验结果表明"
+      },
+      {
+        "text": "pre-training and SFT, the detrimental and biased contents in demonstrate 1.53×∼20.57× throughput improvement when",
+        "x": 54,
+        "y": 216.4,
+        "w": 504,
+        "h": 13.4,
+        "zh": "预训练和 SFT 之后，训练数据里有害、带偏见的内容。吞吐可以提升到 1.53×∼20.57×，当"
+      },
+      {
+        "text": "the training datasets may still mislead an LLM to generate Permission to make digital or hard copies of all or part of this work for",
+        "x": 54,
+        "y": 198,
+        "w": 504,
+        "h": 19.9,
+        "zh": "仍可能把 LLM 带偏，让它生成。允许为本作品的全部或部分制作数字或纸质副本，供"
+      },
+      {
+        "text": "toxic and undesirable content. Reinforcement Learning from personal or classroom use is granted without fee provided that copies",
+        "x": 54,
+        "y": 188,
+        "w": 504,
+        "h": 17.9,
+        "zh": "有毒、不希望看到的内容。从人类反馈来的强化学习。个人或课堂使用，不收费，但前提是这些副本"
+      },
+      {
+        "text": "Human Feedback (RLHF) is introduced to further align an are not made or distributed for profit or commercial advantage and that",
+        "x": 54,
+        "y": 178,
+        "w": 504,
+        "h": 15.9,
+        "zh": "于是引入人类反馈（RLHF），把模型进一步对齐。不得为营利或商业利益而制作或分发，并且"
+      },
+      {
+        "text": "LLM to human values, for building helpful and harmless AI copies bear this notice and the full citation on the first page. Copyrights",
+        "x": 54,
+        "y": 168.1,
+        "w": 504,
+        "h": 13.9,
+        "zh": "到人的价值观，从而做出有帮助、无害的 AI。副本须在首页带上本声明和完整引用。著作权"
+      },
+      {
+        "text": "applications [7, 55]. for components of this work owned by others than the author(s) must",
+        "x": 54,
+        "y": 158.1,
+        "w": 343.5,
+        "h": 12,
+        "zh": "应用 [7, 55]。对本作品中不归作者、而归他人所有的部分，必须"
+      },
+      {
+        "text": "RLHF is built upon traditional RL algorithms [4, 68, 78], be honored. Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific",
+        "x": 54,
+        "y": 138.2,
+        "w": 505.1,
+        "h": 19.9,
+        "zh": "RLHF 建立在传统 RL 算法之上 [4, 68, 78]，得到尊重。注明出处后可以做摘要。若要以其他方式复制、再版、放到服务器上，或转发到邮件列表，需要事先取得具体"
+      },
+      {
+        "text": "e.g., Proximal Policy Optimization (PPO) [68] and REINpermission and/or a fee. Request permissions from permissions@acm.org.",
+        "x": 54,
+        "y": 128.2,
+        "w": 505.7,
+        "h": 17.9,
+        "zh": "例如近端策略优化（PPO）[68] 和 REINFORCE。的许可并/或付费。申请许可请联系 permissions@acm.org。"
+      },
+      {
+        "text": "FORCE [78]. The widely adopted PPO-based RLHF system EuroSys ’25, March 30-April 3, 2025, Rotterdam, Netherlands",
+        "x": 54,
+        "y": 117.3,
+        "w": 504,
+        "h": 16.9,
+        "zh": "[78]。目前常用的、基于 PPO 的 RLHF 系统。EuroSys ’25，2025 年 3 月 30 日至 4 月 3 日，荷兰鹿特丹"
+      },
+      {
+        "text": "typically consists of four LLMs [7, 55]: an actor, a critic, a ref- © 2025 Copyright held by the owner/author(s). Publication rights licensed",
+        "x": 53.5,
+        "y": 106.3,
+        "w": 505.5,
+        "h": 15.9,
+        "zh": "通常包含四个 LLM [7, 55]：一个 actor、一个 critic、一个 reference。© 2025，著作权由所有者/作者持有。出版权已获许可"
+      },
+      {
+        "text": "erence policy network and a reward model. PPO-based RLHF proceeds in iterations, each with three stages: (1) response ACM ISBN 979-8-4007-1196-1/25/03",
+        "x": 53.7,
+        "y": 86.4,
+        "w": 504.5,
+        "h": 23.9,
+        "zh": "策略网络，以及一个 reward 模型。基于 PPO 的 RLHF 按迭代进行，每一轮有三个阶段：（1）回复。ACM ISBN 979-8-4007-1196-1/25/03"
+      },
+      {
+        "text": "generation using the actor model with a batch of prompts; https://doi.org/10.1145/3689031.3696075",
+        "x": 54,
+        "y": 76.4,
+        "w": 504.7,
+        "h": 10,
+        "zh": "生成：用 actor 模型处理一批提示；https://doi.org/10.1145/3689031.3696075"
+      }
+    ],
+    "2": [
+      {
+        "text": "(2) preparation of training data by scoring the generated responses through a single forward pass of the critic, reference policy, and reward models; (3) learning from human preference by updating actor and critic through forward and backward computation. Other RLHF variants [19, 43] follow similar stages but involves different numbers of models and data dependencies among the models. Traditional RL can be modeled as a dataflow [46], which is a directed acyclic graph (DAG): each node in the RL dataflow represents computation of a neural network (e.g., actor or critic network which can be CNN or MLP); each edge denotes data dependency between NN computations (e.g., output of the critic is used as input to actor training [68].) RLHF dataflow is more complex, with more complicated models involved (e.g., LLMs for the actor/critic/reference/reward models), each running distinct computation, and more diverse data dependencies among them (i.e., multicast between distributed model partitions). Training and generation of an LLM in the RLHF dataflow requires distributed computation (e.g., using tensor/pipeline/data parallelism) [40, 71]. Therefore, each node in the RLHF dataflow is a complex distributed program, corresponding to distributed computation of the respective LLM. Models in different nodes typically use different parallelism strategies as their workloads vary. The edge represents data resharding, which is often a many-tomany multicast. Consequently, Flexible representation and efficient execution of the complex and resource intensive",
+        "x": 53.7,
+        "y": 399.2,
+        "w": 242,
+        "h": 320.8,
+        "zh": "（2）准备训练数据：用 critic、reference policy 和 reward 模型各做一次前向，给生成出来的回复打分；（3）从人类偏好中学习：通过前向和反向计算更新 actor 和 critic。其他 RLHF 变体 [19, 43] 阶段类似，但模型个数以及模型之间的数据依赖不同。传统 RL 可以建模成数据流 [46]，也就是一张有向无环图（DAG）：RL 数据流里的每个节点表示一个神经网络的计算（例如 actor 或 critic 网络，可以是 CNN 或 MLP）；每条边表示神经网络计算之间的数据依赖（例如 critic 的输出用作 actor 训练的输入 [68]）。RLHF 数据流更复杂：涉及的模型更复杂（actor、critic、reference、reward 都是 LLM），各自跑的计算也不一样，彼此的数据依赖也更多样，也就是分布式模型分片之间的组播。RLHF 数据流里，一次 LLM 的训练或生成都需要分布式计算（例如张量并行、流水线并行和数据并行）[40, 71]。因此每个节点都是一段复杂的分布式程序，对应该 LLM 的分布式计算。不同节点的负载不同，用的并行策略通常也不一样。边表示数据重切分，常常是一次多对多组播。于是，对这种复杂、又很吃资源的流程，要能灵活表示并高效执行"
+      },
+      {
+        "text": "To address these limitations, we propose HybridFlow, a flexible and efficient RLHF framework to easily represent and execute diverse RLHF dataflows, attaining high throughput. Our key observation is that utilizing the single-controller paradigm on the inter-node level enables flexible expression of various data dependencies and easy coordination of inter-node data resharding with minimal overhead, while integrating the multi-controller paradigm within intra-node computation enhances computation efficiency substantially. We advocate a hierarchical hybrid programming model to generate RLHF dataflows. At the node level, multiple model classes are provided that encapsulate distributed computation (training, inference and generation) of different LLMs in the dataflow into primitive APIs. These APIs can seamlessly support various parallelism strategies from the existing LLM frameworks, including 3D parallelism [71], ZeRO [59], and PyTorch FSDP [57]), and perform distributed computation under the multi-controller paradigm. Among the nodes, a set of transfer protocols are designed to hide the complexity of data resharding from users, as coordinated by a single controller. This programming model abstracts away the complexity of distributed computing, allowing users to implement an RLHF dataflow in a few lines of code and run RLHF through a single process of the single controller. It also effectively decouples intra-node computation and inter-node data transfer, allowing independent optimization of each model without changing the code of other models in the dataflow. Training and generation of the actor model represent major computation in the RLHF dataflow. We further design a 3D-HybridEngine to enable efficient execution of training and generation of the actor model, introducing zero memory redundancy and significantly reduced communication overhead during model parameter resharding between the training and generation stages. Our hybrid programming model also facilitates flexible placement of models onto the same or different sets of GPU devices. This allows us to provide an effective algorithm to optimize GPU allocation and placement of the models, with various model sizes and distinct workloads, for any RLHF dataflow. Our contributions in designing HybridFlow are summarized as follows: • We propose a hierarchical hybrid programming model for conveniently building the RLHF dataflow. This programming model enables efficient distributed execution of intra-node computation and flexible inter-node data resharding and transfer, for various RLHF algorithms (§4). • We design a 3D-HybridEngine that executes training and generation of the actor model with high computation efficiency and zero-redundancy transition between the training stage and the generation stage (§5). • We devise an effective mapping algorithm to automatically identify optimized GPU allocation and placement of each node (model) in the RLHF dataflow (§6). • We conduct extensive experiments comparing HybridFlow with state-of-the-art RLHF systems [17, 30, 82] under various",
+        "x": 317.5,
+        "y": 76.4,
+        "w": 242.2,
+        "h": 643.6,
+        "zh": "针对这些限制，我们提出 HybridFlow，一个灵活、高效的 RLHF 框架，用来方便地表示并执行各种 RLHF 数据流，同时拿到高吞吐。关键观察是：节点之间用单控制器，各种数据依赖就好表达，节点间的数据重切分也容易协调，开销很小；节点内部的计算再接上多控制器，计算效率会高很多。我们主张用一套层次化的混合编程模型来构造 RLHF 数据流。在节点这一层，提供多个模型类，把数据流里不同 LLM 的分布式计算（训练、推理和生成）封装成原语 API。这些 API 可以直接接上现有 LLM 框架里的各种并行策略，包括 3D 并行 [71]、ZeRO [59] 和 PyTorch FSDP [57]，并在多控制器范式下做分布式计算。节点之间设计了一组传输协议，把数据重切分的复杂性藏起来，由单个控制器协调。这套编程模型把分布式计算的复杂性挡在外面：用户用很少几行代码就能实现一条 RLHF 数据流，并且只跑单控制器上的一个进程。它也把节点内计算和节点间数据传输拆开，每个模型可以单独优化，不用改数据流里其他模型的代码。actor 的训练和生成是 RLHF 数据流里的主要计算。我们进一步设计了 3D-HybridEngine，让 actor 的训练和生成都能高效执行：两个阶段之间重切分模型参数时，内存零冗余，通信开销也明显下降。混合编程模型还便于把模型灵活放到同一组或不同组 GPU 上。因此我们可以给出一个有效算法，对任意 RLHF 数据流，按不同模型大小和不同负载，优化 GPU 分配和模型放置。设计 HybridFlow 的贡献概括如下：• 我们提出层次化的混合编程模型，方便搭建 RLHF 数据流。它让节点内计算能高效地分布式执行，也让节点间的数据重切分和传输保持灵活，适用于多种 RLHF 算法（§4）。• 我们设计了 3D-HybridEngine，以很高的计算效率执行 actor 的训练和生成，并在训练阶段和生成阶段之间做零冗余切换（§5）。• 我们给出一个有效的映射算法，自动为 RLHF 数据流中的每个节点（模型）找出较好的 GPU 分配和放置（§6）。• 我们做了大量实验，在多种条件下把 HybridFlow 与当前最好的 RLHF 系统 [17, 30, 82] 比较"
+      },
+      {
+        "text": "Traditional RL frameworks such as RLLib [45] and RLLib Flow [46] utilize a hierarchical single-controller paradigm to run RL dataflows. A centralized controller assigns nodes in the dataflow to different processes and coordinates their execution order. Each node process can further spawn more workers to perform computation, again following the singlecontroller paradigm. However, they only provide primitives for data-parallel training and are constrained to neural networks that are at most hundreds of MB in size [45, 46]. In the RLHF dataflow, each node corresponds to an LLM with up to billions of operators, computed using some complex parallelism. A single-controller paradigm is inefficient due to the substantial overhead of dispatching operators to distributed accelerators [1, 9]. Existing RLHF systems adopt a multi-controller paradigm to manage intra-node computation and inter-node data resharding [17, 30, 80]. Each controller independently manages the computation of one device and uses multiple point-topoint operations to coordinate data dependencies between different nodes. This multi-controller paradigm introduces negligible dispatch overhead when performing LLM computation (detailed in §2.2). However, without central control, it is inflexible to implement various RLHF dataflow, as modifying a single node to adapt to different data dependencies requires changing all dependent nodes’ implementation, hindering code reuse.",
+        "x": 53.6,
+        "y": 76.4,
+        "w": 242.1,
+        "h": 308.8,
+        "zh": "RLLib [45] 和 RLLib Flow [46] 这类传统 RL 框架，用层次化的单控制器来跑 RL 数据流。一个中心控制器把数据流中的节点分给不同进程，并协调执行顺序。每个节点进程还可以再拉起更多 worker 做计算，同样是单控制器。但它们只提供数据并行训练的原语，网络规模最多到几百 MB [45, 46]。在 RLHF 数据流里，每个节点对应一个 LLM，算子可达数十亿，还要用某种复杂并行来算。单控制器在这里效率差，因为把算子分发到分布式加速器上的开销太大 [1, 9]。现有 RLHF 系统用多控制器来管理节点内计算和节点间的数据重切分 [17, 30, 80]。每个控制器只管一台设备上的计算，并用多次点对点操作协调不同节点之间的数据依赖。做 LLM 计算时，这种多控制器的分发开销可以忽略（详见 §2.2）。可是没有中心控制，各种 RLHF 数据流就不好写：为了适应不同的数据依赖而改一个节点，所有依赖它的节点都得跟着改，代码很难复用。"
+      }
+    ],
+    "3": [
+      {
+        "text": "- Computation and - Large transition data dependencies cost between all_gather_weights() - Coupled with some-Rigid support for",
+        "x": 403,
+        "y": 625.5,
+        "w": 151.4,
+        "h": 22.6,
+        "zh": ""
+      },
+      {
+        "text": "Figure 1. Dataflow graph of 3 RLHF algorithms [19, 43, 55]. Stage ○1 , ○2 , ○3 represent Generation, Preparation, and Training, respectively.",
+        "x": 53.7,
+        "y": 570.9,
+        "w": 241.9,
+        "h": 33.9,
+        "zh": "图 1. 三种 RLHF 算法 [19, 43, 55] 的数据流图。阶段 ○1、○2、○3 分别是生成、准备和训练。"
+      },
+      {
+        "text": "Inter-Node: Single-Controller implementation responses = actor.gen(prompts)",
+        "x": 342.1,
+        "y": 589.5,
+        "w": 95.8,
+        "h": 13.4,
+        "zh": "节点间：单控制器实现。responses = actor.gen(prompts)"
+      },
+      {
+        "text": "RLHF algorithms, model sizes and cluster scales. Our evaluation demonstrates 1.53×∼20.57× throughput improvements. We have open-sourced HybridFlow and believe that HybridFlow can boost future RLHF research and development.",
+        "x": 54,
+        "y": 512.1,
+        "w": 241.7,
+        "h": 45.8,
+        "zh": "不同 RLHF 算法、模型大小和集群规模。评估显示吞吐提升 1.53×∼20.57×。我们已经开源 HybridFlow，希望它能推动后续的 RLHF 研究与开发。"
+      },
+      {
+        "text": "Background and Motivation Reinforcement Learning from Human Feedback RLHF Workflow. RLHF aligns the linguistic space of LLMs with human values, using a set of human-ranked candidates of given prompts [7, 19, 41, 43, 55, 70, 91]. An RLHF system typically consists of multiple models, e.g., an actor, a critic, a reference policy, and one or multiple reward models. The actor and the reference are each pre-trained/fined-tuned LLM (i.e., the LLM that is undergoing RLHF). The critic and reward models can be different LLMs fine-tuned on the human preference dataset, with the language modeling head replaced by a scalar output head [7, 55]. The RLHF workflow can be decomposed into 3 stages (Figure 1) and we take PPO",
+        "x": 53.6,
+        "y": 339.4,
+        "w": 242.1,
+        "h": 161.4,
+        "zh": "背景与动机。基于人类反馈的强化学习。RLHF 流程。RLHF 用一组由人排过序的、针对给定提示的候选，把 LLM 的语言空间对齐到人的价值观 [7, 19, 41, 43, 55, 70, 91]。一个 RLHF 系统通常有多个模型，例如 actor、critic、reference policy，以及一个或多个 reward 模型。actor 和 reference 各自是已经预训练或微调过的 LLM（也就是正在做 RLHF 的那个模型）。critic 和 reward 可以是在人类偏好数据上微调过的其他 LLM，只是把语言建模头换成了标量输出头 [7, 55]。RLHF 流程可以拆成 3 个阶段（图 1）。我们以 PPO"
+      },
+      {
+        "text": "Figure 2. Programming model used in RLHF systems. (a) Existing RLHF systems adopt the multi-controller paradigm. (b) HybridFlow utilizes a hybrid programming model: the single-controller coordinates models; each model uses multicontroller paradigm in distributed computation. Inactive node in grey represents operation not executed at this time.",
+        "x": 317.7,
+        "y": 418.7,
+        "w": 241.9,
+        "h": 69.7,
+        "zh": "图 2. RLHF 系统使用的编程模型。（a）现有 RLHF 系统采用多控制器范式。（b）HybridFlow 使用混合编程模型：单控制器负责协调各个模型；每个模型在分布式计算内部再用多控制器。灰色的非活跃节点表示这一时刻没有执行的操作。"
+      },
+      {
+        "text": "Parallelism Strategies. LLMs are trained and served with data, pipeline, and tensor parallelism [36, 40, 54]. With data parallelism (DP), the input data is split into multiple subsets; each subset is processed by a separate device (e.g., a GPU) [69]. ZeRO [59] is a memory-optimized solution for DP training, progressively sharding optimizer states, gradients, and model parameters across GPUs. Pipeline parallelism (PP) [32, 53] and tensor parallelism (TP) [71] distribute model parameters, gradients and optimizer states across multiple GPUs. Modern distributed training frameworks like Megatron-LM [71] and MegaScale [36] utilize 3D parallelism or PTD parallelism [54], where P, T, D stand for PP, TP, DP, respectively. In 3D parallelism, PP size represents the number of pipeline stages in model training, TP size refers to the number of shards that a tensor is partitioned into, and DP size is the number of model replicas. LLM serving systems employ 3D parallelism similar to training while only model parameters and KVCache are sharded [16, 29, 40]. LLM models in the RLHF dataflow may perform distinct computations, including training (one forward pass, one backward pass and model update), inference (one forward pass) and generation (auto-regressive generation with multiple forward passes). In particular, training and generation are performed on the actor model, training and inference on the critic, and inference on reference policy and reward models. Distinct parallel strategies can be applied to different models for varied computations to achieve optimal throughput.",
+        "x": 318,
+        "y": 76.4,
+        "w": 241.7,
+        "h": 320.8,
+        "zh": "并行策略。LLM 的训练和服务使用数据并行、流水线并行和张量并行 [36, 40, 54]。数据并行（DP）把输入分成多份，每一份交给单独的设备（例如一块 GPU）处理 [69]。ZeRO [59] 是一种省内存的 DP 训练做法，逐步把优化器状态、梯度和模型参数切到各块 GPU 上。流水线并行（PP）[32, 53] 和张量并行（TP）[71] 把模型参数、梯度以及优化器状态分布到多块 GPU。Megatron-LM [71] 和 MegaScale [36] 这类现代分布式训练框架使用 3D 并行，或称 PTD 并行 [54]，其中 P、T、D 分别代表 PP、TP、DP。在 3D 并行里，PP 大小是训练时的流水线阶段数，TP 大小是一个张量被切成的份数，DP 大小是模型副本数。LLM 服务系统采用和训练类似的 3D 并行，但只切分模型参数和 KVCache [16, 29, 40]。RLHF 数据流里的 LLM 可能做不同计算：训练（一次前向、一次反向，再加模型更新）、推理（一次前向）和生成（多次前向的自回归生成）。具体而言，actor 上做训练和生成，critic 上做训练和推理，reference policy 和 reward 模型上做推理。不同模型、不同计算可以采用不同并行策略，以取得更高吞吐。"
+      },
+      {
+        "text": "•Stage 1 (Generation): The actor produces responses from a batch of prompts using auto-regressive generation. •Stage 2 (Preparation): Using prompts and generated responses, the critic computes their values [66, 68], the reference policy computes their reference log probabilities, and the reward model computes their rewards [7, 55], all via a single pass of forward computation of the respective model. •Stage 3 (Learning/Training): The actor and the critic are updated via Adam [38], using the batch of data produced by previous stages and the loss function [55]. Other RLHF algorithms largely follow the 3-stage workflow as well (Figure 1(b)(c)). Safe-RLHF [19] introduces an auxiliary pretrain loss following PPO-ptx [55] and includes an additional cost model to fit human preferences and safety labels simultaneously. ReMax [43] requires an additional generation pass for variance reduction and eliminates the critic model in the dataflow. Researchers are actively exploring novel RLHF algorithms [41, 70, 91] and integrating traditional RL methods into RLHF domains [37]. These variances necessitate a flexible representation of the RLHF dataflow graph to accommodate diverse algorithmic requirements.",
+        "x": 54,
+        "y": 76.4,
+        "w": 246.7,
+        "h": 249.1,
+        "zh": "•阶段 1（生成）：actor 对一批提示做自回归生成，得到回复。•阶段 2（准备）：拿着提示和生成的回复，critic 计算 value [66, 68]，reference policy 计算参考对数概率，reward 模型计算奖励 [7, 55]，各自只做一次前向。•阶段 3（学习/训练）：用前面阶段产生的这批数据和损失函数 [55]，通过 Adam [38] 更新 actor 和 critic。其他 RLHF 算法大体也是这三个阶段（图 1(b)(c)）。Safe-RLHF [19] 在 PPO-ptx [55] 之外加了一项辅助预训练损失，并增加一个 cost 模型，同时拟合人类偏好和安全标签。ReMax [43] 为了降低方差要多做一次生成，并且从数据流里去掉 critic。研究者还在积极探索新的 RLHF 算法 [41, 70, 91]，也在把传统 RL 方法接进 RLHF [37]。这些差别要求 RLHF 数据流图能够灵活表示，好容纳不同的算法需求。"
+      }
+    ],
+    "4": [
+      {
+        "text": "Programming Model for Distributed ML Single-Controller. It employs a centralized controller to manage the overall execution flow of the distributed program. With centralized control logic, users can build core functionalities of the dataflow as a single process (Figure 2(b)), while the controller automatically generates distributed workers to carry out the computation. With a global view of the hardware and dataflow graph, the single-controller paradigm allows flexible and optimized resource mapping and execution order coordination among dataflow tasks. However, coordination messages are passed from the controller to all workers, incurring significant dispatch overhead when executing expansive dataflow graphs on large clusters [1, 9]. Multi-Controller. Each device (aka worker) has its own controller. State-of-the-art distributed LLM training and serving systems adopt the multi-controller paradigm, due to its scalability and low dispatch overhead (control messaging largely passed from CPU to GPU over fast PCIe links) [36, 40, 60, 71]. As shown in the example that employs multi-controller RLHF implementation in Figure 2(a), a separate program is run for each model, and all workers of one model execute the same program. Each worker only possesses a local view of the system state and requires point-to-point communication between two models (blue code and arrows) to coordinate model execution order. To implement an RLHF workflow in the multi-controller architecture, a user must intricately integrate the code for collective communication, computation, and point-to-point data transfer in the program run at each device. This leads to deeply nested code of computation and data transfer, challenging to develop, maintain, and optimize. In Figure 2(a), each model performs local computation and all_gather operations (black code), while the actor model must explicitly manage send operations to the critic and reward models, and the latter must correspondingly implement receive operations at precise points in their program. RLHF Characteristics Heterogeneous model workloads. The actor, critic, reference and reward models in RLHF may execute training, inference or generation at different stages, with different memory footprint and computation demand. For reference policy and reward models, only their model parameters need to be stored in GPU memory, as they perform only the forward pass computation. For the actor and the critic, their model parameters, gradients, and optimizer states must be stored as they undergo model training. Moreover, a small actor model (e.g., a 7B pre-trained/fine-tuned LLM) can be paired with larger critic and reward models (e.g., 70B LLMs) in RLHF for better alignment [7]. Given such heterogeneity, different parallelism strategies and tailored optimizations are needed for running each model during RLHF. Unbalanced computation between actor training and generation. In the RLHF dataflow, training and generation of the actor model are represented by two nodes (Figure 1),",
+        "x": 53.5,
+        "y": 76.4,
+        "w": 242.2,
+        "h": 643.6,
+        "zh": "分布式机器学习的编程模型。单控制器。用一个集中控制器管理分布式程序的整体执行。控制逻辑集中以后，用户可以把数据流的核心功能写成单个进程（图 2(b)），控制器再自动拉起分布式 worker 去做计算。单控制器看得到硬件和数据流图的全局，因此资源怎么映射、任务按什么顺序跑，都可以灵活安排。不过协调消息要从控制器发到所有 worker；在大集群上跑很大的数据流图时，分发开销会很明显 [1, 9]。多控制器。每台设备（也就是 worker）有自己的控制器。当前最好的分布式 LLM 训练和服务系统都用多控制器，因为它好扩展，分发开销也低（控制消息主要经高速 PCIe 从 CPU 送到 GPU）[36, 40, 60, 71]。如图 2(a) 的多控制器 RLHF 实现：每个模型跑一份自己的程序，同一模型的所有 worker 执行同一份程序。每个 worker 只看得到局部状态，两个模型之间要靠点对点通信（蓝色代码和箭头）来对齐执行顺序。想在多控制器架构里实现 RLHF，用户必须在每台设备的程序里，把集合通信、计算和点对点数据传输缠在一起。结果计算和数据传输嵌得很深，难写、难维护，也难优化。图 2(a) 里，每个模型做本地计算和 all_gather（黑色代码）；actor 还得显式管理发往 critic 和 reward 模型的 send，后两者必须在程序中刚好对应的位置写上 receive。RLHF 的特点。模型负载不一样。actor、critic、reference 和 reward 可能在不同阶段做训练、推理或生成，内存占用和计算需求都不同。reference policy 和 reward 只做前向，GPU 上只需要放模型参数。actor 和 critic 要训练，参数、梯度和优化器状态都得留着。而且一个较小的 actor（例如 7B 的预训练或微调 LLM）可以配上更大的 critic 和 reward（例如 70B 的 LLM），对齐效果更好 [7]。负载这样不齐，每个模型就需要不同的并行策略，以及专门的优化。actor 的训练和生成算力不均衡。在 RLHF 数据流里，actor 的训练和生成是两个节点（图 1），"
+      },
+      {
+        "text": "Figure 3. Dataflow execution given a model placement plan. Blocks with numbers represent GPUs. In dashed boxes, the models are placed on different sets of devices and can be concurrently computed. Reference model (blue) and reward model (green) are colocated on the same set of GPUs and executed sequentially.",
+        "x": 318,
+        "y": 545.5,
+        "w": 241.6,
+        "h": 69.7,
+        "zh": "图 3. 给定一种模型放置方案后的数据流执行。带数字的方块是 GPU。虚线框中，模型放在不同的设备集合上，可以同时计算。reference 模型（蓝色）和 reward 模型（绿色）共置在同一组 GPU 上，按顺序执行。"
+      },
+      {
+        "text": "which often render majority of the workload in each RLHF iteration (e.g., 58.9% of total RLHF time with HybridFlow). Actor training is computation bound [24], often requiring a larger model-parallel (MP) size (i.e., the number of partitions the model is partitioned into) and distributing the workload to more GPUs, e.g., 8 partitions of a 7B model on 8 GPUs. Using the same parallelism strategy (e.g., the same MP size) for generation can lead to underutilization of GPU computation resources due to its memory-bound nature [40]. Previous studies show that combining a larger DP size with a smaller MP size (hybrid data and model parallelism), e.g., partition a 7B model into two and replicate it four times on 8 GPUs, can improve the generation throughput [44, 92]. Although using different parallelism strategies for actor training and generation may optimize throughput in both stages, resharding the actor model weights at runtime between the two stages can incur significant communication and memory overhead. For example, aligning a 70B actor model requires transferring 140GB of model weights from training to generation per RLHF iteration, taking up to 36.4% of an iteration time when the two stages are on different devices [30]. Diverse model placement requirements. Strategic device placement of models in the RLHF dataflow is necessary, according to computation workloads and data dependencies of the models. Figure 3 gives an example model placement plan and the corresponding RLHF execution flow. Models placed on different sets of devices can be executed in parallel if no data dependencies exist. Models placed on the same set of GPUs, referred to as colocated models, share the GPU memory and are executed sequentially in a time-sharing manner, as out-of-memory (OOM) error may easily happen if colocated LLMs execute concurrently. We observe a compromise: placing models on different devices permits parallel processing but may inevitably lead to some GPU idle time, given staged model execution in RLHF. In Figure 3, actor and critic are placed separately, performing training in parallel, but incurring 1/3 of their GPU time being idle, during other RLHF stages. Supporting various",
+        "x": 317.6,
+        "y": 76.4,
+        "w": 242.1,
+        "h": 452.3,
+        "zh": "这两处常常占掉每轮 RLHF 的大部分时间（例如在 HybridFlow 里占到总时间的 58.9%）。actor 训练偏计算 [24]，通常要更大的模型并行（MP）规模，也就是模型被切成的份数，把负载摊到更多 GPU 上，例如把一个 7B 模型切成 8 份、放在 8 块 GPU 上。生成若沿用同一套并行（例如同一个 MP 规模），会因为生成偏内存瓶颈，GPU 算力用不满 [40]。已有工作表明，把更大的 DP 和更小的 MP 配在一起（数据并行与模型并行混合），例如把 7B 模型切成两份、在 8 块 GPU 上复制 4 份，可以提高生成吞吐 [44, 92]。训练和生成用不同并行策略，两边都能更快，但运行中要在两个阶段之间重切分 actor 的权重，通信和内存开销会很大。例如对齐一个 70B 的 actor，每一轮都要把 140GB 权重从训练搬到生成；两个阶段如果放在不同设备上，这块时间最多能占一轮的 36.4% [30]。模型该怎么摆，需求也很不一样。要按计算负载和数据依赖，有针对性地把数据流里的模型放到设备上。图 3 给了一个放置方案，以及对应的 RLHF 执行过程。没有数据依赖时，放在不同设备集合上的模型可以并行。放在同一组 GPU 上的模型叫做共置模型，它们共用显存，按分时方式一个接一个跑；共置的 LLM 若同时执行，很容易内存不够（OOM）。这里有个取舍：分开放可以并行，但 RLHF 是分阶段的，有些 GPU 仍会空转。图 3 里 actor 和 critic 分开摆，训练可以并行，可在其他阶段，它们大约有 1/3 的 GPU 时间是空的。要支持各种"
+      }
+    ],
+    "5": [
+      {
+        "text": "Table 1. Comparison of RLHF frameworks. Figures illustrate execution of one PPO iteration. Numbers 1-6 represent response generation, reward model inference, reference model inference, critic inference, actor training, and critic training, respectively.",
+        "x": 53.7,
+        "y": 699.7,
+        "w": 504.3,
+        "h": 21.9,
+        "zh": "表 1. RLHF 框架对比。图中画的是一轮 PPO 迭代怎么执行。数字 1–6 依次是：回复生成、reward 模型推理、reference 模型推理、critic 推理、actor 训练、critic 训练。"
+      },
+      {
+        "text": "Training: 3D, ZeRO, FSDP training and generation",
+        "x": 351.6,
+        "y": 659.9,
+        "w": 199.7,
+        "h": 17.5,
+        "zh": "训练：3D、ZeRO、FSDP。训练和生成"
+      },
+      {
+        "text": "Generation: 3D Parallelism Using two copies of actor",
+        "x": 240,
+        "y": 646.4,
+        "w": 314,
+        "h": 21.5,
+        "zh": "生成：3D 并行。使用两份 actor"
+      },
+      {
+        "text": "Using identical model partition in training & generation",
+        "x": 58,
+        "y": 636.8,
+        "w": 382.8,
+        "h": 17.5,
+        "zh": "训练和生成使用相同的模型划分"
+      },
+      {
+        "text": "in two stages (shared weights) Actor/Ref colocated on some GPUs on the same set of devices",
+        "x": 145.5,
+        "y": 613.7,
+        "w": 301.8,
+        "h": 31.1,
+        "zh": "两个阶段里（共享权重）。Actor/Ref 在同一组设备的部分 GPU 上共置"
+      },
+      {
+        "text": "placement strategies and maximizing device utilization are",
+        "x": 54,
+        "y": 549.3,
+        "w": 240,
+        "h": 10,
+        "zh": "放置策略，并尽量把设备用满，这些"
+      },
+      {
+        "text": "in Table 1. Implementing a different placement is difficult, crucial for optimizing RLHF performance at any model size",
+        "x": 54,
+        "y": 537.3,
+        "w": 505.1,
+        "h": 21.9,
+        "zh": "见表 1。换成另一种放置很难做，而对任意模型规模把 RLHF 性能调好又很关键"
+      },
+      {
+        "text": "requiring changing the inner logic of model initialization and inter-node data transfer as highlighted in blue in Figure 2. OpenRLHF and NeMo-Aligner allow concurrent model Limitations of existing RLHF systems",
+        "x": 76.6,
+        "y": 507,
+        "w": 483.1,
+        "h": 40.3,
+        "zh": "得改掉模型初始化和节点间数据传输的内部逻辑，就是图 2 里标蓝的那些。OpenRLHF 和 NeMo-Aligner 允许模型同时计算。现有 RLHF 系统的局限"
+      },
+      {
+        "text": "computation in the preparation and learning stages; in the Inflexible support for various RLHF dataflow graphs.",
+        "x": 54,
+        "y": 494.8,
+        "w": 504,
+        "h": 16.6,
+        "zh": "在准备阶段和学习阶段做计算；到了。对各种 RLHF 数据流图的支持比较死板。"
+      },
+      {
+        "text": "generation stage, models except the actor are idle, wasting Existing RLHF systems adopt the multi-controller paradigm",
+        "x": 54,
+        "y": 482.9,
+        "w": 504,
+        "h": 16.6,
+        "zh": "生成阶段，除了 actor，其他模型都闲着，白白浪费。现有 RLHF 系统采用多控制器范式"
+      },
+      {
+        "text": "the GPUs they occupy. DeepSpeed-Chat colocates all models for dataflow implementation [17, 30, 80, 82]. To implement",
+        "x": 54,
+        "y": 470.9,
+        "w": 504,
+        "h": 16.6,
+        "zh": "它们占着的那些 GPU。DeepSpeed-Chat 把所有模型放在一起。来实现数据流 [17, 30, 80, 82]。要想实现"
+      },
+      {
+        "text": "on the same set of devices, and each device runs each model various RLHF algorithms, a user must navigate and manage",
+        "x": 53.8,
+        "y": 459,
+        "w": 504.2,
+        "h": 16.6,
+        "zh": "同一组设备上，每台设备再按数据流依次跑每个模型。各种 RLHF 算法，用户就得自己在代码里翻找、管理"
+      },
+      {
+        "text": "sequentially according to the RLHF dataflow. With unbalcode that mixes collective communication, model computa-",
+        "x": 54,
+        "y": 447,
+        "w": 505.7,
+        "h": 16.6,
+        "zh": "照着 RLHF 数据流往下执行。一旦各模型负载不均衡。把集合通信和模型计算搅在一起的那套代码"
+      },
+      {
+        "text": "anced workloads among the models, such a placement can tion (potentially using various distributed training/serving",
+        "x": 54,
+        "y": 435.1,
+        "w": 504,
+        "h": 16.6,
+        "zh": "各模型之间的负载并不均衡，这种放置就可能。（可能用到各种分布式训练或服务"
+      },
+      {
+        "text": "be inefficient in resource utilization (evaluated in §8.3). frameworks), and point-to-point data transfer. This code",
+        "x": 54,
+        "y": 423.1,
+        "w": 487.2,
+        "h": 16.6,
+        "zh": "资源利用率不高（§8.3 做了评估）。框架），再加上点对点数据传输。这种代码"
+      },
+      {
+        "text": "Design Considerations structure lacks modularity/function encapsulation, making the RLHF systems tightly coupled with specific LLM train-",
+        "x": 54,
+        "y": 399.2,
+        "w": 388.6,
+        "h": 23.2,
+        "zh": "设计上要考虑的事。结构缺少模块化，函数也没有封装好，于是 RLHF 系统和某套具体的 LLM 训练"
+      },
+      {
+        "text": "To tackle limitations of existing systems, the key question is ing and serving frameworks. Consequently, a user needs to",
+        "x": 54,
+        "y": 387.2,
+        "w": 504,
+        "h": 20.2,
+        "zh": "要解决现有系统的这些不足，关键问题是。以及服务框架。于是用户需要"
+      },
+      {
+        "text": "- How to design a flexible and efficient programming implement and optimize different RLHF dataflows case-by-",
+        "x": 54,
+        "y": 375.3,
+        "w": 504,
+        "h": 20.2,
+        "zh": "怎样设计一套灵活、高效的编程方式。去实现并优化不同的 RLHF 数据流，而且得一个案例一个案例地来"
+      },
+      {
+        "text": "model to implement RLHF dataflow? A single-controller case [46], hindering code reuse and increasing the risk of",
+        "x": 54,
+        "y": 363.3,
+        "w": 504.2,
+        "h": 20.2,
+        "zh": "模型，才能实现 RLHF 数据流？单控制器。[46]，这会妨碍代码复用，也增加风险"
+      },
+      {
+        "text": "design is particularly advantageous at the inter-node level making mistakes. Existing RLHF frameworks only support",
+        "x": 54,
+        "y": 351.4,
+        "w": 504,
+        "h": 20.2,
+        "zh": "这种设计在节点之间这一层特别有利。出错。现有 RLHF 框架只支持"
+      },
+      {
+        "text": "due to its flexibility in coordinating data transfer, execution the PPO algorithm. In addition, limited parallel strategies are",
+        "x": 54,
+        "y": 339.4,
+        "w": 504,
+        "h": 20.2,
+        "zh": "因为它灵活，便于协调数据传输和执行。PPO 算法。另外，能用的并行策略也很有限"
+      },
+      {
+        "text": "order, and resource virtualization among distributed compusupported due to implementation complexity. For example,",
+        "x": 54,
+        "y": 327.5,
+        "w": 505.7,
+        "h": 20.2,
+        "zh": "顺序，以及不同模型的分布式计算之间的资源虚拟化。由于实现复杂，这些策略才支持得有限。例如，"
+      },
+      {
+        "text": "tation of different models [9, 50]. The RLHF dataflow graph to incorporate 3D parallelism for LLM training and genera-",
+        "x": 54,
+        "y": 315.5,
+        "w": 504,
+        "h": 20.2,
+        "zh": "不同模型的计算 [9, 50]。RLHF 的数据流图通常。要想给 LLM 的训练和生成加上 3D 并行"
+      },
+      {
+        "text": "typically consists of only a few nodes. Dispatching control tion in DeepSpeed-Chat [82], one may have to re-implement",
+        "x": 54,
+        "y": 303.6,
+        "w": 504,
+        "h": 20.2,
+        "zh": "只有少数几个节点。从单控制器把控制消息分发出去。在 DeepSpeed-Chat [82] 里，可能不得不把整个系统重写"
+      },
+      {
+        "text": "messages to different nodes from the single-controller inthe whole system due to the mixed code structure.",
+        "x": 54,
+        "y": 291.6,
+        "w": 505.7,
+        "h": 20.2,
+        "zh": "从单控制器发到各个节点，会带来。整个系统，就因为代码结构是混在一起的。"
+      },
+      {
+        "text": "curs negligible overhead as compared to distributed comInefficient RLHF execution. Table 1 summarizes paral-",
+        "x": 54,
+        "y": 279.7,
+        "w": 505.7,
+        "h": 20.2,
+        "zh": "开销，跟节点上的分布式计算比起来可以忽略。RLHF 跑得不够高效。表 1 总结了各系统的并行"
+      },
+      {
+        "text": "putation required for nodes (models) in the dataflow. The lelism strategies, model placement, and execution patterns",
+        "x": 54,
+        "y": 267.7,
+        "w": 504,
+        "h": 20.2,
+        "zh": "数据流里这些节点（模型）所需要的计算。策略、模型放置方式，以及执行模式"
+      },
+      {
+        "text": "multi-controller paradigm, known for its low latency in disadopted by the existing RLHF systems. DeepSpeed-Chat [82]",
+        "x": 54,
+        "y": 255.7,
+        "w": 505.7,
+        "h": 20.2,
+        "zh": "多控制器在分发时延迟很低。这是现有 RLHF 系统采用的做法。DeepSpeed-Chat [82]"
+      },
+      {
+        "text": "patching operators to accelerators [20], can be leveraged in and OpenRLHF [30] adopt ZeRO-3 for actor training and TP",
+        "x": 54,
+        "y": 243.8,
+        "w": 504,
+        "h": 20.2,
+        "zh": "把算子分发到加速器上 [20]，因而可以用在。OpenRLHF [30] 用 ZeRO-3 做 actor 训练，并用 TP"
+      },
+      {
+        "text": "distributed computation of each model. With these insights, for actor generation. OpenRLHF uses different copies of the",
+        "x": 54,
+        "y": 231.8,
+        "w": 505.1,
+        "h": 20.2,
+        "zh": "基于这些观察，。做 actor 生成。OpenRLHF 使用不同的副本，把"
+      },
+      {
+        "text": "we propose a hierarchical hybrid programming model for actor model on different devices for training and generation,",
+        "x": 54,
+        "y": 219.9,
+        "w": 504.2,
+        "h": 20.2,
+        "zh": "我们提出一套层次化的混合编程模型，用来。actor 模型放到不同设备上，分别做训练和生成，"
+      },
+      {
+        "text": "RLHF dataflow implementation. Our key design principle is incurring redundant memory usage and frequent weight syn-",
+        "x": 54,
+        "y": 207.9,
+        "w": 504,
+        "h": 20.2,
+        "zh": "实现 RLHF 数据流。核心原则是。这会多占一份内存，还要在设备之间频繁同步权重"
+      },
+      {
+        "text": "to combine single-controller and multi-controller paradigms chronization among devices. DeepSpeed-Chat maintains the",
+        "x": 54,
+        "y": 196,
+        "w": 504,
+        "h": 20.2,
+        "zh": "把单控制器和多控制器两种范式结合起来。DeepSpeed-Chat 则维持"
+      },
+      {
+        "text": "in a hybrid manner. This design ensures flexible expression same copy of actor model on the same set of devices for train-",
+        "x": 54,
+        "y": 184,
+        "w": 504,
+        "h": 20.2,
+        "zh": "以混合的方式。这样既能灵活表达。同一组设备上保留同一份 actor，用于训练"
+      },
+      {
+        "text": "and efficient execution of RLHF dataflow, maintaining low ing and generation, and reshards model weights between",
+        "x": 54,
+        "y": 172.1,
+        "w": 504.4,
+        "h": 20.2,
+        "zh": "也能高效执行 RLHF 数据流，并把开销维持得很低。以及生成，并在两个阶段之间重切分模型权重"
+      },
+      {
+        "text": "control overhead at both inter-node and intra-node levels. training and generation (due to different parallelisms used",
+        "x": 54,
+        "y": 160.1,
+        "w": 505.5,
+        "h": 20.2,
+        "zh": "节点之间和节点内部都是如此。训练和生成（因为两个阶段用的并行度不同"
+      },
+      {
+        "text": "As shown in Figure 2(b), this paradigm decouples intra-node in the two stages), which may still incur substantial memory",
+        "x": 54,
+        "y": 148.1,
+        "w": 504,
+        "h": 20.2,
+        "zh": "如图 2(b)，这种范式把节点内部的。），大模型仍可能带来相当可观的内存"
+      },
+      {
+        "text": "distributed computation and inter-node data transfer, allowand communication overhead for large models (detailed in",
+        "x": 54,
+        "y": 136.2,
+        "w": 505.7,
+        "h": 20.2,
+        "zh": "分布式计算和节点间的数据传输拆开，于是。以及通信开销（详见"
+      },
+      {
+        "text": "ing each model to focus solely on local computation without §5.4). NeMo-Aligner [17] uses the same 3D parallelism con-",
+        "x": 54,
+        "y": 124.2,
+        "w": 504,
+        "h": 20.2,
+        "zh": "每个模型可以只做本地计算，而不必。§5.4）。NeMo-Aligner [17] 使用同一套 3D 并行配置"
+      },
+      {
+        "text": "managing inter-node communication. figurations in actor training and generation, experiencing low generation throughput (§8.4). Existing RLHF frameworks are limited to one model place-",
+        "x": 54,
+        "y": 88.4,
+        "w": 417.8,
+        "h": 44.1,
+        "zh": "去管节点之间的通信。把它用在 actor 的训练和生成上，生成吞吐偏低（§8.4）。现有 RLHF 框架只能采用一种模型放置"
+      },
+      {
+        "text": "Figure 4 depicts the architecture of HybridFlow, which conment plan and hence one RLHF execution pattern, as shown",
+        "x": 54,
+        "y": 76.4,
+        "w": 505.7,
+        "h": 21.9,
+        "zh": "图 4 画出了 HybridFlow 的架构，它由。方案，于是也只有一种 RLHF 执行模式，如图所示"
+      },
+      {
+        "text": "sists of three major components: Hybrid Programming Model,",
+        "x": 318,
+        "y": 76.4,
+        "w": 241.1,
+        "h": 10,
+        "zh": "三个主要部分组成：混合编程模型、"
+      }
+    ],
+    "6": [
+      {
+        "text": "class ActorWorker(3DParallelWorker): # An example of distributed computation function @register(transfer_mode=3D_PROTO) def update_actor(self, prompts: DataProto):",
+        "x": 320.5,
+        "y": 690.4,
+        "w": 193.8,
+        "h": 27.4,
+        "zh": "class ActorWorker(3DParallelWorker): # 一个分布式计算函数的例子 @register(transfer_mode=3D_PROTO) def update_actor(self, prompts: DataProto):"
+      },
+      {
+        "text": "# Allocate devices for a ResourcePool resource_pool = ResourcePool([n_gpus_per_machine] * n_machines) # Map the model to allocated devices and init model actor_model = ActorWorker(actor_config, resource_pool)",
+        "x": 320.5,
+        "y": 655,
+        "w": 234.7,
+        "h": 27.4,
+        "zh": "# 为 ResourcePool 分配设备 resource_pool = ResourcePool([n_gpus_per_machine] * n_machines) # 把模型映射到分到的设备上并完成初始化 actor_model = ActorWorker(actor_config, resource_pool)"
+      },
+      {
+        "text": "Figure 4. Architecture of HybridFlow. 3D-HybridEngine and Auto-Mapping algorithm. The hybrid programming model includes a set of hierarchical APIs to enable flexible expression of the RLHF dataflow and efficient computation of models in the dataflow (§4). The 3DHybridEngine is particularly designed for efficient training and generation of the actor model, allowing different 3D parallel configurations in the two stages and enabling zero memory redundancy and minimized communication overhead during the transition between two stages (§5). The automapping algorithm determines optimized device placement of each model to maximize the throughput of RLHF (§6). The workflow of our RLHF system goes as follows. A user provides the following inputs to start the RLHF system: (i) model specifications, including the architecture and size of the actor/critic/reference policy/reward models in the RLHF dataflow; (ii) device placement of the models in the dataflow, as obtained by running the auto-mapping algorithm under given GPU cluster configurations; (iii) parallelism strategy for running each model in each stage, e.g., a tuple of (p, t, d) for 3D parallelism, where p, t, d represent PP size, TP size and DP size, respectively. The single controller program takes these inputs to initialize models in the RLHF dataflow and virtualized resource pool, dispatches operations/models to devices according to the placement plan, and invokes functions run by the multiple controllers on devices to carry out distributed computation of each model. The multi-controller program implements the ParallelWorker class: it constructs parallel groups of each model among allocated devices according to its parallelism strategies, invokes the 3D-HybridEngine for actor training and generation, and can be integrated seamlessly with existing LLM engines [40, 57, 60, 71] for training, inference and generation of other models. The transfer protocols are coordinated by the single controller program to support resharding of data (including prompts, responses, and other model outputs in RLHF) between models with distinct parallelism strategies. The data resharding of the actor between training and generation is handled by 3D-HybridEngine. Hybrid Programming Model",
+        "x": 53.5,
+        "y": 130.2,
+        "w": 242.2,
+        "h": 489.6,
+        "zh": "图 4. HybridFlow 的架构，以及 3D-HybridEngine 和自动映射算法。混合编程模型提供一组层次化 API，用来灵活表达 RLHF 数据流，并高效计算其中的模型（§4）。3D-HybridEngine 专门让 actor 的训练和生成跑得高效：两个阶段可以用不同的 3D 并行配置，切换时内存零冗余，通信开销也尽量小（§5）。自动映射算法为每个模型确定较优的设备放置，以尽量提高 RLHF 吞吐（§6）。系统流程如下。用户用这些输入启动 RLHF：（i）模型规格，包括数据流里 actor、critic、reference policy、reward 的结构和大小；（ii）各模型的设备放置，由自动映射算法在给定 GPU 集群配置下算出来；（iii）每个模型在每个阶段的并行策略，例如 3D 并行写成三元组 (p, t, d)，p、t、d 分别是 PP、TP、DP 的大小。单控制器程序用这些输入初始化数据流中的模型，以及虚拟化的资源池，按放置方案把操作和模型分到设备上，再调用设备上多个控制器所跑的函数，完成每个模型的分布式计算。多控制器程序实现 ParallelWorker 类：按各模型的并行策略，在分到的设备之间建立并行组；actor 的训练和生成调用 3D-HybridEngine；其他模型的训练、推理和生成可以无缝接上现有 LLM 引擎 [40, 57, 60, 71]。传输协议由单控制器协调，用来在并行策略不同的模型之间重切分数据，包括提示、回复，以及 RLHF 里的其他模型输出。actor 在训练和生成之间的数据重切分由 3D-HybridEngine 负责。混合编程模型"
+      },
+      {
+        "text": "Figure 5. An illustration of hierarchical APIs. (a) Model with 3D parallel configuration, resource allocation, and 3DParallelWorker initialization. (b) Asynchronous data resharding between two models with collect and distribute functions in 3D_PROTO.",
+        "x": 317.6,
+        "y": 442.4,
+        "w": 242.1,
+        "h": 57.8,
+        "zh": "图 5. 层次化 API 示意。（a）模型的 3D 并行配置、资源分配，以及 3DParallelWorker 的初始化。（b）两个模型之间，用 3D_PROTO 的 collect 和 distribute 做异步数据重切分。"
+      },
+      {
+        "text": "devices, it facilitates distributed model weight initialization and establishes 3D parallel groups for each model. A parallel group includes a set of GPUs to host a specific parallel dimension of the model, e.g., different tensor shards in TP and different model replicas in DP. Figure 5(a) illustrates initialization of the actor model with our APIs, while initialization of other models is similar. Inheriting from the 3DParallelWorker class, several model classes, for actor, critic, reference, and reward model, respectively, are provided. Each of these model classes encapsulates APIs to implement the model’s distributed forward and backward computation, auto-regressive generation, and optimizer updates, decoupling the distributed computation code with data dependencies with other models. These APIs can be easily implemented by reusing the computation scripts from existing LLM systems. For example, the computation involved in update_actor function of ActorWorker (the class for the actor model) is similar to the pre-training scripts in Megatron-LM [71]. A model class encapsulates fundamental operations for implementing various RLHF algorithms, e.g., generate_sequences in the actor model class for generating responses based on the prompts and compute_reward in the reward model class for evaluating responses through a forward pass. (More APIs are detailed in Appendix A). Besides base class 3DParallelWorker that implements 3D parallelism, we further provide base classes for PyTorch FSDP (FSDPWorker) and ZeRO (ZeROWorker), and the corresponding model classes inheriting each base class, to support different parallelism strategies in model computation. ParallelWorker in Figure 4 denotes one of these base classes.",
+        "x": 317.6,
+        "y": 76.4,
+        "w": 245.4,
+        "h": 356.7,
+        "zh": "这些设备之后，它会分布式地初始化模型权重，并为每个模型建好 3D 并行组。一个并行组是一组 GPU，用来放下模型的某一个并行维度，例如 TP 中的不同张量分片，以及 DP 中的不同模型副本。图 5(a) 是用这些 API 初始化 actor，其他模型类似。我们从 3DParallelWorker 派生出 actor、critic、reference 和 reward 几类模型。每一类都把该模型的分布式前向、反向、自回归生成和优化器更新封成 API，使分布式计算代码不再和其他模型的数据依赖缠在一起。这些 API 可以直接复用现有 LLM 系统的计算脚本。例如 ActorWorker（actor 所用的类）里，update_actor 的计算就和 Megatron-LM 的预训练脚本差不多 [71]。模型类还包好了实现各种 RLHF 算法要用的基本操作，例如 actor 类的 generate_sequences 按提示生成回复，reward 类的 compute_reward 用一次前向给回复打分（更多 API 见附录 A）。除了实现 3D 并行的基类 3DParallelWorker，我们还提供 PyTorch FSDP 的基类 FSDPWorker、ZeRO 的基类 ZeROWorker，以及分别继承它们的模型类，好在计算里支持不同并行策略。图 4 中的 ParallelWorker 就是这些基类中的一个。"
+      },
+      {
+        "text": "Intra-node: encapsulating distributed program. For distributed computation of each model in different RLHF stages, we provide a base class, 3DParallelWorker. Given allocated",
+        "x": 53.6,
+        "y": 76.4,
+        "w": 242.1,
+        "h": 33.9,
+        "zh": "节点内部：把分布式程序封装起来。针对不同 RLHF 阶段里每个模型的分布式计算，我们提供基类 3DParallelWorker。给定已经分配好的"
+      }
+    ],
+    "7": [
+      {
+        "text": "Inter-node: unifying data resharding implementation between models. Many-to-many multicast is involved for data transfer between models employing different parallelism strategies on different devices. We unify this data transfer implementation by associating each operation in each model class with a transfer protocol, using @register. Each transfer protocol consists of a collect function and a distribute function, to aggregate output data and distribute input data according to the parallelism strategy of each model. In the example in Figure 5(a), update_actor operation is registered to transfer protocol 3D_PROTO, as 3D parallelism is used for actor training. In 3D_PROTO, the collect function gathers all the output data of corresponding model function (e.g., the loss scalar return from the update_actor) in each DP group to the single controller, and the distribute function distributes the input data to the registered function (e.g., advantages for the update_actor) to each DP group. Data resharding is enabled using the source model’s output collect function and the destination model’s input distribute function. Figure 5(b) illustrates data resharding between the actor (generation) and the critic (inference), where computation of the models adopts different 3D parallelism strategies. The single controller gathers data futures using the collect function in 3D_PROTO of actor (steps ○1 -○3 ) and sends it to critic (step ○4 ); critic distributes the received data futures to each DP group using the distribute function in its 3D_PROTO (step ○5 ). Then remote data is retrieved from actor to critic, with each of critic’s GPUs only fetching the required local batch of the actor’s output data according to its DP rank (step ○6 ). The actual data transfer only occurs between GPUs, avoiding any central bottleneck. We provide 8 transfer protocols, including 3D_PROTO, DP _PROTO, ONE_TO_ALL, etc., that cover most data resharding scenarios (detailed in Appendix B). A user can further extend the transfer protocols through implementing customized collect and distribute functions. Facilitating flexible model placement. We provide a ResourcePool class that virtualizes a set of GPU devices. When applying a ResourcePool instance to a model class (Figure 5(a)), distributed computation of the model will be mapped to the devices. Models utilizing the same ResourcePool instance are colocated on the same set of GPUs; models are placed on different sets of GPUs when different Resource Pool instances are applied in their model classes. We assume no overlap between different ResourcePool instances. Asynchronous dataflow execution. When models are placed on separate sets of devices, their execution is triggered automatically as soon as their inputs become available [50]. In Figure 5(b), the data future from actor is immediately returned after the controller’s call (steps ○1 -○3 ); the controller then initiates a new call to critic and distributes the futures following the transfer protocol (steps ○4 -○5 ). When some models are placed on the same set of devices, they are executed sequentially based on the calling order. With",
+        "x": 53.5,
+        "y": 76.4,
+        "w": 252.3,
+        "h": 643.6,
+        "zh": "节点之间：把模型间的数据重切分做成统一实现。并行策略不同、又放在不同设备上的模型之间传数据，会走到多对多组播。我们用 @register，给每个模型类里的每个操作绑一个传输协议，把这种传输统一起来。每个协议有一个 collect 和一个 distribute：按该模型的并行策略汇总输出、分发输入。图 5(a) 里，update_actor 注册到 3D_PROTO，因为 actor 训练用的是 3D 并行。3D_PROTO 的 collect 把对应函数在每个 DP 组上的全部输出收到单控制器，例如 update_actor 返回的损失标量；distribute 再把这个函数的输入分到每个 DP 组，例如 update_actor 要用的 advantage。重切分时，用源模型输出侧的 collect，加上目的模型输入侧的 distribute。图 5(b) 是 actor（生成）和 critic（推理）之间的重切分，两边 3D 并行策略不同。单控制器用 actor 的 3D_PROTO 里的 collect 收集 data future（步骤 ○1–○3），再发给 critic（步骤 ○4）；critic 用自己 3D_PROTO 的 distribute，把收到的 future 分到每个 DP 组（步骤 ○5）。随后数据从 actor 取到 critic，critic 的每块 GPU 只按自己的 DP rank，拉取 actor 输出里自己那份本地 batch（步骤 ○6）。真正搬数据只发生在 GPU 之间，中心不会成为瓶颈。我们提供 8 种传输协议，包括 3D_PROTO、DP_PROTO、ONE_TO_ALL 等，覆盖大多数重切分场景（详见附录 B）。用户也可以自己写 collect 和 distribute 来扩展。方便灵活地放置模型。ResourcePool 类把一组 GPU 虚拟化。把一个 ResourcePool 实例用到某个模型类上（图 5(a)），这个模型的分布式计算就映射到这些设备。共用同一个 ResourcePool 的模型共置在同一组 GPU 上；用了不同的 ResourcePool，就放到不同的 GPU 集合上。我们假定不同 ResourcePool 互不重叠。数据流异步执行。模型若在彼此分开的设备上，输入一到就自动开始算 [50]。图 5(b) 里，控制器调用返回后，actor 的 data future 立刻到手（步骤 ○1–○3）；控制器再去调用 critic，并按传输协议把这些 future 发出去（步骤 ○4–○5）。放在同一组设备上的模型，则按调用顺序一个接一个执行。借助"
+      },
+      {
+        "text": "algo_type = “Safe-RLHF” # specify different RLHF numerical computation. # Examples of PPO and Safe-RLHF",
+        "x": 320.6,
+        "y": 683,
+        "w": 234.6,
+        "h": 12.6,
+        "zh": "algo_type = “Safe-RLHF” # 用来指定不同 RLHF 算法中的数值计算。# PPO 和 Safe-RLHF 的例子"
+      },
+      {
+        "text": "batch = actor.generate_sequences(prompts, do_sample=False) # Stage 2: Prepare experience",
+        "x": 337.1,
+        "y": 646.8,
+        "w": 191.6,
+        "h": 13.1,
+        "zh": "batch = actor.generate_sequences(prompts, do_sample=False) # 阶段 2：准备 experience"
+      },
+      {
+        "text": "is added for Safe-RLHF batch = cost.compute_cost(batch) batch = compute_advantages(batch, algo_type)",
+        "x": 337.2,
+        "y": 611.1,
+        "w": 217.3,
+        "h": 15.3,
+        "zh": "这几行是为 Safe-RLHF 加上的。batch = cost.compute_cost(batch) batch = compute_advantages(batch, algo_type)"
+      },
+      {
+        "text": "batch[“pretrain_loss”] = pretrain_loss actor_metrics = actor.update_actor(batch, loss_func=algo_type)",
+        "x": 337.2,
+        "y": 575.4,
+        "w": 204.9,
+        "h": 12.6,
+        "zh": ""
+      },
+      {
+        "text": "Figure 6. Implementation of PPO [55], ReMax [43], and SafeRLHF [19]. Users can adapt to different RLHF algorithms by simply adding or deleting a few lines of code.",
+        "x": 318,
+        "y": 535.1,
+        "w": 241.7,
+        "h": 33.9,
+        "zh": "图 6. PPO [55]、ReMax [43] 和 Safe-RLHF [19] 的实现。换一种 RLHF 算法，用户只要加上或删掉几行代码。"
+      },
+      {
+        "text": "our programming model, HybridFlow is flexible in supporting diverse distributed execution patterns without any code change of the RLHF algorithm (Figure 6).",
+        "x": 318,
+        "y": 485.7,
+        "w": 241.7,
+        "h": 33.9,
+        "zh": "有了这套编程模型，HybridFlow 可以灵活支持不同的分布式执行方式，RLHF 算法本身的代码不用改（图 6）。"
+      },
+      {
+        "text": "Implementation of different RLHF algorithms Our APIs enable streamlined development of various RLHF algorithms (dataflows). Users can implement an RLHF algorithm in a few lines of code as a single process program to run on the single controller, that involves a sequence of primitive API calls to invoke distributed computation of models. Examples of PPO, ReMax, and Safe-RLHF are given in Figure 6. PPO can be implemented in just 8 lines by invoking model operations including compute_values and generate_sequences, which are executed under the multicontroller paradigm on multiple GPUs. To adapt to SafeRLHF which integrates an additional cost model to evaluate safety preferences and the pre-taining loss for actor, only 5 more lines of code are added on top of PPO implementation. To adapt to ReMax, one additional call to actor generation is needed, and the critic-related code can be removed. Achieving flexible. This flexibility of extension is crucial for researchers to explore different RLHF algorithms: they can reuse distributed computation encapsulated in each model class and simply adjust the code for numerical computations according to specific algorithms, such as GAE [67] and KL divergence in compute_advantage and loss functions of actor and critic. The streamlined development can be attributed to the hybrid programming model. Our modular API design simplifies development, facilitates extensive code reuse, and enables directly incorporating the codebase of existing LLM training/serving frameworks. It also decouples model computation and data transfer among models. Any change in the distributed frameworks does not affect the code of the RLHF algorithm (Figure 6), enabling individualized optimization for each model’s execution (§5). Flexible placement of models with diverse workloads is supported, enabling optimized mapping of RLHF dataflow onto various devices (§6).",
+        "x": 317.6,
+        "y": 76.4,
+        "w": 242.1,
+        "h": 395.5,
+        "zh": "不同 RLHF 算法怎么写。这些 API 让各种 RLHF 算法（也就是各种数据流）可以写得很短。用户在单控制器上写一个单进程程序，用很少几行、按顺序调用原语 API，去触发各模型的分布式计算。PPO、ReMax 和 Safe-RLHF 的例子见图 6。PPO 只要 8 行，调用 compute_values、generate_sequences 这类模型操作；它们在多块 GPU 上按多控制器方式执行。改成 Safe-RLHF 时，要多一个 cost 模型来评估安全偏好，还要给 actor 加上预训练损失，只需在 PPO 上再加 5 行。改成 ReMax 时，再调用一次 actor 的生成，并把 critic 相关的代码去掉即可。灵活，是这样得到的。这种好扩展的写法，对想试不同 RLHF 算法的人很重要：每个模型类里的分布式计算可以复用，只按具体算法改数值部分，例如 compute_advantage 里的 GAE [67] 和 KL 散度，以及 actor、critic 的损失函数。能写得这么顺，是因为用了混合编程模型。模块化 API 让开发更简单，代码可以大量复用，也能直接拿现有 LLM 训练和服务框架的代码来用。模型计算和模型之间的数据传输也被拆开。底层分布式框架怎么换，都不影响图 6 里那段 RLHF 算法代码，因此每个模型的执行可以单独优化（§5）。负载不同的模型也可以灵活放置，把 RLHF 数据流映射到不同设备上时就能做优化（§6）。"
+      }
+    ],
+    "8": [
+      {
+        "text": "Figure 7. 3D-HybridEngine workflow in one RLHF iteration. 4 GPUs are used for actor training and generation. 1-2-2 (𝑝-𝑡-𝑑) parallel groups are used in training and 1-1-2-2 (𝑝𝑔- 𝑡𝑔-𝑑𝑔-𝑑) parallel groups are used in generation.",
+        "x": 53.7,
+        "y": 563.6,
+        "w": 242.1,
+        "h": 47.3,
+        "zh": "图 7. 一轮 RLHF 迭代中的 3D-HybridEngine 流程。actor 的训练和生成使用 4 块 GPU。训练使用 1-2-2（𝑝-𝑡-𝑑）并行组，生成使用 1-1-2-2（𝑝𝑔-𝑡𝑔-𝑑𝑔-𝑑）并行组。"
+      },
+      {
+        "text": "We design the 3D-HybridEngine to support efficient training and generation of the actor model, targeting significant RLHF throughput improvement.",
+        "x": 53.5,
+        "y": 499.7,
+        "w": 240.8,
+        "h": 33.9,
+        "zh": "我们设计 3D-HybridEngine，让 actor 的训练和生成都跑得高效，目的是把 RLHF 的吞吐明显拉高。"
+      },
+      {
+        "text": "Figure 8. Model weights resharding. 2 machines each with 4 GPUs are used for actor training and generation.",
+        "x": 317.7,
+        "y": 509.6,
+        "w": 240.3,
+        "h": 21.9,
+        "zh": "图 8. 模型权重如何重切分。actor 的训练和生成用 2 台机器，每台 4 块 GPU。"
+      },
+      {
+        "text": "model parameters updated in iteration 𝑖 (step ○1 in Figure 7), for generation within each micro DP group. Then, the batch of prompts are loaded to each model replica (step ○2 ), which generates responses (Generation stage of RLHF). Following this, 3D-HybridEngine performs an all-gather operation on the generation results within each micro DP group (step ○3 ), and re-partitions model parameters according to the 3D parallelism for actor training (step ○4 ). With model weights, prompts and responses correctly re-distributed, the loss of the actor model is computed and actor model weights are updated following the RLHF algorithm (step ○5 ) - actor training stage of iteration 𝑖 + 1.",
+        "x": 318,
+        "y": 340.9,
+        "w": 241.7,
+        "h": 141.8,
+        "zh": "第 𝑖 轮更新过的模型参数（图 7 步骤 ○1），供每个 micro DP 组在生成时使用。随后把一批提示载入每个模型副本（步骤 ○2），由它们生成回复，也就是 RLHF 的生成阶段。接着，3D-HybridEngine 在每个 micro DP 组内对生成结果做 all-gather（步骤 ○3），再按 actor 训练用的 3D 并行，把模型参数重新切开（步骤 ○4）。权重、提示和回复都按新的划分放好之后，计算 actor 的损失，并按 RLHF 算法更新权重（步骤 ○5）。这就是第 𝑖+1 轮的 actor 训练。"
+      },
+      {
+        "text": "To eliminate redundant actor model copies, we advocate deploying actor training and generation stages on the same set of devices, 𝑁𝑎 GPUs allocated to the actor, and execute them sequentially on the same copy of actor model weights. Nonetheless, actor training and generation may well adopt different 3D parallelism strategies, i.e., the generation stage typically requires smaller TP and PP sizes but a larger DP size, than the training stage (§2.3). 3D-HybridEngine enables efficient model parameter resharding between actor training and generation across the same set of devices in this context. Let 𝑝-𝑡-𝑑 denote 3D parallel groups constructed for actor training, corresponding to the set of GPUs to host 𝑝 pipeline stages, 𝑡 tensor shards, and 𝑑 model replicas [54]. 3D-HybridEngine builds different parallel groups for actor training and generation, according to their different 3D parallelism strategies, respectively. We use 𝑝𝑔, 𝑡𝑔, and 𝑑𝑔 to denote the size of generation pipeline parallel group, generation tensor parallel group, and micro data parallel group, respectively, in the generation stage. 𝑑𝑔 indicates the ratio of model replica number in generation over that in training, i.e., each DP replica in training becomes 𝑑𝑔 micro DP replicas, to process 𝑑𝑔 microbatches of prompts and responses. We have 𝑁𝑎=𝑝×𝑡×𝑑=𝑝𝑔×𝑡𝑔×𝑑𝑔×𝑑 such that 𝑑𝑔 = 𝑝 𝑡 . The micro DP groups are employed exclusively in actor generation stage to render a larger DP size for full device utilization. The generation parallel groups are denoted by 𝑝𝑔-𝑡𝑔-𝑑𝑔-𝑑.",
+        "x": 53.7,
+        "y": 159.5,
+        "w": 242,
+        "h": 313.4,
+        "zh": "为了不再保留多余的 actor 副本，我们把训练和生成放在同一组设备上，也就是分给 actor 的 𝑁𝑎 块 GPU，并在同一份权重上先后执行。不过两边的 3D 并行往往不同：生成通常 TP、PP 更小，DP 更大（§2.3）。3D-HybridEngine 就是要在这组设备上，把训练和生成之间的参数重切分做得高效。𝑝-𝑡-𝑑 表示 actor 训练用的 3D 并行组，也就是用来放 𝑝 个流水线阶段、𝑡 份张量分片和 𝑑 个模型副本的那些 GPU [54]。3D-HybridEngine 按训练和生成各自的 3D 并行，分别建组。生成阶段用 𝑝𝑔、𝑡𝑔、𝑑𝑔 表示生成流水线并行组、生成张量并行组和 micro 数据并行组的大小。𝑑𝑔 是生成时的副本数相对训练时的倍数：训练里的每个 DP 副本，到生成时变成 𝑑𝑔 个 micro DP 副本，用来处理 𝑑𝑔 份提示和回复的 microbatch。于是 𝑁𝑎=𝑝×𝑡×𝑑=𝑝𝑔×𝑡𝑔×𝑑𝑔×𝑑，从而 𝑑𝑔 = 𝑝 𝑡。micro DP 组只在 actor 生成时使用，把 DP 做大，让设备尽量忙起来。生成阶段的并行组记为 𝑝𝑔-𝑡𝑔-𝑑𝑔-𝑑。"
+      },
+      {
+        "text": "Zero redundancy model resharding Parallel grouping methods in 3D parallelism are typically as follows: PP and TP groups are formed by assigning consecutive ranks to pipeline stages and tensor shards, respectively; DP groups are constructed by selecting ranks at regular intervals, determined by the product of PP size and TP size. In Figure 8(a), actor training uses 3D parallel groups, 1-4-2: there is one PP group for all GPUs (for illustration clarify); the TP groups are [G1, G2, G3, G4], [G5, G6, G7, G8], and the DP groups are [G1, G5], [G2, G6], [G3, G7], [G4, G8]. Suppose the same parallel grouping methods are used but with different parallel sizes, e.g., 1-2-2-2 for generation in Figure 8(a). During the transition from training to generation, 3D-HybridEngine applies all-gather operations among the model parallel groups to aggregate all parameters, and then retain only a subset of model weights on each device for its generation, according to the parallel groups the device belongs to. On some GPUs (e.g., G2, G3, G6, G7), there is no overlap between training and generation model weights, and separate memory is needed to maintain weights for subsequent training as well (grey boxes in Figure 8(a)).We call",
+        "x": 317.6,
+        "y": 76.4,
+        "w": 242.1,
+        "h": 252.1,
+        "zh": "零冗余的模型重切分。3D 并行的分组通常是这样：PP 和 TP 把连续的 rank 分给流水线阶段和张量分片；DP 按固定间隔取 rank，间隔等于 PP 大小乘 TP 大小。图 8(a) 里，actor 训练用 1-4-2：全部 GPU 只有一个 PP 组（为了把图画清楚）；TP 组是 [G1, G2, G3, G4] 和 [G5, G6, G7, G8]，DP 组是 [G1, G5]、[G2, G6]、[G3, G7]、[G4, G8]。分组办法不变、只改并行规模时，例如图 8(a) 的生成用 1-2-2-2。从训练切到生成，3D-HybridEngine 先在模型并行组里 all-gather，把参数聚齐，再按每台设备所属的并行组，只留下生成要用的那一部分权重。有些 GPU（如 G2、G3、G6、G7）上，训练权重和生成权重对不上，还得另开一块内存，把后面训练还要用的权重存着（图 8(a) 的灰框）。我们把这种做法下的系统称为"
+      },
+      {
+        "text": "3D-HybridEngine Workflow Between actor training in iteration 𝑖 of RLHF and actor generation in iteration 𝑖 + 1, the actor model parameters need to be resharded and prompts data to be distributed, following the parallel group configurations in the two stages. In iteration 𝑖 + 1 of RLHF, 3D-HybridEngine gathers the actor",
+        "x": 54,
+        "y": 76.4,
+        "w": 241.7,
+        "h": 72.7,
+        "zh": "3D-HybridEngine 的流程。从第 𝑖 轮的 actor 训练到第 𝑖+1 轮的 actor 生成，要按两个阶段的并行组把 actor 参数重切分，提示也要重新摊开。到了第 𝑖+1 轮，3D-HybridEngine 先收集 actor 的"
+      }
+    ],
+    "9": [
+      {
+        "text": "Table 2. Transition overhead between training & generation",
+        "x": 53.7,
+        "y": 711.6,
+        "w": 240.4,
+        "h": 10,
+        "zh": "表 2. 训练与生成之间的切换开销"
+      },
+      {
+        "text": "each micro DP group. The communication overhead is re-",
+        "x": 318,
+        "y": 710,
+        "w": 241.7,
+        "h": 10,
+        "zh": "每个 micro DP 组。通信开销会下降"
+      },
+      {
+        "text": "𝑀. Each GPU only needs to collect remote parameters within its micro DP group and can reuse the training weights in generation. Therefore, the peak memory usage of model parameters in HybridFlow precisely matches the model partition size on each GPU in generation, eliminating any redundancy in GPU memory usage.",
+        "x": 318,
+        "y": 634.3,
+        "w": 241.7,
+        "h": 71.4,
+        "zh": "𝑀。每块 GPU 只需在自己的 micro DP 组里收集远端参数，生成时还可以复用训练权重。因此 HybridFlow 里模型参数的峰值内存，刚好等于生成阶段每块 GPU 上那一份模型分片，显存不再有冗余。"
+      },
+      {
+        "text": "the system HybridFlow-V, when 3D-HybridEngine uses the above vanilla parallel grouping methods in the two stages. We further design a new parallel grouping method for 3DHybridEngine to use in the generation stage, that eliminates the redundancy in weights storage and leads to minimal memory footprint and communication due to actor model resharding between training and generation. Specifically, we form generation TP and PP groups by selecting ranks at regular intervals, determined by 𝑡",
+        "x": 53.6,
+        "y": 494.4,
+        "w": 242.1,
+        "h": 109.1,
+        "zh": "也就是 HybridFlow-V：3D-HybridEngine 在两个阶段都用上面那种常规分组。我们又为生成阶段设计了一种新的分组，去掉权重存储上的冗余，让 actor 在训练和生成之间重切分时，内存和通信都尽量小。具体而言，生成用的 TP 组和 PP 组按固定间隔挑 rank，间隔由 𝑡 决定"
+      },
+      {
+        "text": "Our hybrid programming model requires users to input the following configurations, which are referred to as a mapping of the RLHF dataflow to the given devices: (a) device placement of the models in the dataflow; (b) the corresponding parallelism strategy for running each model in each stage. We provide an efficient algorithm (Algorithm 1) for users to identify the optimized mapping of executing the RLHF dataflow on a given cluster of devices, that minimizes the end-to-end latency of each RLHF iteration. Given a dataflow 𝐷, we first explore all possible placement plans P for the models in the given cluster (Line 3). For example, the PPO algorithm involves four models, resulting in 15 possible placements (from the Bell partition problem [10, 62]), ranging from a completely standalone placement where all models are placed on different devices (e.g., OpenRLHF’s placement) to colocating all models on the same set of devices (e.g., DeepSpeed-Chat’s placement). We refer to colocated models on the same set of GPUs as a colocated set. Models in a colocated set can employ different parallelism strategies across the same set of GPUs. We identify the smallest number of GPUs to be allocated to each of the colocated model sets, 𝐴𝑚𝑖𝑛, based on memory consumption of colocated models, ensuring no out-of-memory errors (Line 9). Next, starting from the minimal GPU allocation in 𝐴𝑚𝑖𝑛, we enumerate all feasible device allocations to each colocated model set (Lines 10-12). Given device allocation 𝐴 to the colocated set and computation workload 𝑊 of models in the set, we explore optimized parallelism strategies for each model in the auto_parallel module, that minimizes model execution latency. The workload 𝑊 includes input and output shapes and computation (training, inference or generation) of each model. In auto_parallel, we utilize a simulator module simu to estimate the latency of different parallel strategies, following previous research [42, 84, 90, 92] (outline in Appendix. C). The d_cost module estimates the end-to-end latency of the RLHF dataflow under given model placement and parallelism strategies, by iterating through all stages in the dataflow graph and summing up latencies of all stages (Lines 17, 25). For models in the same colocated set and involving computation in the same stage (such as actor and critic both performing model update in RLHF training stage), their execution latencies are summed up (Line 32). For models in different colocated sets, their execution within the same stage",
+        "x": 317.6,
+        "y": 76.4,
+        "w": 249,
+        "h": 524,
+        "zh": "混合编程模型要求用户给出下面这些配置，也就是把 RLHF 数据流映射到给定设备上的一种映射：（a）各模型放在哪些设备上；（b）每个模型在每个阶段用什么并行策略。我们给出一个高效算法（算法 1），在给定集群上找出较优映射，使每轮 RLHF 的端到端延迟最小。给定数据流 𝐷，先枚举该集群上所有可能的放置 P（第 3 行）。PPO 有四个模型，一共 15 种放法（Bell 划分问题 [10, 62]），从完全分开、每个模型各占一组设备（如 OpenRLHF），到全部共置在同一组设备上（如 DeepSpeed-Chat）。放在同一组 GPU 上的模型称为一个共置集合。同一集合里的模型，可以在这组 GPU 上用不同的并行策略。我们按共置模型的内存占用，算出每个共置集合至少要多少 GPU，记为 𝐴𝑚𝑖𝑛，保证不会 OOM（第 9 行）。再从 𝐴𝑚𝑖𝑛 里的这份最小分配出发，枚举每个共置集合所有可行的设备分配（第 10–12 行）。给定分给该集合的设备 𝐴，以及集合内各模型的负载 𝑊，auto_parallel 为每个模型搜索执行延迟更小的并行策略。𝑊 包括每个模型的输入输出形状，以及它做的是训练、推理还是生成。auto_parallel 用模拟器 simu 估计不同并行策略的延迟，估计方法沿用已有工作 [42, 84, 90, 92]（概要见附录 C）。d_cost 在给定放置和并行策略下估计整条 RLHF 数据流的端到端延迟：走完数据流图的每个阶段，把延迟加起来（第 17、25 行）。同一共置集合里、又在同一阶段都要计算的模型（例如训练阶段 actor 和 critic 都要更新），延迟相加（第 32 行）。不同共置集合里的模型，在同一阶段中的执行"
+      },
+      {
+        "text": "and 𝑝 , and construct micro DP groups by sequentially assigning ranks along the generation TP or PP dimensions. In Figure 8(b), 1-2-2-2 parallel groups are used in generation: the generation TP groups are [G1, G3], [G2, G4], [G5, G7], [G6, G8]; and the micro DP groups are [G1, G2], [G3, G4], [G5, G6], [G7, G8]. This strategic rearrangement of generation parallel groups leads to overlap between training and generation model weights on each device, enabling reuse of training weights during generation and zero redundancy in device memory usage due to model resharding. In addition, 3D-HybridEngine conducts several all-gather operations concurrently, one within each micro DP group, leading to significantly reduced communi-",
+        "x": 54,
+        "y": 352.7,
+        "w": 241.7,
+        "h": 155.1,
+        "zh": "以及 𝑝。micro DP 组则沿着生成阶段的 TP 或 PP 维度，按顺序分配 rank。图 8(b) 的生成使用 1-2-2-2：生成 TP 组是 [G1, G3]、[G2, G4]、[G5, G7]、[G6, G8]；micro DP 组是 [G1, G2]、[G3, G4]、[G5, G6]、[G7, G8]。生成侧的组这样重排之后，每台设备上训练权重和生成权重有重叠，生成可以复用训练权重，重切分不会在设备内存里多占一份。另外，3D-HybridEngine 同时做多次 all-gather，每个 micro DP 组一次，通信量因此明显下降"
+      },
+      {
+        "text": "In Table 2, we compare communication overhead and memory footprint during the transition between training and generation stages, among different actor engine designs. We assume model size of the actor is 𝑀 and 𝑁𝑎 GPUs are used for its training and generation. The actor engine in DeepSpeedChat conducts an all-gather operation across all GPUs during transition; HybridFlow-V performs this all-gather within training TP and PP groups. The communication volumes for these operations are 𝑁𝑎−1𝑀 = 𝑡𝑝𝑑−1𝑀 for DeepSpeed-",
+        "x": 54,
+        "y": 204.3,
+        "w": 241.7,
+        "h": 107.2,
+        "zh": "表 2 比较不同 actor 引擎在训练和生成切换时的通信量和内存。设 actor 大小为 𝑀，训练和生成用 𝑁𝑎 块 GPU。DeepSpeed-Chat 的引擎在切换时对所有 GPU 做 all-gather；HybridFlow-V 只在训练的 TP 组和 PP 组内做。这些操作的通信量是 𝑁𝑎−1𝑀 = 𝑡𝑝𝑑−1𝑀，对 DeepSpeed-Chat 来说是"
+      },
+      {
+        "text": "𝑀 for HybridFlow-V, calculated following [13]. Both engines aggregate all model parameters in each GPU’s memory before subsequently partitioning model states according to the generation parallel groups, resulting in a peak memory usage of model parameters 𝑀. As they cannot reuse training weights during generation on some GPUs, training weights need to be maintained on them, amounting to and 𝑡𝑝 redundant memory consumption, respectively. With our parallel grouping method for the generation stage, HybridFlow confines the all-gather operation within",
+        "x": 53.6,
+        "y": 76.4,
+        "w": 242.1,
+        "h": 122.2,
+        "zh": "对 HybridFlow-V 则是 𝑀，算法按 [13] 计算。两种引擎都会先把全部参数收到每块 GPU 上，再按生成并行组切开，所以参数的峰值内存是 𝑀。有些 GPU 生成时用不上训练权重，这些权重还得留着，冗余内存分别达到，以及 𝑡𝑝。换成我们在生成阶段用的分组之后，HybridFlow 把 all-gather 限制在"
+      }
+    ],
+    "10": [
+      {
+        "text": "Algorithm 1 Device Mapping for an RLHF Dataflow 1: Input: RLHF dataflow graph 𝐷, LLMs in RLHF dataflow 𝐿=[𝑙1, 𝑙2, . . . , 𝑙𝑘], workload𝑊 of LLMs in RLHF dataflow, total # of GPUs 𝑁, memory capacity per GPU 𝑄 2: Output: device mapping of models in RLHF dataflow 3: P ← get_placements(𝐷, 𝐿, 𝑁)",
+        "x": 53.6,
+        "y": 651.6,
+        "w": 240.7,
+        "h": 68.5,
+        "zh": "算法 1：为一条 RLHF 数据流做设备映射。1：输入：RLHF 数据流图 𝐷，其中的 LLM 𝐿=[𝑙1, 𝑙2, …, 𝑙𝑘]，这些 LLM 的负载 𝑊，GPU 总数 𝑁，每块 GPU 的内存容量 𝑄。2：输出：数据流中各模型的设备映射。3：P ← get_placements(𝐷, 𝐿, 𝑁)"
+      },
+      {
+        "text": "Though we assume 𝑁 homogeneous GPUs when running the auto mapping algorithm, Algorithm 1 can be readily extended for optimizing model mapping over heterogeneous devices, by considering heterogeneous devices in simu and auto_parallel modules [88].",
+        "x": 318,
+        "y": 662.2,
+        "w": 240.3,
+        "h": 57.8,
+        "zh": "自动映射时，我们假定这 𝑁 块 GPU 是同构的。只要在 simu 和 auto_parallel 里把异构设备算进去，算法 1 就可以直接用来优化异构设备上的模型映射 [88]。"
+      },
+      {
+        "text": "HybridFlow is implemented in around 12k lines of Python",
+        "x": 318,
+        "y": 621.9,
+        "w": 240,
+        "h": 10,
+        "zh": "HybridFlow 大约用 1.2 万行 Python 写成"
+      },
+      {
+        "text": "Hybrid programming model. The hierarchical APIs are implemented with 1.8k LoC. The centralized single controller is built on top of Ray [50] and uses Remote Process Calls (RPC) to coordinate the execution order of different models and transfer data between models following the dataflow. These intermediate data are stored in TensorDict [57]. In our multi-controller paradigm for distributed computation, each model function runs on a separate process across various devices, with control messages relayed from each controller’s CPU process to the corresponding GPU. Our implementation supports Megatron-LM, PyTorch FSDP, and DeepSpeed as the LLM training and inference engines, and vLLM for autoregressive generation. In vLLM, we replace the centralized KVCache manager with a distributed manager to align with the multi-controller paradigm. 3D-HybridEngine. Its main logic is implemented with 2.4k LoC on top of Megatron-LM and vLLM. We store actor model weights for training and generation stages on separate memory buffers, offload generation weights to the CPU memory during training, reload generation weights back to GPU memory during the transition, and use both buffers in generation. We use NCCL communication primitives [35] to collect and concatenate model parameters in each micro DP group during the transition between training and generation. We offload KVCache to CPU memory after generation and reload it back to GPU in the next iteration. Auto-Mapping Algorithm is implemented with 1.9k LoC, together with three simulators for training, inference, and generation workloads. The algorithm is run before starting the RLHF dataflow on CPU, to generate device mapping and parallelism strategies for dataflow initialization.",
+        "x": 317.5,
+        "y": 239.3,
+        "w": 242.2,
+        "h": 368.6,
+        "zh": "混合编程模型。层次化 API 约 1.8k 行。集中的单控制器建在 Ray [50] 之上，用远程进程调用（RPC）安排各模型的执行顺序，并按数据流在模型之间传数据。中间数据放在 TensorDict [57] 里。分布式计算走多控制器：每个模型函数在各设备的独立进程里跑，控制消息从该控制器的 CPU 进程送到对应 GPU。训练和推理引擎支持 Megatron-LM、PyTorch FSDP 和 DeepSpeed，自回归生成用 vLLM。vLLM 里原来的集中式 KVCache 管理器，被换成分布式管理器，以便对齐多控制器。3D-HybridEngine 的主要逻辑在 Megatron-LM 和 vLLM 上实现，约 2.4k 行。训练权重和生成权重放在两块内存缓冲区里：训练时把生成权重卸到 CPU，切换时再载回 GPU，生成时两块都用。阶段切换用 NCCL 原语 [35]，在每个 micro DP 组里把参数收集起来并拼好。生成结束后 KVCache 卸到 CPU，下一轮再载回 GPU。自动映射算法约 1.9k 行，并带训练、推理、生成三个模拟器。它在数据流启动前于 CPU 上运行，算出设备映射和并行策略，供初始化使用。"
+      },
+      {
+        "text": "𝑏𝑒𝑠𝑡_𝑝𝑙𝑚_𝑎𝑙𝑙𝑜𝑐 ← ∅ 𝐴𝑚𝑖𝑛 ← get_min_alloc(𝑝𝑙𝑚, 𝑄, 𝑁) for all 𝐴 ∈ enum_alloc(𝑁 , 𝐴𝑚𝑖𝑛) do",
+        "x": 78.7,
+        "y": 573.5,
+        "w": 134.9,
+        "h": 32.2,
+        "zh": "best_plm_alloc ← ∅；𝐴𝑚𝑖𝑛 ← get_min_alloc(𝑝𝑙𝑚, 𝑄, 𝑁)；对 enum_alloc(𝑁, 𝐴𝑚𝑖𝑛) 中的每一个 𝐴 做"
+      },
+      {
+        "text": "b𝑙 ← auto_parallel(𝐴, 𝐴𝑚𝑖𝑛, 𝑙,𝑊 )",
+        "x": 108.1,
+        "y": 529.2,
+        "w": 118.6,
+        "h": 12.6,
+        "zh": ""
+      },
+      {
+        "text": "𝐶𝑎𝑙𝑙𝑜𝑐 ← d_cost(𝐷, 𝑝𝑙𝑚,𝑊 ) if 𝐶𝑎𝑙𝑙𝑜𝑐 < 𝐶𝑝𝑙𝑚 then",
+        "x": 88.6,
+        "y": 482.9,
+        "w": 102.9,
+        "h": 21.9,
+        "zh": "𝐶𝑎𝑙𝑙𝑜𝑐 ← d_cost(𝐷, 𝑝𝑙𝑚, 𝑊)；若 𝐶𝑎𝑙𝑙𝑜𝑐 < 𝐶𝑝𝑙𝑚，则"
+      },
+      {
+        "text": "𝑏𝑒𝑠𝑡_𝑝𝑙𝑚_𝑎𝑙𝑙𝑜𝑐 ← (𝑝𝑙𝑚, 𝐴)",
+        "x": 98.7,
+        "y": 462.9,
+        "w": 100.9,
+        "h": 9,
+        "zh": ""
+      },
+      {
+        "text": "𝑏𝑒𝑠𝑡_𝑚𝑎𝑝𝑝𝑖𝑛𝑔 ← 𝑏𝑒𝑠𝑡_𝑝𝑙𝑚_𝑎𝑙𝑙𝑜𝑐 24: return 𝑏𝑒𝑠𝑡_𝑚𝑎𝑝𝑝𝑖𝑛𝑔 25: Procedure d_cost(𝐷, 𝑝𝑙𝑚,𝑊 ): 𝑠 ← number of stages in 𝐷 𝑐 ← [0] × 𝑠 // Initialize latency for each stage to 0 for all set ∈ 𝑝𝑙𝑚 do",
+        "x": 55.5,
+        "y": 373.5,
+        "w": 202.9,
+        "h": 65.2,
+        "zh": "best_mapping ← best_plm_alloc。24：返回 best_mapping。25：过程 d_cost(𝐷, 𝑝𝑙𝑚, 𝑊)：𝑠 ← 𝐷 的阶段数；𝑐 ← [0] × 𝑠 // 每个阶段的延迟先置 0；对 𝑝𝑙𝑚 中的每一个集合 set 做"
+      },
+      {
+        "text": "𝑐𝑔[𝑖] ← 𝑐𝑔[𝑖] + simu(𝑙,𝑊 [𝑖]) 𝑐[𝑖] ← 𝑚𝑎𝑥{𝑐[𝑖], 𝑐𝑔[𝑖]}",
+        "x": 95.7,
+        "y": 316.5,
+        "w": 116.8,
+        "h": 21.3,
+        "zh": ""
+      },
+      {
+        "text": "can be parallelized, and the latency of the stage is determined by the maximum execution time among different sets (Line 33). We identify the best device placement of the models with their corresponding parallelism strategies, achieving minimal execution time per RLHF iteration (Lines 18-23). The complexity of Algorithm 1 is 𝑂( 𝑘 is the number of models in the dataflow and 𝑁 is the total number of devices to run the dataflow. This is the worst-case complexity for enumerating all possible device allocations for a placement strategy (i.e., the standalone placement), calculated by assigning 𝑁 devices to 𝑘 models (known as the integer partition problem [6]). For better efficiency, we cache parallelism strategies identified for each model on a number of devices 𝐴, to eliminate redundant searches for the same parallelism strategies when the model is placed on different sets of 𝐴 GPUs in different placement strategies.",
+        "x": 53.6,
+        "y": 76.4,
+        "w": 242.1,
+        "h": 191.6,
+        "zh": "可以并行，该阶段的延迟取各集合执行时间的最大值（第 33 行）。我们选出执行时间最短的设备放置，以及对应的并行策略（第 18–23 行）。算法 1 的复杂度是 𝑂(。𝑘 是数据流中的模型个数，𝑁 是用来跑这条数据流的设备总数。这是最坏情况：对一种放置（也就是各模型完全分开）枚举所有设备分配，相当于把 𝑁 台设备分给 𝑘 个模型，即整数划分问题 [6]。为了少算重复的，我们把每个模型在 𝐴 台设备上已经搜到的并行策略缓存起来。这样，同一模型在不同放置里被放到另一组同样大小的 𝐴 块 GPU 上时，不必再搜一遍。"
+      },
+      {
+        "text": "Testbed. We deploy HybridFlow on a cluster of 16 machines (128 GPUs). Each machine is equipped with 8 NVIDIA A100- 80GB GPUs inter-connected with 600GB/s NVLink. The inter-machine bandwidth is 200Gbps. Our experiments use the following software versions: CUDA12.1, PyTorch 2.1.2, Megatron-core 0.6.0, NCCL 2.18.1, and vLLM 0.3.1. Models and RLHF algorithms. We run the RLHF dataflow (Figure 1) of PPO [68], ReMax [43] and Safe-RLHF [19] algorithms. PPO is one of the most popular algorithms for RLHF [7, 55], consisting of actor, critic, reference policy, and",
+        "x": 317.6,
+        "y": 76.4,
+        "w": 242.1,
+        "h": 117.6,
+        "zh": "测试平台。HybridFlow 部署在 16 台机器、共 128 块 GPU 上。每台机器 8 块 NVIDIA A100 80GB，机内用 600GB/s 的 NVLink 互联，机器之间带宽 200Gbps。软件版本为 CUDA 12.1、PyTorch 2.1.2、Megatron-core 0.6.0、NCCL 2.18.1、vLLM 0.3.1。模型和 RLHF 算法。我们跑图 1 里 PPO [68]、ReMax [43] 和 Safe-RLHF [19] 的数据流。PPO 是 RLHF 里最常用的算法之一 [7, 55]，包含 actor、critic、reference policy，以及"
+      }
+    ],
+    "11": [
+      {
+        "text": "Figure 9. PPO throughput. Numbers in parentheses are HybridFlow speedups compared with baselines.",
+        "x": 94.5,
+        "y": 599.1,
+        "w": 423,
+        "h": 10,
+        "zh": "图 9. PPO 的吞吐。括号中是 HybridFlow 相对基线的加速比。"
+      },
+      {
+        "text": "Figure 10. ReMax throughput. Numbers in parentheses are HybridFlow speedups compared with baselines",
+        "x": 87.9,
+        "y": 484.9,
+        "w": 436.3,
+        "h": 10,
+        "zh": "图 10. ReMax 的吞吐。括号中是 HybridFlow 相对基线的加速比。"
+      },
+      {
+        "text": "Figure 11. Safe-RLHF throughput. Numbers in the parentheses are HybridFlow speedups compared with the baselines",
+        "x": 64.7,
+        "y": 366.4,
+        "w": 482.6,
+        "h": 10,
+        "zh": "图 11. Safe-RLHF 的吞吐。括号中是 HybridFlow 相对基线的加速比。"
+      },
+      {
+        "text": "reward models. Each model is a Llama [73] model with sizes ranging from 7B to 70B. Safe-RLHF has an additional cost model whose architecture and size are the same as the reward model and ReMax eliminates the critic model. We use mixed precision for actor and critic training, i.e., BF16 for model parameters and FP32 for gradient and optimizer states, with Adam [38] optimizer in all experiments. BF16 is used in model inference and auto-regressive generation. If not specified, the experiment results are obtained from PPO. Baselines. We compare HybridFlow with state-of-the-art RLHF systems including DeepSpeed-Chat [82] v0.14.0, OpenRLHF [30] v0.2.5, and NeMo-Aligner [17] v0.2.0 (detailed in Table 1). NeMo-Alginer doesn’t support ReMax algorithm. We do not compare HybridFlow to other frameworks such as Trlx [27], HuggingFaceDDP [79], and Collosal-Chat [15] as they are less representative and slower than the above baselines (as reported in [82]). We use RLHF throughput (tokens/sec) as the performance metric, computed by dividing the total number of tokens in prompts and responses in a global batch by one RLHF iteration time. All reported performance numbers are averaged over 5 training iterations after a warm-up of 10 iterations.",
+        "x": 53.5,
+        "y": 95.3,
+        "w": 242.2,
+        "h": 261,
+        "zh": "reward 模型。每个模型都是 Llama [73]，大小从 7B 到 70B。Safe-RLHF 多一个 cost 模型，结构和大小与 reward 相同；ReMax 去掉 critic。所有实验里，actor 和 critic 的训练用混合精度：参数 BF16，梯度和优化器状态 FP32，优化器都是 Adam [38]。推理和自回归生成用 BF16。除非另有说明，结果都来自 PPO。基线包括当前最好的几套 RLHF 系统：DeepSpeed-Chat [82] v0.14.0、OpenRLHF [30] v0.2.5、NeMo-Aligner [17] v0.2.0（见表 1）。NeMo-Aligner 不支持 ReMax。我们没有和 Trlx [27]、HuggingFaceDDP [79]、Collosal-Chat [15] 比较，它们代表性较弱，也比上面的基线更慢（[82] 报告过）。指标是 RLHF 吞吐（token/秒）：一个全局 batch 里提示和回复的 token 总数，除以一轮 RLHF 的时间。文中数字都是先预热 10 轮，再对随后 5 轮训练取平均。"
+      },
+      {
+        "text": "Datasets and hyperparameters. We perform RLHF on \"Dahoas/ful-hh-rlhf\" dataset [7] of HuggingFace, which is widely used for LLM alignment [64, 85]. As the baseline systems may not incorporate continuous-batching optimization [83] during generation, for a fair comparison, we enforce the same length on all responses to be generated. In each experiment, the input prompt length and the output response length are both 1024 and the global batch size of input prompts to the actor model is 1024. The number of PPO epochs is 1 and the number of PPO update iterations per epoch is 8, aligning with previous RLHF research [31, 55, 81].",
+        "x": 317.6,
+        "y": 226.8,
+        "w": 242.1,
+        "h": 129.5,
+        "zh": "数据集与超参数。RLHF 用的是 HuggingFace 上的 “Dahoas/ful-hh-rlhf” [7]，这个数据集常用于 LLM 对齐 [64, 85]。基线在生成时未必做了 continuous-batching [83]。为了公平，我们让所有要生成的回复一样长。每次实验里，输入提示和输出回复都是 1024，送给 actor 的提示全局 batch 大小是 1024。PPO 的 epoch 数为 1，每个 epoch 更新 8 次，与已有 RLHF 工作一致 [31, 55, 81]。"
+      },
+      {
+        "text": "End-to-End performance Figures 9, 10, and 11 show RLHF throughput when running PPO, ReMax, and Safe-RLHF respectively. The actor, critic, reference, and reward models in this set of experiments are of the same size, following previous practice [7, 55, 82]. The number of GPUs used in experiments of different model sizes ranges from the smallest number of GPUs to run RLHF without OOM to 128 GPUs. We do not enable offloading optimizer states [61] in the experiments for fair comparison. Overall performance. We observe that HybridFlow consistently outperforms the baselines across all model scales. In",
+        "x": 317.6,
+        "y": 76.4,
+        "w": 242.1,
+        "h": 132.5,
+        "zh": "端到端性能。图 9、图 10、图 11 分别是 PPO、ReMax 和 Safe-RLHF 的吞吐。这组实验里 actor、critic、reference 和 reward 一样大，沿用已有设定 [7, 55, 82]。GPU 数量从刚好能不 OOM 跑起来的最少块数，一直加到 128。为公平起见，实验不卸载优化器状态 [61]。总体来看，各种模型规模上 HybridFlow 都稳定地快于这些基线。在"
+      }
+    ],
+    "12": [
+      {
+        "text": "Figure 13. Placement comparison under 13B actor and reference policy & 70B critic Figure 12. Throughput of HybridFlow under different placements",
+        "x": 85.7,
+        "y": 603.8,
+        "w": 467.5,
+        "h": 30.8,
+        "zh": "图 13. 13B 的 actor 与 reference policy、以及 70B 的 critic 下，不同放置方式的比较。图 12. HybridFlow 在不同放置下的吞吐。"
+      },
+      {
+        "text": "Comparison of different model placements. Figure 12 OpenRLHF and NeMo-Aligner by 3.67× (up to 7.84×), 3.25×",
+        "x": 54,
+        "y": 568.8,
+        "w": 504,
+        "h": 21.9,
+        "zh": "不同模型放置的比较。图 12。相对 OpenRLHF 和 NeMo-Aligner 为 3.67×（最高 7.84×）、3.25×"
+      },
+      {
+        "text": "reveals that optimized placement of HybridFlow under differ- (up to 5.93×) and 12.52× (up to 20.57×), respectively. This is",
+        "x": 53.7,
+        "y": 556.9,
+        "w": 506,
+        "h": 21.9,
+        "zh": "可以看到，HybridFlow 的优化放置会随不同的条件变化。（最高 5.93×）以及 12.52×（最高 20.57×）。这是因为"
+      },
+      {
+        "text": "ent numbers of GPUs varies. From 16 to 64 GPUs, colocating mainly because HybridFlow effectively executes generation,",
+        "x": 54,
+        "y": 544.9,
+        "w": 504,
+        "h": 21.9,
+        "zh": "GPU 数量不同，结果就不一样。从 16 块到 64 块 GPU，把模型共置起来。主要因为 HybridFlow 能有效完成生成、"
+      },
+      {
+        "text": "all models on the same set of devices yields the best perforinference, and training in all RLHF stages by sharding the",
+        "x": 54,
+        "y": 533,
+        "w": 505.7,
+        "h": 21.9,
+        "zh": "全部放在同一组设备上时效果最好。推理，以及各个 RLHF 阶段中的训练，办法是切分这些"
+      },
+      {
+        "text": "mance. For 96 to 128 GPUs with 34B models and 96 GPUs models with different parallelism strategies to fit various",
+        "x": 54,
+        "y": 521,
+        "w": 504,
+        "h": 21.9,
+        "zh": "。34B 模型用 96 到 128 块 GPU，以及 96 块 GPU 的情形。模型，并用不同的并行策略去适配各种"
+      },
+      {
+        "text": "with 13B models, the split strategy becomes optimal. The computation workloads. HybridFlow achieves the highest",
+        "x": 54,
+        "y": 509,
+        "w": 504,
+        "h": 21.9,
+        "zh": "再配上 13B 模型时，split 成为最优。计算负载。HybridFlow 取得了最高的"
+      },
+      {
+        "text": "split strategy divides GPUs evenly between the two sets average speedup of 9.64× when training 70B models, as Hy-",
+        "x": 54,
+        "y": 497.1,
+        "w": 504,
+        "h": 21.9,
+        "zh": "split 把 GPU 在两个集合之间均分。训练 70B 模型时平均加速 9.64×，这是因为 HybridFlow"
+      },
+      {
+        "text": "of models, as their sizes are equal. For 13B models on 128 bridFlow reduces the transition overhead by up to 71.2% and",
+        "x": 54,
+        "y": 485.1,
+        "w": 504,
+        "h": 21.9,
+        "zh": "这些模型，它们的规模相同。对于 128 块 GPU 上的 13B 模型。最多把切换开销降低 71.2%，并且"
+      },
+      {
+        "text": "GPUs, the standalone strategy achieves the highest through- 89.1% compared to DeepSpeed-Chat and OpenRLHF, which",
+        "x": 54,
+        "y": 473.2,
+        "w": 505.7,
+        "h": 21.9,
+        "zh": "GPU，standalone 的吞吐最高。比起 DeepSpeed-Chat 和 OpenRLHF 达到 89.1%，而它们"
+      },
+      {
+        "text": "put. In this case, HybridFlow allocates 64 GPUs for the actor, also incurs large inter-machine communication when train-",
+        "x": 54,
+        "y": 461.2,
+        "w": 505.1,
+        "h": 21.9,
+        "zh": "这时 HybridFlow 给 actor 分配 64 块 GPU。在训练时也会带来大量机器间通信"
+      },
+      {
+        "text": "32 for the critic, and 16 each for the reference and reward ing with ZeRO-3. Due to the lack of KVCache in generation",
+        "x": 54,
+        "y": 449.3,
+        "w": 504,
+        "h": 21.9,
+        "zh": "critic 32 块，reference 和 reward 各 16 块。在使用 ZeRO-3 时。由于生成阶段没有 KVCache"
+      },
+      {
+        "text": "model. In smaller clusters, computation of all models can engine, NeMo-Aligner’s main performance bottleneck lies",
+        "x": 54,
+        "y": 437.3,
+        "w": 504,
+        "h": 21.9,
+        "zh": "模型。集群较小时，各模型的计算都可以。引擎，NeMo-Aligner 的主要性能瓶颈在于"
+      },
+      {
+        "text": "fully utilize GPU resources; the colocate strategy ensures in the generation stage, which accounts for up to 81.2% of",
+        "x": 54,
+        "y": 425.4,
+        "w": 504,
+        "h": 21.9,
+        "zh": "把 GPU 用满；colocate 策略能够保证这一点。生成阶段，它最多占到 81.2%"
+      },
+      {
+        "text": "maximum GPU usage in different RLHF stages. In larger clusits RLHF iteration time. Similar results can be observed in",
+        "x": 54,
+        "y": 413.4,
+        "w": 505.7,
+        "h": 21.9,
+        "zh": "在不同 RLHF 阶段都尽量占满 GPU。集群再大一些时。一轮 RLHF 的时间。类似的结果也可以在"
+      },
+      {
+        "text": "ters, RLHF throughput under colocate placement fails to scale Figures 10, 11 validating the efficiency of HybridFlow on",
+        "x": 54,
+        "y": 401.4,
+        "w": 504,
+        "h": 21.9,
+        "zh": "上，colocate 这种放置的 RLHF 吞吐扩展不上去。图 10 和图 11 表明，HybridFlow 在"
+      },
+      {
+        "text": "up linearly as the batch size is fixed and the computation-torunning various RLHF algorithms.",
+        "x": 54,
+        "y": 389.5,
+        "w": 505.7,
+        "h": 21.9,
+        "zh": "线性增长，因为 batch 大小固定，而计算与通信之比。运行各种 RLHF 算法时也是如此。"
+      },
+      {
+        "text": "communication ratio decreases with a larger DP size on more Scalability. HybridFlow achieves at least 2.09× speedup on 8",
+        "x": 54,
+        "y": 377.5,
+        "w": 504,
+        "h": 21.9,
+        "zh": "通信比会随着 DP 变大、GPU 增多而下降。可扩展性。HybridFlow 在 8 块"
+      },
+      {
+        "text": "GPUs. Standalone and split strategies place models on differGPUs. With increasing GPUs, the strong scaling efficiency of",
+        "x": 54,
+        "y": 365.6,
+        "w": 505.7,
+        "h": 21.9,
+        "zh": "GPU 上至少有 2.09× 的加速。standalone 和 split 把模型放在不同的。GPU 变多以后，强扩展效率"
+      },
+      {
+        "text": "ent devices with a smaller DP size for each model in larger HybridFlow on various model scales is 66.8%, computed by di-",
+        "x": 54,
+        "y": 353.6,
+        "w": 504.2,
+        "h": 21.9,
+        "zh": "设备上，更大的集群里每个模型用更小的 DP。各个模型规模上，HybridFlow 为 66.8%，计算时用"
+      },
+      {
+        "text": "clusters, facilitating parallel execution of different models in throughput in largest scale",
+        "x": 85.6,
+        "y": 343.4,
+        "w": 472.4,
+        "h": 20.2,
+        "zh": "集群里，便于不同模型在同一阶段并行。最大规模上的吞吐"
+      },
+      {
+        "text": "the same stages. In all cases, our Algorithm 1 produces the throughput in smallest scale",
+        "x": 82.8,
+        "y": 332.6,
+        "w": 475.2,
+        "h": 19.1,
+        "zh": "同一阶段。所有情况下，我们的算法 1 得到的都是。最小规模上的吞吐"
+      },
+      {
+        "text": "best placement with the highest training throughput. averaging over three algorithms and all model scales. Scal-",
+        "x": 54,
+        "y": 322.4,
+        "w": 480,
+        "h": 17.3,
+        "zh": "训练吞吐最高的放置。对三种算法和全部模型规模取平均。若继续扩大规模"
+      },
+      {
+        "text": "Larger critic and reward model. We further evaluate ing to a large number of GPUs with a fixed global batch",
+        "x": 54,
+        "y": 310.4,
+        "w": 504,
+        "h": 17.3,
+        "zh": "更大的 critic 和 reward 模型。我们进一步评估了。扩到很多 GPU、而全局 batch 保持不变时"
+      },
+      {
+        "text": "model placements when running PPO with a 13B actor and size results in smaller local batch sizes for each worker, po-",
+        "x": 54,
+        "y": 298.5,
+        "w": 504,
+        "h": 17.3,
+        "zh": "用 13B 的 actor 跑 PPO 时该怎么放置，并且。每个 worker 分到的本地 batch 更小，于是可能"
+      },
+      {
+        "text": "reference policy and 70B critic and reward models (larger tentially causing GPU underutilization. Running 7B models",
+        "x": 54,
+        "y": 286.5,
+        "w": 504.2,
+        "h": 17.3,
+        "zh": "reference policy，以及 70B 的 critic 和 reward（更大的。造成 GPU 吃不饱。在 7B 模型上"
+      },
+      {
+        "text": "critic and reward models are expected to produce better alignon 128 GPUs, HybridFlow still outperforms the best base-",
+        "x": 54,
+        "y": 274.6,
+        "w": 505.7,
+        "h": 17.3,
+        "zh": "这样的 critic 和 reward 有望把对齐做得更好。放到 128 块 GPU 上，HybridFlow 仍然超过最好的基线"
+      },
+      {
+        "text": "ment [7]). Figure 13 shows that the colocate strategy still line OpenRLHF for 1.68×, 1.53×, and 1.71× on PPO, ReMax,",
+        "x": 54,
+        "y": 262.6,
+        "w": 504,
+        "h": 17.3,
+        "zh": "[7]）。图 13 显示，colocate 策略仍然。OpenRLHF，在 PPO、ReMax 上分别为 1.68×、1.53× 和 1.71×，"
+      },
+      {
+        "text": "outperforms others by 44.8% on average with up to 64 GPUs. and Safe-RLHF respectively. This can be attributed to Hy-",
+        "x": 54,
+        "y": 250.6,
+        "w": 505.5,
+        "h": 17.3,
+        "zh": "在最多 64 块 GPU 时，平均比其他放法高出 44.8%。以及 Safe-RLHF。这可以归功于 HybridFlow"
+      },
+      {
+        "text": "The split strategy achieves higher throughput with 96 GPUs. bridFlow’s ability to adapt the best placement strategies for",
+        "x": 54,
+        "y": 238.7,
+        "w": 505.5,
+        "h": 17.3,
+        "zh": "到 96 块 GPU 时，split 的吞吐更高。能够针对不同对象选出最好的放置策略，这些对象是"
+      },
+      {
+        "text": "When scaling to 128 GPUs, the best placement obtained by different models and cluster sizes to minimize RLHF time.",
+        "x": 54,
+        "y": 226.7,
+        "w": 504.3,
+        "h": 17.3,
+        "zh": "扩展到 128 块 GPU 时，所得到的最佳放置。不同的模型和不同的集群规模，从而把 RLHF 的时间尽量缩短。"
+      },
+      {
+        "text": "Algorithm 1 colocates actor, reference, and reward models OpenRLHF performs better in a larger GPU cluster but less",
+        "x": 54,
+        "y": 214.8,
+        "w": 504,
+        "h": 17.3,
+        "zh": "算法 1 把 actor、reference 和 reward 放在一起。OpenRLHF 在更大的 GPU 集群上表现更好，但在更小的集群上就"
+      },
+      {
+        "text": "on 64 GPUs while allocating the remaining 64 GPUs to critic. efficiently on smaller ones.",
+        "x": 54,
+        "y": 202.8,
+        "w": 505.5,
+        "h": 17.3,
+        "zh": "放在 64 块 GPU 上，剩下的 64 块分给 critic。不那么高效。"
+      },
+      {
+        "text": "On the same number of GPUs, actor and reference policy’s computation time is much smaller than critic and reward model, and colocating the reward model with actor and reference policy reduces the GPU idle time in the experience In this experiment, we implement various model placements",
+        "x": 54,
+        "y": 160.1,
+        "w": 505.7,
+        "h": 48.1,
+        "zh": "GPU 数量相同的时候，actor 和 reference policy 的计算时间比 critic 和 reward 短得多；把 reward 与 actor、reference policy 放在一起，可以减少准备 experience 时 GPU 空闲的时间。本实验里，我们实现了多种模型放置"
+      },
+      {
+        "text": "preparation stage. In general, distributing actor and critic on of the PPO algorithm in HybridFlow, under the same model",
+        "x": 54,
+        "y": 148.1,
+        "w": 504,
+        "h": 12.2,
+        "zh": "准备阶段。总体来说，把 actor 和 critic 分到。HybridFlow 中 PPO 算法的这些放法，并且模型设置与"
+      },
+      {
+        "text": "different devices for parallel execution in the training stage and cluster settings as in Sec. 8.2: (i) colocate, the placement",
+        "x": 54,
+        "y": 136.2,
+        "w": 504,
+        "h": 12.2,
+        "zh": "不同的设备上，使训练阶段可以并行执行。第 8.2 节相同的集群设置：（i）colocate，也就是"
+      },
+      {
+        "text": "leads to higher throughput in large clusters. strategy in DeepSpeed-Chat; (ii) standalone, that in OpenRLHF and; (iii) split, NeMo-Aligner’s colocation placement (actor and reference policy on the same set of devices and critic and reward model on another); (iv) hybridflow, the",
+        "x": 53.7,
+        "y": 88.4,
+        "w": 442.8,
+        "h": 48.1,
+        "zh": "在大集群里会有更高的吞吐。DeepSpeed-Chat 的策略；（ii）standalone，即 OpenRLHF 的策略；（iii）split，即 NeMo-Aligner 的共置（actor 和 reference policy 在同一组设备，critic 和 reward 在另一组）；（iv）hybridflow，即"
+      },
+      {
+        "text": "Transition time comparison. Figure 14 shows the transioptimized placement obtained by Algorithm 1.",
+        "x": 54,
+        "y": 76.4,
+        "w": 505.7,
+        "h": 21.9,
+        "zh": "切换时间的比较。图 14 显示的是这段切换。由算法 1 得到的优化放置。"
+      },
+      {
+        "text": "tion time between actor training and generation stages on",
+        "x": 318,
+        "y": 76.4,
+        "w": 240,
+        "h": 10,
+        "zh": "actor 训练和生成两个阶段之间的时间，在"
+      }
+    ],
+    "13": [
+      {
+        "text": "Figure 16. Runtime of device mapping algorithm. The model size and # of GPUs are simultaneously scaled.",
+        "x": 318,
+        "y": 527.6,
+        "w": 240,
+        "h": 21.9,
+        "zh": "图 16. 设备映射算法的运行时间。模型大小和 GPU 数量同时放大。"
+      },
+      {
+        "text": "Figure 15. Time breakdown on different generation parallel sizes of the actor model on 16 GPUs.",
+        "x": 54,
+        "y": 492.7,
+        "w": 240,
+        "h": 21.9,
+        "zh": "图 15. 在 16 块 GPU 上，actor 取不同生成并行规模时的时间分解。"
+      },
+      {
+        "text": "Figure 16 shows the running time of Algorithm 1, which is significantly shorter than days of actual RLHF training. A linear growth of running time is exhibited, revealing good scalability of the device mapping algorithm with model size and cluster size. Most of the running time is spent on estimating the execution latency of each model’s parallel strategies. More parallelism strategies are available for a larger model, requiring more simulations to identify the optimal one for each placement plan. Our caching of optimal parallelism strategies of the models to be reapplied across different placements reduces the search time for the best placement to at",
+        "x": 318,
+        "y": 374.7,
+        "w": 241.7,
+        "h": 129.5,
+        "zh": "图 16 是算法 1 的运行时间，比真正要跑上许多天的 RLHF 训练短得多。时间大致呈线性增长，说明设备映射算法随模型规模和集群规模都能扩展。大部分时间花在估计每个模型各种并行策略的执行延迟。模型越大，可选策略越多，每种放置都要做更多次模拟，才能找出最优的那一个。我们把模型的最优并行策略缓存下来，换一种放置时直接再用，于是搜索最佳放置的时间被压到了"
+      },
+      {
+        "text": "various model scales, which is the time to reshard model weights from training to generation, under the same settings in §8.2. OpenRLHF’s transition time includes weight synchronization time between two copies of the actor model on different devices. HybridFlow reduces the transition time by 55.2% (11.7s) on average and the transition overhead by up to 89.1% (78.2s) with 70B models, while maintaining consistent overhead across different cluster scales. This is attributed to our new parallel grouping method for the generation stage (§5.4). In baseline methods, all model parameters must be collected during transition, necessitating layer-by-layer collections multiple times to prevent OOM. HybridFlow enables zero memory redundancy during transition and requires only one all-gather operation per micro DP group. Transition and generation time We further validate the need to use different parallel sizes in actor training and generation in HybridFlow. In this experiment, all models are colocated on the same set of GPUs, and the KVCache for generation is allocated using the remaining GPU memory (i.e., best-effort allocation). Figure 15 gives the transition and generation time when running RLHF on 16 GPUs with 7B and 13B models, respectively, with training parallel groups 1-8-2 (following p-t-d convention) and varying generation TP group size 𝑡𝑔 from 1 to 8. The generation PP group size remains constant at 𝑝𝑔=1 and the micro DP group size 𝑑𝑔 is computed as 𝑡 . We observe that applying a smaller generation TP group size, 𝑡𝑔=2, for 7B models and 𝑡𝑔=4 for 13B models reduces the generation latency by 60.3% and 36.4%, respectively. Conversely, using the same TP size as training (𝑡𝑔=8), following the NeMo-Aligner approach, results in the largest generation latency due to GPU underutilization. Further reducing 𝑡𝑔 fails to achieve higher speedup, as a smaller 𝑡𝑔 necessitates maintaining a larger KVCache per GPU.",
+        "x": 53.6,
+        "y": 75.3,
+        "w": 242.1,
+        "h": 397.8,
+        "zh": "各个模型规模下都是如此。这里测的是把模型权重从训练重切分到生成的时间，设置与 §8.2 相同。OpenRLHF 的切换时间里，包含两份 actor 在不同设备之间同步权重的时间。HybridFlow 平均把切换时间缩短 55.2%（11.7 秒）；在 70B 模型上，切换开销最多降低 89.1%（78.2 秒），而且换集群规模时这块开销保持稳定。这来自我们在生成阶段使用的新并行分组（§5.4）。基线切换时必须把全部参数收集起来，还得一层一层收许多次，以免 OOM。HybridFlow 切换时内存零冗余，每个 micro DP 组只做一次 all-gather。切换时间与生成时间。我们再验证一件事：在 HybridFlow 里，actor 的训练和生成应当使用不同的并行规模。本实验把所有模型共置在同一组 GPU 上，生成用的 KVCache 占用剩余显存（也就是尽量分配）。图 15 是 16 块 GPU 上分别用 7B 和 13B 跑 RLHF 时的切换时间与生成时间。训练并行组为 1-8-2（按 p-t-d），生成 TP 组大小 𝑡𝑔 从 1 变到 8。生成 PP 组大小固定为 𝑝𝑔=1，micro DP 组大小 𝑑𝑔 按 𝑡 计算。可以看到，7B 把生成 TP 降到 𝑡𝑔=2、13B 用 𝑡𝑔=4 时，生成延迟分别下降 60.3% 和 36.4%。若生成 TP 与训练相同（𝑡𝑔=8），也就是 NeMo-Aligner 的做法，生成延迟最大，因为 GPU 吃不饱。再继续减小 𝑡𝑔，加速就上不去了：𝑡𝑔 越小，每块 GPU 要维持的 KVCache 越大。"
+      },
+      {
+        "text": "Fault Tolerance. HybridFlow is orthogonal to existing faulttolerance approaches [22, 34, 49, 76, 93] and already incorporates checkpointing. Failures can be detected by NCCL errors and silent-data-corruption by checksums. Our programming model enables the single controller to coordinate checkpoint operations via RPC, allowing the saving of model states within each ParallWorker Group. This includes saving parameters of actor/critic models, dataloader IDs, and Random Number Generator (RNG) states to ensure systemwide consistency. Moreover, HybridFlow can also employ redundancy-based fault-tolerance methods, such as broadcast parameters and CPU checkpoint, for fast recovery if enough healthy model replicas are available [76, 93]. Placement Insights. We conclude three main insights for model placement and GPU allocation in RLHF training. 1) Allocating more GPUs to the actor model can reduce the timeconsuming generation latency, which cannot be parallelized with other models. 2) When each model computation can fully utilize GPU resources, colocating all the models is most effective when training on relatively small-scale clusters. 3) When scaling up to large-scale clusters (i.e., strong scaling), distributing the actor and critic models on different devices",
+        "x": 317.5,
+        "y": 76.4,
+        "w": 242.2,
+        "h": 261,
+        "zh": "容错。HybridFlow 与现有容错方法是正交的 [22, 34, 49, 76, 93]，并且已经带了检查点。故障可以由 NCCL 报错发现，静默数据损坏可以由校验和发现。这套编程模型让单控制器用 RPC 协调检查点操作，从而能在每个 ParallWorker 组内保存模型状态，包括 actor 和 critic 的参数、dataloader 的 ID，以及随机数生成器（RNG）的状态，保证全系统一致。若健康的模型副本还够用，HybridFlow 也可以采用基于冗余的容错，例如广播参数和在 CPU 上做检查点，以便快速恢复 [76, 93]。关于放置的结论。RLHF 训练里的模型放置和 GPU 分配，主要有三点。1）多给 actor 一些 GPU，可以缩短生成延迟；生成无法和其他模型并行。2）若每个模型的计算都能把 GPU 吃满，在相对较小的集群上训练时，把所有模型共置最有效。3）往大规模集群做强扩展时，把 actor 和 critic 分到不同设备上"
+      }
+    ],
+    "14": [
+      {
+        "text": "for parallel execution in the training and preparation stages would help achieve higher throughput. Resource multiplexing. HybridFlow enables colocation of models on shared devices by utilizing time-sharing for GPU computation. Recent research in DNN task scheduling has developed fine-grained resource multiplexing techniques, primarily aimed at achieving the service-level objectives of individual tasks [8, 18, 26, 26, 47, 56, 77]. Although the ResourcePool implementation supports parallel execution of collocated models, HybridFlow generally adheres to sequential execution to prevent GPU resource contention or OOM issues as discussed in Section 2.3. Applying GPU sharing and heterogeneous resources in RLHF training poses distinct challenges, as it seeks to balance the computation workload and manage complex data dependencies among various tasks. Investigating fine-grained auto-mapping algorithms for GPU sharing in RLHF training, coupled with model offload optimization and integration of heterogeneous devices, would be a promising direction for future research. From alignment to reasoning. In RLHF for LLM alignment, the reward signal is generated by the reward model. Besides alignment tasks, similar algorithms (e.g., PPO and GRPO [70]) can be applied to other domains, such as code generation and mathematical reasoning. For these tasks, a ground truth may exist for each prompt, which can be determined by assessing the correctness of the output value for each code test case and verifying the accuracy of mathematical results. Therefore, the reward model can be replaced by non-neural-network reward modules, such as a sandbox environment [87] for evaluating generated code or a reward function [14, 65] to validate mathematical results. HybridFlow can seamlessly integrate these reward modules by wrapping them as remote functions and orchestrating their execution within the singleprocess script, providing a flexible and efficient framework for diverse reinforcement learning applications.",
+        "x": 53.6,
+        "y": 303.6,
+        "w": 242.1,
+        "h": 416.4,
+        "zh": "让训练阶段和准备阶段都能并行，吞吐会更高。资源复用。HybridFlow 把模型共置在共享设备上，GPU 计算按分时进行。近来的 DNN 任务调度做了更细的资源复用，主要是为了满足单个任务的服务等级目标 [8, 18, 26, 26, 47, 56, 77]。ResourcePool 的实现虽然允许共置模型并行执行，HybridFlow 一般仍顺序执行，以免出现 §2.3 所说的 GPU 争用或 OOM。在 RLHF 训练里共享 GPU、使用异构资源，难点并不一样：既要平衡计算负载，又要应付任务之间复杂的数据依赖。若能把更细粒度的自动映射用到 RLHF 的 GPU 共享上，再结合模型卸载和异构设备，会是一个值得做的方向。从对齐到推理。LLM 对齐的 RLHF 里，奖励信号由 reward 模型给出。除了对齐，类似算法（例如 PPO 和 GRPO [70]）也可以用在别的地方，比如代码生成和数学推理。这些任务里，每个提示往往有可核对的答案：代码可以看每个测试用例的输出对不对，数学可以核对结果是否正确。于是 reward 模型可以换成非神经网络的奖励模块，例如用沙箱 [87] 评估生成的代码，或用奖励函数 [14, 65] 检查数学结果。HybridFlow 可以把这些模块包成远程函数，放进那个单进程脚本里编排，从而给各种强化学习应用一个灵活、高效的框架。"
+      },
+      {
+        "text": "and DeepSpeed [60] extend data parallelism with communication and memory optimizations. Numerous systems [23, 36, 48, 54, 71, 75, 89] optimized large model training through model parallelisms such as tensor parallelism and pipeline parallelism to partition models across devices. LLM serving systems [3, 16, 40, 72, 83, 92] also adopts data and model parallelism to accelerate auto-regressive generation with specialized optimizations like continuous-batching [83] and chunked-prefill [3]. Note that all the above frameworks adopt multi-controller paradigm for efficient computation. Dataflow systems. Dataflow systems like MapReduce [21], Spark [86], Dryad [33], and Naiad [51] are popular for analytics and ML workloads but they lack support for dynamic task graphs. Ray [50] unifies task-parallel and actor programming models in a single dynamic task graph and implements a scalable distributed scheduler and a global control store, which is adopted by many RL frameworks [45, 46]. Pathways [9], a closed-source project for TPUs, are designed to easily express complex parallelism patterns and fine-grain control flow within a single DNN model, such as pipeline parallelism and Mixture-of-Experts with sparse computation. It employs an asynchronous distributed dataflow design that enables parallel control plane execution despite data dependencies, reducing the dispatch overhead from single-controller paradigm. Its main focus lies on single-model training, requiring complex compilations of each sub-network of a DNN model. HybridFlow can integrate Pathways as a submodule to implement the computation of models in the RLHF dataflow.",
+        "x": 318,
+        "y": 387.2,
+        "w": 241.7,
+        "h": 332.8,
+        "zh": "以及 DeepSpeed [60]，在数据并行之外又做了通信和内存上的优化。许多系统 [23, 36, 48, 54, 71, 75, 89] 用张量并行、流水线并行等模型并行把大模型切到多台设备上，从而把训练做快。LLM 服务系统 [3, 16, 40, 72, 83, 92] 同样用数据并行和模型并行加速自回归生成，并带有 continuous-batching [83]、chunked-prefill [3] 这类专门优化。上述框架为了算得高效，采用的都是多控制器。数据流系统。MapReduce [21]、Spark [86]、Dryad [33] 和 Naiad [51] 这类数据流系统常用于分析和机器学习，但不支持动态任务图。Ray [50] 把任务并行和 actor 编程模型统一到一张动态任务图里，并实现了可扩展的分布式调度器和一份全局控制存储，不少 RL 框架采用它 [45, 46]。Pathways [9] 是面向 TPU 的闭源项目，用来方便地表达复杂并行，以及单个 DNN 内部细粒度的控制流，例如流水线并行，还有带稀疏计算的 Mixture-of-Experts。它用异步分布式数据流，即使有数据依赖，控制面仍可并行执行，从而减轻单控制器的分发开销。它主要针对单模型训练，要把 DNN 的每个子网络做复杂编译。HybridFlow 可以把 Pathways 当作子模块，用来实现 RLHF 数据流中各模型的计算。"
+      },
+      {
+        "text": "HybridFlow is an RLHF framework that enables flexible representation and efficient execution of diverse RLHF algorithms. We propose a hybrid programming model that allows users to easily build RLHF dataflow in a few lines of code by encapsulating distributed computation of different LLMs into primitive APIs and hiding the complexity of data resharding among nodes. Our 3D-HybridEngine ensures efficient execution of training and generation of the actor model, with zero memory redundancy and significantly reduced communication overhead for model parameter resharding. Furthermore, our effective mapping algorithm optimizes GPU allocation and placement of models in the RLHF dataflow. Extensive experiments demonstrate that HybridFlow achieves 1.53× to 20.57× speedup compared to state-of-the-art RLHF systems under various model sizes and cluster scales.",
+        "x": 318,
+        "y": 184,
+        "w": 241.7,
+        "h": 177.3,
+        "zh": "HybridFlow 是一个 RLHF 框架，能灵活表示并高效执行各种 RLHF 算法。我们提出混合编程模型：把不同 LLM 的分布式计算封装成原语 API，并把节点之间数据重切分的复杂性藏起来，用户用很少几行代码就能搭好数据流。3D-HybridEngine 让 actor 的训练和生成高效执行，参数重切分时内存零冗余，通信开销也明显更低。映射算法则优化数据流中各模型的 GPU 分配和放置。大量实验表明，在不同模型大小和集群规模下，HybridFlow 相对当前最好的 RLHF 系统有 1.53× 到 20.57× 的加速。"
+      },
+      {
+        "text": "RL frameworks. There have been plenty of frameworks for RL, ranging from general-purpose RL systems design for small-scale DNNs [12, 25, 28, 39, 45, 46] to RLHF systems specifically optimized for LLMs [15, 17, 30, 80, 82]. We have thoroughly examined closely related work in §2 and we discuss more RL frameworks in this section. These RL frameworks [12, 25, 28, 39, 74], similar to recent RLHF systems, use a hodgepodge of multi-controller frameworks to implement their algorithms. They establish multiple long-running distributed programs with each component coordinating the execution order with hard-coded data synchronization. Gear [74] further optimized the experience replay segment of the RL pipeline. However, all these frameworks fail to support LLM training, inference, and generation in RLHF. LLM training and serving systems. TorchDDP [57] and Horovod [69] support data parallel training. ByteScheduler [58]",
+        "x": 53.6,
+        "y": 76.4,
+        "w": 248.7,
+        "h": 189.3,
+        "zh": "RL 框架。RL 框架已经很多，从面向小规模 DNN 的通用系统设计 [12, 25, 28, 39, 45, 46]，到专门为 LLM 优化的 RLHF 系统 [15, 17, 30, 80, 82]。关系最近的工作已在 §2 仔细讨论，这里再补充一些 RL 框架。这些框架 [12, 25, 28, 39, 74] 和近来的 RLHF 系统一样，把多套多控制器框架拼在一起实现算法。它们拉起多个长期运行的分布式程序，各组件用写死的数据同步来对齐执行顺序。Gear [74] 进一步优化了 RL 流水线中的 experience replay。但这些框架都支持不了 RLHF 里的 LLM 训练、推理和生成。LLM 的训练与服务系统。TorchDDP [57] 和 Horovod [69] 支持数据并行训练。ByteScheduler [58]"
+      },
+      {
+        "text": "We would like to thank our shepherd Y. Charlie Hu and the anonymous reviewers for their constructive feedback. We thank Xin Liu, Yangrui Chen, and Ningxin Zheng for their insightful feedback on this project. This work was supported in part by a ByteDance Research Collaboration Project, and grants from Hong Kong RGC under the contracts HKU 17204423 and C7004-22G (CRF).",
+        "x": 317.5,
+        "y": 76.4,
+        "w": 242.1,
+        "h": 81.7,
+        "zh": "感谢本文的 shepherd Y. Charlie Hu，以及匿名审稿人的建设性意见。感谢 Xin Liu、Yangrui Chen 和 Ningxin Zheng 对本工作的深入反馈。本工作部分由字节跳动科研合作项目支持，并得到香港研究资助局项目 HKU 17204423 与 C7004-22G（CRF）的资助。"
+      }
+    ],
+    "15": [
+      {
+        "text": "Chao Li, and Minyi Guo. 2022. {DVABatch}: Diversity-aware {MultiEntry} {Multi-Exit} batching for efficient processing of {DNN} services on {GPUs}. In2022 USENIX Annual Technical Conference (USENIX",
+        "x": 334.8,
+        "y": 680.1,
+        "w": 224.5,
+        "h": 27.9,
+        "zh": "Chao Li 与 Minyi Guo。2022。{DVABatch}：面向 GPU 上 DNN 服务的、感知多样性的多入口多出口批处理。见 2022 USENIX Annual Technical Conference（USENIX"
+      },
+      {
+        "text": "[1] Martín Abadi. 2016. TensorFlow: learning functions at scale. InProceedings of the 21st ACM SIGPLAN international conference on functional",
+        "x": 57.7,
+        "y": 687.1,
+        "w": 237.1,
+        "h": 17.9,
+        "zh": "[1] Martín Abadi。2016。TensorFlow：大规模地学习函数。见第 21 届 ACM SIGPLAN 函数式编程国际会议论文集，"
+      },
+      {
+        "text": "[2] Josh Achiam, Steven Adler, Sandhini Agarwal, Lama Ahmad, Ilge Akkaya, Florencia Leoni Aleman, Diogo Almeida, Janko Altenschmidt, Sam Altman, Shyamal Anadkat, et al. 2023. Gpt-4 technical report. arXiv preprint arXiv:2303.08774 (2023). [3] Amey Agrawal, Ashish Panwar, Jayashree Mohan, Nipun Kwatra, Bhargav S Gulavani, and Ramachandran Ramjee. 2023. Sarathi: Efficient llm inference by piggybacking decodes with chunked prefills. arXiv preprint arXiv:2308.16369 (2023). [4] Riad Akrour, Marc Schoenauer, and Michele Sebag. 2011. Preferencebased policy learning. In Machine Learning and Knowledge Discovery in Databases: European Conference, ECML PKDD 2011, Athens, Greece, September 5-9, 2011. Proceedings, Part I 11. Springer, 12–27. [5] Gene M Amdahl. 1967. Validity of the single processor approach to achieving large scale computing capabilities. In Proceedings of the April 18-20, 1967, spring joint computer conference. 483–485. [6] George E Andrews and Kimmo Eriksson. 2004. Integer partitions. Cambridge University Press. [7] Yuntao Bai, Andy Jones, Kamal Ndousse, Amanda Askell, Anna Chen, Nova DasSarma, Dawn Drain, Stanislav Fort, Deep Ganguli, Tom Henighan, et al. 2022. Training a helpful and harmless assistant with reinforcement learning from human feedback. arXiv preprint arXiv:2204.05862 (2022). [8] Zhihao Bai, Zhen Zhang, Yibo Zhu, and Xin Jin. 2020. {PipeSwitch}: Fast pipelined context switching for deep learning applications. In 14th USENIX Symposium on Operating Systems Design and Implementation",
+        "x": 57.7,
+        "y": 428.1,
+        "w": 237.7,
+        "h": 247.1,
+        "zh": "[2] Josh Achiam、Steven Adler、Sandhini Agarwal、Lama Ahmad、Ilge Akkaya、Florencia Leoni Aleman、Diogo Almeida、Janko Altenschmidt、Sam Altman、Shyamal Anadkat 等。2023。GPT-4 技术报告。arXiv preprint arXiv:2303.08774（2023）。[3] Amey Agrawal、Ashish Panwar、Jayashree Mohan、Nipun Kwatra、Bhargav S Gulavani 与 Ramachandran Ramjee。2023。Sarathi：把解码搭在分块预填充上，做高效的 LLM 推理。arXiv preprint arXiv:2308.16369（2023）。[4] Riad Akrour、Marc Schoenauer 与 Michele Sebag。2011。基于偏好的策略学习。见 Machine Learning and Knowledge Discovery in Databases: European Conference, ECML PKDD 2011，希腊雅典，2011 年 9 月 5–9 日，Proceedings, Part I 11。Springer，12–27。[5] Gene M Amdahl。1967。用单处理器途径实现大规模计算能力是否成立。见 1967 年 4 月 18–20 日春季联合计算机会议论文集。483–485。[6] George E Andrews 与 Kimmo Eriksson。2004。《Integer partitions》。Cambridge University Press。[7] Yuntao Bai、Andy Jones、Kamal Ndousse、Amanda Askell、Anna Chen、Nova DasSarma、Dawn Drain、Stanislav Fort、Deep Ganguli、Tom Henighan 等。2022。用基于人类反馈的强化学习，训练一个有帮助且无害的助手。arXiv preprint arXiv:2204.05862（2022）。[8] Zhihao Bai、Zhen Zhang、Yibo Zhu 与 Xin Jin。2020。{PipeSwitch}：面向深度学习应用的快速流水线式上下文切换。见 14th USENIX Symposium on Operating Systems Design and Implementation"
+      },
+      {
+        "text": "[19] Josef Dai, Xuehai Pan, Ruiyang Sun, Jiaming Ji, Xinbo Xu, Mickel Liu, Yizhou Wang, and Yaodong Yang. 2024. Safe RLHF: Safe Reinforcement Learning from Human Feedback. In The Twelfth International Conference on Learning Representations. https://openreview.net/forum?id=",
+        "x": 318,
+        "y": 630.3,
+        "w": 240.9,
+        "h": 37.9,
+        "zh": "[19] Josef Dai、Xuehai Pan、Ruiyang Sun、Jiaming Ji、Xinbo Xu、Mickel Liu、Yizhou Wang 与 Yaodong Yang。2024。Safe RLHF：安全的、基于人类反馈的强化学习。见 The Twelfth International Conference on Learning Representations。https://openreview.net/forum?id="
+      },
+      {
+        "text": "[20] Frederica Darema. 2001. The spmd model: Past, present and future. In Recent Advances in Parallel Virtual Machine and Message Passing Interface: 8th European PVM/MPI Users’ Group Meeting Santorini/Thera, Greece, September 23–26, 2001 Proceedings 8. Springer, 1–1. [21] Jeffrey Dean and Sanjay Ghemawat. 2008. MapReduce: simplified data processing on large clusters. Commun. ACM 51, 1 (2008), 107–113. [22] Assaf Eisenman, Kiran Kumar Matam, Steven Ingram, Dheevatsa Mudigere, Raghuraman Krishnamoorthi, Krishnakumar Nair, Misha Smelyanskiy, and Murali Annavaram. 2022. {Check-N-Run}: A checkpointing system for training deep learning recommendation models. In 19th USENIX Symposium on Networked Systems Design and Implementation (NSDI 22). 929–943. [23] Shiqing Fan, Yi Rong, Chen Meng, Zongyan Cao, Siyu Wang, Zhen Zheng, Chuan Wu, Guoping Long, Jun Yang, Lixue Xia, et al. 2021. DAPPLE: A pipelined data parallel approach for training large models. In Proceedings of the 26th ACM SIGPLAN Symposium on Principles and Practice of Parallel Programming. 431–445. [24] X Yu Geoffrey, Yubo Gao, Pavel Golikov, and Gennady Pekhimenko. 2021. Habitat: A {Runtime-Based} computational performance predictor for deep neural network training. In 2021 USENIX Annual Technical Conference (USENIX ATC 21). 503–521. [25] Danijar Hafner, James Davidson, and Vincent Vanhoucke. 2017. Tensorflow agents: Efficient batched reinforcement learning in tensorflow. arXiv preprint arXiv:1709.02878 (2017). [26] Mingcong Han, Hanze Zhang, Rong Chen, and Haibo Chen. 2022. Microsecond-scale preemption for concurrent GPU-accelerated DNN inferences. In 16th USENIX Symposium on Operating Systems Design and Implementation (OSDI 22). 539–558. [27] Alexander Havrilla, Maksym Zhuravinskyi, Duy Phung, Aman Tiwari, Jonathan Tow, Stella Biderman, Quentin Anthony, and Louis Castricato. 2023. trlX: A framework for large scale reinforcement learning from human feedback. In Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing. 8578–8595. [28] C. Hesse, M. Plappert, A. Radford, J. Schulman, S. Sidor, and Y. Wu. 2017. OpenAI baselines. https://github.com/openai/baselines [29] Connor Holmes, Masahiro Tanaka, Michael Wyatt, Ammar Ahmad Awan, Jeff Rasley, Samyam Rajbhandari, Reza Yazdani Aminabadi, Heyang Qin, Arash Bakhtiari, Lev Kurilenko, et al. 2024. DeepSpeedFastGen: High-throughput Text Generation for LLMs via MII and DeepSpeed-Inference. arXiv preprint arXiv:2401.08671 (2024). [30] Jian Hu, Xibin Wu, Xianyu, Chen Su, Leon Qiu, Daoning Jiang, Qing Wang, and Weixun Wang. 2023. OpenRLHF: A Ray-based Highperformance RLHF framework.",
+        "x": 318,
+        "y": 192,
+        "w": 241.4,
+        "h": 426.4,
+        "zh": "[20] Frederica Darema。2001。SPMD 模型：过去、现在与未来。见 Recent Advances in Parallel Virtual Machine and Message Passing Interface：第 8 届 European PVM/MPI Users’ Group Meeting，希腊圣托里尼/锡拉，2001 年 9 月 23–26 日，Proceedings 8。Springer，1–1。[21] Jeffrey Dean 与 Sanjay Ghemawat。2008。MapReduce：大集群上的简化数据处理。Commun. ACM 51, 1（2008），107–113。[22] Assaf Eisenman、Kiran Kumar Matam、Steven Ingram、Dheevatsa Mudigere、Raghuraman Krishnamoorthi、Krishnakumar Nair、Misha Smelyanskiy 与 Murali Annavaram。2022。{Check-N-Run}：面向深度学习推荐模型训练的检查点系统。见 19th USENIX Symposium on Networked Systems Design and Implementation（NSDI 22）。929–943。[23] Shiqing Fan、Yi Rong、Chen Meng、Zongyan Cao、Siyu Wang、Zhen Zheng、Chuan Wu、Guoping Long、Jun Yang、Lixue Xia 等。2021。DAPPLE：一种用于训练大模型的流水线数据并行方法。见第 26 届 ACM SIGPLAN Symposium on Principles and Practice of Parallel Programming 论文集。431–445。[24] X Yu Geoffrey、Yubo Gao、Pavel Golikov 与 Gennady Pekhimenko。2021。Habitat：基于运行时的深度神经网络训练性能预测器。见 2021 USENIX Annual Technical Conference（USENIX ATC 21）。503–521。[25] Danijar Hafner、James Davidson 与 Vincent Vanhoucke。2017。Tensorflow agents：TensorFlow 中高效的批量强化学习。arXiv preprint arXiv:1709.02878（2017）。[26] Mingcong Han、Hanze Zhang、Rong Chen 与 Haibo Chen。2022。面向并发 GPU 加速 DNN 推理的微秒级抢占。见 16th USENIX Symposium on Operating Systems Design and Implementation（OSDI 22）。539–558。[27] Alexander Havrilla、Maksym Zhuravinskyi、Duy Phung、Aman Tiwari、Jonathan Tow、Stella Biderman、Quentin Anthony 与 Louis Castricato。2023。trlX：一个大规模基于人类反馈的强化学习框架。见 Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing。8578–8595。[28] C. Hesse、M. Plappert、A. Radford、J. Schulman、S. Sidor 与 Y. Wu。2017。OpenAI baselines。https://github.com/openai/baselines [29] Connor Holmes、Masahiro Tanaka、Michael Wyatt、Ammar Ahmad Awan、Jeff Rasley、Samyam Rajbhandari、Reza Yazdani Aminabadi、Heyang Qin、Arash Bakhtiari、Lev Kurilenko 等。2024。DeepSpeed-FastGen：借助 MII 和 DeepSpeed-Inference 的高吞吐 LLM 文本生成。arXiv preprint arXiv:2401.08671（2024）。[30] Jian Hu、Xibin Wu、Xianyu、Chen Su、Leon Qiu、Daoning Jiang、Qing Wang 与 Weixun Wang。2023。OpenRLHF：一个基于 Ray 的高性能 RLHF 框架。"
+      },
+      {
+        "text": "[9] Paul Barham, Aakanksha Chowdhery, Jeff Dean, Sanjay Ghemawat, Steven Hand, Daniel Hurt, Michael Isard, Hyeontaek Lim, Ruoming Pang, Sudip Roy, et al. 2022. Pathways: Asynchronous distributed dataflow for ml. Proceedings of Machine Learning and Systems 4 (2022),",
+        "x": 57.7,
+        "y": 378.3,
+        "w": 237.2,
+        "h": 37.9,
+        "zh": "[9] Paul Barham、Aakanksha Chowdhery、Jeff Dean、Sanjay Ghemawat、Steven Hand、Daniel Hurt、Michael Isard、Hyeontaek Lim、Ruoming Pang、Sudip Roy 等。2022。Pathways：面向机器学习的异步分布式数据流。Proceedings of Machine Learning and Systems 4（2022），"
+      },
+      {
+        "text": "[10] Eric Temple Bell. 1934. Exponential polynomials. Annals of Mathematics (1934), 258–277. [11] Tom B. Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, Sandhini Agarwal, Ariel Herbert-Voss, Gretchen Krueger, Tom Henighan, Rewon Child, Aditya Ramesh, Daniel M. Ziegler, Jeffrey Wu, Clemens Winter, Christopher Hesse, Mark Chen, Eric Sigler, Mateusz Litwin, Scott Gray, Benjamin Chess, Jack Clark, Christopher Berner, Sam McCandlish, Alec Radford, Ilya Sutskever, and Dario Amodei. 2020. Language Models are Few-Shot Learners. CoRR abs/2005.14165 (2020). arXiv:2005.14165 https: //arxiv.org/abs/2005.14165 [12] I. Caspi. 2017. Reinforcement learning coach by Intel. https://github. com/NervanaSystems/coach [13] Ernie Chan, Marcel Heimlich, Avi Purkayastha, and Robert Van De Geijn. 2007. Collective communication: theory, practice, and experience. Concurrency and Computation: Practice and Experience 19, 13",
+        "x": 54,
+        "y": 199,
+        "w": 241.4,
+        "h": 167.4,
+        "zh": "[10] Eric Temple Bell。1934。指数多项式。Annals of Mathematics（1934），258–277。[11] Tom B. Brown、Benjamin Mann、Nick Ryder、Melanie Subbiah、Jared Kaplan、Prafulla Dhariwal、Arvind Neelakantan、Pranav Shyam、Girish Sastry、Amanda Askell、Sandhini Agarwal、Ariel Herbert-Voss、Gretchen Krueger、Tom Henighan、Rewon Child、Aditya Ramesh、Daniel M. Ziegler、Jeffrey Wu、Clemens Winter、Christopher Hesse、Mark Chen、Eric Sigler、Mateusz Litwin、Scott Gray、Benjamin Chess、Jack Clark、Christopher Berner、Sam McCandlish、Alec Radford、Ilya Sutskever 与 Dario Amodei。2020。语言模型是少样本学习者。CoRR abs/2005.14165（2020）。arXiv:2005.14165 https://arxiv.org/abs/2005.14165 [12] I. Caspi。2017。Intel 的 Reinforcement learning coach。https://github.com/NervanaSystems/coach [13] Ernie Chan、Marcel Heimlich、Avi Purkayastha 与 Robert Van De Geijn。2007。集合通信：理论、实践与经验。Concurrency and Computation: Practice and Experience 19, 13"
+      },
+      {
+        "text": "[14] Karl Cobbe, Vineet Kosaraju, Mohammad Bavarian, Mark Chen, Heewoo Jun, Lukasz Kaiser, Matthias Plappert, Jerry Tworek, Jacob Hilton, Reiichiro Nakano, et al. 2021. Training verifiers to solve math word problems. arXiv preprint arXiv:2110.14168 (2021). [15] Collosal-AI Corporation. 2023. Collosal-Chat. https://github.com/ binmakeswell/ColossalChat [16] NVIDIA Corporation. 2023. TensorRT-LLM: A TensorRT Toolbox for Optimized Large Language Model Inference. https://github.com/NVIDIA/",
+        "x": 54,
+        "y": 109.3,
+        "w": 241.4,
+        "h": 77.7,
+        "zh": "[14] Karl Cobbe、Vineet Kosaraju、Mohammad Bavarian、Mark Chen、Heewoo Jun、Lukasz Kaiser、Matthias Plappert、Jerry Tworek、Jacob Hilton、Reiichiro Nakano 等。2021。训练验证器来解数学应用题。arXiv preprint arXiv:2110.14168（2021）。[15] Collosal-AI Corporation。2023。Collosal-Chat。https://github.com/binmakeswell/ColossalChat [16] NVIDIA Corporation。2023。TensorRT-LLM：一个用 TensorRT 优化大语言模型推理的工具箱。https://github.com/NVIDIA/"
+      },
+      {
+        "text": "[31] Shengyi Huang, Michael Noukhovitch, Arian Hosseini, Kashif Rasul, Weixun Wang, and Lewis Tunstall. 2024. The N+ Implementation Details of RLHF with PPO: A Case Study on TL; DR Summarization. arXiv preprint arXiv:2403.17031 (2024). [32] Yanping Huang, Youlong Cheng, Ankur Bapna, Orhan Firat, Dehao Chen, Mia Chen, HyoukJoong Lee, Jiquan Ngiam, Quoc V Le, Yonghui Wu, et al. 2019. Gpipe: Efficient training of giant neural networks using pipeline parallelism. Advances in neural information processing",
+        "x": 318,
+        "y": 102.3,
+        "w": 241.3,
+        "h": 77.7,
+        "zh": "[31] Shengyi Huang、Michael Noukhovitch、Arian Hosseini、Kashif Rasul、Weixun Wang 与 Lewis Tunstall。2024。用 PPO 做 RLHF 的 N+ 实现细节：以 TL;DR 摘要为一例。arXiv preprint arXiv:2403.17031（2024）。[32] Yanping Huang、Youlong Cheng、Ankur Bapna、Orhan Firat、Dehao Chen、Mia Chen、HyoukJoong Lee、Jiquan Ngiam、Quoc V Le、Yonghui Wu 等。2019。GPipe：用流水线并行高效训练巨型神经网络。Advances in neural information processing"
+      },
+      {
+        "text": "[17] NVIDIA Corporation. 2024. NeMo-Aligner: Scalable toolkit for efficient model alignment. https://github.com/NVIDIA/NeMo-Aligner",
+        "x": 54,
+        "y": 79.4,
+        "w": 240,
+        "h": 17.9,
+        "zh": "[17] NVIDIA Corporation。2024。NeMo-Aligner：可扩展的高效模型对齐工具包。https://github.com/NVIDIA/NeMo-Aligner"
+      }
+    ],
+    "16": [
+      {
+        "text": "[33] Michael Isard, Mihai Budiu, Yuan Yu, Andrew Birrell, and Dennis Fetterly. 2007. Dryad: distributed data-parallel programs from sequential building blocks. In Proceedings of the 2nd ACM SIGOPS/EuroSys European conference on computer systems 2007. 59–72. [34] Insu Jang, Zhenning Yang, Zhen Zhang, Xin Jin, and Mosharaf Chowdhury. 2023. Oobleck: Resilient distributed training of large models using pipeline templates. In Proceedings of the 29th Symposium on Operating Systems Principles. 382–395. [35] Sylvain Jeaugey. 2017. Nccl 2.0. In GPU Technology Conference (GTC),",
+        "x": 54,
+        "y": 630.3,
+        "w": 241.4,
+        "h": 87.7,
+        "zh": "[33] Michael Isard、Mihai Budiu、Yuan Yu、Andrew Birrell 与 Dennis Fetterly。2007。Dryad：用顺序的构造块写出分布式数据并行程序。见 Proceedings of the 2nd ACM SIGOPS/EuroSys European conference on computer systems 2007。59–72。[34] Insu Jang、Zhenning Yang、Zhen Zhang、Xin Jin 与 Mosharaf Chowdhury。2023。Oobleck：用流水线模板做有弹性的大模型分布式训练。见 Proceedings of the 29th Symposium on Operating Systems Principles。382–395。[35] Sylvain Jeaugey。2017。NCCL 2.0。见 GPU Technology Conference（GTC），"
+      },
+      {
+        "text": "[50] Philipp Moritz, Robert Nishihara, Stephanie Wang, Alexey Tumanov, Richard Liaw, Eric Liang, Melih Elibol, Zongheng Yang, William Paul, Michael I Jordan, et al. 2018. Ray: A distributed framework for emerging {AI} applications. In 13th USENIX symposium on operating systems design and implementation (OSDI 18). 561–577. [51] Derek G Murray, Frank McSherry, Rebecca Isaacs, Michael Isard, Paul Barham, and Martín Abadi. 2013. Naiad: a timely dataflow system. In Proceedings of the Twenty-Fourth ACM Symposium on Operating Systems Principles. 439–455. [52] Reiichiro Nakano, Jacob Hilton, Suchir Balaji, Jeff Wu, Long Ouyang, Christina Kim, Christopher Hesse, Shantanu Jain, Vineet Kosaraju, William Saunders, et al. 2021. Webgpt: Browser-assisted questionanswering with human feedback. arXiv preprint arXiv:2112.09332",
+        "x": 318,
+        "y": 590.5,
+        "w": 241.4,
+        "h": 127.5,
+        "zh": "[50] Philipp Moritz、Robert Nishihara、Stephanie Wang、Alexey Tumanov、Richard Liaw、Eric Liang、Melih Elibol、Zongheng Yang、William Paul、Michael I Jordan 等。2018。Ray：一个面向新兴 AI 应用的分布式框架。见 13th USENIX symposium on operating systems design and implementation（OSDI 18）。561–577。[51] Derek G Murray、Frank McSherry、Rebecca Isaacs、Michael Isard、Paul Barham 与 Martín Abadi。2013。Naiad：一个及时的数据流系统。见 Proceedings of the Twenty-Fourth ACM Symposium on Operating Systems Principles。439–455。[52] Reiichiro Nakano、Jacob Hilton、Suchir Balaji、Jeff Wu、Long Ouyang、Christina Kim、Christopher Hesse、Shantanu Jain、Vineet Kosaraju、William Saunders 等。2021。WebGPT：由浏览器协助、带人类反馈的问答。arXiv preprint arXiv:2112.09332"
+      },
+      {
+        "text": "[36] Ziheng Jiang, Haibin Lin, Yinmin Zhong, Qi Huang, Yangrui Chen, Zhi Zhang, Yanghua Peng, Xiang Li, Cong Xie, Shibiao Nong, et al. 2024. MegaScale: Scaling Large Language Model Training to More Than 10,000 GPUs. arXiv preprint arXiv:2402.15627 (2024). [37] Timo Kaufmann, Paul Weng, Viktor Bengs, and Eyke Hüllermeier. 2023. A survey of reinforcement learning from human feedback. arXiv preprint arXiv:2312.14925 (2023). [38] Diederik P. Kingma and Jimmy Ba. 2017. Adam: A Method for Stochastic Optimization. arXiv:1412.6980 [cs.LG] [39] I. Kostrikov. 2017. PyTorch implementation of advantage actor critic (A2C), proximal policy optimization (PPO) and scalable trust-region method for deep reinforcement learning. https://github.com/ikostrikov/ pytorch-a2c-ppo-acktr [40] Woosuk Kwon, Zhuohan Li, Siyuan Zhuang, Ying Sheng, Lianmin Zheng, Cody Hao Yu, Joseph Gonzalez, Hao Zhang, and Ion Stoica. 2023. Efficient memory management for large language model serving with pagedattention. InProceedings of the 29th Symposium on Operating Systems Principles. 611–626. [41] Harrison Lee, Samrat Phatale, Hassan Mansoor, Kellie Lu, Thomas Mesnard, Colton Bishop, Victor Carbune, and Abhinav Rastogi. 2023. Rlaif: Scaling reinforcement learning from human feedback with ai feedback. arXiv preprint arXiv:2309.00267 (2023). [42] Cheng Li. 2023. LLM-Analysis: Latency and Memory Analysis of Transformer Models for Training and Inference. https://github.com/cli99/llm-",
+        "x": 54,
+        "y": 381.3,
+        "w": 241.4,
+        "h": 237.1,
+        "zh": "[36] Ziheng Jiang、Haibin Lin、Yinmin Zhong、Qi Huang、Yangrui Chen、Zhi Zhang、Yanghua Peng、Xiang Li、Cong Xie、Shibiao Nong 等。2024。MegaScale：把大语言模型训练扩展到一万块 GPU 以上。arXiv preprint arXiv:2402.15627（2024）。[37] Timo Kaufmann、Paul Weng、Viktor Bengs 与 Eyke Hüllermeier。2023。基于人类反馈的强化学习综述。arXiv preprint arXiv:2312.14925（2023）。[38] Diederik P. Kingma 与 Jimmy Ba。2017。Adam：一种随机优化方法。arXiv:1412.6980 [cs.LG] [39] I. Kostrikov。2017。advantage actor critic（A2C）、近端策略优化（PPO）以及可扩展信任域方法的 PyTorch 实现，用于深度强化学习。https://github.com/ikostrikov/pytorch-a2c-ppo-acktr [40] Woosuk Kwon、Zhuohan Li、Siyuan Zhuang、Ying Sheng、Lianmin Zheng、Cody Hao Yu、Joseph Gonzalez、Hao Zhang 与 Ion Stoica。2023。用 PagedAttention 为大语言模型服务做高效内存管理。见 Proceedings of the 29th Symposium on Operating Systems Principles。611–626。[41] Harrison Lee、Samrat Phatale、Hassan Mansoor、Kellie Lu、Thomas Mesnard、Colton Bishop、Victor Carbune 与 Abhinav Rastogi。2023。RLAIF：用 AI 反馈把基于人类反馈的强化学习做大。arXiv preprint arXiv:2309.00267（2023）。[42] Cheng Li。2023。LLM-Analysis：Transformer 模型在训练和推理时的延迟与内存分析。https://github.com/cli99/llm-"
+      },
+      {
+        "text": "[53] Deepak Narayanan, Aaron Harlap, Amar Phanishayee, Vivek Seshadri, Nikhil R Devanur, Gregory R Ganger, Phillip B Gibbons, and Matei Zaharia. 2019. PipeDream: generalized pipeline parallelism for DNN training. In Proceedings of the 27th ACM symposium on operating sys-",
+        "x": 318,
+        "y": 540.7,
+        "w": 240.9,
+        "h": 37.9,
+        "zh": "[53] Deepak Narayanan、Aaron Harlap、Amar Phanishayee、Vivek Seshadri、Nikhil R Devanur、Gregory R Ganger、Phillip B Gibbons 与 Matei Zaharia。2019。PipeDream：面向 DNN 训练的通用流水线并行。见 Proceedings of the 27th ACM symposium on operating sys-"
+      },
+      {
+        "text": "[54] Deepak Narayanan, Mohammad Shoeybi, Jared Casper, Patrick LeGresley, Mostofa Patwary, Vijay Korthikanti, Dmitri Vainbrand, Prethvi Kashinkunti, Julie Bernauer, Bryan Catanzaro, et al. 2021. Efficient large-scale language model training on gpu clusters using megatronlm. In Proceedings of the International Conference for High Performance Computing, Networking, Storage and Analysis. 1–15. [55] Long Ouyang, Jeffrey Wu, Xu Jiang, Diogo Almeida, Carroll Wainwright, Pamela Mishkin, Chong Zhang, Sandhini Agarwal, Katarina Slama, Alex Ray, et al. 2022. Training language models to follow instructions with human feedback. Advances in Neural Information Processing Systems 35 (2022), 27730–27744. [56] Jason Jong Kyu Park, Yongjun Park, and Scott Mahlke. 2017. Dynamic resource management for efficient utilization of multitasking GPUs. In Proceedings of the twenty-second international conference on architectural support for programming languages and operating systems.",
+        "x": 318,
+        "y": 381.3,
+        "w": 241.4,
+        "h": 147.4,
+        "zh": "[54] Deepak Narayanan、Mohammad Shoeybi、Jared Casper、Patrick LeGresley、Mostofa Patwary、Vijay Korthikanti、Dmitri Vainbrand、Prethvi Kashinkunti、Julie Bernauer、Bryan Catanzaro 等。2021。用 Megatron-LM 在 GPU 集群上高效训练大规模语言模型。见 Proceedings of the International Conference for High Performance Computing, Networking, Storage and Analysis。1–15。[55] Long Ouyang、Jeffrey Wu、Xu Jiang、Diogo Almeida、Carroll Wainwright、Pamela Mishkin、Chong Zhang、Sandhini Agarwal、Katarina Slama、Alex Ray 等。2022。用人类反馈训练语言模型遵循指令。Advances in Neural Information Processing Systems 35（2022），27730–27744。[56] Jason Jong Kyu Park、Yongjun Park 与 Scott Mahlke。2017。面向多任务 GPU 高效利用的动态资源管理。见 Proceedings of the twenty-second international conference on architectural support for programming languages and operating systems。"
+      },
+      {
+        "text": "[43] Ziniu Li, Tian Xu, Yushun Zhang, Zhihang Lin, Yang Yu, Ruoyu Sun, and Zhi-Quan Luo. 2023. ReMax: A Simple, Effective, and Efficient Reinforcement Learning Method for Aligning Large Language Models. arXiv preprint arXiv: 2310.10505 (2023). [44] Zhuohan Li, Lianmin Zheng, Yinmin Zhong, Vincent Liu, Ying Sheng, Xin Jin, Yanping Huang, Zhifeng Chen, Hao Zhang, Joseph E Gonzalez, et al. 2023. {AlpaServe}: Statistical multiplexing with model parallelism for deep learning serving. In 17th USENIX Symposium on Operating Systems Design and Implementation (OSDI 23). 663–679. [45] Eric Liang, Richard Liaw, Robert Nishihara, Philipp Moritz, Roy Fox, Ken Goldberg, Joseph Gonzalez, Michael Jordan, and Ion Stoica. 2018. RLlib: Abstractions for distributed reinforcement learning. In International conference on machine learning. PMLR, 3053–3062. [46] Eric Liang, Zhanghao Wu, Michael Luo, Sven Mika, Joseph E Gonzalez, and Ion Stoica. 2021. RLlib Flow: Distributed Reinforcement Learning is a Dataflow Problem. Advances in Neural Information Processing Systems 34 (2021), 5506–5517. [47] Yun Liang, Huynh Phung Huynh, Kyle Rupnow, Rick Siow Mong Goh, and Deming Chen. 2014. Efficient GPU spatial-temporal multitasking. IEEE Transactions on Parallel and Distributed Systems 26, 3 (2014), 748–",
+        "x": 54,
+        "y": 172.1,
+        "w": 241.4,
+        "h": 197.3,
+        "zh": "[43] Ziniu Li、Tian Xu、Yushun Zhang、Zhihang Lin、Yang Yu、Ruoyu Sun 与 Zhi-Quan Luo。2023。ReMax：一种简单、有效且高效的强化学习方法，用于对齐大语言模型。arXiv preprint arXiv:2310.10505（2023）。[44] Zhuohan Li、Lianmin Zheng、Yinmin Zhong、Vincent Liu、Ying Sheng、Xin Jin、Yanping Huang、Zhifeng Chen、Hao Zhang、Joseph E Gonzalez 等。2023。{AlpaServe}：用模型并行做深度学习服务的统计复用。见 17th USENIX Symposium on Operating Systems Design and Implementation（OSDI 23）。663–679。[45] Eric Liang、Richard Liaw、Robert Nishihara、Philipp Moritz、Roy Fox、Ken Goldberg、Joseph Gonzalez、Michael Jordan 与 Ion Stoica。2018。RLlib：分布式强化学习的抽象。见 International conference on machine learning。PMLR，3053–3062。[46] Eric Liang、Zhanghao Wu、Michael Luo、Sven Mika、Joseph E Gonzalez 与 Ion Stoica。2021。RLlib Flow：分布式强化学习是一个数据流问题。Advances in Neural Information Processing Systems 34（2021），5506–5517。[47] Yun Liang、Huynh Phung Huynh、Kyle Rupnow、Rick Siow Mong Goh 与 Deming Chen。2014。高效的 GPU 时空多任务。IEEE Transactions on Parallel and Distributed Systems 26, 3（2014），748–"
+      },
+      {
+        "text": "[57] Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, et al. 2019. Pytorch: An imperative style, high-performance deep learning library. Advances in neural information processing systems 32 (2019). [58] Yanghua Peng, Yibo Zhu, Yangrui Chen, Yixin Bao, Bairen Yi, Chang Lan, Chuan Wu, and Chuanxiong Guo. 2019. A Generic Communication Scheduler for Distributed DNN Training Acceleration. In Proceedings of the 27th ACM Symposium on Operating Systems Principles. ACM, Huntsville Ontario Canada, 16–29. https://doi.org/10. 1145/3341301.3359642 [59] Samyam Rajbhandari, Jeff Rasley, Olatunji Ruwase, and Yuxiong He. 2020. Zero: Memory optimizations toward training trillion parameter models. In SC20: International Conference for High Performance Computing, Networking, Storage and Analysis. IEEE, 1–16. [60] Jeff Rasley, Samyam Rajbhandari, Olatunji Ruwase, and Yuxiong He. 2020. Deepspeed: System optimizations enable training deep learning models with over 100 billion parameters. In Proceedings of the 26th ACM SIGKDD International Conference on Knowledge Discovery & Data",
+        "x": 318,
+        "y": 182,
+        "w": 241.4,
+        "h": 187.3,
+        "zh": "[57] Adam Paszke、Sam Gross、Francisco Massa、Adam Lerer、James Bradbury、Gregory Chanan、Trevor Killeen、Zeming Lin、Natalia Gimelshein、Luca Antiga 等。2019。PyTorch：一个命令式、高性能的深度学习库。Advances in neural information processing systems 32（2019）。[58] Yanghua Peng、Yibo Zhu、Yangrui Chen、Yixin Bao、Bairen Yi、Chang Lan、Chuan Wu 与 Chuanxiong Guo。2019。一个用于加速分布式 DNN 训练的通用通信调度器。见 Proceedings of the 27th ACM Symposium on Operating Systems Principles。ACM，加拿大安大略亨茨维尔，16–29。https://doi.org/10.1145/3341301.3359642 [59] Samyam Rajbhandari、Jeff Rasley、Olatunji Ruwase 与 Yuxiong He。2020。ZeRO：面向万亿参数模型训练的内存优化。见 SC20: International Conference for High Performance Computing, Networking, Storage and Analysis。IEEE，1–16。[60] Jeff Rasley、Samyam Rajbhandari、Olatunji Ruwase 与 Yuxiong He。2020。DeepSpeed：系统优化使超过千亿参数的深度学习模型得以训练。见 Proceedings of the 26th ACM SIGKDD International Conference on Knowledge Discovery & Data"
+      },
+      {
+        "text": "[61] Jie Ren, Samyam Rajbhandari, Reza Yazdani Aminabadi, Olatunji Ruwase, Shuangyan Yang, Minjia Zhang, Dong Li, and Yuxiong He. 2021. {Zero-offload}: Democratizing {billion-scale} model training. In 2021 USENIX Annual Technical Conference (USENIX ATC 21). 551–564. [62] Gian-Carlo Rota. 1964. The number of partitions of a set. The American Mathematical Monthly 71, 5 (1964), 498–504. [63] Baptiste Rozière, Jonas Gehring, Fabian Gloeckle, Sten Sootla, Itai Gat, Xiaoqing Ellen Tan, Yossi Adi, Jingyu Liu, Romain Sauvestre, Tal",
+        "x": 318,
+        "y": 92.4,
+        "w": 241.3,
+        "h": 77.7,
+        "zh": "[61] Jie Ren、Samyam Rajbhandari、Reza Yazdani Aminabadi、Olatunji Ruwase、Shuangyan Yang、Minjia Zhang、Dong Li 与 Yuxiong He。2021。{ZeRO-Offload}：让十亿级模型训练变得人人可用。见 2021 USENIX Annual Technical Conference（USENIX ATC 21）。551–564。[62] Gian-Carlo Rota。1964。一个集合的划分个数。The American Mathematical Monthly 71, 5（1964），498–504。[63] Baptiste Rozière、Jonas Gehring、Fabian Gloeckle、Sten Sootla、Itai Gat、Xiaoqing Ellen Tan、Yossi Adi、Jingyu Liu、Romain Sauvestre、Tal"
+      },
+      {
+        "text": "[48] Wenyan Lu, Guihai Yan, Jiajun Li, Shijun Gong, Yinhe Han, and Xiaowei Li. 2017. Flexflow: A flexible dataflow accelerator architecture for convolutional neural networks. In 2017 IEEE International Symposium on High Performance Computer Architecture (HPCA). IEEE, 553–564. [49] Jayashree Mohan, Amar Phanishayee, and Vijay Chidambaram. 2021. {CheckFreq}: Frequent,{Fine-Grained} {DNN} Checkpointing. In 19th USENIX Conference on File and Storage Technologies (FAST 21).",
+        "x": 54,
+        "y": 92.4,
+        "w": 241.4,
+        "h": 67.7,
+        "zh": "[48] Wenyan Lu、Guihai Yan、Jiajun Li、Shijun Gong、Yinhe Han 与 Xiaowei Li。2017。FlexFlow：一种面向卷积神经网络的灵活数据流加速器结构。见 2017 IEEE International Symposium on High Performance Computer Architecture（HPCA）。IEEE，553–564。[49] Jayashree Mohan、Amar Phanishayee 与 Vijay Chidambaram。2021。{CheckFreq}：频繁、细粒度的 DNN 检查点。见 19th USENIX Conference on File and Storage Technologies（FAST 21）。"
+      }
+    ],
+    "17": [
+      {
+        "text": "Remez, Jérémy Rapin, Artyom Kozhevnikov, Ivan Evtimov, Joanna Bitton, Manish Bhatt, Cristian Canton Ferrer, Aaron Grattafiori, Wenhan Xiong, Alexandre Défossez, Jade Copet, Faisal Azhar, Hugo Touvron, Louis Martin, Nicolas Usunier, Thomas Scialom, and Gabriel Synnaeve. 2023. Code Llama: Open Foundation Models for Code. arXiv preprint arXiv: 2308.12950 (2023). [64] Michael Santacroce, Yadong Lu, Han Yu, Yuanzhi Li, and Yelong Shen. 2023. Efficient RLHF: Reducing the Memory Usage of PPO. arXiv preprint arXiv: 2309.00754 (2023). [65] Hill Kohli Saxton, Grefenstette. 2019. Analysing Mathematical Reasoning Abilities of Neural Models. arXiv:1904.01557 (2019). [66] John Schulman, Sergey Levine, Pieter Abbeel, Michael Jordan, and Philipp Moritz. 2015. Trust region policy optimization. In International conference on machine learning. PMLR, 1889–1897. [67] John Schulman, Philipp Moritz, Sergey Levine, Michael Jordan, and Pieter Abbeel. 2018. High-Dimensional Continuous Control Using Generalized Advantage Estimation. arXiv:1506.02438 [cs.LG] [68] John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov. 2017. Proximal policy optimization algorithms. arXiv preprint arXiv:1707.06347 (2017). [69] Alexander Sergeev and Mike Del Balso. 2018. and easy distributed deep learning in TensorFlow. arXiv preprint arXiv:1802.05799 (2018). [70] Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Mingchuan Zhang, YK Li, Y Wu, and Daya Guo. 2024. Deepseekmath: Pushing the limits of mathematical reasoning in open language models. arXiv preprint arXiv:2402.03300 (2024). [71] Mohammad Shoeybi, Mostofa Patwary, Raul Puri, Patrick LeGresley, Jared Casper, and Bryan Catanzaro. 2019. Megatron-lm: Training multibillion parameter language models using model parallelism. arXiv preprint arXiv:1909.08053 (2019). [72] Yixin Song, Zeyu Mi, Haotong Xie, and Haibo Chen. 2023. PowerInfer: Fast Large Language Model Serving with a Consumer-grade GPU. arXiv:2312.12456 [cs.LG] [73] Hugo Touvron, Louis Martin, Kevin Stone, Peter Albert, Amjad Almahairi, Yasmine Babaei, Nikolay Bashlykov, Soumya Batra, Prajjwal Bhargava, Shruti Bhosale, et al. 2023. Llama 2: Open foundation and fine-tuned chat models. arXiv preprint arXiv:2307.09288 (2023). [74] Hanjing Wang, Man-Kit Sit, Congjie He, Ying Wen, Weinan Zhang, Jun Wang, Yaodong Yang, and Luo Mai. 2023. GEAR: a GPU-centric experience replay system for large reinforcement learning models. In International Conference on Machine Learning. PMLR, 36380–36390. [75] Minjie Wang, Chien-chin Huang, and Jinyang Li. 2019. Supporting very large models using automatic dataflow graph partitioning. In Proceedings of the Fourteenth EuroSys Conference 2019. 1–17. [76] Zhuang Wang, Zhen Jia, Shuai Zheng, Zhen Zhang, Xinwei Fu, TS Eugene Ng, and Yida Wang. 2023. Gemini: Fast failure recovery in distributed training with in-memory checkpoints. In Proceedings of the 29th Symposium on Operating Systems Principles. 364–381. [77] Zhenning Wang, Jun Yang, Rami Melhem, Bruce Childers, Youtao Zhang, and Minyi Guo. 2016. Simultaneous multikernel GPU: Multitasking throughput processors via fine-grained sharing. In 2016 IEEE international symposium on high performance computer architecture (HPCA). IEEE, 358–369. [78] Ronald J Williams. 1992. Simple statistical gradient-following algorithms for connectionist reinforcement learning. Machine learning 8",
+        "x": 54,
+        "y": 162.1,
+        "w": 241.4,
+        "h": 555.9,
+        "zh": "Remez、Jérémy Rapin、Artyom Kozhevnikov、Ivan Evtimov、Joanna Bitton、Manish Bhatt、Cristian Canton Ferrer、Aaron Grattafiori、Wenhan Xiong、Alexandre Défossez、Jade Copet、Faisal Azhar、Hugo Touvron、Louis Martin、Nicolas Usunier、Thomas Scialom 与 Gabriel Synnaeve。2023。Code Llama：面向代码的开放基础模型。arXiv preprint arXiv:2308.12950（2023）。[64] Michael Santacroce、Yadong Lu、Han Yu、Yuanzhi Li 与 Yelong Shen。2023。高效 RLHF：降低 PPO 的内存占用。arXiv preprint arXiv:2309.00754（2023）。[65] Hill Kohli Saxton, Grefenstette。2019。分析神经模型的数学推理能力。arXiv:1904.01557（2019）。[66] John Schulman、Sergey Levine、Pieter Abbeel、Michael Jordan 与 Philipp Moritz。2015。信任域策略优化。见 International conference on machine learning。PMLR，1889–1897。[67] John Schulman、Philipp Moritz、Sergey Levine、Michael Jordan 与 Pieter Abbeel。2018。用广义优势估计做高维连续控制。arXiv:1506.02438 [cs.LG] [68] John Schulman、Filip Wolski、Prafulla Dhariwal、Alec Radford 与 Oleg Klimov。2017。近端策略优化算法。arXiv preprint arXiv:1707.06347（2017）。[69] Alexander Sergeev 与 Mike Del Balso。2018。以及在 TensorFlow 中做简单的分布式深度学习。arXiv preprint arXiv:1802.05799（2018）。[70] Zhihong Shao、Peiyi Wang、Qihao Zhu、Runxin Xu、Junxiao Song、Mingchuan Zhang、YK Li、Y Wu 与 Daya Guo。2024。DeepSeekMath：把开放语言模型的数学推理推向极限。arXiv preprint arXiv:2402.03300（2024）。[71] Mohammad Shoeybi、Mostofa Patwary、Raul Puri、Patrick LeGresley、Jared Casper 与 Bryan Catanzaro。2019。Megatron-LM：用模型并行训练数十亿参数的语言模型。arXiv preprint arXiv:1909.08053（2019）。[72] Yixin Song、Zeyu Mi、Haotong Xie 与 Haibo Chen。2023。PowerInfer：在消费级 GPU 上快速服务大语言模型。arXiv:2312.12456 [cs.LG] [73] Hugo Touvron、Louis Martin、Kevin Stone、Peter Albert、Amjad Almahairi、Yasmine Babaei、Nikolay Bashlykov、Soumya Batra、Prajjwal Bhargava、Shruti Bhosale 等。2023。Llama 2：开放的基础模型与微调后的对话模型。arXiv preprint arXiv:2307.09288（2023）。[74] Hanjing Wang、Man-Kit Sit、Congjie He、Ying Wen、Weinan Zhang、Jun Wang、Yaodong Yang 与 Luo Mai。2023。GEAR：一个以 GPU 为中心、面向大型强化学习模型的 experience replay 系统。见 International Conference on Machine Learning。PMLR，36380–36390。[75] Minjie Wang、Chien-chin Huang 与 Jinyang Li。2019。用自动数据流图划分来支持非常大的模型。见 Proceedings of the Fourteenth EuroSys Conference 2019。1–17。[76] Zhuang Wang、Zhen Jia、Shuai Zheng、Zhen Zhang、Xinwei Fu、TS Eugene Ng 与 Yida Wang。2023。Gemini：用内存检查点在分布式训练中快速恢复故障。见 Proceedings of the 29th Symposium on Operating Systems Principles。364–381。[77] Zhenning Wang、Jun Yang、Rami Melhem、Bruce Childers、Youtao Zhang 与 Minyi Guo。2016。同时多内核 GPU：靠细粒度共享实现多任务吞吐处理器。见 2016 IEEE international symposium on high performance computer architecture（HPCA）。IEEE，358–369。[78] Ronald J Williams。1992。面向连接主义强化学习的简单统计梯度跟踪算法。Machine learning 8"
+      },
+      {
+        "text": "[80] Youshao Xiao, Weichang Wu, Zhenglei Zhou, Fagui Mao, Shangchun Zhao, Lin Ju, Lei Liang, Xiaolu Zhang, and Jun Zhou. 2023. An Adaptive Placement and Parallelism Framework for Accelerating RLHF Training. arXiv preprint arXiv: 2312.11819 (2023). [81] Shusheng Xu, Wei Fu, Jiaxuan Gao, Wenjie Ye, Weilin Liu, Zhiyu Mei, Guangju Wang, Chao Yu, and Yi Wu. 2024. Is dpo superior to ppo for llm alignment? a comprehensive study. arXiv preprint arXiv:2404.10719",
+        "x": 318,
+        "y": 650.3,
+        "w": 241.3,
+        "h": 67.7,
+        "zh": "[80] Youshao Xiao、Weichang Wu、Zhenglei Zhou、Fagui Mao、Shangchun Zhao、Lin Ju、Lei Liang、Xiaolu Zhang 与 Jun Zhou。2023。一个用于加速 RLHF 训练的自适应放置与并行框架。arXiv preprint arXiv:2312.11819（2023）。[81] Shusheng Xu、Wei Fu、Jiaxuan Gao、Wenjie Ye、Weilin Liu、Zhiyu Mei、Guangju Wang、Chao Yu 与 Yi Wu。2024。DPO 是否优于 PPO，更能做 LLM 对齐？一项全面研究。arXiv preprint arXiv:2404.10719"
+      },
+      {
+        "text": "[82] Zhewei Yao, Reza Yazdani Aminabadi, Olatunji Ruwase, Samyam Rajbhandari, Xiaoxia Wu, Ammar Ahmad Awan, Jeff Rasley, Minjia Zhang, Conglong Li, Connor Holmes, et al. 2023. DeepSpeed-Chat: Easy, Fast and Affordable RLHF Training of ChatGPT-like Models at All Scales. arXiv preprint arXiv:2308.01320 (2023). [83] Gyeong-In Yu, Joo Seong Jeong, Geon-Woo Kim, Soojeong Kim, and Byung-Gon Chun. 2022. Orca: A distributed serving system for {Transformer-Based} generative models. In 16th USENIX Symposium on Operating Systems Design and Implementation (OSDI 22). 521–538. [84] Zhihang Yuan, Yuzhang Shang, Yang Zhou, Zhen Dong, Zhe Zhou, Chenhao Xue, Bingzhe Wu, Zhikai Li, Qingyi Gu, Yong Jae Lee, Yan Yan, Beidi Chen, Guangyu Sun, and Kurt Keutzer. 2024. LLM Inference Unveiled: Survey and Roofline Model Insights. arXiv preprint arXiv:",
+        "x": 318,
+        "y": 510.8,
+        "w": 241.4,
+        "h": 127.5,
+        "zh": "[82] Zhewei Yao、Reza Yazdani Aminabadi、Olatunji Ruwase、Samyam Rajbhandari、Xiaoxia Wu、Ammar Ahmad Awan、Jeff Rasley、Minjia Zhang、Conglong Li、Connor Holmes 等。2023。DeepSpeed-Chat：在各种规模上轻松、快速、便宜地做类 ChatGPT 模型的 RLHF 训练。arXiv preprint arXiv:2308.01320（2023）。[83] Gyeong-In Yu、Joo Seong Jeong、Geon-Woo Kim、Soojeong Kim 与 Byung-Gon Chun。2022。Orca：一个面向基于 Transformer 的生成模型的分布式服务系统。见 16th USENIX Symposium on Operating Systems Design and Implementation（OSDI 22）。521–538。[84] Zhihang Yuan、Yuzhang Shang、Yang Zhou、Zhen Dong、Zhe Zhou、Chenhao Xue、Bingzhe Wu、Zhikai Li、Qingyi Gu、Yong Jae Lee、Yan Yan、Beidi Chen、Guangyu Sun 与 Kurt Keutzer。2024。LLM 推理揭秘：综述与屋顶线模型的启示。arXiv preprint arXiv:"
+      },
+      {
+        "text": "[85] Zheng Yuan, Hongyi Yuan, Chuanqi Tan, Wei Wang, Songfang Huang, and Fei Huang. 2023. Rrhf: Rank responses to align language models with human feedback without tears. arXiv preprint arXiv:2304.05302",
+        "x": 318,
+        "y": 470.9,
+        "w": 240.9,
+        "h": 27.9,
+        "zh": "[85] Zheng Yuan、Hongyi Yuan、Chuanqi Tan、Wei Wang、Songfang Huang 与 Fei Huang。2023。RRHF：对回复排序，从而不用那么痛苦地把语言模型对齐到人类反馈。arXiv preprint arXiv:2304.05302"
+      },
+      {
+        "text": "[86] Matei Zaharia, Reynold S Xin, Patrick Wendell, Tathagata Das, Michael Armbrust, Ankur Dave, Xiangrui Meng, Josh Rosen, Shivaram Venkataraman, Michael J Franklin, et al. 2016. Apache spark: a unified engine for big data processing. Commun. ACM 59, 11 (2016),",
+        "x": 318,
+        "y": 421.1,
+        "w": 241.4,
+        "h": 37.9,
+        "zh": "[86] Matei Zaharia、Reynold S Xin、Patrick Wendell、Tathagata Das、Michael Armbrust、Ankur Dave、Xiangrui Meng、Josh Rosen、Shivaram Venkataraman、Michael J Franklin 等。2016。Apache Spark：一个统一的大数据处理引擎。Commun. ACM 59, 11（2016），"
+      },
+      {
+        "text": "[87] Chi Zhang, Guangming Sheng, Siyao Liu, Jiahao Li, Ziyuan Feng, Zherui Liu, Xin Liu, Xiaoying Jia, Yanghua Peng, Haibin Lin, and Chuan Wu. 2024. A Framework for Training Large Language Models for Code Generation via Proximal Policy Optimization. NL2Code Workshop of ACM KDD 2024 (2024). [88] Shiwei Zhang, Lansong Diao, Chuan Wu, Zongyan Cao, Siyu Wang, and Wei Lin. 2024. HAP: SPMD DNN Training on Heterogeneous GPU Clusters with Automated Program Synthesis. arXiv preprint arXiv:2401.05965 (2024). [89] Shiwei Zhang, Lansong Diao, Chuan Wu, Siyu Wang, and Wei Lin. 2022. Accelerating large-scale distributed neural network training with SPMD parallelism. In Proceedings of the 13th Symposium on Cloud",
+        "x": 318,
+        "y": 291.6,
+        "w": 241.3,
+        "h": 117.6,
+        "zh": "[87] Chi Zhang、Guangming Sheng、Siyao Liu、Jiahao Li、Ziyuan Feng、Zherui Liu、Xin Liu、Xiaoying Jia、Yanghua Peng、Haibin Lin 与 Chuan Wu。2024。一个用近端策略优化训练大语言模型做代码生成的框架。NL2Code Workshop of ACM KDD 2024（2024）。[88] Shiwei Zhang、Lansong Diao、Chuan Wu、Zongyan Cao、Siyu Wang 与 Wei Lin。2024。HAP：在异构 GPU 集群上用自动程序综合做 SPMD 的 DNN 训练。arXiv preprint arXiv:2401.05965（2024）。[89] Shiwei Zhang、Lansong Diao、Chuan Wu、Siyu Wang 与 Wei Lin。2022。用 SPMD 并行加速大规模分布式神经网络训练。见 Proceedings of the 13th Symposium on Cloud"
+      },
+      {
+        "text": "[90] Lianmin Zheng, Zhuohan Li, Hao Zhang, Yonghao Zhuang, Zhifeng Chen, Yanping Huang, Yida Wang, Yuanzhong Xu, Danyang Zhuo, Eric P Xing, et al. 2022. Alpa: Automating inter-and {Intra-Operator} parallelism for distributed deep learning. In 16th USENIX Symposium on Operating Systems Design and Implementation (OSDI 22). 559–578. [91] Rui Zheng, Wei Shen, Yuan Hua, Wenbin Lai, Shihan Dou, Yuhao Zhou, Zhiheng Xi, Xiao Wang, Haoran Huang, Tao Gui, et al.2023. Improving generalization of alignment with human preferences through group invariant learning. arXiv preprint arXiv:2310.11971 (2023). [92] Yinmin Zhong, Shengyu Liu, Junda Chen, Jianbo Hu, Yibo Zhu, Xuanzhe Liu, Xin Jin, and Hao Zhang. 2024. DistServe: Disaggregating Prefill and Decoding for Goodput-optimized Large Language Model Serving. arXiv:2401.09670 [cs] [93] Yuchen Zhong, Guangming Sheng, Juncheng Liu, Jinhui Yuan, and Chuan Wu. 2023. Swift: Expedited Failure Recovery for Large-Scale DNN Training. In Proceedings of the 28th ACM SIGPLAN Annual Symposium on Principles and Practice of Parallel Programming (Montreal, QC, Canada) (PPoPP ’23). Association for Computing Machinery, New York, NY, USA, 447–449. https://doi.org/10.1145/3572848.3577510",
+        "x": 318,
+        "y": 92.4,
+        "w": 241.4,
+        "h": 187.3,
+        "zh": "[90] Lianmin Zheng、Zhuohan Li、Hao Zhang、Yonghao Zhuang、Zhifeng Chen、Yanping Huang、Yida Wang、Yuanzhong Xu、Danyang Zhuo、Eric P Xing 等。2022。Alpa：为分布式深度学习自动做算子间与算子内并行。见 16th USENIX Symposium on Operating Systems Design and Implementation（OSDI 22）。559–578。[91] Rui Zheng、Wei Shen、Yuan Hua、Wenbin Lai、Shihan Dou、Yuhao Zhou、Zhiheng Xi、Xiao Wang、Haoran Huang、Tao Gui 等。2023。用群不变学习改进与人类偏好对齐时的泛化。arXiv preprint arXiv:2310.11971（2023）。[92] Yinmin Zhong、Shengyu Liu、Junda Chen、Jianbo Hu、Yibo Zhu、Xuanzhe Liu、Xin Jin 与 Hao Zhang。2024。DistServe：把预填充和解码拆开，以优化大语言模型服务的有效吞吐。arXiv:2401.09670 [cs] [93] Yuchen Zhong、Guangming Sheng、Juncheng Liu、Jinhui Yuan 与 Chuan Wu。2023。Swift：大规模 DNN 训练的加速故障恢复。见 Proceedings of the 28th ACM SIGPLAN Annual Symposium on Principles and Practice of Parallel Programming（加拿大蒙特利尔）（PPoPP ’23）。Association for Computing Machinery，美国纽约，447–449。https://doi.org/10.1145/3572848.3577510"
+      },
+      {
+        "text": "[79] Thomas Wolf, Lysandre Debut, Victor Sanh, Julien Chaumond, Clement Delangue, Anthony Moi, Pierric Cistac, Tim Rault, Rémi Louf, Morgan Funtowicz, Joe Davison, Sam Shleifer, Patrick von Platen, Clara Ma, Yacine Jernite, Julien Plu, Canwen Xu, Teven Le Scao, Sylvain Gugger, Mariama Drame, Quentin Lhoest, and Alexander M. Rush. 2019. HuggingFace’s Transformers: State-of-the-art Natural Language Processing. arXiv preprint arXiv: 1910.03771 (2019).",
+        "x": 54,
+        "y": 82.4,
+        "w": 241.4,
+        "h": 67.7,
+        "zh": "[79] Thomas Wolf、Lysandre Debut、Victor Sanh、Julien Chaumond、Clement Delangue、Anthony Moi、Pierric Cistac、Tim Rault、Rémi Louf、Morgan Funtowicz、Joe Davison、Sam Shleifer、Patrick von Platen、Clara Ma、Yacine Jernite、Julien Plu、Canwen Xu、Teven Le Scao、Sylvain Gugger、Mariama Drame、Quentin Lhoest 与 Alexander M. Rush。2019。HuggingFace Transformers：最先进的自然语言处理。arXiv preprint arXiv:1910.03771（2019）。"
+      }
+    ],
+    "18": [
+      {
+        "text": "Table 3. The transfer protocols in HybridFlow.",
+        "x": 210.3,
+        "y": 711.6,
+        "w": 191.1,
+        "h": 10,
+        "zh": "表 3. HybridFlow 中的传输协议。"
+      },
+      {
+        "text": "All the worker methods have the same input and run the ssme codes, Broadcast the data to all ranks.",
+        "x": 131.4,
+        "y": 673.6,
+        "w": 424.1,
+        "h": 10.3,
+        "zh": "所有 worker 方法的输入相同，跑的也是同一份代码。把数据广播到所有 rank。"
+      },
+      {
+        "text": "The model is sharded among multiple workers within each data-parallel Split the data, scatter across all DP ranks",
+        "x": 118.5,
+        "y": 651.1,
+        "w": 436.3,
+        "h": 14,
+        "zh": "模型在每个数据并行组内的多个 worker 之间切分。把数据切开，散布到所有 DP rank"
+      },
+      {
+        "text": "group. The output of the model only exists in the last pipeline stage and and broadcast within the group.",
+        "x": 130,
+        "y": 643.4,
+        "w": 424.8,
+        "h": 14,
+        "zh": "上。模型的输出只存在于最后一个流水线阶段，并且。再在组内广播。"
+      },
+      {
+        "text": "is duplicated across the data-parallel groups. This is a typical scenario in 3D parallel training in Megatron-LM, Deepspeed, etc. Split the data by micro DP size, scatter across",
+        "x": 112.4,
+        "y": 624.6,
+        "w": 442.4,
+        "h": 25.1,
+        "zh": "在各个数据并行组之间是重复的。这是 Megatron-LM、DeepSpeed 等框架做 3D 并行训练时的典型情形。按 micro DP 的大小把数据切开，并散布到"
+      },
+      {
+        "text": "Used with HybridEngine. It is used to handle the 3D-parallel scheme of all micro DP groups and broadcast",
+        "x": 126.7,
+        "y": 616.9,
+        "w": 428.1,
+        "h": 10.2,
+        "zh": "与 HybridEngine 一起使用。它用来处理 3D 并行方案，对象是。所有 micro DP 组，并广播"
+      },
+      {
+        "text": "the local_rank=0 worker in all micro DP groups. the policy model, when switching between training and inference. among all ranks within the group.",
+        "x": 127.2,
+        "y": 609.2,
+        "w": 418.6,
+        "h": 10.3,
+        "zh": "每个 micro DP 组里 local_rank=0 的那个 worker。策略模型，在训练和推理之间切换的时候。组内的所有 rank。"
+      },
+      {
+        "text": "Used to examine weight names as they are identical in TP and DP Broadcast the data to all ranks.",
+        "x": 131.4,
+        "y": 594.4,
+        "w": 423.4,
+        "h": 10.2,
+        "zh": "用来查看权重名字，因为这些名字在 TP 和 DP 中是一样的。把数据广播到所有 rank。"
+      },
+      {
+        "text": "the t=0, d=0 worker in all PP groups. Split the data into batches and",
+        "x": 132.2,
+        "y": 579.5,
+        "w": 217.3,
+        "h": 17.5,
+        "zh": "每个 PP 组里 t=0、d=0 的那个 worker。把数据分成若干 batch，并"
+      },
+      {
+        "text": "Training model in data-parallel mode. scatter across all DP ranks.",
+        "x": 136.6,
+        "y": 571.8,
+        "w": 334.5,
+        "h": 10.2,
+        "zh": "以数据并行方式训练模型。散布到所有 DP rank。"
+      },
+      {
+        "text": "Used when debugging. Users can manually define the inputs of each Gather the data from all ranks.",
+        "x": 261.2,
+        "y": 557,
+        "w": 293.6,
+        "h": 10.2,
+        "zh": "调试时使用。用户可以手工指定每一份输入。从所有 rank 把数据收集起来。"
+      },
+      {
+        "text": "Algorithm 2 Auto Parallelism Algorithm In HybridFlow, we implemented the primitive of each model",
+        "x": 54,
+        "y": 508.3,
+        "w": 433.6,
+        "h": 25,
+        "zh": "算法 2：自动并行算法。在 HybridFlow 里，我们实现了每个模型的基本原语"
+      },
+      {
+        "text": "1: Input: Device allocation 𝐴, minimal device allocation in RLHF training by inheriting the 3DParallelWorker, FSDP",
+        "x": 54,
+        "y": 496.3,
+        "w": 504,
+        "h": 21.3,
+        "zh": "1：输入：设备分配 𝐴，以及最小的设备分配。RLHF 训练通过继承 3DParallelWorker、FSDP"
+      },
+      {
+        "text": "and model parallel size for each model in a set 𝐴𝑚𝑖𝑛, Worker and ZeROWorker. The functions of these model classes",
+        "x": 53.8,
+        "y": 484.4,
+        "w": 505.3,
+        "h": 21.3,
+        "zh": "集合中每个模型的模型并行规模 𝐴𝑚𝑖𝑛，。Worker 和 ZeROWorker 来实现。这些模型类里的函数"
+      },
+      {
+        "text": "workload 𝑊 , the number of GPUs per machine 𝑈 are designed to decouple the distributed computation code",
+        "x": 54,
+        "y": 472.4,
+        "w": 480.2,
+        "h": 21.3,
+        "zh": "负载 𝑊，每台机器的 GPU 数量 𝑈。是为了把分布式计算的代码拆开"
+      },
+      {
+        "text": "2: Output: the parallelism strategy for the model in a set and provide fundamental operations in RLHF for the users.",
+        "x": 54,
+        "y": 460.5,
+        "w": 502.7,
+        "h": 21.3,
+        "zh": "2：输出：该集合中这个模型的并行策略。并向用户提供 RLHF 要用的基本操作。"
+      },
+      {
+        "text": "3: Procedure auto_parallel(𝐴, 𝐴𝑚𝑖𝑛, 𝑙,𝑊 ): This primitive design is compatible with the auto-regressive",
+        "x": 53.7,
+        "y": 448.5,
+        "w": 443.8,
+        "h": 21.3,
+        "zh": "3：过程 auto_parallel(𝐴, 𝐴𝑚𝑖𝑛, 𝑙, 𝑊)：这种原语设计和自回归是兼容的"
+      },
+      {
+        "text": "4: 𝑁𝑙 = 𝐴[𝑙] // Get device allocation of the model generation, forward pass, backward pass, and model update",
+        "x": 54,
+        "y": 436.6,
+        "w": 466,
+        "h": 21.3,
+        "zh": "4：𝑁𝑙 = 𝐴[𝑙] // 取该模型分到的设备。生成、前向、反向，以及模型更新"
+      },
+      {
+        "text": "5: 𝑡𝑚𝑖𝑛 = 𝐴𝑚𝑖𝑛[𝑙].𝑡 // Get minimal model parallel size operations in the existing distributed inference and training",
+        "x": 54,
+        "y": 424.6,
+        "w": 484.8,
+        "h": 21.3,
+        "zh": "5：𝑡𝑚𝑖𝑛 = 𝐴𝑚𝑖𝑛[𝑙].𝑡 // 取最小的模型并行规模。现有分布式推理和训练里的那些操作"
+      },
+      {
+        "text": "6: 𝑝𝑚𝑖𝑛 = 𝐴𝑚𝑖𝑛[𝑙].𝑝 frameworks. Users can easily customize the RLHF training dataflow (by adapting the numerical computation in the pro-",
+        "x": 54,
+        "y": 400.7,
+        "w": 348.7,
+        "h": 33.3,
+        "zh": "6：𝑝𝑚𝑖𝑛 = 𝐴𝑚𝑖𝑛[𝑙].𝑝。框架。用户可以很容易地按算法设计改写 RLHF 训练数据流（只需调整所给函数里的数值计算"
+      },
+      {
+        "text": "8: best_para.cost ← ∞ vided functions) according to the algorithm’s design and",
+        "x": 53.8,
+        "y": 388.7,
+        "w": 363.2,
+        "h": 21.3,
+        "zh": "8：best_para.cost ← ∞。函数），按照算法的设计，并且"
+      },
+      {
+        "text": "9: for all t ∈ {𝑡𝑚𝑖𝑛, 𝑡𝑚𝑖𝑛 + 1..., 𝑈} do for all p ∈ {𝑝𝑚𝑖𝑛, 𝑝𝑚𝑖𝑛 + 1..., 𝑁𝑙 } do benefit from reusing the underlying distributed computation implementation. We illustrate the meaning and the actual computations of these APIs in Table 4.",
+        "x": 54,
+        "y": 352.9,
+        "w": 435,
+        "h": 45.2,
+        "zh": "9：对每个 t ∈ {𝑡𝑚𝑖𝑛, 𝑡𝑚𝑖𝑛+1, …, 𝑈}，对每个 p ∈ {𝑝𝑚𝑖𝑛, 𝑝𝑚𝑖𝑛+1, …, 𝑁𝑙} 做。从而复用底层的分布式计算实现。这些 API 的含义和实际计算见表 4。"
+      },
+      {
+        "text": "para_plan ← (𝑝, 𝑡, 𝑑) cost ← simu(𝑝𝑎𝑟𝑎_𝑝𝑙𝑎𝑛, 𝑙,𝑊 [𝑙]) if best_para.𝑐𝑜𝑠𝑡 > cost then best_para.𝑐𝑜𝑠𝑡 ← cost We implemented transfer protocols that cover all common",
+        "x": 53.5,
+        "y": 310.3,
+        "w": 434.3,
+        "h": 48.3,
+        "zh": "para_plan ← (𝑝, 𝑡, 𝑑)；cost ← simu(para_plan, 𝑙, 𝑊[𝑙])；若 best_para.cost > cost，则 best_para.cost ← cost。我们实现的传输协议覆盖了所有常见情形"
+      },
+      {
+        "text": "best_para ← para_plan use cases of data resharding between models in RLHF dataflow.",
+        "x": 54,
+        "y": 298.3,
+        "w": 406.4,
+        "h": 12.4,
+        "zh": "best_para ← para_plan。也就是 RLHF 数据流里、模型之间数据重切分的那些用法。"
+      },
+      {
+        "text": "17: return best_para Users can utilize these pre-defined protocols to generate any RLHF dataflow. Moreover, Users can easily define their own transfer protocols by implementing a collect function and a",
+        "x": 54,
+        "y": 262.5,
+        "w": 354.2,
+        "h": 36.3,
+        "zh": "17：返回 best_para。用户可以用这些预定义协议生成任意 RLHF 数据流。此外，用户只要实现一个 collect 函数和一个"
+      },
+      {
+        "text": "includes three simulators for training, inference, and generdistribute function. Transfer protocols decoupled the compli-",
+        "x": 54,
+        "y": 250.5,
+        "w": 505.7,
+        "h": 16.6,
+        "zh": "其中有训练、推理和生成三个模拟器。distribute 函数即可。传输协议把原本缠在一起的复杂部分拆开了"
+      },
+      {
+        "text": "ation workload, all are analytical models following previous cated data resharding and distributed training. We denote p,",
+        "x": 54,
+        "y": 238.6,
+        "w": 504,
+        "h": 16.6,
+        "zh": "负载，它们都是沿用已有工作的解析模型。数据重切分和分布式训练。我们把 p、"
+      },
+      {
+        "text": "research [42, 84, 92]. The training and inference workload is t, d as the rank of the worker in pipeline-, tensor- and data-",
+        "x": 54,
+        "y": 226.6,
+        "w": 504,
+        "h": 16.6,
+        "zh": "的研究 [42, 84, 92]。训练和推理负载是。t、d 分别记为 worker 在流水线并行组、张量并行组和数据"
+      },
+      {
+        "text": "compute-bound while the generation workload is memoryparallel group respectively. We illustrate these predefined",
+        "x": 54,
+        "y": 214.6,
+        "w": 505.7,
+        "h": 16.6,
+        "zh": "受计算限制，生成负载则受内存限制。并行组中的 rank。我们列出这些预先定义好的"
+      },
+      {
+        "text": "bound. For the actor model, we first find the parallelism stratprotocols in Table 3.",
+        "x": 54,
+        "y": 202.7,
+        "w": 505.7,
+        "h": 16.6,
+        "zh": "。对 actor 模型，我们先确定并行策略。这些协议见表 3。"
+      },
+      {
+        "text": "egy for training and record the memory usage in the training stage. During actor generation, KVCache requirements are Auto-Parallelism Algorithm",
+        "x": 74.4,
+        "y": 175,
+        "w": 483.6,
+        "h": 32.3,
+        "zh": "供训练使用，并记下训练阶段的内存占用。actor 生成时，KVCache 需要按照。自动并行算法"
+      },
+      {
+        "text": "calculated using the batch size and max sequence length. If the model-parallel size for the generation stage cannot Algorithm 2 outlines the search process of the optimal par-",
+        "x": 53.7,
+        "y": 160.1,
+        "w": 505.9,
+        "h": 23.4,
+        "zh": "batch 大小和最大序列长度来计算。若生成阶段的模型并行规模无法。算法 2 说明如何搜索最优的并行"
+      },
+      {
+        "text": "accommodate both parameters and KVCache, we increase allelism strategy of each model. Starting from the minimal",
+        "x": 54,
+        "y": 148.1,
+        "w": 504,
+        "h": 11.4,
+        "zh": "同时放下参数和 KVCache，就把规模加大。每个模型的策略。从最小的"
+      },
+      {
+        "text": "it. Then, we seek the optimal strategy with corresponding model parallelism size of each model (to prevent OOM when",
+        "x": 54,
+        "y": 136.2,
+        "w": 504,
+        "h": 11.4,
+        "zh": "它。然后按对应的条件寻找最优策略。每个模型的模型并行规模（为避免发生 OOM，当"
+      },
+      {
+        "text": "KVCache allocation by comparing the latency estimation. colocating with multiple workers), we enumerate all feasi-",
+        "x": 54,
+        "y": 124.2,
+        "w": 505.5,
+        "h": 11.4,
+        "zh": "按 KVCache 怎么分配，比较延迟估计来定。与多个 worker 共置时），我们枚举所有可行的"
+      },
+      {
+        "text": "Developing a comprehensive autoregressive generation simble parallel configurations based on the number of GPUs",
+        "x": 54,
+        "y": 112.3,
+        "w": 505.7,
+        "h": 11.4,
+        "zh": "再做一个更完整的自回归生成模拟。并行配置，依据是 GPU 的数量"
+      },
+      {
+        "text": "ulator that accounts for variable KVCache sizes could further and the number of GPUs per machine 𝑈. The default num-",
+        "x": 54,
+        "y": 100.3,
+        "w": 504.2,
+        "h": 11.4,
+        "zh": "把会变化的 KVCache 大小也算进去，还可以进一步。以及每台机器的 GPU 数量 𝑈。默认的"
+      },
+      {
+        "text": "enhance the auto-mapping process in RLHF research. ber of 𝑈 is set to 8. We use simu module to estimate the latency of each model based on their workload. This module",
+        "x": 54,
+        "y": 76.4,
+        "w": 481.1,
+        "h": 23.4,
+        "zh": "改进 RLHF 研究中的自动映射。数目上，𝑈 设为 8。我们用 simu 模块，按每个模型的负载估计延迟。这个模块"
+      }
+    ],
+    "19": [
+      {
+        "text": "Table 4. Key functions provided in each model class. The users can use these provided functions to construct various RLHF",
+        "x": 53.7,
+        "y": 711.6,
+        "w": 504.6,
+        "h": 10,
+        "zh": "表 4. 每个模型类提供的关键函数。用户可以用这些函数搭出各种 RLHF"
+      },
+      {
+        "text": "Based on a batch of prompts, the actor model generates a batch of responses and returns the log probability of each token in the responses. The actor model computes the log probability of each token in the prompts and responses. This log probability is the same as the return log probability when performing generation using the same model precision. (Optional in PPO) The actor model computes the pretrain loss based on the pertaining",
+        "x": 302.1,
+        "y": 586.2,
+        "w": 251.5,
+        "h": 81,
+        "zh": "给定一批提示，actor 生成一批回复，并返回回复里每个 token 的对数概率。actor 还会计算提示和回复中每个 token 的对数概率。模型精度相同时，它和生成阶段返回的对数概率一致。（PPO 中可选）actor 计算预训练损失，依据的是预训练的"
+      },
+      {
+        "text": "Based on the advantages, returns (calculated from compute_advantage) and pertaining loss, the actor model calculate the training loss and update its weights. We implement various loss for diverse RLHF algorithms including PPO [55], Safe-RLHF [19], ReMax [43], GRPO [70] and others. The critic model computes the values for each prompt and response. Based on the values and returns, the critic computes a squared-error loss to update its weights. We also implement critic loss for diverse RLHF algorithms including PPO [55], Safe-RLHF [19], ReMax [43], GRPO [70]",
+        "x": 302.1,
+        "y": 477.7,
+        "w": 253,
+        "h": 91.8,
+        "zh": "根据 advantage、return（由 compute_advantage 算出）以及预训练损失，actor 计算训练损失并更新自己的权重。我们为多种 RLHF 算法实现了不同损失，包括 PPO [55]、Safe-RLHF [19]、ReMax [43]、GRPO [70] 等。critic 为每个提示和回复计算 value。再根据 value 和 return，critic 计算平方误差损失并更新权重。我们也实现了多种 RLHF 算法的 critic 损失，包括 PPO [55]、Safe-RLHF [19]、ReMax [43]、GRPO [70]"
+      },
+      {
+        "text": "The reference model computes the reference log probability of each token in the prompts and responses. This log probability is utilized as a benchmark to evaluate the divergence of the actor model and constrain its learning process. The reward model conducts forward computation to calculate scores for a given set of prompts and responses. The rewards could be token-level",
+        "x": 302.1,
+        "y": 394.6,
+        "w": 251.7,
+        "h": 66.3,
+        "zh": "reference 模型计算提示和回复中每个 token 的参考对数概率。这个对数概率用来当作基准，衡量 actor 偏了多远，从而约束它的学习。reward 模型对给定的一组提示和回复做前向，算出分数。奖励可以是 token 级的"
+      },
+      {
+        "text": "Based on the values rewards from the value model and reward model respectively, the function estimates the advantages on the given prompts and the current policy model’s responses. This computation involves no model forward passes.",
+        "x": 302.1,
+        "y": 337.1,
+        "w": 253,
+        "h": 40.7,
+        "zh": "value 模型和 reward 模型分别给出 value 与 reward。该函数据此估计给定提示、以及当前策略模型这些回复上的 advantage。这一步计算不做任何模型前向。"
+      }
+    ]
+  }
+}

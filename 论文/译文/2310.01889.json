@@ -1,0 +1,911 @@
+{
+  "id": "2310.01889",
+  "title": "2310.01889",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "Ring Attention with Blockwise Transformers for Near-Infinite Context",
+        "x": 161.5,
+        "y": 659,
+        "w": 288.4,
+        "h": 37.1,
+        "zh": "Ring Attention：用分块 Transformer 把上下文做到近乎无限"
+      },
+      {
+        "text": "Transformers have emerged as the architecture of choice for many state-of-the-art AI models, showcasing exceptional performance across a wide range of AI applications. However, the memory demands imposed by Transformers limit their ability to handle long sequences, thereby posing challenges in utilizing videos, actions, and other long-form sequences and modalities in complex environments. We present a novel approach, Ring Attention with Blockwise Transformers (Ring Attention), which leverages blockwise computation of self-attention and feedforward to distribute long sequences across multiple devices while fully overlapping the communication of key-value blocks with the computation of blockwise attention. Our approach enables training and inference of sequences that are up to device count times longer than those achievable by prior memory-efficient Transformers, without resorting to approximations or incurring additional communication and computation overheads. Extensive experiments on language modeling and reinforcement learning tasks demonstrate the effectiveness of our approach in allowing millions of tokens context size and improving performance. .",
+        "x": 117.7,
+        "y": 383.8,
+        "w": 377.6,
+        "h": 140.9,
+        "zh": "Transformer 已经成为许多最先进 AI 模型所选用的架构，在范围很广的 AI 应用上表现突出。然而，Transformer 带来的内存需求限制了它处理长序列的能力，因此在复杂环境里使用视频、动作以及其他长序列和长模态都会遇到困难。我们提出一种新方法：Ring Attention with Blockwise Transformers（Ring Attention）。它按块计算自注意力和前馈，把长序列分到多台设备上，并让 key-value 块的通信与分块注意力的计算完全重叠。这样，可训练和可推理的序列长度最多可以达到以往内存高效 Transformer 的设备数倍，既不做近似，也不增加额外的通信和计算开销。语言建模和强化学习任务上的大量实验表明，本方法能把上下文做到数百万 token，并提高性能。"
+      },
+      {
+        "text": "Transformers [37] have become the backbone of many state-of-the-art AI systems that have demonstrated impressive performance across a wide range of AI problems. Transformers achieve this success through their architecture design that uses self-attention and position-wise feedforward mechanisms. However, scaling up the context length of Transformers is a challenge [29], since the inherited architecture design of Transformers, i.e. the self-attention has memory cost quadratic in the input sequence length, which makes it challenging to scale to longer input sequences. Large context Transformers are essential for tackling a diverse array of AI challenges, ranging from processing books and high-resolution images to analyzing long videos and complex codebases. They excel at extracting information from the interconnected web and hyperlinked content, and are crucial for",
+        "x": 107.7,
+        "y": 244.8,
+        "w": 398,
+        "h": 97.2,
+        "zh": "Transformer [37] 已经成为许多最先进 AI 系统的骨干，这些系统在一大类 AI 问题上表现突出。Transformer 能做到这一点，是因为架构里使用了自注意力和逐位置的前馈。但是，把 Transformer 的上下文加长并不容易 [29]：它沿用的设计，也就是自注意力，内存开销随输入序列长度成平方增长，因此很难扩到更长的输入。长上下文的 Transformer 对处理许多 AI 问题都不可少，从书籍和高分辨率图像，到长视频和复杂代码库。它们擅长从彼此链接的网页和带超链接的内容里抽取信息，而且对"
+      },
+      {
+        "text": "with significantly expanded context than before: GPT-3.5 [32] with context length 16K, GPT-4 [29] with context length 32k, MosaicML’s MPT [25] with context length 65k, and Anthropic’s Claude [1] with context length 100k. Driven by the significance, there has been surging research interests in reducing memory cost. One line of research leverages the observation that the softmax matrix in self-attention can be computed without materializing the full matrix [24] which has led to the development of blockwise computation of self-attention and feedforward [30, 9, 23] without making approximations. Despite the reduced memory, a significant challenge still arises from storing the output of each layer. This necessity arises from self-attention’s inherent nature, involving interactions among all elements (n to n interactions). The subsequent layer’s self-attention relies on accessing all of the prior layer’s outputs. Failing to do so would increase computational costs cubically, as every output must be recomputed for each sequence element, rendering it impractical for longer sequences.",
+        "x": 107.6,
+        "y": 97.5,
+        "w": 398.1,
+        "h": 135.4,
+        "zh": "比以往显著更长的上下文：GPT-3.5 [32] 的上下文长度是 16K，GPT-4 [29] 是 32k，MosaicML 的 MPT [25] 是 65k，Anthropic 的 Claude [1] 是 100k。正因为这件事重要，降低内存开销的研究迅速增多。其中一条路线利用了这样的观察：自注意力里的 softmax 矩阵不必把整个矩阵物化出来就能计算 [24]，由此发展出不做近似的分块自注意力和前馈 [30, 9, 23]。内存虽然降下来了，把每一层的输出存下来仍然是大问题。这是自注意力本身决定的，所有元素之间都要交互（n 对 n）。下一层的自注意力必须读到上一层的全部输出。否则计算量会变成三次方：每个序列位置都要把每一个输出重算一遍，序列一长就不现实。"
+      }
+    ],
+    "2": [
+      {
+        "text": "These components facilitate the efficient capture of long-range dependencies between input tokens, and enable scalability through highly parallel computations. To put the memory demand in perspective, even when dealing with a batch size of 1, processing 100 million tokens requires over 1000GB of memory for a modest model with a hidden size of 1024. This is much greater than the capacity of contemporary GPUs and TPUs, which typically have less than 100GB of high-bandwidth memory (HBM).",
+        "x": 107.3,
+        "y": 600.9,
+        "w": 190.4,
+        "h": 119.1,
+        "zh": "这些组件可以高效捕捉输入 token 之间的长程依赖，并靠高度并行的计算来扩展规模。把内存需求换成具体数字：即便 batch size 为 1，处理 1 亿个 token，对隐藏大小只有 1024 的一个不大的模型，也要超过 1000GB 内存。这远远超过当代 GPU 和 TPU 的容量，它们的高带宽内存（HBM）通常不到 100GB。"
+      },
+      {
+        "text": "Maximum context length under endTo tackle this challenge, we make a key obser-",
+        "x": 107.7,
+        "y": 584.6,
+        "w": 398,
+        "h": 20.3,
+        "zh": ""
+      },
+      {
+        "text": "to-end large-scale training on TPUv4-1024. Basevation: by performing self-attention and feedfor-",
+        "x": 107.8,
+        "y": 573.6,
+        "w": 397.9,
+        "h": 20.3,
+        "zh": ""
+      },
+      {
+        "text": "lines are vanilla transformers [37], memory effiward network computations in a blockwise fash-",
+        "x": 107.6,
+        "y": 562.7,
+        "w": 398,
+        "h": 20.3,
+        "zh": ""
+      },
+      {
+        "text": "cient transformers [30], and memory efficient ation [23], we can distribute sequence dimensions",
+        "x": 108,
+        "y": 551.8,
+        "w": 397.7,
+        "h": 20.3,
+        "zh": ""
+      },
+      {
+        "text": "tention and feedforward (blockwise parallel transacross multiple devices, allowing concurrent",
+        "x": 108,
+        "y": 540.9,
+        "w": 397.7,
+        "h": 20.3,
+        "zh": ""
+      },
+      {
+        "text": "formers) [23]. Our proposed approach Ring Attencomputation and communication. This insight",
+        "x": 108,
+        "y": 530,
+        "w": 397.7,
+        "h": 20.3,
+        "zh": ""
+      },
+      {
+        "text": "tion allows training up to device count times longer stems from the fact that when we compute the",
+        "x": 108,
+        "y": 519.1,
+        "w": 396.2,
+        "h": 20.3,
+        "zh": ""
+      },
+      {
+        "text": "sequence than baselines and enables the training of attention on a block-by-block basis, the results",
+        "x": 108,
+        "y": 508.2,
+        "w": 396,
+        "h": 20.3,
+        "zh": ""
+      },
+      {
+        "text": "sequences that exceed millions in length without are invariant to the ordering of these blockwise",
+        "x": 108,
+        "y": 497.3,
+        "w": 396,
+        "h": 20.3,
+        "zh": ""
+      },
+      {
+        "text": "making approximations nor adding any overheads computations. Our method distributes the outer",
+        "x": 108,
+        "y": 486.4,
+        "w": 396,
+        "h": 20.3,
+        "zh": ""
+      },
+      {
+        "text": "to communication and computation. loop of computing blockwise attention among hosts, with each device managing its respective input block. For the inner loop, every device computes blockwise attention and feedforward operations specific to its designated input block. Host devices form a conceptual ring, where during the inner loop, each device sends a copy of its key-value blocks being used for blockwise computation to the next device in the ring, while simultaneously receiving key-value blocks from the previous one. As long as block computations take longer than block transfers, overlapping these processes results in no added overhead compared to standard transformers. The use of a ring topology for computing self-attention has also been studied in prior work [21] but it incurs non-overlapped communication overheads similar to sequence parallelism, making it infeasible for large context sizes. Our work utilizes blockwise parallel transformers [23] to substantially reduce memory costs, enabling zero-overhead scaling of context size across tens of millions of tokens during both training and inference, and allowing for the use of an arbitrarily large context size. Since our approach overlaps the communication of key-value blocks between hosts in a ring through blockwise computation of transformers, we name it Ring Attention with Blockwise Parallel Transformers (Ring Attention). We evaluate the effectiveness of our approach on language modeling benchmarks. Our experiments show that Ring Attention can reduce the memory requirements of Transformers, enabling us to train more than 500 times longer sequence than prior memory efficient state-of-the-arts and enables the training of sequences that exceed 100 million in length without making approximations to attention. Importantly, Ring Attention eliminates the memory constraints imposed by individual devices, empowering the training and inference of sequences with lengths that scale in proportion to the number of devices, essentially achieving near-infinite context size. Our contributions are twofold: (a) proposing a memory efficient transformers architecture that allows the context length to scale linearly with the number of devices while maintaining performance, eliminating the memory bottleneck imposed by individual devices, and (b) demonstrating the effectiveness of our approach through extensive experiments.",
+        "x": 107.5,
+        "y": 191.8,
+        "w": 398.1,
+        "h": 304,
+        "zh": "在通信和计算上。计算分块注意力的循环被分到各台主机，每台设备管理自己的输入块。在内层循环里，每台设备只对自己分到的输入块做分块注意力和前馈。各台主机在概念上连成一个环：内层循环进行时，每台设备把当前用于分块计算的 key-value 块复制一份，发给环上的下一台，同时从上一家接收 key-value 块。只要按块的计算比按块的传输更久，把这两件事重叠起来，相对标准 Transformer 就不会多出开销。用环形拓扑计算自注意力在先前工作里也研究过 [21]，但它的通信开销不能被计算盖住，和序列并行类似，因此做不到很大的上下文。我们利用分块并行 Transformer [23] 大幅降低内存开销，从而在训练和推理时都能把上下文零开销地扩到数千万 token，并且允许任意大的上下文。由于本方法是在 Transformer 的分块计算过程中，把环上各主机之间 key-value 块的通信重叠掉，我们把它命名为 Ring Attention with Blockwise Parallel Transformers（Ring Attention）。我们在语言建模基准上评估了它的效果。实验表明，Ring Attention 能降低 Transformer 的内存需求，使我们能够训练的序列长度超过以往内存高效最好结果的 500 倍，并且能在不对注意力做近似的情况下训练长度超过 1 亿的序列。重要的是，Ring Attention 消除了单台设备施加的内存限制，使可训练和可推理的序列长度随设备数量成比例增长，从而实际上达到近乎无限的上下文。我们的贡献有两方面：（a）提出一种内存高效的 Transformer 架构，使上下文长度在保持性能的同时随设备数量线性增长，从而消除单台设备造成的内存瓶颈；（b）用大量实验说明本方法是有效的。"
+      },
+      {
+        "text": "where s is the sequence length and d is the head dimension. We compute the matrix of outputs as:",
+        "x": 107.5,
+        "y": 133,
+        "w": 398.2,
+        "h": 20.9,
+        "zh": "其中 s 是序列长度，d 是头的维度。输出矩阵按下面的方式计算："
+      },
+      {
+        "text": "where softmax is applied row-wise. Each self-attention sub-layer is accompanied with a feedforward network, which is applied to each position separately and identically. This consists of two linear",
+        "x": 107.6,
+        "y": 72,
+        "w": 396.5,
+        "h": 20.9,
+        "zh": "其中 softmax 按行施加。每个自注意力子层都配有一个前馈网络，它对每个位置单独、并且以相同方式作用。这个网络由两个线性"
+      }
+    ],
+    "3": [
+      {
+        "text": "transformations with a ReLU activation in between.",
+        "x": 108,
+        "y": 710,
+        "w": 206.2,
+        "h": 10,
+        "zh": "变换组成，中间是一个 ReLU 激活。"
+      },
+      {
+        "text": "Blockwise Parallel Transformers. Prior state-of-the-arts have led to substantial reductions in memory utilization, achieved through innovative techniques that enable attention computation without full materialization by computing attention in a block by block manner [30, 9, 23]. These advancements lowered the memory overhead of attention to 2bsh bytes per layer, where b represents the batch size, s denotes the sequence length, and h stands for the hidden size of the model. To further reduce memory usage, blockwise parallel transformer (BPT) [23] introduced a strategy where the feedforward network associated with each self-attention sub-layer is computed in a block-wise fashion. This approach effectively limits the maximum activation size of feedforward network from 8bsh to 2bsh. For a more detailed analysis of memory efficiency, please refer to the discussion provided therein. In summary, the state-of-the-art transformer layer’s memory cost of activation is 2bsh. Large Output of Each Layer. While BPT significantly reduces memory demand in Transformers, it still presents a major challenge for scaling up context length because it requires storing the output of each layer. This storage is crucial due to the inherent nature of self-attention, which involves interactions among all elements (n to n interactions). Without these stored outputs, the subsequent layer’s self-attention becomes computationally impractical, necessitating recomputation for each sequence element. To put it simply, processing 100 million tokens with a batch size of 1 requires over 1000GB of memory even for a modest model with a hidden size of 1024. In contrast, modern GPUs and TPUs typically provide less than 100GB of high-bandwidth memory (HBM), and the prospects for significant HBM expansion are hindered by physical limitations and high manufacturing costs.",
+        "x": 107.3,
+        "y": 466.9,
+        "w": 398.5,
+        "h": 211.8,
+        "zh": "分块并行 Transformer。此前的最好结果已经把内存占用大幅降了下来：注意力可以按块计算，不必把整个矩阵物化出来 [30, 9, 23]。这些进展把注意力的内存开销降到每层 2bsh 字节，其中 b 是 batch size，s 是序列长度，h 是模型的隐藏大小。为了进一步省内存，分块并行 Transformer（BPT）[23] 让每个自注意力子层所带的前馈网络也按块计算。这样，前馈网络的最大激活从 8bsh 降到 2bsh。内存效率的更细分析见该文中的讨论。总的来说，目前最好的 Transformer 层，激活的内存开销是 2bsh。每一层的输出仍然很大。BPT 虽然显著降低了 Transformer 的内存需求，要继续加长上下文仍然很难，因为它必须保存每一层的输出。自注意力的本性是所有元素之间都要交互（n 对 n），所以这些输出必须留着。没有它们，下一层的自注意力在计算上就不现实，每个序列元素都得重算。具体而言，batch size 为 1 时处理 1 亿个 token，即便隐藏大小只有 1024 的一个不大的模型，也要超过 1000GB 内存。相比之下，现在的 GPU 和 TPU 通常只提供不到 100GB 的高带宽内存（HBM），而 HBM 也很难再大幅加大，既受物理限制，制造成本也高。"
+      },
+      {
+        "text": "Ring Attention with Blockwise Parallel Transformers",
+        "x": 125.9,
+        "y": 443,
+        "w": 271.3,
+        "h": 12,
+        "zh": "用分块并行 Transformer 实现的 Ring Attention"
+      },
+      {
+        "text": "Our primary objective is to eliminates the memory constraints imposed by individual devices by efficiently distribute long sequences across multiple hosts without adding overhead. To achieve this goal, we propose an enhancement to the blockwise parallel transformers (BPT) framework [23]. When distributing an input sequence across different hosts, each host is responsible for running one element of the outer loop of blockwise attention corresponding to its designated block, as well as the feedforward network specific to that block. These operations do not necessitate communication with other hosts. However, a challenge arises in the inner loop, which involves key-value block interactions that require fetching blocks from other hosts. Since each host possesses only one key-value block, the naive approach of fetching blocks from other hosts results in two significant issues. Firstly, it introduces a computation delay as the system waits to receive the necessary key-value blocks. Secondly, the accumulation of key-value blocks leads to increased memory usage, which defeats the purpose of reducing memory cost. Ring-Based Blockwise Attention. To tackle the aforementioned challenges, we leverage the permutation invariance property of the inner loop’s key-value block operations. This property stems from the fact that the self-attention between a query block and a group of key-value blocks can be computed in any order, as long as the statistics of each block are combined correctly for rescaling. We leverage this property by conceptualizing all hosts as forming a ring structure: host-1, host-2, ..., host-N. As we compute blockwise attention and feedforward, each host efficiently coordinates by concurrently sending key-value blocks being used for attention computation to the next host while receiving key-value blocks from the preceding host, effectively overlapping transferring of blocks with blockwise computation. Concretely, for any host-i, during the computation of attention between its query block and a key-value block, it concurrently sends key-value blocks to the next host-(i + 1) while receiving key-value blocks from the preceding host-(i − 1). If the computation time exceeds the time required for transferring key-value blocks, this results in no additional communication cost. This overlapping mechanism applies to both forward and backward passes of our approach since the same operations and techniques can be used. Prior work has also proposed leveraging a ring topology to compute self-attention [21], aiming to reduce communication costs. Our work differs by utilizing blockwise parallel transformers to substantially reduce memory costs. As we show in the next section, this enables zero-overhead scaling of context size during both training and inference and allows arbitrarily large context size. Arithmetic Intensity Between Hosts. In order to determine the minimal required block size to overlap transferring with computation, assume that each host has F FLOPS and that the bandwidth",
+        "x": 107.5,
+        "y": 72,
+        "w": 398.2,
+        "h": 359.1,
+        "zh": "我们的首要目标，是消除单台设备带来的内存限制：把长序列高效地分到多台主机上，同时不增加开销。为此，我们在分块并行 Transformer（BPT）框架 [23] 上做了加强。输入序列分到不同主机之后，每台主机负责分块注意力外层循环里属于自己那一块的一次计算，以及这一块对应的前馈网络。这些操作不需要和其他主机通信。难的是内层循环：key-value 块之间要交互，必须从其他主机把块取过来。每台主机手里只有一个 key-value 块。如果朴素地去其他主机取块，会有两个严重问题。第一，系统要等所需的 key-value 块到达，计算被拖住。第二，key-value 块在本地堆积，内存用量上升，省内存的目的就落空了。基于环的分块注意力。针对上述问题，我们利用内层循环中 key-value 块运算的置换不变性。一个 query 块和一组 key-value 块之间的自注意力可以按任意顺序计算，只要把每一块的统计量正确地合并，再用来做重缩放。我们据此把全部主机看成一个环：host-1、host-2、……、host-N。在计算分块注意力和前馈的同时，每台主机把当前用于注意力计算的 key-value 块发给下一台，并从上一家接收 key-value 块，使块的传输与分块计算重叠。具体来说，对任意 host-i，当它在计算自己的 query 块与某个 key-value 块的注意力时，会同时把 key-value 块发给下一台 host-(i + 1)，并从上一台 host-(i − 1) 接收 key-value 块。如果计算时间长于传输 key-value 块所需的时间，就不会增加通信开销。同一套操作和技巧可以用于前向和反向，因此这种重叠对前向和反向都适用。先前也有工作用环形拓扑来计算自注意力 [21]，目的是降低通信开销。我们的不同之处在于使用分块并行 Transformer 来大幅降低内存开销。下一节会说明，这使得训练和推理时的上下文都能零开销地扩展，并且允许任意大的上下文。主机之间的算术强度。为了确定至少需要多大的块，才能让传输被计算盖住，假设每台主机的算力为 F FLOPS，而带宽"
+      }
+    ],
+    "4": [
+      {
+        "text": "Figure 2: Top (a): We use the same model architecture as the original Transformer but reorganize the compute. In the diagram, we explain this by showing that in a ring of hosts, each host holds one query block, and key-value blocks traverse through a ring of hosts for attention and feedforward computations in a block-by-block fashion. As we compute attention, each host sends key-value blocks to the next host while receives key-value blocks from the preceding host. The communication is overlapped with the computation of blockwise attention and feedforward. Bottom (b): We compute the original Transformer block-by-block. Each host is responsible for one iteration of the query’s outer loop, while the key-value blocks rotate among the hosts. As visualized, a device starts with the first query block on the left; then we iterate over the key-value blocks sequence positioned horizontally. The query block, combined with the key-value blocks, are used to compute self-attention (yellow box), whose output is pass to feedforward network (cyan box).",
+        "x": 107.7,
+        "y": 211,
+        "w": 398,
+        "h": 119.1,
+        "zh": "图 2：上图（a）：我们使用与原始 Transformer 相同的模型架构，只是重新组织了计算。如图所示，在一个主机环里，每台主机持有一个 query 块，key-value 块沿着主机环逐块传送，用于注意力和前馈计算。计算注意力时，每台主机把 key-value 块发给下一台主机，同时从上一台主机接收 key-value 块。通信与分块注意力及前馈的计算重叠。下图（b）：我们逐块计算原来的 Transformer 块。每台主机负责 query 外层循环的一次迭代，key-value 块在各主机之间轮转。如图，一台设备从左侧第一个 query 块开始，然后沿水平方向遍历 key-value 块序列。query 块与这些 key-value 块一起用来计算自注意力（黄框），其输出再送入前馈网络（青框）。"
+      },
+      {
+        "text": "between hosts is denoted as B. It’s worth noting that our approach involves interactions only with the immediately previous and next hosts in a circular configuration, thus our analysis applies to both GPU all-to-all topology and TPU torus topology. Let’s consider the variables: block size denoted as c and hidden size as d. When computing blockwise self-attention, we require 2dc FLOPs for calculating attention scores using queries and keys, and an additional 2dc FLOPs for multiplying these attention scores by values. In total, the computation demands amount to 4dc FLOPs. We exclude the projection of queries, keys, and values, as well as blockwise feedforward operations, since they only add compute complexity without any communication costs between hosts. This simplification leads to more stringent condition and does not compromise the validity of our approach. On the communication front, both key and value blocks require a total of 2cd bytes. Thus, the combined communication demand is 4cd bytes. To achieve an overlap between communication and",
+        "x": 108,
+        "y": 72,
+        "w": 397.7,
+        "h": 119.1,
+        "zh": "在主机之间记为 B。需要说明的是，本方法只与环上紧邻的前一台和后一台交互，因此这一分析同时适用于 GPU 的全互连拓扑和 TPU 的环面拓扑。把块大小记为 c，隐藏大小记为 d。计算分块自注意力时，用 query 和 key 计算注意力分数需要 2dc 次 FLOPs，再把这些分数乘到 value 上还需要 2dc 次 FLOPs。计算量合计为 4dc 次 FLOPs。query、key、value 的投影以及分块前馈没有算进去，因为它们只增加计算，不在主机之间产生通信。这样得到的条件更严，但并不损害本方法的有效性。通信方面，key 块和 value 块一共需要 2cd 字节，因此合起来的通信需求是 4cd 字节。要让通信与"
+      }
+    ],
+    "5": [
+      {
+        "text": "Table 1: Comparison of maximum activation sizes among different Transformer architectures. Here, b is batch size, h is hidden dimension, n is number of head, s is sequence length, c is block size, the block size (c) is independent of the input sequence length (s). The comparison is between vanilla Transformer [37], memory efficient attention [30], memory efficient attention and feedforward [23], and our proposed approach Ring Attention. Numbers are shown in bytes per layer, assuming bfloat16",
+        "x": 107.7,
+        "y": 669.6,
+        "w": 397.6,
+        "h": 53.6,
+        "zh": "表 1：不同 Transformer 架构的最大激活大小比较。这里 b 是 batch size，h 是隐藏维度，n 是头数，s 是序列长度，c 是块大小；块大小 c 与输入序列长度 s 无关。比较对象包括原始 Transformer [37]、内存高效注意力 [30]、内存高效的注意力与前馈 [23]，以及我们提出的 Ring Attention。表中数字是每层的字节数，并假定使用 bfloat16。"
+      },
+      {
+        "text": "Memory efficient attention Memory efficient attention",
+        "x": 166.7,
+        "y": 598.9,
+        "w": 106.5,
+        "h": 20.9,
+        "zh": "内存高效注意力　内存高效注意力"
+      },
+      {
+        "text": "Table 2: Minimal sequence length needed on each device. Interconnect Bandwidth is the unidirectional bandwidth between hosts, i.e., NVLink / InfiniBand bandwidth between GPUs and ICI bandwidth between TPUs. The minimal block size required c = FLOPS/Bandwidth, and minimal",
+        "x": 107.7,
+        "y": 526.1,
+        "w": 398,
+        "h": 31.8,
+        "zh": "表 2：每台设备所需的最小序列长度。互联带宽指主机之间的单向带宽，也就是 GPU 之间的 NVLink / InfiniBand 带宽，以及 TPU 之间的 ICI 带宽。所需的最小块大小为 c = FLOPS/Bandwidth，并且最小"
+      },
+      {
+        "text": "computation, the following condition must hold: 4dc /F ≥ 4cd/B. This implies that the block size, denoted as c, should be greater than or equal to F/B. Effectively, this means that the block size needs to be larger than the ratio of FLOPs over bandwidth. Memory Requirement. A host needs to store multiple blocks, including one block size to store the current query block, two block sizes for the current key and value blocks, and two block sizes for receiving key and value blocks. Furthermore, storing the output of blockwise attention and feedforward necessitates one block size, as the output retains the shape of the query block. Therefore, a total of six blocks are required, which translates to 6bch bytes of memory. It’s worth noting that the blockwise feedforward network has a maximum activation size of 2bch [23]. Consequently, the total maximum activation size remains at 6bch bytes. Table 1 provides a detailed comparison of the memory costs between our method and other approaches. Notably, our method exhibits the advantage of linear memory scaling with respect to the block size c, and is independent of the input sequence",
+        "x": 108,
+        "y": 246.6,
+        "w": 397.2,
+        "h": 135.4,
+        "zh": "计算能够重叠，下列条件必须成立：4dc/F ≥ 4cd/B。这意味着块大小 c 应当大于或等于 F/B。也就是说，块大小需要大于 FLOPs 与带宽之比。内存需求。一台主机需要存放若干块：一块用来存放当前的 query 块，两块用来存放当前的 key 和 value，另外两块用来接收 key 和 value。此外，分块注意力和前馈的输出也要占一块，因为输出的形状与 query 块相同。因此一共需要六块，对应 6bch 字节的内存。分块前馈网络的最大激活是 2bch [23]，所以最大激活的总量仍然是 6bch 字节。表 1 详细比较了本方法与其他方法的内存开销。可以看出，本方法的内存随块大小 c 线性增长，并且与输入序列"
+      },
+      {
+        "text": "Our analysis shows that the model needs to have a sequence length of s = 6c, which is six times the minimal block size. Requirements for popular computing servers are shown in Table 2. The required minimal sequence length (rightmost column) for each host varies between 6K and 10K, and the minimal block size (second-to-rightmost column) for each host is around 1K for TPUs and GPUs with high bandwidth interconnect. For GPUs connected via InfiniBand, which offers lower bandwidth, the requirements are more strict. These requirements are easy to meet with parallelism such as data and tensor parallelism and memory efficient blockwise attention and feedforward [30, 9, 23], which we will show in experiment Section 5. Algorithm and Implementation. Algorithm 1 provides the pseudocode of the algorithm. Ring Attention is compatible with existing code for memory efficient transformers: Ring Attention just needs to call whatever available memory efficient computation locally on each host, and overlap the communication of key-value blocks between hosts with blockwise computation. We use collective operation jax.lax.ppermute to send and receive key value blocks between nearby hosts. A Jax implementation is provided in Appendix A.",
+        "x": 107.6,
+        "y": 72,
+        "w": 396.6,
+        "h": 157.3,
+        "zh": "我们的分析表明，模型需要的序列长度为 s = 6c，即最小块大小的六倍。常见计算服务器上的要求见表 2。每台主机所需的最小序列长度（最右一列）在 6K 到 10K 之间；对高带宽互联的 TPU 和 GPU，每台主机的最小块大小（右起第二列）大约是 1K。经 InfiniBand 连接的 GPU 带宽更低，要求更严。借助数据并行、张量并行，以及内存高效的分块注意力和前馈 [30, 9, 23]，这些要求不难满足，实验部分的第 5 节会加以说明。算法与实现。算法 1 给出了该算法的伪代码。Ring Attention 可以与现有的内存高效 Transformer 代码配合：每台主机只要在本地调用已有的内存高效计算，并把主机之间 key-value 块的通信与分块计算重叠起来。我们使用集合操作 jax.lax.ppermute，在相邻主机之间收发 key-value 块。Jax 实现见附录 A。"
+      }
+    ],
+    "6": [
+      {
+        "text": "Algorithm 1 Reducing Transformers Memory Cost with Ring Attention. Required: Input sequence x. Number of hosts Nh.",
+        "x": 107.6,
+        "y": 695.4,
+        "w": 290.5,
+        "h": 24.9,
+        "zh": "算法 1：用 Ring Attention 降低 Transformer 的内存开销。需要：输入序列 x，主机数 Nh。"
+      },
+      {
+        "text": "Split input sequence into Nh blocks that each host has one input block. Compute query, key, and value for its input block on each host. for Each transformer layer do for count = 1 to Nh − 1 do for For each host concurrently. do Compute memory efficient attention incrementally using local query, key, value blocks. Send key and value blocks to next host and receive key and value blocks from previous",
+        "x": 118,
+        "y": 609.7,
+        "w": 386,
+        "h": 75.4,
+        "zh": "把输入序列分成 Nh 块，使每台主机得到一块输入。每台主机对自己的输入块计算 query、key 和 value。对每一个 Transformer 层执行：for count = 1 to Nh − 1 do：对各台主机同时执行：用本地的 query、key、value 块，增量地计算内存高效注意力。把 key 和 value 块发给下一台主机，并从上一家接收 key 和 value 块"
+      },
+      {
+        "text": "for For each host concurrently. do Compute memory efficient feedforward using local attention output.",
+        "x": 127.9,
+        "y": 555.1,
+        "w": 281.9,
+        "h": 20.9,
+        "zh": "对各台主机同时执行：用本地的注意力输出计算内存高效前馈。"
+      },
+      {
+        "text": "We evaluate the impact of using Ring Attention in improving Transformer models by benchmarking maximum sequence length and model flops utilization. Model Configuration. Our study is built upon the LLaMA architecture, we consider 3B, 7B, 13B, and 30B model sizes in our experiments. Baselines. We evaluate our method by comparing it with vanilla transformers [37] which computes self-attention by materializing the attention matrix and computes the feedforward network normally, transformers with memory efficient attention [30] and its efficient CUDA implementation [9], and transformers with both memory efficient attention and feedforward [23]. Training Configuration. For all methods, we apply full gradient checkpointing [5] to both attention and feedforward, following prior works [30, 23]. The experiments are on both GPUs and TPUs. For GPUs, we consider both single DGX A100 server with 8 GPUs and distributed 32 A100 GPUs. We also experiment with TPUs, from older generations TPUv3 to newer generations of TPUv4 and TPUv5e. We note that all of our results are obtained using full precision instead of mixed precision.",
+        "x": 107.5,
+        "y": 323,
+        "w": 398.2,
+        "h": 157.3,
+        "zh": "我们用最大序列长度和模型 FLOPs 利用率来衡量 Ring Attention 对 Transformer 的改进。模型配置。实验基于 LLaMA 架构，考虑 3B、7B、13B 和 30B 四种模型大小。基线。比较对象包括：原始 Transformer [37]，它把注意力矩阵物化出来以计算自注意力，前馈也按常规方式计算；使用内存高效注意力的 Transformer [30] 及其高效 CUDA 实现 [9]；同时使用内存高效注意力和前馈的 Transformer [23]。训练配置。所有方法都对注意力和前馈使用完整的梯度检查点 [5]，与先前工作一致 [30, 23]。实验在 GPU 和 TPU 上进行。GPU 方面，既包括一台配有 8 块 GPU 的 DGX A100 服务器，也包括分布式的 32 块 A100。TPU 方面，从较老的 TPUv3 到较新的 TPUv4 和 TPUv5e 都做了实验。需要说明，我们的全部结果都是用全精度得到的，而不是混合精度。"
+      },
+      {
+        "text": "In our experiments, our primary objective is to comprehensively evaluate the performance of Ring Attention across multiple key metrics, including maximum supported sequence length within accelerator memory, model flops utilization, and throughput. We compare Ring Attention’s performance with several baseline models , including the vanilla transformers [37], transformers with memory efficient attention [30], and transformers with both memory efficient attention and feedforward [23], across different model sizes and accelerator configurations.",
+        "x": 107.6,
+        "y": 217.8,
+        "w": 398,
+        "h": 64.5,
+        "zh": "实验的首要目标，是从多个关键指标全面评估 Ring Attention 的性能，包括加速器内存所能支持的最大序列长度、模型 FLOPs 利用率以及吞吐。我们在不同模型大小和加速器配置下，把 Ring Attention 与若干基线比较，包括原始 Transformer [37]、使用内存高效注意力的 Transformer [30]，以及同时使用内存高效注意力和前馈的 Transformer [23]。"
+      },
+      {
+        "text": "We evaluate maximum supported context length using fully sharded tensor parallelsim (FSDP) [11] which is widely used in prior end-to-end training [36, 12]. We note that no tensor parallelism is considered in our evaluations since our approach is independent of tensor parallelism. Practitioners can combine our method with tensor parallelism, which we will show in Section 5.2. Using FSDP allows us to set the same batch size in tokens for baselines and our approach, ensuring a fair comparison. Concretely, on n devices, FSDP is used to shard the model for baselines, which gives a sequence length of l. The total batch size in tokens is nl. We utilize FSDP along with Ring Attention to extend the sequence length to",
+        "x": 107.5,
+        "y": 93.8,
+        "w": 396.6,
+        "h": 87.3,
+        "zh": "我们用全分片数据并行（FSDP）[11] 来评估所能支持的最大上下文长度。这种做法广泛用于先前的端到端训练 [36, 12]。评估中不考虑张量并行，因为本方法与张量并行相互独立。实际使用时可以把本方法与张量并行结合起来，第 5.2 节会说明。使用 FSDP 可以让基线和本方法采用相同的、以 token 计的 batch size，从而公平比较。具体而言，在 n 台设备上，基线用 FSDP 切分模型，得到序列长度 l。以 token 计的总 batch size 为 nl。我们把 FSDP 与 Ring Attention 一起使用，把序列长度扩展到"
+      },
+      {
+        "text": "and m sequences. This means that the total batch size in tokens remains the same, but Ring Attention enables a significantly larger context size. Table 3 summarizes the results of our experiments.",
+        "x": 108,
+        "y": 72,
+        "w": 396,
+        "h": 31.8,
+        "zh": "以及 m 条序列。这意味着以 token 计的总 batch size 保持不变，但 Ring Attention 能够支持大得多的上下文。表 3 汇总了实验结果。"
+      }
+    ],
+    "7": [
+      {
+        "text": "Table 3: The maximum context length supported in end-to-end training using fully sharded data parallelism and various transformers architectures. We show different model sizes and accelerators. Baselines are vanilla transformer [37], transformer with memory efficient attention [30], and transformer with memory efficient attention and feedforward [23]. The context size is reported in tokens (1e3). Our Ring Attention substantially outperforms baselines and enables training sequences that are up to device count times longer than prior state-of-the-arts.",
+        "x": 107.7,
+        "y": 658.7,
+        "w": 398.1,
+        "h": 64.5,
+        "zh": "表 3：在全分片数据并行以及不同 Transformer 架构下，端到端训练所能支持的最大上下文长度。表中给出不同的模型大小和加速器。基线为原始 Transformer [37]、使用内存高效注意力的 Transformer [30]，以及同时使用内存高效注意力和前馈的 Transformer [23]。上下文大小以 token 计（1e3）。我们的 Ring Attention 明显超过这些基线，能够训练的序列最长可以达到以往最好结果的设备数倍。"
+      },
+      {
+        "text": "Our Ring Attention model consistently surpasses baselines, delivering superior scalability across diverse hardware setups. For example, with 32 A100 GPUs, we achieve over 1 million tokens in context size for 7B model, a 32 times improvement over previous best. Furthermore, when utilizing larger accelerators like TPUv4-512, Ring Attention enables a 256 times increase in context size, allows training sequences of over 30 million tokens. Furthermore, our Ring Attention model scales linearly with the number of devices, as demonstrated by the 8x improvement over previous best on 8 A100 and the 256x improvement on TPUv3-512. If a model can be trained with context size s on n GPUs using the blockwise attention and feedforward, with our Ring Attention approach, it becomes possible to train a model with a context size of ns.",
+        "x": 107.6,
+        "y": 253.8,
+        "w": 397.6,
+        "h": 97.2,
+        "zh": "Ring Attention 在各种硬件上都稳定超过基线，可扩展性更好。例如在 32 块 A100 上，7B 模型的上下文超过 100 万 token，是以往最好结果的 32 倍。在更大的加速器上，例如 TPUv4-512，Ring Attention 使上下文变为原来的 256 倍，可以训练超过 3000 万 token 的序列。而且 Ring Attention 随设备数量线性扩展：在 8 块 A100 上是以往最好结果的 8 倍，在 TPUv3-512 上是 256 倍。如果一个模型使用分块注意力和前馈，能够在 n 块 GPU 上以上下文大小 s 进行训练，那么使用 Ring Attention 之后，就可以把上下文大小训练到 ns。"
+      },
+      {
+        "text": "We evaluate the model flops utilization (MFU) of Ring Attention in standard training settings using fully sharded data parallelism(FSDP) [11] and tensor parallelism following LLaMA and OpenLLaMA [36, 12] with Jax SPMD. The batch size in tokens are 2M on 8/32x A100 and 4M on TPUv4-256. Our goal is investigating the impact of model size and context length on MFU, a critical performance metrics while highlighting the benefits of our approach. Table 5.1 presents the results of our experiments on MFU for different model sizes and context lengths. We present the achieved MFU using state-of-the-art memory efficient transformers BPT [23], compare it to our anticipated MFU based on these results, and demonstrate the actual MFU obtained with our approach (Ring Attention). For fair comparison, both BPT and our approach are based on the same BPT implementation on both",
+        "x": 107.5,
+        "y": 121.1,
+        "w": 398.2,
+        "h": 97.2,
+        "zh": "我们在常规训练设置下评估 Ring Attention 的模型 FLOPs 利用率（MFU），使用全分片数据并行（FSDP）[11]，以及遵循 LLaMA 和 OpenLLaMA [36, 12]、基于 Jax SPMD 的张量并行。以 token 计的 batch size 在 8/32 块 A100 上为 2M，在 TPUv4-256 上为 4M。我们要考察模型大小和上下文长度对 MFU 的影响。MFU 是一项关键性能指标，同时也用来体现本方法的好处。表 5.1 给出不同模型大小和上下文长度下的 MFU。我们列出目前最好的内存高效 Transformer，即 BPT [23]，所达到的 MFU，据此给出预期的 MFU，并给出本方法（Ring Attention）实际得到的 MFU。为了公平比较，BPT 和本方法都基于同一套 BPT 实现，并且都在两种"
+      },
+      {
+        "text": "Ring Attention trains much longer context sizes for self-attention, resulting in higher self-attention FLOPs compared to baseline models. Since self-attention has a lower MFU than feedforward, Ring Attention is expected to have a lower MFU than the baseline models. Our method offers a clear",
+        "x": 107.6,
+        "y": 72,
+        "w": 396.5,
+        "h": 31.8,
+        "zh": "Ring Attention 为自注意力训练长得多的上下文，因此自注意力的 FLOPs 高于基线模型。由于自注意力的 MFU 低于前馈网络，Ring Attention 的 MFU 预期会低于基线模型。我们的方法提供了一个明确的"
+      }
+    ],
+    "8": [
+      {
+        "text": "Table 4: Model flops utilization (MFU) with different training configurations: model sizes, compute, and context lengths. Ring Attention enables training large models (7B-65B) on large input context",
+        "x": 107.7,
+        "y": 702.3,
+        "w": 397.6,
+        "h": 20.9,
+        "zh": "表 4：不同训练配置下的模型 FLOPs 利用率（MFU），配置包括模型大小、计算设备和上下文长度。Ring Attention 能够训练大模型（7B–65B），所用的输入上下文"
+      },
+      {
+        "text": "sizes (over 4M) with negligible overheads.",
+        "x": 108,
+        "y": 691.4,
+        "w": 169.7,
+        "h": 10,
+        "zh": "规模超过 4M，开销可以忽略。"
+      },
+      {
+        "text": "advantage in terms of maintaining MFU while enabling training with significantly longer context lengths. As shown in Table 5.1, when comparing our approach to prior state-of-the-arts, it is evident that we can train very large context models without compromising MFU or throughput.",
+        "x": 108,
+        "y": 382.6,
+        "w": 396,
+        "h": 31.8,
+        "zh": "优势在于：把上下文加到长得多的时候，仍然能够维持 MFU。如表 5.1 所示，与以往最好结果相比，我们可以训练上下文非常长的模型，而不牺牲 MFU 或吞吐。"
+      },
+      {
+        "text": "We present results of applying Ring Attention for learning trial-and-error RL experience using Transformers. We report our results in Table 5, where we evaluate our proposed model on the ExoRL benchmark across six different tasks. On ExoRL, we report the cumulative return, as per ExoRL [39]. We compare BC, DT [4], AT [22], and AT with memory efficient attention [30] (AT+ME), AT with blockwise parallel transformers [23] (AT+BPT), and AT with our Ring Attention (AT+Ring Attention). The numbers of BC, DT, AT are from the ExoRL and AT paper. AT + Ring Attention numbers are run by ourselves. Since the ExoRL data is highly diverse, having been collected using unsupervised RL [19], it has been found that TD learning performs best, while behavior cloning struggles [39]. AT [22] shows that conditioning Transformer on multiple trajectories with relabeled target return can achieve competitive results with TD learning. For more details, please refer to their papers. We are interested in applying Ring Attention to improve the performance of AT by conditioning on a larger",
+        "x": 107.5,
+        "y": 230.3,
+        "w": 398.2,
+        "h": 119.1,
+        "zh": "我们给出把 Ring Attention 用于让 Transformer 学习试错式强化学习经验的结果，见表 5。我们在 ExoRL 基准的六个任务上评估所提出的模型。在 ExoRL 上报告累积回报，口径与 ExoRL [39] 一致。比较对象包括 BC、DT [4]、AT [22]、使用内存高效注意力的 AT [30]（AT+ME）、使用分块并行 Transformer 的 AT [23]（AT+BPT），以及使用我们的 Ring Attention 的 AT（AT+Ring Attention）。BC、DT、AT 的数字来自 ExoRL 和 AT 的论文。AT + Ring Attention 的数字是我们自己运行得到的。ExoRL 的数据差异很大，由无监督强化学习采集而来 [19]，已有研究发现 TD 学习表现最好，而行为克隆很吃力 [39]。AT [22] 表明，把 Transformer 的条件设为多条轨迹，并重标注目标回报，可以达到与 TD 学习相当的结果。细节请参见他们的论文。我们希望用 Ring Attention 提高 AT 的表现，做法是把条件设在更大的"
+      },
+      {
+        "text": "Table 5: Application of Ring Attention on improving Transformer in RL. BC and DT use vanilla attention. AT + ME denotes using memory efficient attention, AT + BPT denotes using blockwise",
+        "x": 107.7,
+        "y": 198.8,
+        "w": 396.3,
+        "h": 20.9,
+        "zh": "表 5：用 Ring Attention 改进强化学习中的 Transformer。BC 和 DT 使用原始注意力。AT + ME 表示使用内存高效注意力，AT + BPT 表示使用分块"
+      },
+      {
+        "text": "parallel transformer. AT + RA denotes using Ring Attention.",
+        "x": 108,
+        "y": 187.9,
+        "w": 242,
+        "h": 10,
+        "zh": "并行 Transformer。AT + RA 表示使用 Ring Attention。"
+      }
+    ],
+    "9": [
+      {
+        "text": "number of trajectories rather than 32 trajectories in prior works. It is worth noting that each trajectory has 1000 × 4 length where 1000 is sequence length while 4 is return-state-action-reward, making training 128 trajectories with modest 350M size model infeasible for prior state-of-the-art blockwise parallel transformers. Results in Table 5 show that, by scaling up the sequence length (number of trajectories), AT + Ring Attention consistently outperforms oringal AT with BPT across all six tasks, achieving a total average return of 113.66 compared to the AT with BPT model’s total average return of 111.13. The results show that the advantage of Ring Attention for training and inference with long",
+        "x": 108,
+        "y": 500.5,
+        "w": 397.2,
+        "h": 75.4,
+        "zh": "轨迹条数上，而不是先前工作中的 32 条轨迹。需要注意，每条轨迹的长度是 1000 × 4，其中 1000 是序列长度，4 对应回报–状态–动作–奖励。因此，即使用规模不大的 350M 模型去训练 128 条轨迹，以往最好的分块并行 Transformer 也做不到。表 5 的结果表明，把序列长度（即轨迹条数）加大之后，AT + Ring Attention 在全部六个任务上都稳定超过原来带 BPT 的 AT，总平均回报达到 113.66，而带 BPT 的 AT 的总平均回报为 111.13。这些结果表明，Ring Attention 在用长序列做训练和推理时的优势"
+      },
+      {
+        "text": "We evaluate Ring Attention by applying our method to finetune LLaMA model to longer context. In this experiment, while our approach enables training with millions of context tokens, we conducted finetuning on the LLaMA-13B model, limiting the context length to 512K tokens due to constraints on our cloud compute budget. This finetuning was carried out on 32 A100 GPUs, using the ShareGPT dataset, following methodologies as outlined in prior works [6, 13]. We then evaluated our finetuned model on the line retrieval test [20]. In this test, the model needs to precisely retrieve a number from a long document, the task can effectively capture the abilities of text generation, retrieval, and information association at long context, reflected by the retrieving accuracy. Figure 3 presents the accuracy results for different models across varying context lengths (measured in tokens). Notably, our model, Ring Attention-13B-512K, stands out as it maintains high accuracy levels even with long contexts. GPT3.5-turbo-16K, Vicuna-16B-16K, and Claude-2-100K demonstrate competitive accuracy within short context lengths. However, they cannot handle extended context lengths.",
+        "x": 107.5,
+        "y": 326.5,
+        "w": 397.7,
+        "h": 130,
+        "zh": "我们把本方法用于把 LLaMA 微调到更长的上下文，以此来评估 Ring Attention。虽然本方法能够以数百万上下文 token 进行训练，但受云上计算预算限制，这次只在 LLaMA-13B 上把上下文长度微调到 512K token。微调在 32 块 A100 上进行，使用 ShareGPT 数据集，做法遵循先前工作 [6, 13]。随后在行检索测试 [20] 上评估微调后的模型。这项测试要求模型从一个长文档中精确取出一个数字，检索准确率能够反映长上下文下的文本生成、检索和信息关联能力。图 3 给出不同模型在不同上下文长度（以 token 计）上的准确率。值得注意的是，我们的模型 Ring Attention-13B-512K 即使在长上下文下仍保持很高的准确率。GPT3.5-turbo-16K、Vicuna-16B-16K 和 Claude-2-100K 在较短的上下文里准确率也有竞争力，但它们无法处理更长的上下文。"
+      },
+      {
+        "text": "Transformers have garnered significant attention in the field of AI and have become the backbone for numerous state-of-the-art models. Several works have explored memory-efficient techniques to address the memory limitations of Transformers and enable their application to a wider range of problems. Computing exact self-attention in a blockwise manner using the tiling technique [24] has led to the development of memory efficient attention mechanisms [30] and its efficient CUDA implementation [9], and blockwise parallel transformer [23] that proposes computing both feedforward and self-attention block-by-block, resulting in a significant reduction in memory requirements. In line with these advancements, our work falls into the category of memory efficient computation for Transformers. Other works have investigated the approximation of attention mechanisms, yet these efforts have often yielded sub-optimal results or encountered challenges during scaling up. For an in-depth review of these techniques, we recommend referring to the surveys [26, 35]. Another avenue of research explores various parallelism methods, including data parallelism [10], tensor parallelism [34], pipeline parallelism [27, 15, 28], sequence parallelism [21, 18, 17], and FSDP [11, 31]. The activations of self-attention take a substantial amount of memory for large context models. Tensor parallelism can only reduce parts of activations memory and sequence parallelism introduces a significant communication overhead that cannot be fully overlapped with computation. Prior work has studied sharding along sequence and attention heads, and gathering sequences via an optimized all-to-all topology, achieving reduced communication [17]. However, this method is restricted by the number of attention heads and requires gathering the full sequence on each device. In comparison, our approach fully overlaps communication with blockwise computation, enhancing its scalability. Prior",
+        "x": 107.6,
+        "y": 72,
+        "w": 398.1,
+        "h": 217.2,
+        "zh": "Transformer 在 AI 领域受到广泛关注，并成为许多最先进模型的骨干。已有不少工作研究内存高效技术，以应对 Transformer 的内存限制，使它能够用到更广的问题上。用分块技术精确计算自注意力 [24]，发展出了内存高效注意力机制 [30] 及其高效 CUDA 实现 [9]，以及分块并行 Transformer [23]。后者提出把前馈和自注意力都逐块计算，从而显著降低内存需求。顺着这些进展，我们的工作属于 Transformer 的内存高效计算。另一些工作研究注意力机制的近似，但这些尝试往往结果不够好，或者在扩大规模时遇到困难。这些技术的详细综述见 [26, 35]。另一条研究路线探索各种并行方法，包括数据并行 [10]、张量并行 [34]、流水线并行 [27, 15, 28]、序列并行 [21, 18, 17] 以及 FSDP [11, 31]。对大上下文模型来说，自注意力的激活占用大量内存。张量并行只能减少一部分激活内存，序列并行则会带来无法被计算完全盖住的大量通信开销。先前工作研究过沿序列和注意力头进行切分，再通过优化过的 all-to-all 拓扑把序列收集起来，从而减少通信 [17]。不过这种方法受注意力头数量的限制，而且每台设备上都要把完整序列收集齐。相比之下，我们的方法把通信与分块计算完全重叠，可扩展性更好。先前"
+      }
+    ],
+    "10": [
+      {
+        "text": "work extends sequence parallelism for computing self-attention using a ring topology [21], which reduces the communication cost compared to standard sequence parallelism. However, overlapping communication with computation remains challenging due to the constraints of arithmetic intensity. The communication overheads render this approach infeasible for training and inference in largecontext scenarios. Our work leverages on blockwise parallel transformers to distribute blockwise attention and feedforward across devices and concurrently overlaps the communication of key-value blocks in a circular of hosts with the computation of query-key-value blocks and feedforward, reducing memory cost substantially and allowing device count times larger context size with zero overheads. Overlapping communication with computation has been studied in high performance computing literature [7, 38, 8, inter alia]. While ring communication has found applications in other parallel computing scenarios [2, 16, 14, 33], our work stands out as the first work to show that it can be applied to self-attention as used in Transformers and to make it fit efficiently into Transformer training and inference without adding significant overhead by overlapping blockwise computation",
+        "x": 107.6,
+        "y": 579.1,
+        "w": 398.1,
+        "h": 140.9,
+        "zh": "工作用环形拓扑扩展了序列并行，用来计算自注意力 [21]，相对标准序列并行降低了通信开销。但由于算术强度的限制，通信仍然很难与计算重叠。这些通信开销使该方法无法用于大上下文场景下的训练和推理。我们依托分块并行 Transformer，把分块注意力和前馈分布到各设备上，并让 key-value 块在主机环上的通信，与 query-key-value 块及前馈的计算同时重叠，从而大幅降低内存开销，并能以零开销把上下文做到设备数倍。通信与计算的重叠在高性能计算文献中已有研究 [7, 38, 8，以及其他工作]。环形通信也用在其他并行计算场景中 [2, 16, 14, 33]，而我们的工作首次表明，它可以用于 Transformer 中的自注意力，并且通过与分块计算重叠，能够高效地纳入 Transformer 的训练和推理，而不增加显著开销。"
+      },
+      {
+        "text": "In conclusion, we propose a memory efficient approach to reduce the memory requirements of Transformers, the backbone of state-of-the-art AI models. Our approach allows the context length to scale linearly with the number of devices while maintaining performance, eliminating the memory bottleneck imposed by individual devices. Through extensive experiments on language modeling and reinforcement learning, we demonstrate its effectiveness, enabling training sequences that are up to device count times longer than those of prior memory-efficient Transformers, exceeding a context length of 100 million without making approximations to attention. In terms of future prospects, the possibility of near-infinite context introduces a vast array of exciting opportunities, such as large video-audio-language models, learning from extended feedback and trial-and-errors, understanding and generating codebase, adapting AI models to understand scientific data such as gene sequences, and developing strong reasoning from link gathering data.",
+        "x": 107.7,
+        "y": 411.5,
+        "w": 397.6,
+        "h": 119.1,
+        "zh": "总之，我们提出一种内存高效的方法，用来降低 Transformer 的内存需求。Transformer 是目前最先进 AI 模型的骨干。本方法使上下文长度在保持性能的同时随设备数量线性增长，从而消除单台设备造成的内存瓶颈。通过语言建模和强化学习上的大量实验，我们说明了它的有效性：能够训练的序列最长可以达到以往内存高效 Transformer 的设备数倍，上下文长度超过 1 亿，而且不对注意力做近似。就今后的前景而言，近乎无限的上下文带来一大批值得探索的机会，例如大型视频–音频–语言模型、从拉长的反馈和反复试错中学习、理解并生成代码库、让 AI 模型理解基因序列这类科学数据，以及从链接汇集的数据中发展出强推理。"
+      },
+      {
+        "text": "This project is supported in part by Office of Naval Research grant N00014-21-1-2769. We express our gratitude to the BAIR and RLL communities for their insightful discussions and feedback. We are also thankful to David Patterson for addressing our questions about TPUs and giving insightful feedback on early versions of this work. Our appreciation goes out to Yash Katariya and Sharad Vikram from the Jax developers’ team for assisting with our Jax related questions. We also thank Tri Dao for the valuable feedback on this work. We thank Google TPU Research Cloud for granting us",
+        "x": 107.6,
+        "y": 309.4,
+        "w": 396.4,
+        "h": 64.5,
+        "zh": "本项目部分得到海军研究办公室资助，批准号 N00014-21-1-2769。感谢 BAIR 和 RLL 社区的讨论与反馈。也感谢 David Patterson 解答我们关于 TPU 的问题，并对这项工作的早期版本给出有见地的意见。感谢 Jax 开发团队的 Yash Katariya 和 Sharad Vikram 帮助解答与 Jax 有关的问题。也感谢 Tri Dao 对这项工作提出的宝贵反馈。感谢 Google TPU Research Cloud 向我们提供"
+      },
+      {
+        "text": "[2] Christian Bischof. Parallel computing: Architectures, algorithms, and applications, volume 15.",
+        "x": 113,
+        "y": 216.9,
+        "w": 392.8,
+        "h": 10,
+        "zh": "[2] Christian Bischof。并行计算：体系结构、算法与应用，第 15 卷。"
+      },
+      {
+        "text": "[3] Tom Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared D Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, et al. Language models are few-shot learners. Advances in neural information processing systems, 33:1877–1901, 2020.",
+        "x": 113,
+        "y": 161.4,
+        "w": 392.3,
+        "h": 31.8,
+        "zh": "[3] Tom Brown、Benjamin Mann、Nick Ryder、Melanie Subbiah、Jared D Kaplan、Prafulla Dhariwal、Arvind Neelakantan、Pranav Shyam、Girish Sastry、Amanda Askell 等。语言模型是少样本学习者。Advances in Neural Information Processing Systems，33:1877–1901，2020。"
+      },
+      {
+        "text": "[4] Lili Chen, Kevin Lu, Aravind Rajeswaran, Kimin Lee, Aditya Grover, Misha Laskin, Pieter Abbeel, Aravind Srinivas, and Igor Mordatch. Decision transformer: Reinforcement learning via sequence modeling. Advances in neural information processing systems, 34:15084–15097,",
+        "x": 113,
+        "y": 116.7,
+        "w": 392.3,
+        "h": 31.8,
+        "zh": "[4] Lili Chen、Kevin Lu、Aravind Rajeswaran、Kimin Lee、Aditya Grover、Misha Laskin、Pieter Abbeel、Aravind Srinivas 与 Igor Mordatch。Decision Transformer：经由序列建模做强化学习。Advances in Neural Information Processing Systems，34:15084–15097，"
+      },
+      {
+        "text": "[5] Tianqi Chen, Bing Xu, Chiyuan Zhang, and Carlos Guestrin. Training deep nets with sublinear memory cost. arXiv preprint arXiv:1604.06174, 2016.",
+        "x": 113,
+        "y": 72,
+        "w": 391.2,
+        "h": 20.9,
+        "zh": "[5] Tianqi Chen、Bing Xu、Chiyuan Zhang 与 Carlos Guestrin。以亚线性内存开销训练深度网络。arXiv 预印本 arXiv:1604.06174，2016。"
+      }
+    ],
+    "11": [
+      {
+        "text": "[6] Wei-Lin Chiang, Zhuohan Li, Zi Lin, Ying Sheng, Zhanghao Wu, Hao Zhang, Lianmin Zheng, Siyuan Zhuang, Yonghao Zhuang, Joseph E Gonzalez, et al. Vicuna: An open-source chatbot impressing gpt-4 with 90%* chatgpt quality. See https://vicuna.lmsys.org, 2023.",
+        "x": 113,
+        "y": 688.2,
+        "w": 392.3,
+        "h": 31.8,
+        "zh": "[6] Wei-Lin Chiang、Zhuohan Li、Zi Lin、Ying Sheng、Zhanghao Wu、Hao Zhang、Lianmin Zheng、Siyuan Zhuang、Yonghao Zhuang、Joseph E Gonzalez 等。Vicuna：一个开源聊天机器人，以 90%* 的 ChatGPT 质量给 GPT-4 留下深刻印象。见 https://vicuna.lmsys.org，2023。"
+      },
+      {
+        "text": "[7] Anthony Danalis, Ki-Yong Kim, Lori Pollock, and Martin Swany. Transformations to parallel codes for communication-computation overlap. In SC’05: Proceedings of the 2005 ACM/IEEE conference on Supercomputing, pages 58–58. IEEE, 2005.",
+        "x": 113,
+        "y": 647.1,
+        "w": 391,
+        "h": 31.8,
+        "zh": "[7] Anthony Danalis、Ki-Yong Kim、Lori Pollock 与 Martin Swany。面向通信与计算重叠的并行代码变换。载于 SC’05：2005 ACM/IEEE Supercomputing 会议论文集，第 58–58 页。IEEE，2005。"
+      },
+      {
+        "text": "[8] Anthony Danalis, Lori Pollock, Martin Swany, and John Cavazos. Mpi-aware compiler optimizations for improving communication-computation overlap. In Proceedings of the 23rd international conference on Supercomputing, pages 316–325, 2009.",
+        "x": 113,
+        "y": 606.1,
+        "w": 392.7,
+        "h": 31.8,
+        "zh": "[8] Anthony Danalis、Lori Pollock、Martin Swany 与 John Cavazos。为改善通信与计算重叠而做的、感知 MPI 的编译优化。载于第 23 届国际 Supercomputing 会议论文集，第 316–325 页，2009。"
+      },
+      {
+        "text": "[9] Tri Dao, Dan Fu, Stefano Ermon, Atri Rudra, and Christopher Ré. Flashattention: Fast and memory-efficient exact attention with io-awareness. Advances in Neural Information Processing Systems, 35:16344–16359, 2022.",
+        "x": 113,
+        "y": 565,
+        "w": 391,
+        "h": 31.8,
+        "zh": "[9] Tri Dao、Dan Fu、Stefano Ermon、Atri Rudra 与 Christopher Ré。FlashAttention：具备 IO 意识的快速且内存高效的精确注意力。Advances in Neural Information Processing Systems，35:16344–16359，2022。"
+      },
+      {
+        "text": "[10] Jeffrey Dean, Greg Corrado, Rajat Monga, Kai Chen, Matthieu Devin, Mark Mao, Marc’aurelio Ranzato, Andrew Senior, Paul Tucker, Ke Yang, et al. Large scale distributed deep networks. Advances in neural information processing systems, 25, 2012.",
+        "x": 108,
+        "y": 523.9,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "[10] Jeffrey Dean、Greg Corrado、Rajat Monga、Kai Chen、Matthieu Devin、Mark Mao、Marc’aurelio Ranzato、Andrew Senior、Paul Tucker、Ke Yang 等。大规模分布式深度网络。Advances in Neural Information Processing Systems，25，2012。"
+      },
+      {
+        "text": "[11] Facebook. Fully Sharded Data Parallel: faster AI training with fewer GPUs — engineering.fb.com. https://engineering.fb.com/2021/07/15/open-source/fsdp/, 2023.",
+        "x": 108,
+        "y": 493.7,
+        "w": 397.6,
+        "h": 20.9,
+        "zh": "[11] Facebook。Fully Sharded Data Parallel：用更少的 GPU 更快地训练 AI — engineering.fb.com。https://engineering.fb.com/2021/07/15/open-source/fsdp/，2023。"
+      },
+      {
+        "text": "[12] Xinyang Geng and Hao Liu. Openllama: An open reproduction of llama, may 2023. URL https://github. com/openlm-research/open_llama, 2023.",
+        "x": 108,
+        "y": 463.6,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[12] Xinyang Geng 与 Hao Liu。OpenLLaMA：对 LLaMA 的一次开源复现，2023 年 5 月。URL https://github.com/openlm-research/open_llama，2023。"
+      },
+      {
+        "text": "[13] Xinyang Geng, Arnav Gudibande, Hao Liu, Eric Wallace, Pieter Abbeel, Sergey Levine, and Dawn Song. Koala: A dialogue model for academic research. Blog post, April, 1, 2023.",
+        "x": 108,
+        "y": 433.4,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[13] Xinyang Geng、Arnav Gudibande、Hao Liu、Eric Wallace、Pieter Abbeel、Sergey Levine 与 Dawn Song。Koala：面向学术研究的对话模型。博客文章，2023 年 4 月 1 日。"
+      },
+      {
+        "text": "[14] Andrew Gibiansky. Bringing hpc techniques to deep learning. Baidu Research, Tech. Rep.,",
+        "x": 108,
+        "y": 414.1,
+        "w": 397.2,
+        "h": 10,
+        "zh": "[14] Andrew Gibiansky。把高性能计算的技术带入深度学习。Baidu Research，技术报告，"
+      },
+      {
+        "text": "[15] Yanping Huang, Youlong Cheng, Ankur Bapna, Orhan Firat, Dehao Chen, Mia Chen, HyoukJoong Lee, Jiquan Ngiam, Quoc V Le, Yonghui Wu, et al. Gpipe: Efficient training of giant neural networks using pipeline parallelism. Advances in neural information processing systems,",
+        "x": 108,
+        "y": 362.1,
+        "w": 397.6,
+        "h": 31.8,
+        "zh": "[15] Yanping Huang、Youlong Cheng、Ankur Bapna、Orhan Firat、Dehao Chen、Mia Chen、HyoukJoong Lee、Jiquan Ngiam、Quoc V Le、Yonghui Wu 等。GPipe：用流水线并行高效训练巨型神经网络。Advances in Neural Information Processing Systems，"
+      },
+      {
+        "text": "[16] Joshua Hursey and Richard L Graham. Building a fault tolerant mpi application: A ring communication example. In 2011 IEEE International Symposium on Parallel and Distributed Processing Workshops and Phd Forum, pages 1549–1556. IEEE, 2011.",
+        "x": 108,
+        "y": 310.1,
+        "w": 396,
+        "h": 31.8,
+        "zh": "[16] Joshua Hursey 与 Richard L Graham。构建容错的 MPI 应用：一个环形通信的例子。载于 2011 IEEE International Symposium on Parallel and Distributed Processing Workshops and Phd Forum，第 1549–1556 页。IEEE，2011。"
+      },
+      {
+        "text": "[17] Sam Ade Jacobs, Masahiro Tanaka, Chengming Zhang, Minjia Zhang, Leon Song, Samyam Rajbhandari, and Yuxiong He. Deepspeed ulysses: System optimizations for enabling training of extreme long sequence transformer models. arXiv preprint arXiv:2309.14509, 2023.",
+        "x": 108,
+        "y": 269.1,
+        "w": 396,
+        "h": 31.8,
+        "zh": "[17] Sam Ade Jacobs、Masahiro Tanaka、Chengming Zhang、Minjia Zhang、Leon Song、Samyam Rajbhandari 与 Yuxiong He。DeepSpeed Ulysses：为训练极长序列的 Transformer 模型而做的系统优化。arXiv 预印本 arXiv:2309.14509，2023。"
+      },
+      {
+        "text": "[18] Vijay Korthikanti, Jared Casper, Sangkug Lym, Lawrence McAfee, Michael Andersch, Mohammad Shoeybi, and Bryan Catanzaro. Reducing activation recomputation in large transformer models. arXiv preprint arXiv:2205.05198, 2022.",
+        "x": 108,
+        "y": 228,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "[18] Vijay Korthikanti、Jared Casper、Sangkug Lym、Lawrence McAfee、Michael Andersch、Mohammad Shoeybi 与 Bryan Catanzaro。减少大型 Transformer 模型中的激活重计算。arXiv 预印本 arXiv:2205.05198，2022。"
+      },
+      {
+        "text": "[19] Michael Laskin, Denis Yarats, Hao Liu, Kimin Lee, Albert Zhan, Kevin Lu, Catherine Cang, Lerrel Pinto, and Pieter Abbeel. Urlb: Unsupervised reinforcement learning benchmark. arXiv preprint arXiv:2110.15191, 2021.",
+        "x": 108,
+        "y": 186.9,
+        "w": 397.2,
+        "h": 31.8,
+        "zh": "[19] Michael Laskin、Denis Yarats、Hao Liu、Kimin Lee、Albert Zhan、Kevin Lu、Catherine Cang、Lerrel Pinto 与 Pieter Abbeel。URLB：无监督强化学习基准。arXiv 预印本 arXiv:2110.15191，2021。"
+      },
+      {
+        "text": "[20] Dacheng Li, Rulin Shao, Anze Xie, Ying Sheng, Lianmin Zheng, Joseph E. Gonzalez, Ion Stoica, Xuezhe Ma, and Hao Zhang. How long can open-source llms truly promise on context length?, June 2023. URL https://lmsys.org/blog/2023-06-29-longchat.",
+        "x": 108,
+        "y": 145.8,
+        "w": 396,
+        "h": 31.8,
+        "zh": "[20] Dacheng Li、Rulin Shao、Anze Xie、Ying Sheng、Lianmin Zheng、Joseph E. Gonzalez、Ion Stoica、Xuezhe Ma 与 Hao Zhang。开源 LLM 所承诺的上下文长度，究竟能有多长？2023 年 6 月。URL https://lmsys.org/blog/2023-06-29-longchat。"
+      },
+      {
+        "text": "[21] Shenggui Li, Fuzhao Xue, Chaitanya Baranwal, Yongbin Li, and Yang You. Sequence parallelism: Long sequence training from system perspective. In Anna Rogers, Jordan Boyd-Graber, and Naoaki Okazaki, editors, Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), pages 2391–2404, Toronto, Canada, July 2023. Association for Computational Linguistics. doi: 10.18653/v1/2023.acl-long.134. URL https://aclanthology.org/2023.acl-long.134.",
+        "x": 108,
+        "y": 72,
+        "w": 397.6,
+        "h": 64.5,
+        "zh": "[21] Shenggui Li、Fuzhao Xue、Chaitanya Baranwal、Yongbin Li 与 Yang You。序列并行：从系统角度看长序列训练。载于 Anna Rogers、Jordan Boyd-Graber 与 Naoaki Okazaki 编，第 61 届计算语言学协会年会论文集（第 1 卷：长文），第 2391–2404 页，加拿大多伦多，2023 年 7 月。Association for Computational Linguistics。doi: 10.18653/v1/2023.acl-long.134。URL https://aclanthology.org/2023.acl-long.134。"
+      }
+    ],
+    "12": [
+      {
+        "text": "[22] Hao Liu and Pieter Abbeel. Emergent agentic transformer from chain of hindsight experience. International Conference on Machine Learning, 2023.",
+        "x": 108,
+        "y": 699.1,
+        "w": 397.7,
+        "h": 20.9,
+        "zh": "[22] Hao Liu 与 Pieter Abbeel。从后见之明链的经验中涌现的智能体式 Transformer。International Conference on Machine Learning，2023。"
+      },
+      {
+        "text": "[23] Hao Liu and Pieter Abbeel. Blockwise parallel transformer for large context models. Advances in neural information processing systems, 2023.",
+        "x": 108,
+        "y": 666.8,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[23] Hao Liu 与 Pieter Abbeel。面向大上下文模型的分块并行 Transformer。Advances in Neural Information Processing Systems，2023。"
+      },
+      {
+        "text": "[24] Maxim Milakov and Natalia Gimelshein. Online normalizer calculation for softmax. arXiv preprint arXiv:1805.02867, 2018.",
+        "x": 108,
+        "y": 634.4,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[24] Maxim Milakov 与 Natalia Gimelshein。softmax 的在线归一化计算。arXiv 预印本 arXiv:1805.02867，2018。"
+      },
+      {
+        "text": "[25] MosaicML. Introducing mpt-7b: A new standard for open-source, commercially usable llms, 2023. URL https://www.mosaicml.com/blog/mpt-7b.",
+        "x": 108,
+        "y": 602.1,
+        "w": 397.2,
+        "h": 20.9,
+        "zh": "[25] MosaicML。介绍 MPT-7B：开源且可商用 LLM 的一项新标准，2023。URL https://www.mosaicml.com/blog/mpt-7b。"
+      },
+      {
+        "text": "[26] Sharan Narang, Hyung Won Chung, Yi Tay, William Fedus, Thibault Fevry, Michael Matena, Karishma Malkan, Noah Fiedel, Noam Shazeer, Zhenzhong Lan, et al. Do transformer modifications transfer across implementations and applications? arXiv preprint arXiv:2102.11972,",
+        "x": 108,
+        "y": 558.8,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "[26] Sharan Narang、Hyung Won Chung、Yi Tay、William Fedus、Thibault Fevry、Michael Matena、Karishma Malkan、Noah Fiedel、Noam Shazeer、Zhenzhong Lan 等。对 Transformer 的改动能否跨实现、跨应用迁移？arXiv 预印本 arXiv:2102.11972，"
+      },
+      {
+        "text": "[27] Deepak Narayanan, Aaron Harlap, Amar Phanishayee, Vivek Seshadri, Nikhil R Devanur, Gregory R Ganger, Phillip B Gibbons, and Matei Zaharia. Pipedream: Generalized pipeline parallelism for dnn training. In Proceedings of the 27th ACM Symposium on Operating Systems Principles, pages 1–15, 2019.",
+        "x": 108,
+        "y": 493.7,
+        "w": 397.2,
+        "h": 42.7,
+        "zh": "[27] Deepak Narayanan、Aaron Harlap、Amar Phanishayee、Vivek Seshadri、Nikhil R Devanur、Gregory R Ganger、Phillip B Gibbons 与 Matei Zaharia。PipeDream：面向 DNN 训练的广义流水线并行。载于第 27 届 ACM Symposium on Operating Systems Principles 论文集，第 1–15 页，2019。"
+      },
+      {
+        "text": "[28] Deepak Narayanan, Amar Phanishayee, Kaiyu Shi, Xie Chen, and Matei Zaharia. Memoryefficient pipeline-parallel dnn training. In International Conference on Machine Learning, pages 7937–7947. PMLR, 2021.",
+        "x": 108,
+        "y": 450.5,
+        "w": 397.6,
+        "h": 31.8,
+        "zh": "[28] Deepak Narayanan、Amar Phanishayee、Kaiyu Shi、Xie Chen 与 Matei Zaharia。内存高效的流水线并行 DNN 训练。载于 International Conference on Machine Learning，第 7937–7947 页。PMLR，2021。"
+      },
+      {
+        "text": "[29] OpenAI. Gpt-4 technical report, 2023.",
+        "x": 108,
+        "y": 429,
+        "w": 175.1,
+        "h": 10,
+        "zh": "[29] OpenAI。GPT-4 技术报告，2023。"
+      },
+      {
+        "text": "[30] Markus N Rabe and Charles Staats. Self-attention does not need o(n2) memory. arXiv preprint arXiv:2112.05682, 2021.",
+        "x": 108,
+        "y": 396.7,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[30] Markus N Rabe 与 Charles Staats。自注意力不需要 O(n²) 的内存。arXiv 预印本 arXiv:2112.05682，2021。"
+      },
+      {
+        "text": "[31] Samyam Rajbhandari, Jeff Rasley, Olatunji Ruwase, and Yuxiong He. Zero: Memory optimizations toward training trillion parameter models. In SC20: International Conference for High Performance Computing, Networking, Storage and Analysis, pages 1–16. IEEE, 2020.",
+        "x": 108,
+        "y": 353.4,
+        "w": 397.6,
+        "h": 31.8,
+        "zh": "[31] Samyam Rajbhandari、Jeff Rasley、Olatunji Ruwase 与 Yuxiong He。ZeRO：面向万亿参数模型训练的内存优化。载于 SC20：International Conference for High Performance Computing, Networking, Storage and Analysis，第 1–16 页。IEEE，2020。"
+      },
+      {
+        "text": "[32] J. Schulman, B. Zoph, C. Kim, J. Hilton, J. Menick, J. Weng, J. F. C. Uribe, L. Fedus, L. Metz, M. Pokorny, R. G. Lopes, S. Zhao, A. Vijayvergiya, E. Sigler, A. Perelman, C. Voss, M. Heaton, J. Parish, D. Cummings, R. Nayak, V. Balcom, D. Schnurr, T. Kaftan, C. Hallacy, N. Turley, N. Deutsch, and V. Goel. Chatgpt: Optimizing language models for dialogue. OpenAI Blog, 2022. URL https://openai.com/blog/chatgpt.",
+        "x": 108,
+        "y": 288.3,
+        "w": 397.2,
+        "h": 53.6,
+        "zh": "[32] J. Schulman、B. Zoph、C. Kim、J. Hilton、J. Menick、J. Weng、J. F. C. Uribe、L. Fedus、L. Metz、M. Pokorny、R. G. Lopes、S. Zhao、A. Vijayvergiya、E. Sigler、A. Perelman、C. Voss、M. Heaton、J. Parish、D. Cummings、R. Nayak、V. Balcom、D. Schnurr、T. Kaftan、C. Hallacy、N. Turley、N. Deutsch 与 V. Goel。ChatGPT：为对话优化语言模型。OpenAI Blog，2022。URL https://openai.com/blog/chatgpt。"
+      },
+      {
+        "text": "[33] Alexander Sergeev and Mike Del Balso. Horovod: fast and easy distributed deep learning in tensorflow. arXiv preprint arXiv:1802.05799, 2018.",
+        "x": 108,
+        "y": 256,
+        "w": 396,
+        "h": 20.9,
+        "zh": "[33] Alexander Sergeev 与 Mike Del Balso。Horovod：在 TensorFlow 中又快又简单地做分布式深度学习。arXiv 预印本 arXiv:1802.05799，2018。"
+      },
+      {
+        "text": "[34] Mohammad Shoeybi, Mostofa Patwary, Raul Puri, Patrick LeGresley, Jared Casper, and Bryan Catanzaro. Megatron-lm: Training multi-billion parameter language models using model parallelism. arXiv preprint arXiv:1909.08053, 2019.",
+        "x": 108,
+        "y": 212.7,
+        "w": 396,
+        "h": 31.8,
+        "zh": "[34] Mohammad Shoeybi、Mostofa Patwary、Raul Puri、Patrick LeGresley、Jared Casper 与 Bryan Catanzaro。Megatron-LM：用模型并行训练数十亿参数的语言模型。arXiv 预印本 arXiv:1909.08053，2019。"
+      },
+      {
+        "text": "[35] Yi Tay, Mostafa Dehghani, Samira Abnar, Hyung Won Chung, William Fedus, Jinfeng Rao, Sharan Narang, Vinh Q Tran, Dani Yogatama, and Donald Metzler. Scaling laws vs model architectures: How does inductive bias influence scaling? arXiv preprint arXiv:2207.10551,",
+        "x": 108,
+        "y": 169.4,
+        "w": 397.2,
+        "h": 31.8,
+        "zh": "[35] Yi Tay、Mostafa Dehghani、Samira Abnar、Hyung Won Chung、William Fedus、Jinfeng Rao、Sharan Narang、Vinh Q Tran、Dani Yogatama 与 Donald Metzler。缩放定律与模型架构：归纳偏置如何影响缩放？arXiv 预印本 arXiv:2207.10551，"
+      },
+      {
+        "text": "[36] Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier Martinet, Marie-Anne Lachaux, Timothée Lacroix, Baptiste Rozière, Naman Goyal, Eric Hambro, Faisal Azhar, et al. Llama: Open and efficient foundation language models. arXiv preprint arXiv:2302.13971, 2023.",
+        "x": 108,
+        "y": 115.3,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "[36] Hugo Touvron、Thibaut Lavril、Gautier Izacard、Xavier Martinet、Marie-Anne Lachaux、Timothée Lacroix、Baptiste Rozière、Naman Goyal、Eric Hambro、Faisal Azhar 等。LLaMA：开放且高效的基础语言模型。arXiv 预印本 arXiv:2302.13971，2023。"
+      },
+      {
+        "text": "[37] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin. Attention is all you need. Advances in neural information processing systems, 30, 2017.",
+        "x": 108,
+        "y": 72,
+        "w": 397.2,
+        "h": 31.8,
+        "zh": "[37] Ashish Vaswani、Noam Shazeer、Niki Parmar、Jakob Uszkoreit、Llion Jones、Aidan N Gomez、Łukasz Kaiser 与 Illia Polosukhin。注意力就是你所需要的一切。Advances in Neural Information Processing Systems，30，2017。"
+      }
+    ],
+    "13": [
+      {
+        "text": "[38] Shibo Wang, Jinliang Wei, Amit Sabne, Andy Davis, Berkin Ilbeyi, Blake Hechtman, Dehao Chen, Karthik Srinivasa Murthy, Marcello Maggioni, Qiao Zhang, et al. Overlap communication with dependent computation via decomposition in large deep learning models. In Proceedings of the 28th ACM International Conference on Architectural Support for Programming Languages and Operating Systems, Volume 1, pages 93–106, 2022.",
+        "x": 108,
+        "y": 666.4,
+        "w": 396,
+        "h": 53.6,
+        "zh": "[38] Shibo Wang、Jinliang Wei、Amit Sabne、Andy Davis、Berkin Ilbeyi、Blake Hechtman、Dehao Chen、Karthik Srinivasa Murthy、Marcello Maggioni、Qiao Zhang 等。在大型深度学习模型中，通过分解使通信与存在依赖的计算重叠。载于第 28 届 ACM International Conference on Architectural Support for Programming Languages and Operating Systems 论文集，第 1 卷，第 93–106 页，2022。"
+      },
+      {
+        "text": "[39] Denis Yarats, David Brandfonbrener, Hao Liu, Michael Laskin, Pieter Abbeel, Alessandro Lazaric, and Lerrel Pinto. Don’t change the algorithm, change the data: Exploratory data for offline reinforcement learning. arXiv preprint arXiv:2201.13425, 2022.",
+        "x": 108,
+        "y": 625.7,
+        "w": 396.2,
+        "h": 31.8,
+        "zh": "[39] Denis Yarats、David Brandfonbrener、Hao Liu、Michael Laskin、Pieter Abbeel、Alessandro Lazaric 与 Lerrel Pinto。别改算法，改数据：用于离线强化学习的探索性数据。arXiv 预印本 arXiv:2201.13425，2022。"
+      }
+    ],
+    "14": [
+      {
+        "text": "The implementation of Ring Attention in Jax is provided in Figure 4. We use defvjp function to define both the forward and backward passes, and use collective operation jax.lax.ppermute to facilitate the exchange of key-value blocks among a ring of hosts. The provided code snippet highlights essential components of Ring Attention. We provide the complete code of our Ring Attention at https://github.com/lhao499/llm_large_context. For large scale end-to-end training on TPU or on GPU cluster with high bandwidth inter connection, we recommend using FSDP to shard large models and using Ring Attention to achieve large context. If total batch size is too large, add tensor parallelism to reduce the global batch size. The degree of parallelism can be adjusted using the mesh_dim parameter within the codebase. To illustrate, consider a setup with 512 devices, such as 512x A100. If the model size is 30B, you can shard it across 8 devices and allocate the remaining 32 devices for Ring Attention. This setup allows the context size to be expanded 32 times more than if you didn’t use Ring Attention. Conversely, for models sized 7B or 3B, there is no need for FSDP. This means you can utilize all 512 devices exclusively to expand the context using Ring Attention by 512 times. Building upon the result that our approach allows for a 256K context size when using 8x A100 GPUs, it suggests that by employing 512 A100 GPUs, the",
+        "x": 107.6,
+        "y": 529.9,
+        "w": 398.1,
+        "h": 168.2,
+        "zh": "Ring Attention 的 Jax 实现见图 4。我们用 defvjp 同时定义前向和反向，并用集合操作 jax.lax.ppermute 在主机环上交换 key-value 块。给出的代码片段标出了 Ring Attention 的关键部分。完整代码见 https://github.com/lhao499/llm_large_context。在 TPU 上，或在具有高带宽互联的 GPU 集群上做大规模端到端训练时，建议用 FSDP 切分大模型，再用 Ring Attention 获得大上下文。如果总 batch size 太大，就加上张量并行来减小全局 batch size。并行度可以在代码库中用 mesh_dim 参数调整。举例来说，考虑 512 台设备的配置，例如 512 块 A100。若模型大小为 30B，可以把它切分到 8 台设备上，把剩下的 32 台设备留给 Ring Attention。这样，上下文大小可以达到不用 Ring Attention 时的 32 倍。反过来，大小为 7B 或 3B 的模型不需要 FSDP。这意味着 512 台设备可以全部用来做 Ring Attention，把上下文扩大为原来的 512 倍。基于本方法在 8 块 A100 GPU 上能够达到 256K 上下文这一结果，若使用 512 块 A100，则"
+      },
+      {
+        "text": "potential context size can be expanded to 16 million.",
+        "x": 108,
+        "y": 519,
+        "w": 209.7,
+        "h": 10,
+        "zh": "潜在的上下文大小可以扩大到 1600 万。"
+      },
+      {
+        "text": "In the experimental results presented in Section 5.1, we used fully sharded tensor parallelism (FSDP) to partition the model across GPUs or TPU devices. Our evaluation focused on determining the maximum achievable sequence length in commonly used FSDP training scenarios. For TPUs, we utilized its default training configuration, which involved performing matmul operations in bfloat16 format with weight accumulation in float32. On the other hand, for GPUs, we adopted the default",
+        "x": 108,
+        "y": 408,
+        "w": 396.7,
+        "h": 53.6,
+        "zh": "在第 5.1 节给出的实验结果中，我们使用全分片数据并行（FSDP）把模型划分到 GPU 或 TPU 设备上。评估关注的是，在常用的 FSDP 训练场景下，序列最长能够达到多少。对 TPU，我们使用其默认训练配置：矩阵乘法使用 bfloat16，权重累加使用 float32。对 GPU，我们则采用默认"
+      },
+      {
+        "text": "setup, where all operations were performed in float32.",
+        "x": 108,
+        "y": 397.1,
+        "w": 224.5,
+        "h": 10,
+        "zh": "设置，全部操作都在 float32 下进行。"
+      },
+      {
+        "text": "In the evaluation presented in Section 5.2. The batch size in tokens is 2 million per batch on GPU and 4 million per batch on TPU. The training was conducted using FSDP [11] with Jax SPMD. For gradient checkpointing [5], we used nothing_saveable as checkpointing policies for attention and feedforward network (FFN). For more details, please refer to Jax documentation.",
+        "x": 108,
+        "y": 322.8,
+        "w": 396.2,
+        "h": 42.7,
+        "zh": "第 5.2 节的评估中，以 token 计的 batch size 在 GPU 上为每批 200 万，在 TPU 上为每批 400 万。训练使用 FSDP [11] 与 Jax SPMD。梯度检查点 [5] 方面，注意力和前馈网络（FFN）的检查点策略都使用 nothing_saveable。更多细节见 Jax 文档。"
+      },
+      {
+        "text": "In the evaluation presented in Section 5.4, we finetuned the LLaMA-13B model [36], limiting context length to 512K tokens due to constraints on our cloud compute budget, the training was conducted on 32x A100 80GB Cloud GPUs. We use user-shared conversations gathered from ShareGPT.com with its public APIs for finetuning, following methodologies as outlined in prior works [6, 13]. ShareGPT is a website where users can share their ChatGPT conversations. To ensure data quality, we convert the HTML back to markdown and filter out some inappropriate or low-quality samples, which results",
+        "x": 108,
+        "y": 226.7,
+        "w": 396.3,
+        "h": 64.5,
+        "zh": "第 5.4 节的评估中，我们微调了 LLaMA-13B 模型 [36]。受云上计算预算限制，上下文长度限制为 512K token。训练在 32 块 A100 80GB 云 GPU 上进行。我们使用 ShareGPT.com 公开 API 收集的用户分享对话进行微调，做法遵循先前工作 [6, 13]。ShareGPT 是一个供用户分享自己 ChatGPT 对话的网站。为保证数据质量，我们把 HTML 转回 markdown，并滤掉一些不合适或质量较低的样本，从而得到"
+      },
+      {
+        "text": "in 125K conversations after data cleaning.",
+        "x": 108,
+        "y": 215.8,
+        "w": 167.7,
+        "h": 10,
+        "zh": "数据清洗之后的 125K 条对话。"
+      },
+      {
+        "text": "We provide the minimal sequence length required to overlap communication with computation during training in Table 2. Ring Attention enables effortless training of context size that scales linearly with the number of devices. While we focus on introducing training as it is more memory demanding than autoregressive inference where the number of query token is one, Ring Attention is applicable to inference too. For example, serving a LLaMa 7B on 32x TPUv5e, the conventional approach is to distribute the model along the attention heads dimension, with each device computing one attention head. Assuming a batch size of 1, this can serve up to a 256K context length due to key-value cache activation size. Ring Attention can allow 32 times larger context by circulating the key-value cache between a ring of devices. To overlap the communication with computation, it needs d2/F >= 2*d2/B, where B/F >=2. With a bandwidth of 186 GB/s and flops of 196 TFLOPs, and assuming an",
+        "x": 107.5,
+        "y": 72,
+        "w": 396.5,
+        "h": 108.1,
+        "zh": "表 2 给出了训练时为使通信与计算重叠所需的最小序列长度。Ring Attention 可以轻松训练随设备数量线性增长的上下文。我们着重介绍训练，是因为训练比自回归推理更消耗内存——自回归推理时 query token 的数量为 1——但 Ring Attention 同样适用于推理。例如，在 32 块 TPUv5e 上部署一个 LLaMa 7B，常规做法是沿注意力头这一维切分模型，每台设备计算一个注意力头。假设 batch size 为 1，受 key-value cache 的激活大小限制，这样最多能够服务 256K 的上下文长度。Ring Attention 可以让 key-value cache 在设备环上轮转，从而使上下文变为原来的 32 倍。要使通信与计算重叠，需要满足 d2/F >= 2*d2/B，即 B/F >= 2。在带宽为 186 GB/s、算力为 196 TFLOPs 的条件下，再假设一个"
+      }
+    ],
+    "15": [
+      {
+        "text": "def _ring_attention_fwd(q, k, v, attn_bias, axis_name, float32_logits, blockwise_kwargs):",
+        "x": 118,
+        "y": 713.8,
+        "w": 418.9,
+        "h": 9,
+        "zh": "定义前向函数 _ring_attention_fwd(q, k, v, attn_bias, axis_name, float32_logits, blockwise_kwargs)。"
+      },
+      {
+        "text": "q, k = q.astype(jnp.float32), k.astype(jnp.float32) batch, q_len, num_heads, dim_per_head = q.shape batch, kv_len, num_heads, dim_per_head = k.shape numerator = jnp.zeros((batch, q_len, num_heads, dim_per_head)).astype(q.dtype) denominator = jnp.zeros((batch, num_heads, q_len)).astype(q.dtype) axis_size = lax.psum(1, axis_name) block_size = q_len # assumes this function is pre-sharded inside shard_map query_chunk_size = blockwise_kwargs[\"query_chunk_size\"] key_chunk_size = blockwise_kwargs[\"key_chunk_size\"] def scan_kv_block(carry, idx): prev_max_score, numerator, denominator, k, v = carry attn_bias_slice = lax.dynamic_slice_in_dim(attn_bias,",
+        "x": 136.8,
+        "y": 584.3,
+        "w": 367.1,
+        "h": 118.6,
+        "zh": "把 q 和 k 都转成 jnp.float32。从 q.shape 读出 batch、q_len、num_heads、dim_per_head，再从 k.shape 读出 batch、kv_len、num_heads、dim_per_head。numerator 初始化为形状 (batch, q_len, num_heads, dim_per_head) 的全 0，数据类型与 q 相同；denominator 初始化为形状 (batch, num_heads, q_len) 的全 0，数据类型与 q 相同。axis_size 由 lax.psum(1, axis_name) 得到。block_size 取 q_len；注释说明，这里假定该函数已经在 shard_map 内部预先切分好。query_chunk_size 与 key_chunk_size 从 blockwise_kwargs 中取出。接着定义 scan_kv_block(carry, idx)：从 carry 中解开 prev_max_score、numerator、denominator、k、v，并用 lax.dynamic_slice_in_dim 从 attn_bias 中切出 attn_bias_slice，"
+      },
+      {
+        "text": "(lax.axis_index(axis_name) - idx) % axis_size * kv_len, kv_len, axis=-1) q_block_idx = lax.axis_index(axis_name) k_block_idx = (lax.axis_index(axis_name) - idx) % axis_size q_chunk_idx_start = q_block_idx * (block_size // query_chunk_size) k_chunk_idx_start = k_block_idx * (block_size // key_chunk_size) numerator, denominator, max_score = _blockwise_attention_fwd(q, k, v, (numerator, denominator, prev_max_score), q_chunk_idx_start, k_chunk_idx_start, bias=attn_bias_slice, **blockwise_kwargs) k, v = map(lambda x: lax.ppermute(x, axis_name, perm=[(i, (i + 1) % axis_size) for i in range(axis_size)]), (k, v)) return (max_score, numerator, denominator, k, v), None prev_max_score = jnp.full((batch, num_heads, q_len), -jnp.inf).astype(q.dtype) (max_score, numerator, denominator, _, _), _ = lax.scan(scan_kv_block, init=(prev_max_score, numerator, denominator, k, v), xs=jnp.arange(0, axis_size)) output = numerator / rearrange(denominator, 'b h q -> b q h')[..., None] return output.astype(v.dtype), (output, q, k, v, attn_bias, denominator, max_score)",
+        "x": 136.8,
+        "y": 424.9,
+        "w": 409.4,
+        "h": 158.4,
+        "zh": "切片起点为 (lax.axis_index(axis_name) - idx) % axis_size * kv_len，长度为 kv_len，轴为 -1。q_block_idx 取 lax.axis_index(axis_name)，k_block_idx 取 (lax.axis_index(axis_name) - idx) % axis_size。q_chunk_idx_start 等于 q_block_idx 乘以 (block_size // query_chunk_size)，k_chunk_idx_start 等于 k_block_idx 乘以 (block_size // key_chunk_size)。调用 _blockwise_attention_fwd，传入 q、k、v、当时的 (numerator, denominator, prev_max_score)、两个 chunk 起点、bias=attn_bias_slice 以及 blockwise_kwargs，得到更新后的 numerator、denominator 和 max_score。再用 lax.ppermute 把 k 和 v 沿 axis_name 送到环上的下一台，置换为每个 i 对应 (i, (i + 1) % axis_size)。scan_kv_block 返回 (max_score, numerator, denominator, k, v) 以及 None。prev_max_score 初始化为形状 (batch, num_heads, q_len)、取值为 -jnp.inf、数据类型与 q 相同的数组。随后用 lax.scan，以 (prev_max_score, numerator, denominator, k, v) 为初值，在 xs = jnp.arange(0, axis_size) 上扫描 scan_kv_block。output 等于 numerator 除以按 'b h q -> b q h' 重排后的 denominator。函数返回转成 v.dtype 的 output，以及 (output, q, k, v, attn_bias, denominator, max_score)。"
+      },
+      {
+        "text": "def _ring_attention_bwd(axis_name, float32_logits, blockwise_kwargs, res, g): output, q, k, v, attn_bias, denominator, max_score = res batch, kv_len, num_heads, dim_per_head = k.shape axis_size = lax.psum(1, axis_name) dq = jnp.zeros_like(q, dtype=jnp.float32) dk = jnp.zeros_like(k, dtype=jnp.float32) dv = jnp.zeros_like(v, dtype=jnp.float32) query_chunk_size = blockwise_kwargs[\"query_chunk_size\"] key_chunk_size = blockwise_kwargs[\"key_chunk_size\"] block_size = q.shape[1] # assumes this function is pre-sharded inside shard_map def scan_kv_block(carry, idx):",
+        "x": 118,
+        "y": 305.3,
+        "w": 390.6,
+        "h": 108.6,
+        "zh": "定义反向函数 _ring_attention_bwd(axis_name, float32_logits, blockwise_kwargs, res, g)。从 res 中解开 output、q、k、v、attn_bias、denominator、max_score。从 k.shape 读出 batch、kv_len、num_heads、dim_per_head。axis_size 由 lax.psum(1, axis_name) 得到。dq、dk、dv 分别初始化为与 q、k、v 同形状的全 0，数据类型为 jnp.float32。query_chunk_size 与 key_chunk_size 从 blockwise_kwargs 中取出。block_size 取 q.shape[1]；同样假定该函数已经在 shard_map 内部预先切分好。定义 scan_kv_block(carry, idx)："
+      },
+      {
+        "text": "dq, dk, dv, k, v = carry attn_bias_slice = lax.dynamic_slice_in_dim(attn_bias, (lax.axis_index(axis_name) - idx) % axis_size * kv_len, kv_len, axis=-1) q_block_idx = lax.axis_index(axis_name) k_block_idx = (lax.axis_index(axis_name) - idx) % axis_size q_chunk_idx_start = q_block_idx * (block_size // query_chunk_size) k_chunk_idx_start = k_block_idx * (block_size // key_chunk_size) dq, dk, dv = _blockwise_attention_bwd(q, k, v, g, (dq, dk, dv, output, denominator, max_score), q_chunk_idx_start, k_chunk_idx_start, bias=attn_bias_slice, **blockwise_kwargs) k, v, dk, dv = map(lambda x: lax.ppermute(x, axis_name, perm=[(i, (i + 1) % axis_size) for i in range(axis_size)]), (k, v, dk, dv)) return (dq, dk, dv, k, v), None (dq, dk, dv, k, v), _ = lax.scan(scan_kv_block, init=(dq, dk, dv, k, v), xs=jnp.arange(0, axis_size)) dq, dk, dv = dq.astype(q.dtype), dk.astype(k.dtype), dv.astype(v.dtype) return dq, dk, dv, None",
+        "x": 136.8,
+        "y": 155.9,
+        "w": 475.3,
+        "h": 148.4,
+        "zh": "从 carry 中解开 dq、dk、dv、k、v。用 lax.dynamic_slice_in_dim 切分 attn_bias，起点为 (lax.axis_index(axis_name) - idx) % axis_size * kv_len，长度为 kv_len，轴为 -1，得到 attn_bias_slice。q_block_idx 取 lax.axis_index(axis_name)，k_block_idx 取 (lax.axis_index(axis_name) - idx) % axis_size，并据此算出 q_chunk_idx_start 与 k_chunk_idx_start。调用 _blockwise_attention_bwd，传入 q、k、v、g、当时的 (dq, dk, dv, output, denominator, max_score)、两个 chunk 起点以及 bias=attn_bias_slice 和 blockwise_kwargs，得到更新后的 dq、dk、dv。再用 lax.ppermute 把 k、v、dk、dv 沿 axis_name 送到环上的下一台。返回 (dq, dk, dv, k, v) 以及 None。lax.scan 以 (dq, dk, dv, k, v) 为初值，在 jnp.arange(0, axis_size) 上扫描该函数。最后把 dq、dk、dv 分别转回 q、k、v 的数据类型并返回，第四个返回值为 None。"
+      },
+      {
+        "text": "@partial(jax.custom_vjp, nondiff_argnums=[4, 5, 6]) def ring_attention(q, k, v, attn_bias, axis_name, float32_logits, blockwise_kwargs): y, _ = _ring_attention_fwd(q, k, v, attn_bias, axis_name, float32_logits, blockwise_kwargs)",
+        "x": 118,
+        "y": 116,
+        "w": 447.1,
+        "h": 28.9,
+        "zh": "用 @partial(jax.custom_vjp, nondiff_argnums=[4, 5, 6]) 装饰 ring_attention(q, k, v, attn_bias, axis_name, float32_logits, blockwise_kwargs)。函数体内调用 _ring_attention_fwd，只取返回值中的 y。"
+      },
+      {
+        "text": "ring_attention.defvjp(_ring_attention_fwd, _ring_attention_bwd) Figure 4: Key parts of the implementation of Ring Attention in Jax. We use collective operation lax.ppermute to send and receive key value blocks between previous and next hosts.",
+        "x": 108,
+        "y": 57.3,
+        "w": 396,
+        "h": 37.8,
+        "zh": "ring_attention.defvjp(_ring_attention_fwd, _ring_attention_bwd)。图 4：Ring Attention 在 Jax 中实现的关键部分。我们使用集合操作 lax.ppermute，在前一台与后一台主机之间收发 key-value 块。"
+      }
+    ],
+    "16": [
+      {
+        "text": "unreasonably high MFU of 40% for this large context, then B/F = 2.4, meaning that Ring Attention allows 32 times larger context for inference without adding overheads.",
+        "x": 108,
+        "y": 699.1,
+        "w": 396,
+        "h": 20.9,
+        "zh": "对这么大的上下文来说高得不太合理的 40% MFU，则 B/F = 2.4。这意味着 Ring Attention 可以在推理时把上下文变为原来的 32 倍，而不增加开销。"
+      },
+      {
+        "text": "Given that our proposed approach unlocks the possibility of training with a context size exceeding 100 million tokens and allows for linear scaling of the context size based on the number of devices, it is essential to understand how the training FLOPs per dataset scale with the context size. While a larger context size results in a higher number of FLOPs, the increased ratio does not scale quadratically because the number of tokens remains fixed. We present these results in Figure 5, which showcases various model sizes and context lengths, representing different computational budgets. The figure shows the ratio of FLOPs for larger context lengths compared to the same model with a shorter 4K context size. We calculated the per sequence FLOPs using (24bsh + 4bs h)n where h is",
+        "x": 107.7,
+        "y": 577,
+        "w": 396.7,
+        "h": 86.3,
+        "zh": "既然本方法使超过 1 亿 token 的上下文训练成为可能，并允许上下文大小随设备数量线性增长，就有必要弄清每个数据集上的训练 FLOPs 如何随上下文大小变化。上下文更大时 FLOPs 会更多，但增加的比例并不会成平方增长，因为 token 的数量保持固定。这些结果见图 5，其中展示了不同的模型大小和上下文长度，对应不同的计算预算。图中给出的是更长上下文相对同一模型、较短的 4K 上下文的 FLOPs 之比。我们用 (24bsh + 4bs h)n 计算每条序列的 FLOPs，其中 h 是"
+      },
+      {
+        "text": "Figure 5: The per dataset trainig FLOPs cost ratio relative to a 4k context size, considering different model dimensions. On the x-axis, you’ll find the context length, where, for example, 32x(128k) denotes a context length of 128k, 32x the size of the same model’s 4k context length.",
+        "x": 108,
+        "y": 275.9,
+        "w": 396.7,
+        "h": 31.8,
+        "zh": "图 5：相对 4k 上下文大小，每个数据集的训练 FLOPs 开销比，并考虑不同的模型维度。横轴是上下文长度。例如，32x(128k) 表示上下文长度为 128k，即同一模型 4k 上下文长度的 32 倍。"
+      },
+      {
+        "text": "model hidden dimension, b is batch size, s is total sequence length, and n is number of layers. The per dataset FLOPs ratio is then given by ((24bs2h + 4bs2 h)/(24bs1h + 4bs1 h))/(s2/s1) = (6h + s2)/(6h + s1), where s2 and s1 are new and old context lengths. Model sizes and their hidden dimensions are as follows: LLaMA-7B (4096), LLaMA-13B (5140), LLaMA-33B (7168), LLaMA-65B (8192), GPT3-175B (12288), and 1TB (36864). These model configurations are from LLaMA [36] and GPT-3 [3] papers, except the 1TB model size and dimension were defined by us. As depicted in Figure 5, scaling up small models to a 1M context size results in approximately 20-40 times more FLOPs, and even more for 10M and 100M token context sizes. However, as the model sizes increase, the cost ratio decreases. For instance, scaling up the 170B model from 4K to 10M incurs 162.6x higher per dataset FLOPs, despite the context size being 3072 times longer.",
+        "x": 106.8,
+        "y": 149.7,
+        "w": 398.4,
+        "h": 113.6,
+        "zh": "模型的隐藏维度，b 是 batch size，s 是总序列长度，n 是层数。每个数据集的 FLOPs 之比于是写成 ((24bs2h + 4bs2 h)/(24bs1h + 4bs1 h))/(s2/s1) = (6h + s2)/(6h + s1)，其中 s2 和 s1 分别是新的和旧的上下文长度。模型大小及其隐藏维度如下：LLaMA-7B（4096）、LLaMA-13B（5140）、LLaMA-33B（7168）、LLaMA-65B（8192）、GPT3-175B（12288），以及 1TB（36864）。这些模型配置来自 LLaMA [36] 和 GPT-3 [3] 的论文，只有 1TB 的模型大小和维度是我们定义的。如图 5 所示，把小模型扩到 1M 的上下文，FLOPs 大约变为 20–40 倍；到 10M 和 100M token 的上下文时还会更高。不过，随着模型变大，这个开销比会下降。例如，把 170B 模型从 4K 扩到 10M，每个数据集的 FLOPs 变为原来的 162.6 倍，尽管上下文长度是原来的 3072 倍。"
+      }
+    ]
+  }
+}

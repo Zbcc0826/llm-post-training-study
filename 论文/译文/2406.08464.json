@@ -1,0 +1,2279 @@
+{
+  "id": "2406.08464",
+  "title": "2406.08464",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "MAGPIE: ALIGNMENT DATA SYNTHESIS FROM SCRATCH",
+        "x": 108.4,
+        "y": 698.8,
+        "w": 395.2,
+        "h": 16.8,
+        "zh": "MAGPIE：从零合成对齐数据"
+      },
+      {
+        "text": "Allen Institute for AI https://magpie-align.github.io/ https://hf.co/magpie-align",
+        "x": 125.4,
+        "y": 588.5,
+        "w": 211.2,
+        "h": 36.9,
+        "zh": "艾伦人工智能研究所（Allen Institute for AI） https://magpie-align.github.io/ https://hf.co/magpie-align"
+      },
+      {
+        "text": "High-quality instruction data is critical for aligning large language models (LLMs). Although some models, such as Llama-3-Instruct, have open weights, their alignment data remain private, which hinders the democratization of AI. High human labor costs and a limited, predefined scope for prompting prevent existing opensource data creation methods from scaling effectively, potentially limiting the diversity and quality of public alignment datasets. Is it possible to synthesize high-quality instruction data at scale by extracting it directly from an aligned LLM? We present a self-synthesis method for generating large-scale alignment data named MAGPIE. Our key observation is that aligned LLMs like Llama-3-Instruct can generate a user query when we input only the pre-query templates up to the position reserved for user messages, thanks to their auto-regressive nature. We use this method to prompt Llama-3-Instruct and generate 4 million instructions along with their corresponding responses. We further introduce extensions of MAGPIE for filtering, generating multi-turn, preference optimization, domain-specific and multilingual datasets. We perform a comprehensive analysis of the MAGPIEgenerated data. To compare MAGPIE-generated data with other public instruction datasets (e.g., ShareGPT, WildChat, Evol-Instruct, UltraChat, OpenHermes, TuluV2-Mix, GenQA), we fine-tune Llama-3-8B-Base with each dataset and evaluate the performance of the fine-tuned models. Our results indicate that using MAGPIE for supervised fine-tuning (SFT) solely can surpass the performance of previous public datasets utilized for both SFT and preference optimization, such as direct preference optimization with UltraFeedback. We also show that in some tasks, models supervised fine-tuned with MAGPIE perform comparably to the official Llama-3-8B-Instruct, despite the latter being enhanced with 10 million data points through SFT and subsequent preference optimization. This advantage is evident on alignment benchmarks such as AlpacaEval, ArenaHard, and WildBench.",
+        "x": 143.5,
+        "y": 268.8,
+        "w": 326.4,
+        "h": 283.9,
+        "zh": "高质量指令数据对对齐大语言模型（LLM）至关重要。尽管 Llama-3-Instruct 等模型公开了权重，它们的对齐数据仍然不公开，这妨碍了人工智能的普及。高昂的人力成本，以及提示范围有限且预先划定，使现有开源数据构建方法难以有效扩展，从而可能限制公开对齐数据集的多样性与质量。能否直接从已对齐的 LLM 中抽取数据，大规模合成高质量指令数据？我们提出一种自合成方法，用于生成大规模对齐数据，名为 MAGPIE。关键观察是：由于自回归特性，像 Llama-3-Instruct 这样的已对齐 LLM，在只输入查询前模板、直到预留给用户消息的位置时，就能生成一条用户查询。我们用这一方法提示 Llama-3-Instruct，生成了 400 万条指令及其对应回复。我们还进一步给出 MAGPIE 的扩展，用于过滤、生成多轮对话、偏好优化、领域专用以及多语言数据集。我们对 MAGPIE 生成的数据做了全面分析。为把 MAGPIE 生成的数据与其他公开指令数据集（例如 ShareGPT、WildChat、Evol-Instruct、UltraChat、OpenHermes、TuluV2-Mix、GenQA）相比较，我们用每个数据集微调 Llama-3-8B-Base，并评估微调后模型的表现。结果表明，仅用 MAGPIE 做监督微调（SFT），就能超过以往那些同时用于 SFT 和偏好优化的公开数据集，例如配合 UltraFeedback 的直接偏好优化。我们还表明，在部分任务上，用 MAGPIE 做监督微调的模型，表现与官方 Llama-3-8B-Instruct 相当，尽管后者经过 1000 万条数据的 SFT 及随后的偏好优化。这一优势在 AlpacaEval、ArenaHard 和 WildBench 等对齐基准上都很明显。"
+      },
+      {
+        "text": "Large language models (LLMs) such as GPT-4 (Achiam et al., 2023) and Llama-3 (Meta, 2024) have become integral to AI applications due to their exceptional performance on a wide array of tasks by following instructions. The success of LLMs is heavily reliant on the data used for instruction fine-tuning, which equips them to handle a diverse range of tasks, including those not encountered during training. The effectiveness of instruction tuning depends crucially on access to high-quality instruction datasets. However, the alignment datasets used for fine-tuning models like Llama-3-Instruct are typically private, even when the model weights are open, which impedes the democratization of AI and limits scientific research for understanding and enhancing LLM alignment. To address the challenges in constructing high-quality instruction datasets, researchers have developed two main approaches. The first type of method involves human effort to generate and curate instruction data (Databricks, 2023; Köpf et al., 2023; Zhao et al., 2024; Zheng et al., 2024; 2023), which is both time-consuming and labor-intensive (Liu et al., 2024a). In contrast, the second type of methods uses LLMs to produce synthetic instructions (Ding et al., 2023; Yin et al., 2023; Li et al., 2024a; Sun et al., 2023; Taori et al., 2023; Wang et al., 2023; 2024c; Xu et al., 2023a;b; Li et al., 2023a).",
+        "x": 107.7,
+        "y": 62.1,
+        "w": 398.1,
+        "h": 158.4,
+        "zh": "以 GPT-4（Achiam et al., 2023）和 Llama-3（Meta, 2024）为代表的大语言模型，凭借在广泛任务上遵循指令的出色表现，已成为人工智能应用的重要组成部分。LLM 的成功在很大程度上依赖于指令微调所用的数据，这些数据使模型能够处理多种多样的任务，包括训练时未曾见过的任务。指令微调是否有效，关键取决于能否获得高质量指令数据集。然而，用于微调 Llama-3-Instruct 这类模型的对齐数据集通常并不公开，即便模型权重已经开放，这阻碍了人工智能的普及，也限制了人们为理解和改进 LLM 对齐而开展的科学研究。为应对构建高质量指令数据集的困难，研究者发展出两类主要方法。第一类依靠人力生成并整理指令数据（Databricks, 2023; Köpf et al., 2023; Zhao et al., 2024; Zheng et al., 2024; 2023），既耗时又费力（Liu et al., 2024a）。相比之下，第二类方法使用 LLM 来产生合成指令（Ding et al., 2023; Yin et al., 2023; Li et al., 2024a; Sun et al., 2023; Taori et al., 2023; Wang et al., 2023; 2024c; Xu et al., 2023a;b; Li et al., 2023a）。"
+      }
+    ],
+    "2": [
+      {
+        "text": "Figure 1: This figure illustrates MAGPIE, the process of self-synthesizing alignment data from aligned LLMs (e.g., Llama-3-8B-Instruct) to create a high-quality instruction dataset. In Step 1, we input only the pre-query template into the aligned LLM and generate an instruction along with its response using auto-regressive generation. In Step 2, we use a combination of a post-query template and another pre-query template to wrap the instruction generated from Step 1, prompting the LLM to generate the response. This completes the construction of the instruction dataset. MAGPIE efficiently generates diverse and high-quality instruction data, which can be further extended to multi-turn (MAGPIE-MT), preference optimization (MAGPIE-DPO), domain-specific, and multilingual datasets.",
+        "x": 108,
+        "y": 487.5,
+        "w": 397.2,
+        "h": 86.7,
+        "zh": "图 1：本图说明 MAGPIE，即从已对齐的 LLM（例如 Llama-3-8B-Instruct）自合成对齐数据、从而构建高质量指令数据集的过程。步骤 1 中，我们只把查询前模板输入已对齐的 LLM，并利用自回归生成得到一条指令及其回复。步骤 2 中，我们用查询后模板与另一段查询前模板的组合，把步骤 1 生成的指令包起来，再提示 LLM 生成回复。至此，指令数据集构建完成。MAGPIE 能高效生成多样且高质量的指令数据，并可进一步扩展为多轮（MAGPIE-MT）、偏好优化（MAGPIE-DPO）、领域专用以及多语言数据集。"
+      },
+      {
+        "text": "Although these methods reduce human effort, its success heavily depends on prompt engineering and the careful selection of initial seed questions. The diversity of synthetic data tends to decrease as the dataset size grows. Despite ongoing efforts, the scalable creation of high-quality and diverse instruction datasets continues to be a challenging problem. Is it possible to synthesize high-quality instructions at scale by directly extracting data from advanced aligned LLMs? A typical input to an aligned LLM contains three key components: the pre-query template, the query, and the post-query template. For instance, an input to Llama-2-chat could be “[INST] Hi! [/INST]”, where [INST] is the pre-query template and [/INST] is the post-query template. These templates are predefined by the creators of the aligned LLMs to ensure the correct prompting of the models. We observe that when we only input the pre-query template to aligned LLMs such as Llama-3-Instruct, they self-synthesize a user query due to their auto-regressive nature. Our experiments indicate that these random user queries are of high quality and great diversity, suggesting that the abilities learned during the alignment process are effectively utilized. Based on these findings, we developed a self-synthesis method to construct high-quality instruction datasets at scale, named MAGPIE (as illustrated in Figure 1). Unlike existing methods, our approach does not rely on prompt engineering or seed questions. Instead, it directly constructs instruction data by prompting aligned LLMs with a pre-query template for sampling instructions. We also demonstrated the extensibility of MAGPIE in generating multi-turn, preference optimization, domainspecific, and multilingual datasets. We applied MAGPIE to the Llama-3-8B-Instruct and Llama-3- 70B-Instruct models, creating two instruction datasets: MAGPIE-Air and MAGPIE-Pro, respectively. Our MAGPIE-Air and MAGPIE-Pro datasets were created using 206 and 614 GPU hours, respectively, without any human intervention or API access to production LLMs like GPT-4. The statistics and advantages of MAGPIE datasets compared to existing ones are summarized in Table 4 in Appendix A. We perform a comprehensive analysis of these two datasets in Section 3, allowing practitioners to filter and select data instances for fine-tuning models according to their particular needs. To compare MAGPIE data with other public instruction datasets (e.g., ShareGPT (Chiang et al., 2023), WildChat (Zhao et al., 2024), Evol Instruct (Xu et al., 2023a), UltraChat (Ding et al., 2023), OpenHermes (Teknium, 2023a;b), GenQA (Chen et al., 2024), Tulu V2 Mix (Ivison et al., 2023)), we conducted supervised fine-tuning (SFT) of the Llama-3-8B-Base model with each dataset and assess the performance of the fine-tuned models on alignment benchmarks such as AlpacaEval 2 (Li et al., 2023b), Arena-Hard (Li et al., 2024b), and WildBench (Lin et al., 2024). Our results show that models supervised fine-tuned with MAGPIE achieve superior performance, even surpassing models that utilize both SFT and direct preference optimization (DPO) (Rafailov et al., 2023) with UltraFeedback (Cui et al., 2023). Notably, MAGPIE-aligned models outperform the official Llama-3-8B-Instruct model on AlpacaEval 2, despite the latter being fine-tuned with over 10 million data points for SFT and",
+        "x": 106.7,
+        "y": 62.1,
+        "w": 399.1,
+        "h": 406.5,
+        "zh": "这些方法虽然减少了人力，其成效仍严重依赖提示工程，以及对初始种子问题的仔细挑选。随着数据集规模增大，合成数据的多样性往往会下降。尽管已有不少努力，可扩展地构建高质量且多样的指令数据集，仍然是一个难题。能否直接从先进的已对齐 LLM 中抽取数据，从而大规模合成高质量指令？输入已对齐 LLM 的典型内容包含三个关键部分：查询前模板、查询，以及查询后模板。例如，输入 Llama-2-chat 的内容可以是 “[INST] Hi! [/INST]”，其中 [INST] 是查询前模板，[/INST] 是查询后模板。这些模板由已对齐 LLM 的构建者预先定义，以保证模型被正确提示。我们观察到，当只把查询前模板输入 Llama-3-Instruct 等已对齐 LLM 时，由于自回归特性，它们会自行合成一条用户查询。实验表明，这些随机用户查询质量高、多样性好，说明对齐过程中学到的能力被有效利用了。基于这些发现，我们开发了一种自合成方法，用以大规模构建高质量指令数据集，命名为 MAGPIE（如图 1 所示）。与现有方法不同，我们的做法不依赖提示工程或种子问题。它通过用查询前模板提示已对齐 LLM 来采样指令，从而直接构建指令数据。我们还展示了 MAGPIE 在生成多轮、偏好优化、领域专用以及多语言数据集方面的可扩展性。我们把 MAGPIE 用于 Llama-3-8B-Instruct 和 Llama-3-70B-Instruct，分别构建了两个指令数据集：MAGPIE-Air 与 MAGPIE-Pro。MAGPIE-Air 与 MAGPIE-Pro 的构建分别使用了 206 与 614 个 GPU 小时，无需人工干预，也不需要调用 GPT-4 这类生产级 LLM 的 API。MAGPIE 数据集相对现有数据集的统计与优势，汇总于附录 A 的表 4。我们在第 3 节对这两个数据集做全面分析，便于实践者按自身需求过滤并挑选样本来微调模型。为把 MAGPIE 数据与其他公开指令数据集（例如 ShareGPT（Chiang et al., 2023）、WildChat（Zhao et al., 2024）、Evol Instruct（Xu et al., 2023a）、UltraChat（Ding et al., 2023）、OpenHermes（Teknium, 2023a;b）、GenQA（Chen et al., 2024）、Tulu V2 Mix（Ivison et al., 2023））相比较，我们对 Llama-3-8B-Base 用每个数据集做了监督微调（SFT），并在 AlpacaEval 2（Li et al., 2023b）、Arena-Hard（Li et al., 2024b）和 WildBench（Lin et al., 2024）等对齐基准上评估微调后模型的表现。结果表明，用 MAGPIE 做监督微调的模型表现更优，甚至超过那些用 UltraFeedback（Cui et al., 2023）同时做 SFT 和直接偏好优化（DPO）（Rafailov et al., 2023）的模型。值得注意的是，MAGPIE 对齐的模型在 AlpacaEval 2 上超过官方 Llama-3-8B-Instruct，尽管后者使用超过 1000 万条数据做了 SFT 以及"
+      }
+    ],
+    "3": [
+      {
+        "text": "subsequent preference optimization. Not only does MAGPIE excel in SFT alone compared to prior public datasets, but also delivers the best results when combined with preference optimization methods such as DPO. By leveraging MAGPIE extensions to generate high-quality preference optimization datasets, MAGPIE-aligned Llama-3 models can even outperform GPT-4-Turbo(1106) on AlpacaEval 2. These findings show the exceptional quality of instruction data generated by MAGPIE, enabling it to outperform even the official, extensively optimized, and proprietary LLMs.",
+        "x": 108,
+        "y": 645.4,
+        "w": 396.2,
+        "h": 64.8,
+        "zh": "随后的偏好优化。MAGPIE 不仅在单独做 SFT 时优于以往的公开数据集，在与 DPO 等偏好优化方法结合时也能取得最好的结果。借助 MAGPIE 的扩展来生成高质量偏好优化数据集，MAGPIE 对齐的 Llama-3 模型甚至能在 AlpacaEval 2 上超过 GPT-4-Turbo(1106)。这些发现说明 MAGPIE 生成的指令数据质量极高，使其甚至能超过官方的、经过大量优化的专有 LLM。"
+      },
+      {
+        "text": "MAGPIE: A SCALABLE METHOD TO SYNTHESIZE ALIGNMENT DATA",
+        "x": 126.8,
+        "y": 616.7,
+        "w": 349.3,
+        "h": 12,
+        "zh": "MAGPIE：一种可扩展的对齐数据合成方法"
+      },
+      {
+        "text": "Chat Templates of Aligned LLMs. For an aligned LLM (e.g., Llama-3-8B-Instruct), the input sequence can be represented as x = Tpre−query ⊕ q ⊕ Tpost−query. Here, q is the user query (e.g., \"What material should I use to build a nest?\"), while Tpre−query and Tpost−query are pre-query and post-query templates. The pre-query template shows up before the user query, and the post-query template is defined as the conversation template between the user query and the LLM response. These templates are defined by the model provider to ensure the correct prompting. For example, for Llama- 3-8B-Insturct model, Tpre−query = <|start_header_id|>user<|end_header_id|>, and Tpost−query =<|eot_id|><|start_header_id|>assistant<|end_header_id|>.",
+        "x": 108,
+        "y": 515,
+        "w": 397.7,
+        "h": 88.2,
+        "zh": "已对齐 LLM 的对话模板。对一个已对齐的 LLM（例如 Llama-3-8B-Instruct），输入序列可以表示为 x = Tpre−query ⊕ q ⊕ Tpost−query。其中 q 是用户查询（例如 “What material should I use to build a nest?”），Tpre−query 与 Tpost−query 分别是查询前模板和查询后模板。查询前模板出现在用户查询之前，查询后模板定义为用户查询与 LLM 回复之间的对话模板。这些模板由模型提供方定义，以保证提示正确。例如，对 Llama-3-8B-Instruct 模型，Tpre−query = <|start_header_id|>user<|end_header_id|>，Tpost−query = <|eot_id|><|start_header_id|>assistant<|end_header_id|>。"
+      },
+      {
+        "text": "Overview of MAGPIE. In what follows, we describe our lightweight and effective method, MAGPIE, to synthesize alignment data from aligned LLMs. An instance of instruction data consists of at least one or multiple instruction-response pairs. Each pair specifies the roles of instruction provider (e.g., user) and follower (e.g., assistant), along with their instruction and response. As shown in Figure 1, MAGPIE consists of two steps: (1) instruction generation, and (2) response generation. The MAGPIE pipeline can be fully automated without any human intervention, and can be readily adapted for the generation of multi-turn, preference, and domain-specific datasets, as detailed in Section 2.2. We",
+        "x": 108,
+        "y": 405.4,
+        "w": 397.2,
+        "h": 75.7,
+        "zh": "MAGPIE 概述。下文介绍我们轻量而有效的方法 MAGPIE，用于从已对齐 LLM 合成对齐数据。一条指令数据至少包含一对或多对指令—回复。每一对都标明指令提出者（例如用户）和跟随者（例如助手）的角色，以及各自的指令和回复。如图 1 所示，MAGPIE 包含两步：（1）指令生成，（2）回复生成。MAGPIE 流程可以完全自动化，无需人工干预，并且可以方便地改用于生成多轮、偏好以及领域专用数据集，详见第 2.2 节。我们"
+      },
+      {
+        "text": "Step 1: Instruction Generation. The goal of this step is to generate an instruction for each instance of instruction data. Given an open-weight aligned LLM (e.g., Llama-3-70B-Instruct), MAGPIE crafts a pre-query template in the format of the predefined instruction template of the LLM. Note that the auto-regressive LLM has been fine-tuned using instruction data in the format of the pre-query template. Thus, the LLM autonomously generates an instruction when the pre-query template crafted by MAGPIE is given as an input. MAGPIE stops generating the instruction once the LLM produces an end-of-sequence token. Sending the crafted query to the LLM multiple times leads to a set of instructions. We note that compared with existing synthetic approaches (Ding et al., 2023; Li et al., 2024a; Taori et al., 2023; Wang et al., 2023; 2024c; Xu et al., 2023a;b), MAGPIE does not require specific prompt engineering techniques since the crafted query follows the format of the predefined instruction template. In addition, MAGPIE autonomously generates instructions without using any seed question, ensuring the diversity of generated instructions. Step 2: Response Generation. The goal of this step is to generate responses to the instructions obtained from Step 1. MAGPIE sends these instructions to the LLM to generate the corresponding responses. Combining the roles of instruction provider and follower, the instructions from Step 1, and the responses generated in Step 2 yields the instruction dataset. Applicability of MAGPIE on Different LLMs. MAGPIE can be readily deployed to state-of-the-art open-weight language models including but not limited to Llama-3 (Meta, 2024), Llama-3.1 (Dubey et al., 2024), Qwen2 (Yang et al., 2024), Gemma-2 (Team et al., 2024), and Phi-3 (Abdin et al., 2024). Please refer to Appendix A for detailed support and corresponding datasets. Remark. MAGPIE generates high-quality instructions even when the instruction loss is masked during alignment. We hypothesize that LLMs retain an implicit memorization of instruction distributions.",
+        "x": 107.6,
+        "y": 129.4,
+        "w": 398.1,
+        "h": 258,
+        "zh": "步骤 1：指令生成。这一步的目标是为每条指令数据生成一条指令。给定一个开放权重的已对齐 LLM（例如 Llama-3-70B-Instruct），MAGPIE 按该 LLM 预定义的指令模板格式构造查询前模板。需要注意，这个自回归 LLM 已经用查询前模板格式的指令数据做过微调。因此，当把 MAGPIE 构造的查询前模板作为输入时，LLM 会自主生成一条指令。一旦 LLM 产生序列结束标记，MAGPIE 就停止生成指令。把构造好的查询多次送入 LLM，就能得到一组指令。我们指出，与现有合成方法（Ding et al., 2023; Li et al., 2024a; Taori et al., 2023; Wang et al., 2023; 2024c; Xu et al., 2023a;b）相比，MAGPIE 不需要专门的提示工程，因为构造的查询遵循预定义指令模板的格式。此外，MAGPIE 自主生成指令，不使用任何种子问题，从而保证生成指令的多样性。步骤 2：回复生成。这一步的目标是为步骤 1 得到的指令生成回复。MAGPIE 把这些指令送入 LLM，生成对应回复。把指令提出者与跟随者的角色、步骤 1 的指令，以及步骤 2 生成的回复组合起来，就得到指令数据集。MAGPIE 在不同 LLM 上的适用性。MAGPIE 可以方便地部署到最先进的开放权重语言模型上，包括但不限于 Llama-3（Meta, 2024）、Llama-3.1（Dubey et al., 2024）、Qwen2（Yang et al., 2024）、Gemma-2（Team et al., 2024）和 Phi-3（Abdin et al., 2024）。详细支持情况及对应数据集见附录 A。备注。即便对齐时屏蔽了指令损失，MAGPIE 仍能生成高质量指令。我们猜想，LLM 保留了对指令分布的隐式记忆。"
+      },
+      {
+        "text": "We leave it as a potential future research problem.",
+        "x": 107.5,
+        "y": 118.4,
+        "w": 199.4,
+        "h": 10,
+        "zh": "我们把它留作未来可能的研究问题。"
+      },
+      {
+        "text": "Dataset Filtering. MAGPIE allows practitioners to select instruction data from the raw dataset generated from the above two steps based on their needs. In Appendix C, we explores potential filter",
+        "x": 108,
+        "y": 62.1,
+        "w": 396.2,
+        "h": 20.9,
+        "zh": "数据集过滤。MAGPIE 允许实践者根据自身需求，从上述两步生成的原始数据集中挑选指令数据。在附录 C 中，我们探讨了可能的过滤"
+      }
+    ],
+    "4": [
+      {
+        "text": "I need help with a complex calculus problem. I have no idea where to start. Problem: Use cylindrical coordinates to find the volume of the solid bounded by the surfaces z = 4x, z = x^2, and z = 0. Can you help me break down this problem",
+        "x": 383.1,
+        "y": 660.3,
+        "w": 114.7,
+        "h": 56.1,
+        "zh": "我需要帮助解决一道复杂的微积分题。我完全不知道从哪里下手。题目：用柱坐标求由曲面 z = 4x、z = x^2 和 z = 0 所围成的立体体积。你能帮我把这道题拆开来吗"
+      },
+      {
+        "text": "You are an AI assistant designed to provide helpful, step-by-step guidance on solvingmath problems. The user will ask you a wide range of complex mathematical questions. Your purpose is to assist users in understanding mathematical concepts, working through",
+        "x": 114.1,
+        "y": 677.3,
+        "w": 243.8,
+        "h": 22.6,
+        "zh": "你是一名人工智能助手，旨在为数学问题提供有帮助的逐步指导。用户会向你提出各种各样的复杂数学问题。你的目的是帮助用户理解数学概念，并逐步完成"
+      },
+      {
+        "text": "<|begin_of_text|><|start_header_id|>system<|end_header_id|> 你是⼀个⼈⼯智能助⼿，旨在为⽤户的中⽂问题提供准确、简洁的回答。<|eot_id|>",
+        "x": 114.4,
+        "y": 605.8,
+        "w": 227.4,
+        "h": 17.7,
+        "zh": "<|begin_of_text|><|start_header_id|>system<|end_header_id|> 你是一个人工智能助手，旨在为用户的中文问题提供准确、简洁的回答。<|eot_id|>"
+      },
+      {
+        "text": "Figure 2: This figure illustrates how to control generating math and Chinese instructions using system prompts. The system prompt in Chinese translates to: \"You are an AI assistant designed to provide accurate and concise answers to users’ questions in Chinese.\" The user’s response in Chinese translates to: \"I want to learn about some basic concepts and historical development trends of AI.\"",
+        "x": 108,
+        "y": 534.6,
+        "w": 396,
+        "h": 42.8,
+        "zh": "图 2：本图说明如何用系统提示控制数学指令和中文指令的生成。图中的中文系统提示意为：“你是一名人工智能助手，旨在为用户的中文问题提供准确、简洁的回答。”用户的中文内容意为：“我想了解人工智能的一些基本概念和历史发展趋势。”"
+      },
+      {
+        "text": "configurations with eight available metrics for users to customize their own MAGPIE datasets. We also provide 6 off-the-shelf filter configurations and discuss their performance in Appendix F.4. Generating Multi-Turn Instruction Datasets. MAGPIE can be readily extended to generate multiturn instruction datasets. To construct a multi-turn dataset (denoted as MAGPIE-MT), we initially follow Steps 1 and 2 to generate the first turn of instruction and response. For subsequent turns, we append the pre-query template to the end of the full prompt from the previous round of communication. We observe that the model may occasionally forget its role as the user, especially for the 8B model. To mitigate this, we employ a system prompt designed to control the behavior of the LLM and reinforce its awareness of the multi-round conversation context. The full prompt for building the instructions of MAGPIE-MT can be found in Figure 14 in Appendix G. We follow the procedure in Step 2 of Section 2.1 to generate responses to form the multi-turn instruction dataset. Generating Preference Optimization Datasets. Leveraging the diverse and high-quality instructions produced by MAGPIE, we present a simple and effective method for generating preference optimization data, inspired by Meng et al. (2024) and Tran et al. (2023). We first select a small proportion of high-quality instructions from the raw dataset generated by the MAGPIE pipeline, ensuring diverse task categories. For each selected instruction, we sample responses from the aligned LLM k times, using a temperature of T < 1. We then employ a reward model (RM) to annotate scores for these responses. The response with the highest RM score is labeled as the chosen response, while the one with the lowest RM score is designated as the rejected response. Generating Domain-Specific and Multilingual Datasets. In certain scenarios, users may wish to fine-tune LLMs using domain-specific or multilingual instruction data to enhance performance within specific domains or languages. To address this need, we introduce a lightweight method to control both the task category and the language of generated instructions. Our approach involves guiding LLMs through a tailored system prompt, specifying that the model is a chatbot designed for a particular domain and outlining the types of user queries it might encounter. Figure 2 shows how to control generating math and Chinese instructions using system prompts. More examples of system prompts designed to control the generation of code, translation, and multilingual instructions",
+        "x": 107.5,
+        "y": 155.8,
+        "w": 398.2,
+        "h": 312.8,
+        "zh": "配置，并向用户提供八项可用指标，以便定制自己的 MAGPIE 数据集。我们还提供 6 套现成的过滤配置，并在附录 F.4 讨论它们的表现。生成多轮指令数据集。MAGPIE 可以方便地扩展，用来生成多轮指令数据集。为构建多轮数据集（记为 MAGPIE-MT），我们先按步骤 1 和步骤 2 生成第一轮的指令与回复。对后续轮次，我们把查询前模板接到上一轮完整提示的末尾。我们观察到，模型有时会忘记自己的用户角色，8B 模型尤其如此。为缓解这一点，我们使用系统提示来控制 LLM 的行为，并强化它对多轮对话上下文的意识。构建 MAGPIE-MT 指令的完整提示见附录 G 的图 14。我们按照第 2.1 节步骤 2 的流程生成回复，从而形成多轮指令数据集。生成偏好优化数据集。借助 MAGPIE 产生的多样且高质量指令，我们提出一种简单有效的偏好优化数据生成方法，灵感来自 Meng et al. (2024) 和 Tran et al. (2023)。我们先从 MAGPIE 流程生成的原始数据集中选出一小部分高质量指令，并保证任务类别多样。对每条选中的指令，我们以温度 T < 1 从已对齐 LLM 采样 k 次回复。然后用奖励模型（RM）为这些回复标注分数。RM 分数最高的回复标为 chosen（被选中）回复，分数最低的标为 rejected（被拒绝）回复。生成领域专用与多语言数据集。在某些场景下，用户可能希望用领域专用或多语言指令数据微调 LLM，以提升特定领域或语言上的表现。为此，我们引入一种轻量方法，同时控制生成指令的任务类别和语言。具体做法是用定制的系统提示引导 LLM，说明该模型是面向特定领域的聊天机器人，并概括它可能遇到的用户查询类型。图 2 展示了如何用系统提示控制数学指令和中文指令的生成。更多用于控制代码、翻译和多语言指令生成的系统提示示例"
+      },
+      {
+        "text": "are illustrated in Figure 15 in Appendix G.",
+        "x": 108,
+        "y": 144.8,
+        "w": 169.9,
+        "h": 10,
+        "zh": "见图 15，位于附录 G。"
+      },
+      {
+        "text": "Furthermore, we note that domain-specific and multilingual instruction data can also be generated using models that are tailored to particular fields. MAGPIE demonstrates broad applicability beyond diverse chat models, extending to specialized code models (e.g., DeepSeek-Coder-V2 (Zhu et al., 2024)) and math models (e.g., Qwen2-Math-7B-Instruct (Yang et al., 2024)). By leveraging the unique strengths and specializations of different models, MAGPIE can create a rich and diverse corpus of instructions. Examples of MAGPIE-generated instructions from different domain-specific models and multilingual models are provided in Appendix H.",
+        "x": 108,
+        "y": 62.1,
+        "w": 397.2,
+        "h": 75.7,
+        "zh": "此外，我们指出，领域专用和多语言指令数据也可以用针对特定领域定制的模型来生成。MAGPIE 的适用范围不限于各类聊天模型，还可以延伸到专门的代码模型（例如 DeepSeek-Coder-V2（Zhu et al., 2024））和数学模型（例如 Qwen2-Math-7B-Instruct（Yang et al., 2024））。借助不同模型各自的长处与专长，MAGPIE 可以构建丰富多样的指令语料。不同领域专用模型和多语言模型所生成的 MAGPIE 指令示例见附录 H。"
+      }
+    ],
+    "5": [
+      {
+        "text": "To demonstrate the effectiveness of MAGPIE compared with baseline methods for generating diverse high-quality alignment datasets, we apply MAGPIE to the Llama-3-8B-Instruct and Llama-3-70BInstruct models (Meta, 2024) to construct two instruction datasets: Llama-3-MAGPIE-Air (hereafter referred to as MAGPIE-Air) and Llama-3-MAGPIE-Pro (hereafter referred to as MAGPIE-Pro), respectively. Examples of instances in both datasets can be found in Appendix H. In this section, we present a comprehensive analysis of the MAGPIE-Air and MAGPIE-Pro datasets, including topic coverage, difficulty, quality, similarity of instructions, and the quality of the responses. We also provide the safety analysis and cost analysis of MAGPIE.",
+        "x": 107.7,
+        "y": 596.8,
+        "w": 398,
+        "h": 86.7,
+        "zh": "为说明 MAGPIE 相对基线方法在生成多样、高质量对齐数据集上的效果，我们把 MAGPIE 用于 Llama-3-8B-Instruct 和 Llama-3-70B-Instruct（Meta, 2024），分别构建两个指令数据集：Llama-3-MAGPIE-Air（下文称 MAGPIE-Air）和 Llama-3-MAGPIE-Pro（下文称 MAGPIE-Pro）。两个数据集中的样本示例见附录 H。本节对 MAGPIE-Air 与 MAGPIE-Pro 做全面分析，包括主题覆盖、难度、质量、指令相似度，以及回复质量。我们还给出 MAGPIE 的安全性分析与成本分析。"
+      },
+      {
+        "text": "We follow Zhao et al. (2024) and analyze the coverage of MAGPIE-Pro in the embedding space. Specifically, we use the all-mpnet-base-v2 embedding model to calculate the input embeddings, and employ t-SNE (Van der Maaten & Hinton, 2008) to project these embeddings into a two-dimensional space. We adopt three synthetic datasets as baselines, including Alpaca (Taori et al., 2023), Evol Instruct (Xu et al., 2023a), and UltraChat (Ding et al., 2023), to demonstrate the coverage of MAGPIE-Pro. The detailed analysis can be found in Appendix D.1. We observe that the t-SNE plot of MAGPIE-Pro encompasses the area covered by the plots of Alpaca, Evol Instruct, and UltraChat. This suggests that MAGPIE-Pro provides a broader or more diverse range of topics. We also follow Wang et al. (2023) and present the most common verbs and their top direct noun objects in instructions in Appendix D, indicating the diverse topic coverage of MAGPIE dataset.",
+        "x": 107.5,
+        "y": 439.6,
+        "w": 398.2,
+        "h": 114.6,
+        "zh": "我们遵循 Zhao et al. (2024)，在嵌入空间中分析 MAGPIE-Pro 的覆盖范围。具体而言，我们用 all-mpnet-base-v2 嵌入模型计算输入嵌入，并用 t-SNE（Van der Maaten & Hinton, 2008）把这些嵌入投影到二维空间。我们采用三个合成数据集作为基线，包括 Alpaca（Taori et al., 2023）、Evol Instruct（Xu et al., 2023a）和 UltraChat（Ding et al., 2023），以展示 MAGPIE-Pro 的覆盖情况。详细分析见附录 D.1。我们观察到，MAGPIE-Pro 的 t-SNE 图覆盖了 Alpaca、Evol Instruct 和 UltraChat 图所占据的区域。这表明 MAGPIE-Pro 提供了更广或更多样的主题范围。我们还遵循 Wang et al. (2023)，在附录 D 中给出指令里最常见的动词及其直接名词宾语，说明 MAGPIE 数据集的主题覆盖多样。"
+      },
+      {
+        "text": "Attribute: Task Categories of Instructions.",
+        "x": 108,
+        "y": 387,
+        "w": 186.5,
+        "h": 10,
+        "zh": "属性：指令的任务类别。"
+      },
+      {
+        "text": "We use Llama-3-8B-Instruct to categorize the instances in MAGPIE-Pro (see Figure 9 in Appendix D.1 for detail). The prompts used to query Llama-3-8B-Instruct can be found in Appendix G. Our observations indicate that over half of the tasks in MAGPIE-Pro pertain to information seeking, making it the predominant category. This is followed by tasks involving creative writing, advice seeking, planning, and math. This distribution over the task categories aligns with the practical requests from human users (Li et al., 2023b).",
+        "x": 108,
+        "y": 332.2,
+        "w": 397.7,
+        "h": 64.8,
+        "zh": "我们用 Llama-3-8B-Instruct 对 MAGPIE-Pro 中的样本分类（详见附录 D.1 的图 9）。查询 Llama-3-8B-Instruct 所用的提示见附录 G。我们的观察表明，MAGPIE-Pro 中超过一半的任务属于信息寻求，这是最主要的类别。其后是创意写作、寻求建议、规划和数学。任务类别上的这一分布，与人类用户的实际请求相符（Li et al., 2023b）。"
+      },
+      {
+        "text": "Attribute: Quality of Instructions. Similar to methods in (Chen et al., 2023), we prompt the Llama-3-8B-Instruct model to assess the quality of each instruction in MAGPIE-Air and MAGPIE-Pro, categorizing them as ‘very poor’, ‘poor’, ‘average’, ‘good’, and ‘excellent’. We present the histograms of qualities for both datasets in Figure 3-(a). We have the following two observations. First, both datasets are of high quality, with the majority of instances rated ‘average’ or higher. In addition, the overall quality of MAGPIE-Pro surpasses that of MAGPIE-Air. We hypothesize that this is due to the enhanced capabilities of Llama-3-70B compared with Llama-3-8B. Attribute: Difficulty of Instructions. We use the Llama-3- 8B-Instruct model to rate the difficulty of each instruction in",
+        "x": 107.6,
+        "y": 166.8,
+        "w": 249.5,
+        "h": 147.4,
+        "zh": "属性：指令质量。与（Chen et al., 2023）中的方法类似，我们提示 Llama-3-8B-Instruct 评估 MAGPIE-Air 和 MAGPIE-Pro 中每条指令的质量，将其分为 very poor（很差）、poor（较差）、average（中等）、good（良好）和 excellent（优秀）。两个数据集的质量直方图见图 3-(a)。我们有如下两点观察。第一，两个数据集质量都较高，大多数样本被评为 average 或更高。此外，MAGPIE-Pro 的整体质量超过 MAGPIE-Air。我们猜想，这是因为 Llama-3-70B 的能力强于 Llama-3-8B。属性：指令难度。我们用 Llama-3-8B-Instruct 模型为下列数据集中每条指令的难度评分："
+      },
+      {
+        "text": "MAGPIE-Air and MAGPIE-Pro. Each instruction can be labeled as ‘very easy’, ‘easy’, ‘medium’, ‘hard’, or ‘very hard’. Fig-",
+        "x": 108,
+        "y": 144.9,
+        "w": 249.1,
+        "h": 20.9,
+        "zh": "MAGPIE-Air 与 MAGPIE-Pro。每条指令可被标为 very easy（很容易）、easy（容易）、medium（中等）、hard（难）或 very hard（很难）。图"
+      },
+      {
+        "text": "Figure 3: The statistics of instrucure 3-(b) presents the histograms of the levels of difficulty for",
+        "x": 108,
+        "y": 133.9,
+        "w": 397.7,
+        "h": 18,
+        "zh": "图 3：指令的统计。图 3-(b) 给出各难度等级的直方图，对象为"
+      },
+      {
+        "text": "tion difficulty and quality. MAGPIE-Air and MAGPIE-Pro. We observe that the distributions across difficulty levels are similar for MAGPIE-Air and MAGPIE-Pro. Some instructions in MAGPIE-Pro are more challenging than those in MAGPIE-Air because MAGPIE-Pro is generated by a more capable model (Llama-3-70B-Instruct).",
+        "x": 108,
+        "y": 90.1,
+        "w": 396,
+        "h": 50.9,
+        "zh": "难度与质量。MAGPIE-Air 与 MAGPIE-Pro。我们观察到，MAGPIE-Air 与 MAGPIE-Pro 在各难度等级上的分布相似。MAGPIE-Pro 中有些指令比 MAGPIE-Air 更难，因为 MAGPIE-Pro 由能力更强的模型（Llama-3-70B-Instruct）生成。"
+      },
+      {
+        "text": "https://huggingface.co/sentence-transformers/all-mpnet-base-v2",
+        "x": 124.1,
+        "y": 62.1,
+        "w": 335.5,
+        "h": 9,
+        "zh": ""
+      }
+    ],
+    "6": [
+      {
+        "text": "Attribute: Instruction Similarity. We quantify the similarity among instructions generated by MAGPIE to remove repetitive instructions. We measure the similarity using minimum neighbor distance in the embedding space. Specifically, we first represent all instructions in the embedding space using the all-mpnet-base-v2 embedding model. For any given instruction, we then calculate the minimum distance from the instruction to its nearest neighbors in the embedding space using Facebook AI Similarity Search (FAISS) (Douze et al., 2024). The minimum neighbor distances of instructions in MAGPIEAir after removing repetitions are summarized in Figure 4-(a).",
+        "x": 107.6,
+        "y": 590.6,
+        "w": 249.5,
+        "h": 119.6,
+        "zh": "属性：指令相似度。我们量化 MAGPIE 所生成指令之间的相似度，以去除重复指令。相似度用嵌入空间中的最小近邻距离来度量。具体而言，我们先用 all-mpnet-base-v2 嵌入模型把所有指令表示到嵌入空间中。对任意给定指令，再用 Facebook AI Similarity Search（FAISS）（Douze et al., 2024）计算该指令到嵌入空间中最近邻的最小距离。去除重复后，MAGPIE-Air 中指令的最小近邻距离汇总于图 4-(a)。"
+      },
+      {
+        "text": "(b)Reward Difference between Base Model and Instruct Model Attribute: Quality of Responses. We assess the quality of",
+        "x": 107.6,
+        "y": 573.6,
+        "w": 393.1,
+        "h": 20.8,
+        "zh": "（b）基座模型与 Instruct 模型之间的奖励差值。属性：回复质量。我们评估下列内容的质量："
+      },
+      {
+        "text": "Figure 4: This figure summarizes responses using rewards assigned by a reward model, denoted",
+        "x": 108,
+        "y": 562.7,
+        "w": 396,
+        "h": 16.5,
+        "zh": "图 4：本图汇总了回复情况，所用奖励由奖励模型给出，记为"
+      },
+      {
+        "text": "the minimum neighbor distances as r . For each instance in our dataset, we also calculate reward",
+        "x": 108,
+        "y": 551.7,
+        "w": 396,
+        "h": 16.5,
+        "zh": "最小近邻距离，记为 r。对数据集中的每个样本，我们还计算奖励"
+      },
+      {
+        "text": "and reward differences. difference as r − rbase, where rbase is the reward assigned by the same reward model to the response generated by the Llama-3 base model for the same instruction. We use URIAL (Lin et al., 2023) to elicit responses from the base model. A positive reward difference indicates that the response from our dataset is of higher quality, and could potentially benefit instruction tuning. In our experiments, we follow Lambert et al. (2024) and choose FsfairX-LLaMA3-RM-v0.1 (Xiong et al., 2024) as the reward model. Our results on the reward difference are presented in Figure 4-(b).",
+        "x": 108,
+        "y": 475,
+        "w": 396.4,
+        "h": 82.3,
+        "zh": "与奖励差值。差值定义为 r − rbase，其中 rbase 是同一奖励模型对 Llama-3 基座模型针对同一指令所生成回复给出的奖励。我们用 URIAL（Lin et al., 2023）从基座模型引出回复。奖励差值为正，说明我们数据集里的回复质量更高，并可能有益于指令微调。实验中我们遵循 Lambert et al. (2024)，选用 FsfairX-LLaMA3-RM-v0.1（Xiong et al., 2024）作为奖励模型。奖励差值的结果见图 4-(b)。"
+      },
+      {
+        "text": "We use Llama-Guard-2 (Team, 2024) to analyze the safety of MAGPIE-Air and MAGPIE-Pro. Our results indicate that both datasets are predominantly safe, with less than 1% of the data potentially containing harmful instructions or responses. Please see Appendix D.2 for detailed safety analysis.",
+        "x": 107.5,
+        "y": 401.2,
+        "w": 396.8,
+        "h": 31.9,
+        "zh": "我们用 Llama-Guard-2（Team, 2024）分析 MAGPIE-Air 与 MAGPIE-Pro 的安全性。结果表明，两个数据集总体上是安全的，可能包含有害指令或回复的数据不到 1%。详细安全性分析见附录 D.2。"
+      },
+      {
+        "text": "We perform experiments on a server with four NVIDIA A100-SXM4-80GB GPUs, an AMD EPYC 7763 64-Core Processor, and 512 GB of RAM, using the VLLM inference framework (Kwon et al., 2023). The models are loaded in the bfloat16 format. When creating the 3M MAGPIE-Air dataset, our MAGPIE spent 1.55 and 50 hours to generate the instructions (Step 1) and responses (Step 2), respectively. For the 1M MAGPIE-Pro dataset, MAGPIE used 3.5 and 150 hours to generate the instructions (Step 1) and responses (Step 2), respectively. Compared to existing approaches to create instruction datasets, the pipeline of MAGPIE is fully automated without any human intervention or API access to advanced commercial models such as GPT-4 (Achiam et al., 2023). Consequently, MAGPIE is cost-effective and scalable. On average, implementing MAGPIE on a cloud server would incur costs of $0.12 and $1.1 per 1,000 data instances for MAGPIE-Air and MAGPIE-Pro, respectively.",
+        "x": 107.5,
+        "y": 233.8,
+        "w": 398.2,
+        "h": 125.5,
+        "zh": "实验在一台配备四块 NVIDIA A100-SXM4-80GB GPU、一颗 AMD EPYC 7763 64 核处理器和 512 GB 内存的服务器上进行，推理框架为 VLLM（Kwon et al., 2023）。模型以 bfloat16 格式加载。构建 300 万条的 MAGPIE-Air 数据集时，MAGPIE 在步骤 1 生成指令用了 1.55 小时，步骤 2 生成回复用了 50 小时。对 100 万条的 MAGPIE-Pro 数据集，MAGPIE 在步骤 1 用了 3.5 小时，步骤 2 用了 150 小时。与现有的指令数据集构建方法相比，MAGPIE 的流程完全自动化，无需人工干预，也不需要调用 GPT-4（Achiam et al., 2023）等先进商业模型的 API。因此，MAGPIE 既省成本又可扩展。平均而言，在云服务器上运行 MAGPIE，MAGPIE-Air 与 MAGPIE-Pro 每 1000 条数据的成本分别约为 0.12 美元和 1.1 美元。"
+      },
+      {
+        "text": "Additional dataset analysis, including the impact of generation configurations on the quality and difficulty of the generated instructions, is detailed in Appendix D.3. We provide ablation analysis on annotating models for assessing quality and difficulty in Appendix D.4.",
+        "x": 107.6,
+        "y": 160,
+        "w": 396.4,
+        "h": 31.9,
+        "zh": "更多数据集分析，包括生成配置对所生成指令的质量与难度的影响，详见附录 D.3。关于用于评估质量与难度的标注模型的消融分析，见附录 D.4。"
+      },
+      {
+        "text": "In this section, we evaluate the quality of MAGPIE-generated datasets by utilizing them to align base models including Llama-3 (Meta, 2024), Qwen1.5 (Bai et al., 2023), and Qwen2 (Yang et al., 2024).",
+        "x": 108,
+        "y": 89.2,
+        "w": 397.7,
+        "h": 20.9,
+        "zh": "本节我们通过用 MAGPIE 生成的数据集去对齐基座模型，来评估这些数据集的质量。基座模型包括 Llama-3（Meta, 2024）、Qwen1.5（Bai et al., 2023）和 Qwen2（Yang et al., 2024）。"
+      },
+      {
+        "text": "https://lambdalabs.com/service/gpu-cloud",
+        "x": 124.1,
+        "y": 62.1,
+        "w": 215.7,
+        "h": 9,
+        "zh": ""
+      }
+    ],
+    "7": [
+      {
+        "text": "Baselines for Supervised Fine-Tuning and Preference Optimization. We compare the family of instruction datasets generated by MAGPIE with eight SOTA open-source instruction datasets: ShareGPT (Chiang et al., 2023), WildChat (Zhao et al., 2024), Evol Instruct (Xu et al., 2023a), UltraChat (Ding et al., 2023), GenQA (Chen et al., 2024), OpenHermes 1 (Teknium, 2023a), OpenHermes 2.5 (Teknium, 2023b), and Tulu V2 Mix (Ivison et al., 2023). ShareGPT and WildChat are representative human-written datasets containing 112K and 652K high-quality multi-round conversations between humans and GPT, respectively. Evol Instruct, UltraChat, and GenQA are representative open-source synthetic datasets. Following Meng et al. (2024), we use the 208K sanitized version of Ultrachat provided by HuggingFace . OpenHermes 1, OpenHermes 2.5, and Tulu V2 Mix are crowd-sourced datasets consisting of a mix of diverse open-source instruction datasets, with 243K, 1M, and 326K conversations, respectively. We also create an instruction dataset with 100K conversations using the Self-Instruct (Wang et al., 2023) and Llama-3-8B-Instruct model,",
+        "x": 107.6,
+        "y": 556.7,
+        "w": 397.7,
+        "h": 130.5,
+        "zh": "监督微调与偏好优化的基线。我们把 MAGPIE 生成的指令数据集族，与八个最先进的开源指令数据集比较：ShareGPT（Chiang et al., 2023）、WildChat（Zhao et al., 2024）、Evol Instruct（Xu et al., 2023a）、UltraChat（Ding et al., 2023）、GenQA（Chen et al., 2024）、OpenHermes 1（Teknium, 2023a）、OpenHermes 2.5（Teknium, 2023b）和 Tulu V2 Mix（Ivison et al., 2023）。ShareGPT 与 WildChat 是有代表性的人工撰写数据集，分别包含 11.2 万条和 65.2 万条人类与 GPT 之间的高质量多轮对话。Evol Instruct、UltraChat 和 GenQA 是有代表性的开源合成数据集。遵循 Meng et al. (2024)，我们使用 HuggingFace 提供的 20.8 万条经过清洗的 UltraChat 版本。OpenHermes 1、OpenHermes 2.5 和 Tulu V2 Mix 是众包数据集，由多种开源指令数据集混合而成，分别包含 24.3 万、100 万和 32.6 万条对话。我们还用 Self-Instruct（Wang et al., 2023）和 Llama-3-8B-Instruct 构建了一个包含 10 万条对话的指令数据集，"
+      },
+      {
+        "text": "We compare the models aligned using MAGPIE with preference optimization baselines using direct preference optimization (DPO) (Rafailov et al., 2023). Specifically, we follow Meng et al. (2024) and use the models fine-tuned with the UltraChat dataset (for instruction tuning) and Ultrafeedback dataset (for preference optimization) (Cui et al., 2023). MAGPIE Setups. To demonstrate the quality of MAGPIE-generated instruction datasets for SFT, we select the first 300K MAGPIE-Air and MAGPIE-Pro raw datasets generated by Llama-3-8B-Instruct and Llama-3-70B-Instruct models, respectively. Apart from these raw datasets, we also applied the filters detailed in Appendix C and created two filtered datasets: MAGPIE-Air-Filtered and MAGPIEPro-Filtered, each contains 300K conversations. For preference optimization, we generate two additional datasets: MAGPIE-Air-DPO (generated by Llama-3-8B-Instruct) and MAGPIE-Pro-DPO (generated by Llama-3-70B-Instruct) with k = 5 and T = 0.8, each contains 100K conversations. We use RLHFlow/ArmoRM-Llama3-8B-v0.1 (Wang et al., 2024a) as the reward model. Model Alignment Details. For supervised fine-tuning, we follow Touvron et al. (2023) and use a cosine learning rate schedule with an initial learning rate of 2 × 10 Qwen1.5 and Qwen2 base models. The maximum sequence length is 8192. For DPO, we use a",
+        "x": 107.5,
+        "y": 363.5,
+        "w": 398.2,
+        "h": 175.3,
+        "zh": "我们把用 MAGPIE 对齐的模型，与使用直接偏好优化（DPO）（Rafailov et al., 2023）的偏好优化基线相比较。具体而言，我们遵循 Meng et al. (2024)，使用先用 UltraChat 数据集做指令微调、再用 UltraFeedback 数据集做偏好优化的模型（Cui et al., 2023）。MAGPIE 的设置。为说明 MAGPIE 生成的指令数据集用于 SFT 时的质量，我们分别选取由 Llama-3-8B-Instruct 和 Llama-3-70B-Instruct 生成的 MAGPIE-Air 与 MAGPIE-Pro 原始数据集的前 30 万条。除这些原始数据集外，我们还应用附录 C 中的过滤器，构建了两个过滤后的数据集：MAGPIE-Air-Filtered 与 MAGPIE-Pro-Filtered，各含 30 万条对话。用于偏好优化时，我们额外生成两个数据集：MAGPIE-Air-DPO（由 Llama-3-8B-Instruct 生成）和 MAGPIE-Pro-DPO（由 Llama-3-70B-Instruct 生成），取 k = 5、T = 0.8，各含 10 万条对话。奖励模型使用 RLHFlow/ArmoRM-Llama3-8B-v0.1（Wang et al., 2024a）。模型对齐细节。监督微调时，我们遵循 Touvron et al. (2023)，使用余弦学习率日程，初始学习率为 2 × 10，并用于 Qwen1.5 和 Qwen2 基座模型。最大序列长度为 8192。对于 DPO，我们使用"
+      },
+      {
+        "text": ". The detailed parameters can be found in Appendix E.2. We follow the official instruction templates of each model. Evaluation Benchmarks. We evaluate the performance of the aligned models using two widely adopted instruction-following benchmarks: AlpacaEval 2 (Li et al., 2023b) and Arena-Hard (Li et al., 2024b). AlpacaEval 2 consists of 805 representative instructions chosen from real user interactions. Arena-Hard is an enhanced version of MT-Bench (Zheng et al., 2023), containing 500 challenging user queries. Both benchmarks employ a GPT evaluator to assess responses generated by the model of interest and a baseline model. Specifically, we use GPT-4-Turbo (1106) and Llama-3-8B-Instruct as baselines for AlpacaEval 2. By default, Arena-Hard uses GPT-4 (0314) as its baseline model. Metrics. We adopt two metrics to measure the capabilities of instruction-following of fine-tuned models. The first metric is the win rate (WR), which calculates the fraction of responses that are favored by the GPT evaluator. This metric is applied in both benchmarks including AlpacaEval 2 and Arena-Hard. The second metric is the length-controlled win rate (LC) (Dubois et al., 2024), a debiased version of WR. The GPT evaluator considers the lengths of responses generated by the baseline model and model under evaluation when computing LC. By accounting for response length, LC reduces its impact on the win rate. This metric is specifically applied to the AlpacaEval 2",
+        "x": 107.6,
+        "y": 176.2,
+        "w": 398.1,
+        "h": 186.3,
+        "zh": "。详细参数见附录 E.2。我们遵循每个模型的官方指令模板。评测基准。我们用两个广泛采用的指令遵循基准来评估对齐后模型的表现：AlpacaEval 2（Li et al., 2023b）和 Arena-Hard（Li et al., 2024b）。AlpacaEval 2 包含 805 条从真实用户交互中选出的有代表性的指令。Arena-Hard 是 MT-Bench（Zheng et al., 2023）的增强版本，包含 500 条有挑战性的用户查询。两个基准都用 GPT 评测器来评估待测模型和基线模型生成的回复。具体而言，AlpacaEval 2 以 GPT-4-Turbo (1106) 和 Llama-3-8B-Instruct 作为基线。Arena-Hard 默认以 GPT-4 (0314) 作为基线模型。指标。我们采用两项指标衡量微调模型的指令遵循能力。第一项是胜率（WR），即 GPT 评测器更偏好的回复所占比例。该指标用于 AlpacaEval 2 和 Arena-Hard 两个基准。第二项是长度受控胜率（LC）（Dubois et al., 2024），是 WR 的去偏版本。GPT 评测器在计算 LC 时会考虑基线模型和待评模型所生成回复的长度。通过计入回复长度，LC 降低了长度对胜率的影响。该指标专门用于 AlpacaEval 2"
+      },
+      {
+        "text": "More Experimental Setups. We provide more detailed descriptions of our experimental setups, including more model alignment details and benchmark decoding hyper-parameters in Appendix E.",
+        "x": 108,
+        "y": 137.3,
+        "w": 397.2,
+        "h": 20.9,
+        "zh": "更多实验设置。我们在附录 E 中给出更详细的实验设置说明，包括更多模型对齐细节，以及基准解码超参数。"
+      },
+      {
+        "text": "https://huggingface.co/datasets/HuggingFaceH4/ultrachat_200k https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct",
+        "x": 124.1,
+        "y": 62.1,
+        "w": 322.8,
+        "h": 19.8,
+        "zh": ""
+      }
+    ],
+    "8": [
+      {
+        "text": "Table 1: This table compares the performance of models instruction-tuned on the Llama-3-8B base models using MAGPIE-generated datasets and baseline datasets. We observe that models aligned with our datasets significantly outperform those aligned with baseline datasets of the same order of magnitude in terms of data size. In addition, our fine-tuned models achieve comparable performance to the official aligned model, despite only undergoing SFT with a much smaller dataset. Numbers in bold indicate that MAGPIE outperforms the official Llama-3-8B-Instruct model.",
+        "x": 107.6,
+        "y": 647.7,
+        "w": 396.4,
+        "h": 64.8,
+        "zh": "表 1：本表比较在 Llama-3-8B 基座模型上，用 MAGPIE 生成的数据集与基线数据集做指令微调后的模型表现。我们观察到，用我们的数据集对齐的模型，在数据规模同数量级的情况下，显著优于用基线数据集对齐的模型。此外，我们微调后的模型仅用小得多的数据集做了 SFT，表现仍与官方对齐模型相当。加粗数字表示 MAGPIE 超过官方 Llama-3-8B-Instruct。"
+      },
+      {
+        "text": "+Self-Instruct (Llama-3) (Wang et al., 2023) +ShareGPT (Chiang et al., 2023) +Evol Instruct (Xu et al., 2023a) +OpenHermes 1 (Teknium, 2023a) +Tulu V2 Mix (Ivison et al., 2023) +WildChat (Zhao et al., 2024) +OpenHermes 2.5 (Teknium, 2023b) +GenQA (Chen et al., 2024) +UltraChat (Ding et al., 2023) $ +UltraFeedback((Cui et al., 2023))",
+        "x": 141.5,
+        "y": 527.8,
+        "w": 122.5,
+        "h": 75.9,
+        "zh": "+Self-Instruct（Llama-3）（Wang et al., 2023） +ShareGPT（Chiang et al., 2023） +Evol Instruct（Xu et al., 2023a） +OpenHermes 1（Teknium, 2023a） +Tulu V2 Mix（Ivison et al., 2023） +WildChat（Zhao et al., 2024） +OpenHermes 2.5（Teknium, 2023b） +GenQA（Chen et al., 2024） +UltraChat（Ding et al., 2023） $ +UltraFeedback（（Cui et al., 2023））"
+      },
+      {
+        "text": "In Table 1, we compare the performance of Llama-3 models fine-tuned with instruction datasets generated by MAGPIE against those supervised fine-tuned with baseline datasets. Using the AlpacaEval 2 benchmark, we observe that both the LC and WR of our supervised fine-tuned models surpass all those models fine-tuned with baseline SFT datasets. This indicates that the datasets generated by MAGPIE are of higher quality, leading to significantly enhanced instruction-following capabilities. A similar observation is made when using the Arena-Hard evaluation benchmark. light that the Llama-3 base models supervised fine-tuned with instruction datasets generated by MAGPIE outperform even those models that have undergone preference optimization (i.e., STF followed by DPO), which further emphasizes the high quality of data generated by MAGPIE.",
+        "x": 107.6,
+        "y": 315.2,
+        "w": 398.1,
+        "h": 108.6,
+        "zh": "在表 1 中，我们比较用 MAGPIE 生成的指令数据集微调的 Llama-3 模型，与用基线数据集做监督微调的模型。在 AlpacaEval 2 基准上，我们观察到自己监督微调模型的 LC 和 WR 都超过所有用基线 SFT 数据集微调的模型。这表明 MAGPIE 生成的数据集质量更高，指令遵循能力因而显著增强。使用 Arena-Hard 评测基准时也有类似观察。需要指出的是，用 MAGPIE 生成的指令数据集做监督微调的 Llama-3 基座模型，甚至优于那些做过偏好优化（即先 SFT 再做 DPO）的模型，这进一步说明 MAGPIE 所生成数据的质量很高。"
+      },
+      {
+        "text": "MAGPIE datasets outperform baselines with SFT only.",
+        "x": 108.2,
+        "y": 413.8,
+        "w": 240.7,
+        "h": 10,
+        "zh": "仅做 SFT 时，MAGPIE 数据集就优于各基线。"
+      },
+      {
+        "text": "To investigate the advantages of MAGPIE across different task categories, we also compare the performance of models fine-tuned with MAGPIE-Pro compared with baseline datasets using WildBench benchmark (Lin et al., 2024). This benchmark consists of 1024 tasks carefully selected from real-world human-LLM conversation logs. The results are demonstrated in Figure 5. We observe that MAGPIE consistently outperforms baseline datasets across",
+        "x": 107.7,
+        "y": 210.6,
+        "w": 229.7,
+        "h": 86.7,
+        "zh": "为考察 MAGPIE 在不同任务类别上的优势，我们还用 WildBench 基准（Lin et al., 2024）比较了用 MAGPIE-Pro 微调的模型与用基线数据集微调的模型。该基准包含 1024 项从真实人类与 LLM 对话日志中仔细挑选的任务。结果见图 5。我们观察到，MAGPIE 始终优于基线数据集，其优势遍及"
+      },
+      {
+        "text": "Models aligned with data generated by MAGPIE achieve comparable or even higher performance to the official aligned model, but with fewer data. In Table 1, we also compare the performance of models aligned with data generated by MAGPIE against the official aligned model (Llama-3-8B-Instruct). We observe that the Llama-",
+        "x": 107.3,
+        "y": 127.9,
+        "w": 230,
+        "h": 64.8,
+        "zh": "用 MAGPIE 生成的数据对齐的模型，以更少的数据达到与官方对齐模型相当、甚至更高的表现。在表 1 中，我们还把用 MAGPIE 生成数据对齐的模型与官方对齐模型（Llama-3-8B-Instruct）相比较。我们观察到，Llama-"
+      },
+      {
+        "text": "Figure 5: This figure shows the perfor- 3-8B base model supervised fine-tuned with data from",
+        "x": 108,
+        "y": 116.9,
+        "w": 397.7,
+        "h": 18.5,
+        "zh": ""
+      },
+      {
+        "text": "mance breakdown by category of MAGMAGPIE outperforms Llama-3-8B-instruct using the Al-",
+        "x": 108.2,
+        "y": 106,
+        "w": 397.4,
+        "h": 18.5,
+        "zh": ""
+      },
+      {
+        "text": "PIE-Pro and baselines on WildBench. pacaEval 2 benchmark. For example, when Llama-3-8BInstruct is chosen as the baseline model of AlpacaEval 2, we observe that LC of Llama-3-8B base models fine-tuned with instruction data from MAGPIE exceeds 50%, indicating a preference for our SFT models over the official aligned model. In addition, when DPO is applied, our aligned model",
+        "x": 108,
+        "y": 62.1,
+        "w": 396.2,
+        "h": 51.4,
+        "zh": "PIE-Pro 与各基线在 WildBench 上的结果。pacaEval 2 基准。例如，当把 Llama-3-8B-Instruct 选作 AlpacaEval 2 的基线模型时，我们观察到，用 MAGPIE 的指令数据微调的 Llama-3-8B 基座模型，其 LC 超过 50%，说明相对官方对齐模型，评测更偏好我们的 SFT 模型。此外，在施加 DPO 之后，我们对齐后的模型"
+      }
+    ],
+    "9": [
+      {
+        "text": "Table 2: This table compares the performance of models instruction-tuned on the Qwen base models using the MAGPIE-Pro-300K-Filtered dataset and the official instruction-tuned models. The Qwen base model enhanced with MAGPIE outperforms the official instruction-tuned model.",
+        "x": 107.7,
+        "y": 680.5,
+        "w": 396.3,
+        "h": 31.9,
+        "zh": "表 2：本表比较在 Qwen 基座模型上，用 MAGPIE-Pro-300K-Filtered 数据集做指令微调的模型与官方指令微调模型的表现。用 MAGPIE 增强后的 Qwen 基座模型超过了官方指令微调模型。"
+      },
+      {
+        "text": "demonstrates remarkable performance gains. Specifically, it outperforms the official Llama-3-8BInstruct model on both the AlpacaEval 2 and Arena-Hard benchmarks. Most notably, our model even surpasses GPT-4-Turbo(1106) on AlpacaEval 2. Finally, we highlight that our alignment process uses no more than 400K data, whereas the official aligned models are aligned with more than 10M data samples. This demonstrates the high quality of the data generated by MAGPIE. MAGPIE can enhance the performance of other backbone models. Table 2 illustrates the efficacy of MAGPIE when applied to generate instruction dataset and fine-tune other base models, i.e., Qwen2- 1.5B, Qwen1.5-4B, and Qwen1.5-7B. The results demonstrate that our fine-tuned models achieve better performance than the official aligned models, which have undergone both supervised finetuning and preference tuning. These results underscore the effectiveness of MAGPIE and the quality of its generated instructions. In addition, we apply MAGPIE-generated datasets to align Llama-3.1Minitron-4B-Width-Base (Sreenivas et al., 2024) and Llama-3.1-8B-Instruct (Dubey et al., 2024) using SFT followed by DPO. The resulting aligned model, which we term MagpieLM, achieves remarkable performance and ranks first among popular open-source instruction models with fewer than 10 billion parameters. The details of MagpieLM are deferred to Appendix B. Performance of MAGPIE on More Benchmarks. We report the performance of models supervised fine-tuned using MAGPIE-Air and MAGPIE-Pro, evaluated across a range of tasks featured on the Huggingface Open LLM Leaderboard (Beeching et al., 2023) in Table 3. The tasks includes MMLU (Hendrycks et al., 2020), ARC Challenge (Clark et al., 2018), HellaSwag (Zellers et al., 2019), TruthfulQA (Lin et al., 2021), WinoGrande (Levesque et al., 2012), and GSM8K (Cobbe et al., 2021). We also perform experiments on MMLU-Redux (Gema et al., 2024) with zero-shot prompting. Our experimental results demonstrate that models fine-tuned with MAGPIE-Air and MAGPIE-Pro achieve comparable performance to the official instruct model and other baselines. We note that the performance of MAGPIE may degrade on reasoning tasks, which is attributed to the small proportion of reasoning instructions in MAGPIE-Air and MAGPIE-Pro datasets. In response, we provide a supplementary \"booster\" dataset containing 150K math, code, and reasoning instructions using the MAGPIE extension mentioned in Section 2.2. We combine this booster dataset with MAGPIE-Pro-300K-Filtered and create MAGPIE-Pro-Mix-Filtered. Experimental results presented in Table 3 demonstrate that the model supervised fine-tuned using the mixed dataset effectively addresses the initial weakness in reasoning tasks. Notably, this new model ranks among the top-3 of all model checkpoints, performing only slightly weaker than OpenHermes 2.5 (1M conversations) and Llama-3-8B-Instruct (>10M conversations). This significant improvement showcases the flexibility and adaptability of the MAGPIE framework in generating task-specific instruction data. Additional Experimental Results. We defer additional experimental results and analysis of multiturn datasets, i.e., MAGPIE-Air-MT and MAGPIE-Pro-MT, to Appendix F.1. We conduct a detailed comparison between MAGPIE and Self-Instruct in Appendix F.2. In addition, ablations on data quantity, quality, filter designs, and response generator are deferred in Appendices F.3, F.4, and F.5. MAGPIE model’s performance on trustworthiness benchmarks is reported in Appendices F.6.",
+        "x": 107.3,
+        "y": 125.3,
+        "w": 398.5,
+        "h": 439.4,
+        "zh": "表现出显著的性能提升。具体而言，它在 AlpacaEval 2 和 Arena-Hard 两个基准上都超过官方 Llama-3-8B-Instruct。最值得注意的是，我们的模型甚至在 AlpacaEval 2 上超过 GPT-4-Turbo(1106)。最后我们强调，我们的对齐过程使用的数据不超过 40 万条，而官方对齐模型使用了超过 1000 万条样本。这体现了 MAGPIE 所生成数据的高质量。MAGPIE 也能提升其他骨干模型的表现。表 2 说明，当用 MAGPIE 生成指令数据集并微调其他基座模型，即 Qwen2-1.5B、Qwen1.5-4B 和 Qwen1.5-7B 时，MAGPIE 是有效的。结果表明，我们微调后的模型表现优于官方对齐模型，而后者同时做过监督微调和偏好微调。这些结果凸显了 MAGPIE 及其所生成指令的质量。此外，我们用 MAGPIE 生成的数据集，对 Llama-3.1-Minitron-4B-Width-Base（Sreenivas et al., 2024）和 Llama-3.1-8B-Instruct（Dubey et al., 2024）先做 SFT 再做 DPO。由此得到的对齐模型我们称为 MagpieLM，它表现突出，在参数量少于 100 亿的流行开源指令模型中排名第一。MagpieLM 的细节见附录 B。MAGPIE 在更多基准上的表现。我们在表 3 中报告用 MAGPIE-Air 和 MAGPIE-Pro 做监督微调的模型，在 Huggingface Open LLM Leaderboard（Beeching et al., 2023）所涵盖的一系列任务上的表现。这些任务包括 MMLU（Hendrycks et al., 2020）、ARC Challenge（Clark et al., 2018）、HellaSwag（Zellers et al., 2019）、TruthfulQA（Lin et al., 2021）、WinoGrande（Levesque et al., 2012）和 GSM8K（Cobbe et al., 2021）。我们还用零样本提示在 MMLU-Redux（Gema et al., 2024）上做了实验。实验结果表明，用 MAGPIE-Air 和 MAGPIE-Pro 微调的模型，表现与官方 instruct 模型及其他基线相当。我们注意到，MAGPIE 在推理任务上的表现可能下降，原因是 MAGPIE-Air 和 MAGPIE-Pro 数据集中推理类指令所占比例较小。对此，我们用第 2.2 节提到的 MAGPIE 扩展，提供一个包含 15 万条数学、代码和推理指令的补充 booster 数据集。我们把该 booster 数据集与 MAGPIE-Pro-300K-Filtered 合并，得到 MAGPIE-Pro-Mix-Filtered。表 3 的实验结果表明，用混合数据集做监督微调的模型，有效弥补了最初在推理任务上的不足。值得注意的是，这个新模型在所有模型检查点中位列前三，仅略弱于 OpenHermes 2.5（100 万条对话）和 Llama-3-8B-Instruct（超过 1000 万条对话）。这一显著提升展示了 MAGPIE 框架在生成特定任务指令数据时的灵活性与适应性。更多实验结果。多轮数据集（即 MAGPIE-Air-MT 和 MAGPIE-Pro-MT）的更多实验结果与分析见附录 F.1。MAGPIE 与 Self-Instruct 的详细比较见附录 F.2。关于数据数量、质量、过滤器设计以及回复生成器的消融，分别见附录 F.3、F.4 和 F.5。MAGPIE 模型在可信度基准上的表现见附录 F.6。"
+      },
+      {
+        "text": "LLM Alignment. Instruction tuning (Wei et al., 2022) and preference tuning (Bai et al., 2022) are widely used to align the responses of LLMs with human values. Instruction tuning utilizes an",
+        "x": 108,
+        "y": 62.1,
+        "w": 396.7,
+        "h": 20.9,
+        "zh": "LLM 对齐。指令微调（Wei et al., 2022）和偏好微调（Bai et al., 2022）被广泛用于使 LLM 的回复与人类价值对齐。指令微调使用一个"
+      }
+    ],
+    "10": [
+      {
+        "text": "Table 3: This table compares the performance of models supervised-fine-tuned on MAGPIE-Air, MAGPIE-Pro, and MAGPIE-Pro-Mix against baselines and official instruct model across various downstream benchmarks. All models are supervised-fine-tuned on the Llama-8B base models.",
+        "x": 107.7,
+        "y": 680.5,
+        "w": 397.6,
+        "h": 31.9,
+        "zh": "表 3：本表比较在 MAGPIE-Air、MAGPIE-Pro 和 MAGPIE-Pro-Mix 上做监督微调的模型，与各基线及官方 instruct 模型在多种下游基准上的表现。所有模型都在 Llama-8B 基座模型上做监督微调。"
+      },
+      {
+        "text": "instruction dataset to fine-tune LLMs, where each instruction data consists of one turn or multiple turns of instructions and desired responses. The performance of instruction tuning heavily relies on the quality of instruction data (Taori et al., 2023; Wang et al., 2023; Zhou et al., 2023). Preference tuning further improves responses of LLMs using reinforcement learning human feedback (RLHF) (Bai et al., 2022) or preference optimization (Azar et al., 2024; Ethayarajh et al., 2024; Hong et al., 2024; Rafailov et al., 2023) based on a preference dataset. Alignment Dataset Construction. We classify the existing methods of creating datasets for model alignment into two main categories: human interactions with LLMs and synthetic instruction generation. To create datasets for alignment, previous studies have collected human interactions with LLMs (Databricks, 2023; Zhao et al., 2024; Zheng et al., 2024; 2023; Köpf et al., 2023). However, manually crafting instructions is not only time-consuming and labor-intensive, but may also incorporate toxic content (Zhao et al., 2024). Another category of approaches (Wang et al., 2023; Taori et al., 2023; Xu et al., 2023a;b; Wang et al., 2024c; Sun et al., 2023) focus on prompting LLMs to generate synthetic instruction datasets, beginning with a small set of human-annotated seed instructions and expanding these through few-shot prompting. However, these methods face a diversity challenge, as few-shot prompting often results in new instructions that are too similar to the original seed questions (Li et al., 2024a). To enhance coverage, some research (Ding et al., 2023; Li et al., 2024a) summarizes world knowledge and employs it to generate synthetic datasets. We note that our MAGPIE dataset also belongs to the synthetic dataset. However, we leverage the prompt template without any requirement for seed questions or prompt engineering. Compared to the above two main categories, alignment data can also be generated by transforming existing data (Wang et al., 2022; Sanh et al., 2022; Gandhi et al., 2024). However, the constrained variety of NLP tasks in these datasets may impede the ability of tuned LLMs to generalize in realworld scenarios (Li et al., 2024a). There are also mixture datasets (e.g., (Ivison et al., 2023; Teknium, 2023a; Liu et al., 2024b; Zhou et al., 2023)) that combine or select high-quality instruction data from various existing open-source instruction datasets to enhance coverage (Ivison et al., 2023; Teknium, 2023a) and/or improve overall performance (Liu et al., 2024b; Zhou et al., 2023). There are also data construction methods focusing on improving the reasoning and math abilities (Yue et al., 2023; 2024), which can be further merged with MAGPIE for creating a better mixture of data for instruction tuning. Training Data Extraction. Language models have the capability to memorize examples from their training datasets, potentially enabling malicious users to extract private information (Brown et al., 2022; Biderman et al., 2023; Carlini et al., 2021). Pioneering work (Krishna et al., 2020; Carlini et al., 2021; Nasr et al., 2023) has demonstrated that it is possible to extract private pre-training data from BERT (Devlin et al., 2018), GPT-2 (Radford et al., 2018), and ChatGPT (Achiam et al., 2023), respectively. Yu et al. (2023) propose several techniques including adjusting sampling strategies to better extract training datasets from language models. Recently, Kassem et al. (2024) propose a blackbox prompt optimization method that uses an attacker LLM to extract high levels of memorization in a victim LLM. Wang et al. (2024b) leverage membership inference attack (MIA) to extract fine-tuning datasets from fine-tuned language models. Bai et al. (2024) extract the training dataset of production language models via special characters (e.g., structural symbols of JSON files, and , # in emails and online posts). Different from the prior work, we aim to create publicly available alignment datasets with minimal human effort by leveraging the remarkable generation capabilities of LLMs, rather than extracting private training data from LLMs.",
+        "x": 107.6,
+        "y": 62.1,
+        "w": 398.1,
+        "h": 488.2,
+        "zh": "指令数据集来微调 LLM，其中每条指令数据由一轮或多轮指令及期望回复组成。指令微调的表现在很大程度上依赖于指令数据的质量（Taori et al., 2023; Wang et al., 2023; Zhou et al., 2023）。偏好微调在偏好数据集的基础上，用基于人类反馈的强化学习（RLHF）（Bai et al., 2022）或偏好优化（Azar et al., 2024; Ethayarajh et al., 2024; Hong et al., 2024; Rafailov et al., 2023）进一步改进 LLM 的回复。对齐数据集的构建。我们把现有的模型对齐数据集构建方法分为两大类：人类与 LLM 的交互，以及合成指令生成。为构建对齐数据集，以往研究收集了人类与 LLM 的交互（Databricks, 2023; Zhao et al., 2024; Zheng et al., 2024; 2023; Köpf et al., 2023）。然而，人工编写指令不仅耗时费力，还可能掺入有毒内容（Zhao et al., 2024）。另一类方法（Wang et al., 2023; Taori et al., 2023; Xu et al., 2023a;b; Wang et al., 2024c; Sun et al., 2023）侧重于提示 LLM 生成合成指令数据集：从一小批人工标注的种子指令出发，再通过少样本提示加以扩展。不过，这些方法面临多样性方面的挑战，因为少样本提示得到的新指令往往与原始种子问题过于相似（Li et al., 2024a）。为扩大覆盖面，一些研究（Ding et al., 2023; Li et al., 2024a）先总结世界知识，再用它生成合成数据集。我们指出，MAGPIE 数据集同样属于合成数据集。不过，我们利用提示模板，不需要种子问题，也不需要提示工程。相对于上述两大类，对齐数据也可以通过对已有数据做变换来生成（Wang et al., 2022; Sanh et al., 2022; Gandhi et al., 2024）。然而，这些数据集中 NLP 任务的种类有限，可能妨碍微调后的 LLM 在真实场景中泛化（Li et al., 2024a）。也有混合数据集（例如 Ivison et al., 2023; Teknium, 2023a; Liu et al., 2024b; Zhou et al., 2023），它们从各种现有开源指令数据集中组合或挑选高质量指令数据，以扩大覆盖面（Ivison et al., 2023; Teknium, 2023a），和/或提升整体表现（Liu et al., 2024b; Zhou et al., 2023）。还有一些数据构建方法专注于提升推理与数学能力（Yue et al., 2023; 2024），它们可以进一步与 MAGPIE 合并，从而为指令微调构造更好的数据混合。训练数据提取。语言模型能够记住训练数据集中的样本，这可能使恶意用户得以提取隐私信息（Brown et al., 2022; Biderman et al., 2023; Carlini et al., 2021）。先驱工作（Krishna et al., 2020; Carlini et al., 2021; Nasr et al., 2023）分别表明，可以从 BERT（Devlin et al., 2018）、GPT-2（Radford et al., 2018）和 ChatGPT（Achiam et al., 2023）中提取私有的预训练数据。Yu et al. (2023) 提出了若干技术，包括调整采样策略，以便更好地从语言模型中提取训练数据集。最近，Kassem et al. (2024) 提出一种黑盒提示优化方法，用一个攻击者 LLM 来提取受害者 LLM 中程度很高的记忆内容。Wang et al. (2024b) 利用成员推断攻击（MIA）从微调后的语言模型中提取微调数据集。Bai et al. (2024) 通过特殊字符（例如 JSON 文件的结构符号，以及邮件和网络帖子中的 , #）提取生产级语言模型的训练数据集。与以往工作不同，我们的目标是借助 LLM 出色的生成能力，以极少的人力构建可公开的对齐数据集，而不是从 LLM 中提取私有训练数据。"
+      }
+    ],
+    "11": [
+      {
+        "text": "LIMITATIONS, DISCUSSIONS, AND ETHICAL CONSIDERATIONS",
+        "x": 126.8,
+        "y": 700.2,
+        "w": 316.7,
+        "h": 12,
+        "zh": "局限性、讨论与伦理考量"
+      },
+      {
+        "text": "Limitations and Discussions. MAGPIE-aligned LLMs demonstrate strong performance on instruction following benchmarks compared to the official Llama-3-8B-Instruct. However, we observe a performance degradation on math and reasoning benchmarks. Although we leverage the techniques described in Section 2.2 to generate specialized booster reasoning datasets, there is still a performance gap between MAGPIE-aligned LLMs and the official models. Enhancing the reasoning ability of MAGPIE-aligned models presents a promising direction for future research. Societal Impact and Potential Harmful Consequences. The primary objective of this paper is to develop a scalable method to synthesize instruction data to enhance the instruction-following capabilities of LLMs, and thus align them with human values. However, the data generated by MAGPIE may contain harmful instructions and/or responses, which may lead to unsafe behaviors if used raw in instruction tuning. Our empirical evaluations indicate that such harmful data instances constitute less than 1% of the dataset. Our data filtering technique in Appendix C can identify and",
+        "x": 108,
+        "y": 550.3,
+        "w": 397.7,
+        "h": 136.5,
+        "zh": "局限性与讨论。与官方 Llama-3-8B-Instruct 相比，MAGPIE 对齐的 LLM 在指令遵循基准上表现很强。不过，我们观察到它们在数学和推理基准上有所下降。尽管我们利用第 2.2 节所述技术生成了专门的推理增强数据集，MAGPIE 对齐的 LLM 与官方模型之间仍有性能差距。提升 MAGPIE 对齐模型的推理能力，是一个有前景的未来研究方向。社会影响与潜在有害后果。本文的主要目标是发展一种可扩展的方法来合成指令数据，以增强 LLM 的指令遵循能力，从而使它们与人类价值对齐。然而，MAGPIE 生成的数据可能包含有害指令和/或回复，若未经处理就用于指令微调，可能导致不安全行为。我们的实证评估表明，这类有害样本在数据集中所占比例不到 1%。附录 C 中的数据过滤技术可以识别并"
+      },
+      {
+        "text": "remove these instances, thus mitigating the risk.",
+        "x": 108,
+        "y": 539.3,
+        "w": 191.1,
+        "h": 10,
+        "zh": "去除这些样本，从而降低风险。"
+      },
+      {
+        "text": "In this paper, we developed a scalable method, MAGPIE, to synthesize instruction data for fine-tuning large language models. MAGPIE leveraged the predefined instruction templates of open-weight LLMs and crafted a prompt specifying only the role of instruction provider. Given the crafted prompt, the LLM then generated detailed instructions due to their auto-regressive nature. MAGPIE then sent the generated instructions to the LLM to generate corresponding responses. These pairs of instructions and responses constituted the instruction dataset. We used Llama-3-8B-instruct to label the instruction dataset and developed a filtering technique to select effective data instances for instruction tuning. We fine-tuned the Llama-3-8B base model using the selected data, and demonstrated that the finetuned model outperformed those fine-tuned using all baselines. Moreover, our fine-tuned models outperformed the official aligned model, Llama-3-8B-Instruct, which has been instruction-tuned and preference-optimized using more than 10M data instances. This highlighted the quality of the",
+        "x": 107.5,
+        "y": 377.8,
+        "w": 398.2,
+        "h": 119.6,
+        "zh": "本文中，我们开发了一种可扩展的方法 MAGPIE，用于合成指令数据以微调大语言模型。MAGPIE 利用开放权重 LLM 的预定义指令模板，构造一条只指定指令提出者角色的提示。给定这条构造好的提示后，LLM 会因其自回归特性而生成详细指令。MAGPIE 再把生成的指令送回 LLM，以生成对应回复。这些指令与回复配对构成指令数据集。我们用 Llama-3-8B-Instruct 为指令数据集打标签，并开发了一种过滤技术，以挑选对指令微调有效的样本。我们用选出的数据微调 Llama-3-8B 基座模型，并表明微调后的模型优于用所有基线微调得到的模型。此外，我们微调后的模型超过了官方对齐模型 Llama-3-8B-Instruct，后者使用超过 1000 万条数据做了指令微调和偏好优化。这凸显了"
+      },
+      {
+        "text": "The research of Z. Xu, F. Jiang, L. Niu, and R. Poovendran is partially supported by the National Science Foundation (NSF) AI Institute for Agent-based Cyber Threat Intelligence and Operation (ACTION) under grant IIS 2229876 and Air Force Office of Scientific Research (AFOSR) under grant FA9550-23-1-0208. The research of Y. Choi is partially supported by the National Science Foundation (NSF) under grant DMS-2134012 (Scaling Laws of Deep Learning) and the Office of Naval Research (ONR) under grant N00014-24-1-2207 (Symbolic Knowledge Distillation of LLMs",
+        "x": 107.7,
+        "y": 260.1,
+        "w": 396.5,
+        "h": 64.8,
+        "zh": "Z. Xu、F. Jiang、L. Niu 与 R. Poovendran 的研究部分得到美国国家科学基金会（NSF）基于智能体的网络威胁情报与行动人工智能研究所（ACTION）资助，项目编号 IIS 2229876，以及美国空军科学研究办公室（AFOSR）资助，项目编号 FA9550-23-1-0208。Y. Choi 的研究部分得到美国国家科学基金会（NSF）资助，项目编号 DMS-2134012（深度学习的缩放定律），以及海军研究办公室（ONR）资助，项目编号 N00014-24-1-2207（LLM 的符号知识蒸馏"
+      },
+      {
+        "text": "for All: Diverse Scales, Skills, and Values).",
+        "x": 108,
+        "y": 249.2,
+        "w": 173.1,
+        "h": 10,
+        "zh": "面向所有人：多样的规模、技能与价值）。"
+      },
+      {
+        "text": "This work is supported in part by funds provided by the National Science Foundation, Department of Homeland Security, and IBM. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the NSF or its",
+        "x": 107.7,
+        "y": 210.3,
+        "w": 396.3,
+        "h": 31.9,
+        "zh": "本工作部分得到美国国家科学基金会、国土安全部以及 IBM 提供的经费支持。本材料中表达的任何意见、发现、结论或建议均属于作者，不一定反映 NSF 或其"
+      },
+      {
+        "text": "Marah Abdin, Sam Ade Jacobs, Ammar Ahmad Awan, Jyoti Aneja, Ahmed Awadallah, Hany Awadalla, Nguyen Bach, Amit Bahree, Arash Bakhtiari, Harkirat Behl, et al. Phi-3 technical report: A highly capable language model locally on your phone. arXiv preprint arXiv:2404.14219, 2024. Josh Achiam, Steven Adler, Sandhini Agarwal, Lama Ahmad, Ilge Akkaya, Florencia Leoni Aleman, Diogo Almeida, Janko Altenschmidt, Sam Altman, Shyamal Anadkat, et al. Gpt-4 technical report.",
+        "x": 108,
+        "y": 102.3,
+        "w": 397.7,
+        "h": 61.1,
+        "zh": "Marah Abdin、Sam Ade Jacobs、Ammar Ahmad Awan、Jyoti Aneja、Ahmed Awadallah、Hany Awadalla、Nguyen Bach、Amit Bahree、Arash Bakhtiari、Harkirat Behl 等。Phi-3 技术报告：一部能在你的手机上本地运行的高性能语言模型。arXiv 预印本 arXiv:2404.14219，2024。Josh Achiam、Steven Adler、Sandhini Agarwal、Lama Ahmad、Ilge Akkaya、Florencia Leoni Aleman、Diogo Almeida、Janko Altenschmidt、Sam Altman、Shyamal Anadkat 等。GPT-4 技术报告。"
+      },
+      {
+        "text": "Mohammad Gheshlaghi Azar, Zhaohan Daniel Guo, Bilal Piot, Remi Munos, Mark Rowland, Michal Valko, and Daniele Calandriello. A general theoretical paradigm to understand learning from",
+        "x": 108,
+        "y": 62.1,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Mohammad Gheshlaghi Azar、Zhaohan Daniel Guo、Bilal Piot、Remi Munos、Mark Rowland、Michal Valko 与 Daniele Calandriello。一个用于理解从"
+      }
+    ],
+    "12": [
+      {
+        "text": "human preferences. In International Conference on Artificial Intelligence and Statistics, pp. 4447–4455. PMLR, 2024.",
+        "x": 117.6,
+        "y": 689.2,
+        "w": 388.1,
+        "h": 20.9,
+        "zh": "人类偏好中学习的一般理论范式。见 International Conference on Artificial Intelligence and Statistics，第 4447–4455 页。PMLR，2024。"
+      },
+      {
+        "text": "Jinze Bai, Shuai Bai, Yunfei Chu, Zeyu Cui, Kai Dang, Xiaodong Deng, Yang Fan, Wenbin Ge, Yu Han, Fei Huang, Binyuan Hui, Luo Ji, Mei Li, Junyang Lin, Runji Lin, Dayiheng Liu, Gao Liu, Chengqiang Lu, Keming Lu, Jianxin Ma, Rui Men, Xingzhang Ren, Xuancheng Ren, Chuanqi Tan, Sinan Tan, Jianhong Tu, Peng Wang, Shijie Wang, Wei Wang, Shengguang Wu, Benfeng Xu, Jin Xu, An Yang, Hao Yang, Jian Yang, Shusheng Yang, Yang Yao, Bowen Yu, Hongyi Yuan, Zheng Yuan, Jianwei Zhang, Xingxuan Zhang, Yichang Zhang, Zhenru Zhang, Chang Zhou, Jingren Zhou, Xiaohuan Zhou, and Tianhang Zhu. Qwen technical report. arXiv preprint arXiv:2309.16609,",
+        "x": 108,
+        "y": 603.2,
+        "w": 397.2,
+        "h": 75.7,
+        "zh": "Jinze Bai、Shuai Bai、Yunfei Chu、Zeyu Cui、Kai Dang、Xiaodong Deng、Yang Fan、Wenbin Ge、Yu Han、Fei Huang、Binyuan Hui、Luo Ji、Mei Li、Junyang Lin、Runji Lin、Dayiheng Liu、Gao Liu、Chengqiang Lu、Keming Lu、Jianxin Ma、Rui Men、Xingzhang Ren、Xuancheng Ren、Chuanqi Tan、Sinan Tan、Jianhong Tu、Peng Wang、Shijie Wang、Wei Wang、Shengguang Wu、Benfeng Xu、Jin Xu、An Yang、Hao Yang、Jian Yang、Shusheng Yang、Yang Yao、Bowen Yu、Hongyi Yuan、Zheng Yuan、Jianwei Zhang、Xingxuan Zhang、Yichang Zhang、Zhenru Zhang、Chang Zhou、Jingren Zhou、Xiaohuan Zhou 与 Tianhang Zhu。Qwen 技术报告。arXiv 预印本 arXiv:2309.16609，"
+      },
+      {
+        "text": "Yang Bai, Ge Pei, Jindong Gu, Yong Yang, and Xingjun Ma. Special characters attack: Toward scalable training data extraction from large language models. arXiv preprint arXiv:2405.05990,",
+        "x": 108,
+        "y": 561,
+        "w": 397.2,
+        "h": 20.9,
+        "zh": "Yang Bai、Ge Pei、Jindong Gu、Yong Yang 与 Xingjun Ma。特殊字符攻击：走向从大语言模型中可扩展地提取训练数据。arXiv 预印本 arXiv:2405.05990，"
+      },
+      {
+        "text": "Yuntao Bai, Andy Jones, Kamal Ndousse, Amanda Askell, Anna Chen, Nova DasSarma, Dawn Drain, Stanislav Fort, Deep Ganguli, Tom Henighan, Nicholas Joseph, Saurav Kadavath, Jackson Kernion, Tom Conerly, Sheer El-Showk, Nelson Elhage, Zac Hatfield-Dodds, Danny Hernandez, Tristan Hume, Scott Johnston, Shauna Kravec, Liane Lovitt, Neel Nanda, Catherine Olsson, Dario Amodei, Tom Brown, Jack Clark, Sam McCandlish, Chris Olah, Ben Mann, and Jared Kaplan. Training a helpful and harmless assistant with reinforcement learning from human feedback, 2022.",
+        "x": 108,
+        "y": 474.9,
+        "w": 397.7,
+        "h": 64.8,
+        "zh": "Yuntao Bai、Andy Jones、Kamal Ndousse、Amanda Askell、Anna Chen、Nova DasSarma、Dawn Drain、Stanislav Fort、Deep Ganguli、Tom Henighan、Nicholas Joseph、Saurav Kadavath、Jackson Kernion、Tom Conerly、Sheer El-Showk、Nelson Elhage、Zac Hatfield-Dodds、Danny Hernandez、Tristan Hume、Scott Johnston、Shauna Kravec、Liane Lovitt、Neel Nanda、Catherine Olsson、Dario Amodei、Tom Brown、Jack Clark、Sam McCandlish、Chris Olah、Ben Mann 与 Jared Kaplan。用基于人类反馈的强化学习训练一个有用且无害的助手，2022。"
+      },
+      {
+        "text": "Clémentine Fourrier, Nazneen Rajani, Omar Sanseviero, Lewis Tunstall, and Thomas Wolf. board. https://huggingface.co/spaces/open-llm-leaderboard/open_llm_",
+        "x": 118,
+        "y": 432.7,
+        "w": 386.6,
+        "h": 31.9,
+        "zh": "Clémentine Fourrier、Nazneen Rajani、Omar Sanseviero、Lewis Tunstall 与 Thomas Wolf。board。https://huggingface.co/spaces/open-llm-leaderboard/open_llm_"
+      },
+      {
+        "text": "Stella Biderman, Usvsn Prashanth, Lintang Sutawika, Hailey Schoelkopf, Quentin Anthony, Shivanshu Purohit, and Edward Raff. Emergent and predictable memorization in large language models. Advances in Neural Information Processing Systems, 36, 2023.",
+        "x": 108,
+        "y": 379.5,
+        "w": 397.7,
+        "h": 31.9,
+        "zh": "Stella Biderman、Usvsn Prashanth、Lintang Sutawika、Hailey Schoelkopf、Quentin Anthony、Shivanshu Purohit 与 Edward Raff。大语言模型中涌现且可预测的记忆。Advances in Neural Information Processing Systems，36，2023。"
+      },
+      {
+        "text": "Hannah Brown, Katherine Lee, Fatemehsadat Mireshghallah, Reza Shokri, and Florian Tramèr. What does it mean for a language model to preserve privacy? In Proceedings of the 2022 ACM Conference on Fairness, Accountability, and Transparency, pp. 2280–2292, 2022.",
+        "x": 108,
+        "y": 337.3,
+        "w": 397.7,
+        "h": 31.9,
+        "zh": "Hannah Brown、Katherine Lee、Fatemehsadat Mireshghallah、Reza Shokri 与 Florian Tramèr。语言模型保持隐私意味着什么？见 Proceedings of the 2022 ACM Conference on Fairness, Accountability, and Transparency，第 2280–2292 页，2022。"
+      },
+      {
+        "text": "Nicholas Carlini, Florian Tramer, Eric Wallace, Matthew Jagielski, Ariel Herbert-Voss, Katherine Lee, Adam Roberts, Tom Brown, Dawn Song, Ulfar Erlingsson, et al. Extracting training data from large language models. In 30th USENIX Security Symposium (USENIX Security 21), pp.",
+        "x": 108,
+        "y": 295.1,
+        "w": 397.7,
+        "h": 31.9,
+        "zh": "Nicholas Carlini、Florian Tramer、Eric Wallace、Matthew Jagielski、Ariel Herbert-Voss、Katherine Lee、Adam Roberts、Tom Brown、Dawn Song、Ulfar Erlingsson 等。从大语言模型中提取训练数据。见 30th USENIX Security Symposium (USENIX Security 21)，第"
+      },
+      {
+        "text": "Jiuhai Chen, Rifaa Qadri, Yuxin Wen, Neel Jain, John Kirchenbauer, Tianyi Zhou, and Tom Goldstein. Genqa: Generating millions of instructions from a handful of prompts. arXiv preprint arXiv:2406.10323, 2024.",
+        "x": 108,
+        "y": 241.9,
+        "w": 397.7,
+        "h": 31.9,
+        "zh": "Jiuhai Chen、Rifaa Qadri、Yuxin Wen、Neel Jain、John Kirchenbauer、Tianyi Zhou 与 Tom Goldstein。GenQA：从少量提示生成数百万条指令。arXiv 预印本 arXiv:2406.10323，2024。"
+      },
+      {
+        "text": "Lichang Chen, Shiyang Li, Jun Yan, Hai Wang, Kalpa Gunaratna, Vikas Yadav, Zheng Tang, Vijay Srinivasan, Tianyi Zhou, Heng Huang, et al. Alpagasus: Training a better alpaca with fewer data. arXiv preprint arXiv:2307.08701, 2023.",
+        "x": 108,
+        "y": 199.7,
+        "w": 397.7,
+        "h": 31.9,
+        "zh": "Lichang Chen、Shiyang Li、Jun Yan、Hai Wang、Kalpa Gunaratna、Vikas Yadav、Zheng Tang、Vijay Srinivasan、Tianyi Zhou、Heng Huang 等。AlpaGasus：用更少的数据训练出更好的 Alpaca。arXiv 预印本 arXiv:2307.08701，2023。"
+      },
+      {
+        "text": "Wei-Lin Chiang, Zhuohan Li, Zi Lin, Ying Sheng, Zhanghao Wu, Hao Zhang, Lianmin Zheng, Siyuan Zhuang, Yonghao Zhuang, Joseph E. Gonzalez, Ion Stoica, and Eric P. Xing. Vicuna: An open-source chatbot impressing gpt-4 with 90%* chatgpt quality, March 2023. URL https: //lmsys.org/blog/2023-03-30-vicuna/.",
+        "x": 108,
+        "y": 146.6,
+        "w": 399,
+        "h": 42.8,
+        "zh": "Wei-Lin Chiang、Zhuohan Li、Zi Lin、Ying Sheng、Zhanghao Wu、Hao Zhang、Lianmin Zheng、Siyuan Zhuang、Yonghao Zhuang、Joseph E. Gonzalez、Ion Stoica 与 Eric P. Xing。Vicuna：一个开源聊天机器人，以 90%* 的 ChatGPT 质量给 GPT-4 留下印象，2023 年 3 月。URL https://lmsys.org/blog/2023-03-30-vicuna/。"
+      },
+      {
+        "text": "Peter Clark, Isaac Cowhey, Oren Etzioni, Tushar Khot, Ashish Sabharwal, Carissa Schoenick, and Oyvind Tafjord. Think you have solved question answering? try arc, the ai2 reasoning challenge. arXiv preprint arXiv:1803.05457, 2018.",
+        "x": 108,
+        "y": 104.3,
+        "w": 397.7,
+        "h": 31.9,
+        "zh": "Peter Clark、Isaac Cowhey、Oren Etzioni、Tushar Khot、Ashish Sabharwal、Carissa Schoenick 与 Oyvind Tafjord。你以为自己解决了问答吗？试试 ARC，AI2 推理挑战。arXiv 预印本 arXiv:1803.05457，2018。"
+      },
+      {
+        "text": "Karl Cobbe, Vineet Kosaraju, Mohammad Bavarian, Mark Chen, Heewoo Jun, Lukasz Kaiser, Matthias Plappert, Jerry Tworek, Jacob Hilton, Reiichiro Nakano, et al. Training verifiers to solve math word problems. arXiv preprint arXiv:2110.14168, 2021.",
+        "x": 108,
+        "y": 62.1,
+        "w": 397.2,
+        "h": 31.9,
+        "zh": "Karl Cobbe、Vineet Kosaraju、Mohammad Bavarian、Mark Chen、Heewoo Jun、Lukasz Kaiser、Matthias Plappert、Jerry Tworek、Jacob Hilton、Reiichiro Nakano 等。训练验证器以求解数学应用题。arXiv 预印本 arXiv:2110.14168，2021。"
+      }
+    ],
+    "13": [
+      {
+        "text": "Ganqu Cui, Lifan Yuan, Ning Ding, Guanming Yao, Wei Zhu, Yuan Ni, Guotong Xie, Zhiyuan Liu, and Maosong Sun. Ultrafeedback: Boosting language models with high-quality feedback. arXiv preprint arXiv:2310.01377, 2023.",
+        "x": 108,
+        "y": 678.3,
+        "w": 397.2,
+        "h": 31.9,
+        "zh": "Ganqu Cui、Lifan Yuan、Ning Ding、Guanming Yao、Wei Zhu、Yuan Ni、Guotong Xie、Zhiyuan Liu 与 Maosong Sun。UltraFeedback：用高质量反馈增强语言模型。arXiv 预印本 arXiv:2310.01377，2023。"
+      },
+      {
+        "text": "URL https://huggingface.co/datasets/ databricks/databricks-dolly-15k.",
+        "x": 118,
+        "y": 646.9,
+        "w": 387.2,
+        "h": 20.9,
+        "zh": ""
+      },
+      {
+        "text": "Daniel Deutsch, Rotem Dror, and Dan Roth. On the limitations of reference-free evaluations of generated text. In Yoav Goldberg, Zornitsa Kozareva, and Yue Zhang (eds.), Proceedings of the 2022 Conference on Empirical Methods in Natural Language Processing, pp. 10960–10977, Abu Dhabi, United Arab Emirates, December 2022. Association for Computational Linguistics. doi: 10.18653/v1/2022.emnlp-main.753. URL https://aclanthology.org/2022.",
+        "x": 108,
+        "y": 582.6,
+        "w": 400.2,
+        "h": 53.8,
+        "zh": "Daniel Deutsch、Rotem Dror 与 Dan Roth。无参考生成文本评测的局限。见 Yoav Goldberg、Zornitsa Kozareva 与 Yue Zhang（编），Proceedings of the 2022 Conference on Empirical Methods in Natural Language Processing，第 10960–10977 页，阿拉伯联合酋长国阿布扎比，2022 年 12 月。Association for Computational Linguistics。doi: 10.18653/v1/2022.emnlp-main.753。URL https://aclanthology.org/2022。"
+      },
+      {
+        "text": "Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. Bert: Pre-training of deep bidirectional transformers for language understanding. arXiv preprint arXiv:1810.04805, 2018.",
+        "x": 108,
+        "y": 540.3,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Jacob Devlin、Ming-Wei Chang、Kenton Lee 与 Kristina Toutanova。BERT：面向语言理解的深度双向 Transformer 预训练。arXiv 预印本 arXiv:1810.04805，2018。"
+      },
+      {
+        "text": "Ning Ding, Yulin Chen, Bokai Xu, Yujia Qin, Zhi Zheng, Shengding Hu, Zhiyuan Liu, Maosong Sun, and Bowen Zhou. Enhancing chat language models by scaling high-quality instructional conversations. arXiv preprint arXiv:2305.14233, 2023.",
+        "x": 108,
+        "y": 498,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Ning Ding、Yulin Chen、Bokai Xu、Yujia Qin、Zhi Zheng、Shengding Hu、Zhiyuan Liu、Maosong Sun 与 Bowen Zhou。通过扩展高质量指令对话来增强聊天语言模型。arXiv 预印本 arXiv:2305.14233，2023。"
+      },
+      {
+        "text": "Matthijs Douze, Alexandr Guzhva, Chengqi Deng, Jeff Johnson, Gergely Szilvasy, Pierre-Emmanuel Mazaré, Maria Lomeli, Lucas Hosseini, and Hervé Jégou. The faiss library. 2024.",
+        "x": 108,
+        "y": 466.6,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Matthijs Douze、Alexandr Guzhva、Chengqi Deng、Jeff Johnson、Gergely Szilvasy、Pierre-Emmanuel Mazaré、Maria Lomeli、Lucas Hosseini 与 Hervé Jégou。FAISS 库。2024。"
+      },
+      {
+        "text": "Abhimanyu Dubey, Abhinav Jauhri, Abhinav Pandey, Abhishek Kadian, Ahmad Al-Dahle, Aiesha Letman, Akhil Mathur, Alan Schelten, Amy Yang, Angela Fan, et al. The llama 3 herd of models. arXiv preprint arXiv:2407.21783, 2024.",
+        "x": 108,
+        "y": 424.2,
+        "w": 397.7,
+        "h": 31.9,
+        "zh": "Abhimanyu Dubey、Abhinav Jauhri、Abhinav Pandey、Abhishek Kadian、Ahmad Al-Dahle、Aiesha Letman、Akhil Mathur、Alan Schelten、Amy Yang、Angela Fan 等。Llama 3 模型群。arXiv 预印本 arXiv:2407.21783，2024。"
+      },
+      {
+        "text": "Yann Dubois, Balázs Galambosi, Percy Liang, and Tatsunori B Hashimoto. Length-controlled alpacaeval: A simple way to debias automatic evaluators. arXiv preprint arXiv:2404.04475, 2024.",
+        "x": 108,
+        "y": 392.9,
+        "w": 397.7,
+        "h": 20.9,
+        "zh": "Yann Dubois、Balázs Galambosi、Percy Liang 与 Tatsunori B Hashimoto。长度受控的 AlpacaEval：一种消除自动评测器偏差的简单方法。arXiv 预印本 arXiv:2404.04475，2024。"
+      },
+      {
+        "text": "Kawin Ethayarajh, Winnie Xu, Niklas Muennighoff, Dan Jurafsky, and Douwe Kiela. Kto: Model alignment as prospect theoretic optimization. arXiv preprint arXiv:2402.01306, 2024.",
+        "x": 108,
+        "y": 361.5,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Kawin Ethayarajh、Winnie Xu、Niklas Muennighoff、Dan Jurafsky 与 Douwe Kiela。KTO：把模型对齐视为前景理论中的优化。arXiv 预印本 arXiv:2402.01306，2024。"
+      },
+      {
+        "text": "Saumya Gandhi, Ritu Gala, Vijay Viswanathan, Tongshuang Wu, and Graham Neubig. Better synthetic data by retrieving and transforming existing datasets. arXiv preprint arXiv:2404.14361,",
+        "x": 108,
+        "y": 330.1,
+        "w": 397.2,
+        "h": 20.9,
+        "zh": "Saumya Gandhi、Ritu Gala、Vijay Viswanathan、Tongshuang Wu 与 Graham Neubig。通过检索并变换已有数据集来获得更好的合成数据。arXiv 预印本 arXiv:2404.14361，"
+      },
+      {
+        "text": "Aryo Pradipta Gema, Joshua Ong Jun Leang, Giwon Hong, Alessio Devoto, Alberto Carlo Maria Mancino, Rohit Saxena, Xuanli He, Yu Zhao, Xiaotang Du, Mohammad Reza Ghasemi Madani, et al. Are we done with mmlu? arXiv preprint arXiv:2406.04127, 2024.",
+        "x": 108,
+        "y": 276.8,
+        "w": 397.2,
+        "h": 31.9,
+        "zh": "Aryo Pradipta Gema、Joshua Ong Jun Leang、Giwon Hong、Alessio Devoto、Alberto Carlo Maria Mancino、Rohit Saxena、Xuanli He、Yu Zhao、Xiaotang Du、Mohammad Reza Ghasemi Madani 等。MMLU 已经够了吗？arXiv 预印本 arXiv:2406.04127，2024。"
+      },
+      {
+        "text": "Dan Hendrycks, Collin Burns, Steven Basart, Andy Zou, Mantas Mazeika, Dawn Song, and",
+        "x": 108,
+        "y": 256.4,
+        "w": 396,
+        "h": 10,
+        "zh": "Dan Hendrycks、Collin Burns、Steven Basart、Andy Zou、Mantas Mazeika、Dawn Song 与"
+      },
+      {
+        "text": "Measuring massive multitask language understanding. arXiv:2009.03300, 2020.",
+        "x": 118,
+        "y": 234.5,
+        "w": 314,
+        "h": 20.9,
+        "zh": "大规模多任务语言理解的测量。arXiv:2009.03300，2020。"
+      },
+      {
+        "text": "Jiwoo Hong, Noah Lee, and James Thorne. Reference-free monolithic preference optimization with odds ratio. arXiv preprint arXiv:2403.07691, 2024.",
+        "x": 108,
+        "y": 203.1,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Jiwoo Hong、Noah Lee 与 James Thorne。用优势比做无参考的单体偏好优化。arXiv 预印本 arXiv:2403.07691，2024。"
+      },
+      {
+        "text": "Yue Huang, Lichao Sun, Haoran Wang, Siyuan Wu, Qihui Zhang, Yuan Li, Chujie Gao, Yixin Huang, Wenhan Lyu, Yixuan Zhang, Xiner Li, Hanchi Sun, Zhengliang Liu, Yixin Liu, Yijue Wang, Zhikun Zhang, Bertie Vidgen, Bhavya Kailkhura, Caiming Xiong, Chaowei Xiao, Chunyuan Li, Eric P. Xing, Furong Huang, Hao Liu, Heng Ji, Hongyi Wang, Huan Zhang, Huaxiu Yao, Manolis Kellis, Marinka Zitnik, Meng Jiang, Mohit Bansal, James Zou, Jian Pei, Jian Liu, Jianfeng Gao, Jiawei Han, Jieyu Zhao, Jiliang Tang, Jindong Wang, Joaquin Vanschoren, John Mitchell, Kai Shu, Kaidi Xu, Kai-Wei Chang, Lifang He, Lifu Huang, Michael Backes, Neil Zhenqiang Gong, Philip S. Yu, Pin-Yu Chen, Quanquan Gu, Ran Xu, Rex Ying, Shuiwang Ji, Suman Jana, Tianlong Chen, Tianming Liu, Tianyi Zhou, William Yang Wang, Xiang Li, Xiangliang Zhang, Xiao Wang, Xing Xie, Xun Chen, Xuyu Wang, Yan Liu, Yanfang Ye, Yinzhi Cao, Yong Chen, and Yue Zhao. Trustllm: Trustworthiness in large language models. In Forty-first International Conference on Machine Learning, 2024. URL https://openreview.net/forum?id=bWUU0LwwMp.",
+        "x": 108,
+        "y": 62.1,
+        "w": 397.7,
+        "h": 130.5,
+        "zh": "Yue Huang、Lichao Sun、Haoran Wang、Siyuan Wu、Qihui Zhang、Yuan Li、Chujie Gao、Yixin Huang、Wenhan Lyu、Yixuan Zhang、Xiner Li、Hanchi Sun、Zhengliang Liu、Yixin Liu、Yijue Wang、Zhikun Zhang、Bertie Vidgen、Bhavya Kailkhura、Caiming Xiong、Chaowei Xiao、Chunyuan Li、Eric P. Xing、Furong Huang、Hao Liu、Heng Ji、Hongyi Wang、Huan Zhang、Huaxiu Yao、Manolis Kellis、Marinka Zitnik、Meng Jiang、Mohit Bansal、James Zou、Jian Pei、Jian Liu、Jianfeng Gao、Jiawei Han、Jieyu Zhao、Jiliang Tang、Jindong Wang、Joaquin Vanschoren、John Mitchell、Kai Shu、Kaidi Xu、Kai-Wei Chang、Lifang He、Lifu Huang、Michael Backes、Neil Zhenqiang Gong、Philip S. Yu、Pin-Yu Chen、Quanquan Gu、Ran Xu、Rex Ying、Shuiwang Ji、Suman Jana、Tianlong Chen、Tianming Liu、Tianyi Zhou、William Yang Wang、Xiang Li、Xiangliang Zhang、Xiao Wang、Xing Xie、Xun Chen、Xuyu Wang、Yan Liu、Yanfang Ye、Yinzhi Cao、Yong Chen 与 Yue Zhao。TrustLLM：大语言模型中的可信度。见 Forty-first International Conference on Machine Learning，2024。URL https://openreview.net/forum?id=bWUU0LwwMp。"
+      }
+    ],
+    "14": [
+      {
+        "text": "Hamish Ivison, Yizhong Wang, Valentina Pyatkin, Nathan Lambert, Matthew Peters, Pradeep Dasigi, Joel Jang, David Wadden, Noah A Smith, Iz Beltagy, et al. Camels in a changing climate: Enhancing lm adaptation with tulu 2. arXiv preprint arXiv:2311.10702, 2023.",
+        "x": 108,
+        "y": 678.3,
+        "w": 397.4,
+        "h": 31.9,
+        "zh": "Hamish Ivison、Yizhong Wang、Valentina Pyatkin、Nathan Lambert、Matthew Peters、Pradeep Dasigi、Joel Jang、David Wadden、Noah A Smith、Iz Beltagy 等。变化气候中的骆驼：用 Tulu 2 增强语言模型适配。arXiv 预印本 arXiv:2311.10702，2023。"
+      },
+      {
+        "text": "Aly M Kassem, Omar Mahmoud, Niloofar Mireshghallah, Hyunwoo Kim, Yulia Tsvetkov, Yejin Choi, Sherif Saad, and Santu Rana. Alpaca against vicuna: Using llms to uncover memorization of llms. arXiv preprint arXiv:2403.04801, 2024.",
+        "x": 108,
+        "y": 637.6,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Aly M Kassem、Omar Mahmoud、Niloofar Mireshghallah、Hyunwoo Kim、Yulia Tsvetkov、Yejin Choi、Sherif Saad 与 Santu Rana。Alpaca 对阵 Vicuna：用 LLM 揭示 LLM 的记忆。arXiv 预印本 arXiv:2403.04801，2024。"
+      },
+      {
+        "text": "Andreas Köpf, Yannic Kilcher, Dimitri von Rütte, Sotiris Anagnostidis, Zhi Rui Tam, Keith Stevens, Abdullah Barhoum, Duc Nguyen, Oliver Stanley, Richárd Nagyfi, Shahul ES, Sameer Suri, David Glushkov, Arnav Dantuluri, Andrew Maguire, Christoph Schuhmann, Huu Nguyen, and Alexander Mattick. Openassistant conversations - democratizing large language model alignment. In A. Oh, T. Naumann, A. Globerson, K. Saenko, M. Hardt, and S. Levine (eds.), Advances in Neural Information Processing Systems, volume 36, pp. 47669–47681. Curran Associates, Inc., 2023.",
+        "x": 108,
+        "y": 564.1,
+        "w": 397.7,
+        "h": 64.8,
+        "zh": "Andreas Köpf、Yannic Kilcher、Dimitri von Rütte、Sotiris Anagnostidis、Zhi Rui Tam、Keith Stevens、Abdullah Barhoum、Duc Nguyen、Oliver Stanley、Richárd Nagyfi、Shahul ES、Sameer Suri、David Glushkov、Arnav Dantuluri、Andrew Maguire、Christoph Schuhmann、Huu Nguyen 与 Alexander Mattick。OpenAssistant 对话：让大语言模型对齐走向普及。见 A. Oh、T. Naumann、A. Globerson、K. Saenko、M. Hardt 与 S. Levine（编），Advances in Neural Information Processing Systems，第 36 卷，第 47669–47681 页。Curran Associates, Inc.，2023。"
+      },
+      {
+        "text": "https://proceedings.neurips.cc/paper_files/paper/2023/file/ 949f0f8f32267d297c2d4e3ee10a2e7e-Paper-Datasets_and_Benchmarks.",
+        "x": 118,
+        "y": 542.2,
+        "w": 387.2,
+        "h": 20.9,
+        "zh": ""
+      },
+      {
+        "text": "Kalpesh Krishna, Gaurav Singh Tomar, Ankur P. Parikh, Nicolas Papernot, and Mohit Iyyer. Thieves on sesame street! model extraction of bert-based apis. In International Conference on Learning Representations, 2020. URL https://openreview.net/forum?id=Byl5NREFDr.",
+        "x": 108,
+        "y": 490.6,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Kalpesh Krishna、Gaurav Singh Tomar、Ankur P. Parikh、Nicolas Papernot 与 Mohit Iyyer。芝麻街窃贼！对基于 BERT 的 API 做模型提取。见 International Conference on Learning Representations，2020。URL https://openreview.net/forum?id=Byl5NREFDr。"
+      },
+      {
+        "text": "Woosuk Kwon, Zhuohan Li, Siyuan Zhuang, Ying Sheng, Lianmin Zheng, Cody Hao Yu, Joseph E. Gonzalez, Hao Zhang, and Ion Stoica. Efficient memory management for large language model serving with pagedattention. In Proceedings of the ACM SIGOPS 29th Symposium on Operating Systems Principles, 2023.",
+        "x": 108,
+        "y": 438.9,
+        "w": 397.7,
+        "h": 42.8,
+        "zh": "Woosuk Kwon、Zhuohan Li、Siyuan Zhuang、Ying Sheng、Lianmin Zheng、Cody Hao Yu、Joseph E. Gonzalez、Hao Zhang 与 Ion Stoica。用 PagedAttention 为大语言模型服务做高效内存管理。见 Proceedings of the ACM SIGOPS 29th Symposium on Operating Systems Principles，2023。"
+      },
+      {
+        "text": "Nathan Lambert, Valentina Pyatkin, Jacob Morrison, LJ Miranda, Bill Yuchen Lin, Khyathi Chandu, Nouha Dziri, Sachin Kumar, Tom Zick, Yejin Choi, et al. Rewardbench: Evaluating reward models for language modeling. arXiv preprint arXiv:2403.13787, 2024.",
+        "x": 108,
+        "y": 398.3,
+        "w": 397.2,
+        "h": 31.9,
+        "zh": "Nathan Lambert、Valentina Pyatkin、Jacob Morrison、LJ Miranda、Bill Yuchen Lin、Khyathi Chandu、Nouha Dziri、Sachin Kumar、Tom Zick、Yejin Choi 等。RewardBench：评测语言建模所用的奖励模型。arXiv 预印本 arXiv:2403.13787，2024。"
+      },
+      {
+        "text": "Hector Levesque, Ernest Davis, and Leora Morgenstern. The winograd schema challenge. In Thirteenth international conference on the principles of knowledge representation and reasoning,",
+        "x": 108,
+        "y": 368.6,
+        "w": 397.2,
+        "h": 20.9,
+        "zh": "Hector Levesque、Ernest Davis 与 Leora Morgenstern。Winograd 模式挑战。见 Thirteenth international conference on the principles of knowledge representation and reasoning，"
+      },
+      {
+        "text": "Guohao Li, Hasan Hammoud, Hani Itani, Dmitrii Khizbullin, and Bernard Ghanem. Camel: Communicative agents for\" mind\" exploration of large language model society. Advances in Neural Information Processing Systems, 36:51991–52008, 2023a.",
+        "x": 108,
+        "y": 317,
+        "w": 397.7,
+        "h": 31.9,
+        "zh": "Guohao Li、Hasan Hammoud、Hani Itani、Dmitrii Khizbullin 与 Bernard Ghanem。CAMEL：用于“心智”探索大语言模型社会的交流型智能体。Advances in Neural Information Processing Systems，36:51991–52008，2023a。"
+      },
+      {
+        "text": "Haoran Li, Qingxiu Dong, Zhengyang Tang, Chaojun Wang, Xingxing Zhang, Haoyang Huang, Shaohan Huang, Xiaolong Huang, Zeqiang Huang, Dongdong Zhang, et al. Synthetic data (almost) from scratch: Generalized instruction tuning for language models. arXiv preprint arXiv:2402.13064,",
+        "x": 108,
+        "y": 276.3,
+        "w": 397.7,
+        "h": 31.9,
+        "zh": "Haoran Li、Qingxiu Dong、Zhengyang Tang、Chaojun Wang、Xingxing Zhang、Haoyang Huang、Shaohan Huang、Xiaolong Huang、Zeqiang Huang、Dongdong Zhang 等。几乎从零开始的合成数据：语言模型的广义指令微调。arXiv 预印本 arXiv:2402.13064，"
+      },
+      {
+        "text": "Tianle Li, Wei-Lin Chiang, Evan Frick, Lisa Dunlap, Banghua Zhu, Joseph E. Gonzalez, and Ion Stoica. From live data to high-quality benchmarks: The arena-hard pipeline, April 2024b. URL https://lmsys.org/blog/2024-04-19-arena-hard/.",
+        "x": 108,
+        "y": 224.7,
+        "w": 396.5,
+        "h": 31.9,
+        "zh": "Tianle Li、Wei-Lin Chiang、Evan Frick、Lisa Dunlap、Banghua Zhu、Joseph E. Gonzalez 与 Ion Stoica。从实时数据到高质量基准：Arena-Hard 流程，2024 年 4 月（2024b）。URL https://lmsys.org/blog/2024-04-19-arena-hard/。"
+      },
+      {
+        "text": "Xuechen Li, Tianyi Zhang, Yann Dubois, Rohan Taori, Ishaan Gulrajani, Carlos Guestrin, Percy Liang, and Tatsunori B. Hashimoto. Alpacaeval: An automatic evaluator of instruction-following models. https://github.com/tatsu-lab/alpaca_eval, 2023b.",
+        "x": 108,
+        "y": 184.1,
+        "w": 396.4,
+        "h": 31.9,
+        "zh": "Xuechen Li、Tianyi Zhang、Yann Dubois、Rohan Taori、Ishaan Gulrajani、Carlos Guestrin、Percy Liang 与 Tatsunori B. Hashimoto。AlpacaEval：指令遵循模型的自动评测器。https://github.com/tatsu-lab/alpaca_eval，2023b。"
+      },
+      {
+        "text": "Bill Yuchen Lin, Abhilasha Ravichander, Ximing Lu, Nouha Dziri, Melanie Sclar, Khyathi Chandu, Chandra Bhagavatula, and Yejin Choi. The unlocking spell on base llms: Rethinking alignment via in-context learning. arXiv preprint arXiv:2312.01552, 2023.",
+        "x": 108,
+        "y": 143.4,
+        "w": 397.2,
+        "h": 31.9,
+        "zh": "Bill Yuchen Lin、Abhilasha Ravichander、Ximing Lu、Nouha Dziri、Melanie Sclar、Khyathi Chandu、Chandra Bhagavatula 与 Yejin Choi。基座 LLM 上的解锁咒语：通过上下文学习重新思考对齐。arXiv 预印本 arXiv:2312.01552，2023。"
+      },
+      {
+        "text": "Bill Yuchen Lin, Khyathi Chandu, Faeze Brahman, Yuntian Deng, Abhilasha Ravichander, Valentina Pyatkin, Ronan Le Bras, and Yejin Choi. Wildbench: Benchmarking language models with challenging tasks from real users in the wild, 2024. URL https://huggingface.co/ spaces/allenai/WildBench.",
+        "x": 108,
+        "y": 91.8,
+        "w": 397.2,
+        "h": 42.8,
+        "zh": "Bill Yuchen Lin、Khyathi Chandu、Faeze Brahman、Yuntian Deng、Abhilasha Ravichander、Valentina Pyatkin、Ronan Le Bras 与 Yejin Choi。WildBench：用来自真实用户的挑战性任务评测语言模型，2024。URL https://huggingface.co/ spaces/allenai/WildBench。"
+      },
+      {
+        "text": "Stephanie Lin, Jacob Hilton, and Owain Evans. Truthfulqa: Measuring how models mimic human falsehoods. arXiv preprint arXiv:2109.07958, 2021.",
+        "x": 108,
+        "y": 62.1,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Stephanie Lin、Jacob Hilton 与 Owain Evans。TruthfulQA：测量模型如何模仿人类的谬误。arXiv 预印本 arXiv:2109.07958，2021。"
+      }
+    ],
+    "15": [
+      {
+        "text": "Ruibo Liu, Jerry Wei, Fangyu Liu, Chenglei Si, Yanzhe Zhang, Jinmeng Rao, Steven Zheng, Daiyi Peng, Diyi Yang, Denny Zhou, et al. Best practices and lessons learned on synthetic data for language models. arXiv preprint arXiv:2404.07503, 2024a. Wei Liu, Weihao Zeng, Keqing He, Yong Jiang, and Junxian He. What makes good data for alignment? a comprehensive study of automatic data selection in instruction tuning. In The Twelfth International Conference on Learning Representations, 2024b. URL https://openreview. net/forum?id=BTKAeLqLMw. Yu Meng, Mengzhou Xia, and Danqi Chen. Simpo: Simple preference optimization with a referencefree reward. arXiv preprint arXiv:2405.14734, 2024. Meta. Llama 3. https://ai.meta.com/blog/meta-llama-3/, 2024. Milad Nasr, Nicholas Carlini, Jonathan Hayase, Matthew Jagielski, A Feder Cooper, Daphne Ippolito, Christopher A Choquette-Choo, Eric Wallace, Florian Tramèr, and Katherine Lee. Scalable extraction of training data from (production) language models. arXiv preprint arXiv:2311.17035,",
+        "x": 108,
+        "y": 538.8,
+        "w": 400.2,
+        "h": 171.3,
+        "zh": "Ruibo Liu、Jerry Wei、Fangyu Liu、Chenglei Si、Yanzhe Zhang、Jinmeng Rao、Steven Zheng、Daiyi Peng、Diyi Yang、Denny Zhou 等。语言模型合成数据的最佳实践与经验教训。arXiv 预印本 arXiv:2404.07503，2024a。Wei Liu、Weihao Zeng、Keqing He、Yong Jiang 与 Junxian He。什么样的数据有利于对齐？指令微调中自动数据选择的全面研究。见 The Twelfth International Conference on Learning Representations，2024b。URL https://openreview. net/forum?id=BTKAeLqLMw。Yu Meng、Mengzhou Xia 与 Danqi Chen。SimPO：用无参考奖励做简单偏好优化。arXiv 预印本 arXiv:2405.14734，2024。Meta。Llama 3。https://ai.meta.com/blog/meta-llama-3/，2024。Milad Nasr、Nicholas Carlini、Jonathan Hayase、Matthew Jagielski、A Feder Cooper、Daphne Ippolito、Christopher A Choquette-Choo、Eric Wallace、Florian Tramèr 与 Katherine Lee。从（生产级）语言模型中可扩展地提取训练数据。arXiv 预印本 arXiv:2311.17035，"
+      },
+      {
+        "text": "OpenAI. Tiktoken. https://github.com/openai/tiktoken, 2024. Alec Radford, Karthik Narasimhan, Tim Salimans, Ilya Sutskever, et al. Improving language understanding by generative pre-training. 2018. Rafael Rafailov, Archit Sharma, Eric Mitchell, Christopher D Manning, Stefano Ermon, and Chelsea Finn. Direct preference optimization: Your language model is secretly a reward model. In Thirty-seventh Conference on Neural Information Processing Systems, 2023. URL https: //openreview.net/forum?id=HPuSIXJaa9. Victor Sanh, Albert Webson, Colin Raffel, Stephen Bach, Lintang Sutawika, Zaid Alyafeai, Antoine Chaffin, Arnaud Stiegler, Arun Raja, Manan Dey, M Saiful Bari, Canwen Xu, Urmish Thakker, Shanya Sharma Sharma, Eliza Szczechla, Taewoon Kim, Gunjan Chhablani, Nihal Nayak, Debajyoti Datta, Jonathan Chang, Mike Tian-Jian Jiang, Han Wang, Matteo Manica, Sheng Shen, Zheng Xin Yong, Harshit Pandey, Rachel Bawden, Thomas Wang, Trishala Neeraj, Jos Rozen, Abheesht Sharma, Andrea Santilli, Thibault Fevry, Jason Alan Fries, Ryan Teehan, Teven Le Scao, Stella Biderman, Leo Gao, Thomas Wolf, and Alexander M Rush. Multitask prompted training enables zero-shot task generalization. In International Conference on Learning Representations, 2022. URL https://openreview.net/forum?id=9Vrb9D0WI4. Sharath Turuvekere Sreenivas, Saurav Muralidharan, Raviraj Joshi, Marcin Chochowski, Mostofa Patwary, Mohammad Shoeybi, Bryan Catanzaro, Jan Kautz, and Pavlo Molchanov. Llm pruning and distillation in practice: The minitron approach. arXiv preprint arXiv:2408.11796, 2024. Zhiqing Sun, Yikang Shen, Qinhong Zhou, Hongxin Zhang, Zhenfang Chen, David Cox, Yiming Yang, and Chuang Gan. Principle-driven self-alignment of language models from scratch with minimal human supervision. Advances in Neural Information Processing Systems, 36, 2023. Rohan Taori, Ishaan Gulrajani, Tianyi Zhang, Yann Dubois, Xuechen Li, Carlos Guestrin, Percy Liang, and Tatsunori B. Hashimoto. Stanford alpaca: An instruction-following llama model. https://github.com/tatsu-lab/stanford_alpaca, 2023. Gemma Team, Morgane Riviere, Shreya Pathak, Pier Giuseppe Sessa, Cassidy Hardin, Surya Bhupatiraju, Léonard Hussenot, Thomas Mesnard, Bobak Shahriari, Alexandre Ramé, et al. Gemma 2: Improving open language models at a practical size. arXiv preprint arXiv:2408.00118,",
+        "x": 108,
+        "y": 161.3,
+        "w": 399,
+        "h": 358.1,
+        "zh": "OpenAI。Tiktoken。https://github.com/openai/tiktoken，2024。Alec Radford、Karthik Narasimhan、Tim Salimans、Ilya Sutskever 等。通过生成式预训练改进语言理解。2018。Rafael Rafailov、Archit Sharma、Eric Mitchell、Christopher D Manning、Stefano Ermon 与 Chelsea Finn。直接偏好优化：你的语言模型其实是一个奖励模型。见 Thirty-seventh Conference on Neural Information Processing Systems，2023。URL https: //openreview.net/forum?id=HPuSIXJaa9。Victor Sanh、Albert Webson、Colin Raffel、Stephen Bach、Lintang Sutawika、Zaid Alyafeai、Antoine Chaffin、Arnaud Stiegler、Arun Raja、Manan Dey、M Saiful Bari、Canwen Xu、Urmish Thakker、Shanya Sharma Sharma、Eliza Szczechla、Taewoon Kim、Gunjan Chhablani、Nihal Nayak、Debajyoti Datta、Jonathan Chang、Mike Tian-Jian Jiang、Han Wang、Matteo Manica、Sheng Shen、Zheng Xin Yong、Harshit Pandey、Rachel Bawden、Thomas Wang、Trishala Neeraj、Jos Rozen、Abheesht Sharma、Andrea Santilli、Thibault Fevry、Jason Alan Fries、Ryan Teehan、Teven Le Scao、Stella Biderman、Leo Gao、Thomas Wolf 与 Alexander M Rush。多任务提示训练使零样本任务泛化成为可能。见 International Conference on Learning Representations，2022。URL https://openreview.net/forum?id=9Vrb9D0WI4。Sharath Turuvekere Sreenivas、Saurav Muralidharan、Raviraj Joshi、Marcin Chochowski、Mostofa Patwary、Mohammad Shoeybi、Bryan Catanzaro、Jan Kautz 与 Pavlo Molchanov。实践中的 LLM 剪枝与蒸馏：Minitron 方法。arXiv 预印本 arXiv:2408.11796，2024。Zhiqing Sun、Yikang Shen、Qinhong Zhou、Hongxin Zhang、Zhenfang Chen、David Cox、Yiming Yang 与 Chuang Gan。从零开始、在极少人工监督下由原则驱动的语言模型自对齐。Advances in Neural Information Processing Systems，36，2023。Rohan Taori、Ishaan Gulrajani、Tianyi Zhang、Yann Dubois、Xuechen Li、Carlos Guestrin、Percy Liang 与 Tatsunori B. Hashimoto。Stanford Alpaca：一个遵循指令的 Llama 模型。https://github.com/tatsu-lab/stanford_alpaca，2023。Gemma Team、Morgane Riviere、Shreya Pathak、Pier Giuseppe Sessa、Cassidy Hardin、Surya Bhupatiraju、Léonard Hussenot、Thomas Mesnard、Bobak Shahriari、Alexandre Ramé 等。Gemma 2：在实用规模上改进开放语言模型。arXiv 预印本 arXiv:2408.00118，"
+      },
+      {
+        "text": "Llama Team. Meta llama guard 2. https://github.com/meta-llama/PurpleLlama/ blob/main/Llama-Guard2/MODEL_CARD.md, 2024.",
+        "x": 108,
+        "y": 120.9,
+        "w": 397.2,
+        "h": 20.9,
+        "zh": "Llama Team。Meta Llama Guard 2。https://github.com/meta-llama/PurpleLlama/ blob/main/Llama-Guard2/MODEL_CARD.md，2024。"
+      },
+      {
+        "text": "Teknium. Openhermes 2.5: An open dataset of synthetic data for generalist llm assistants, 2023b. URL https://huggingface.co/datasets/teknium/OpenHermes-2.5.",
+        "x": 108,
+        "y": 62.1,
+        "w": 397.7,
+        "h": 20.9,
+        "zh": "Teknium。OpenHermes 2.5：面向通用 LLM 助手的开源合成数据集，2023b。URL https://huggingface.co/datasets/teknium/OpenHermes-2.5。"
+      }
+    ],
+    "16": [
+      {
+        "text": "Hugo Touvron, Louis Martin, Kevin Stone, Peter Albert, Amjad Almahairi, Yasmine Babaei, Nikolay Bashlykov, Soumya Batra, Prajjwal Bhargava, Shruti Bhosale, et al. Llama 2: Open foundation and fine-tuned chat models. arXiv preprint arXiv:2307.09288, 2023.",
+        "x": 108,
+        "y": 678.3,
+        "w": 396.4,
+        "h": 31.9,
+        "zh": "Hugo Touvron、Louis Martin、Kevin Stone、Peter Albert、Amjad Almahairi、Yasmine Babaei、Nikolay Bashlykov、Soumya Batra、Prajjwal Bhargava、Shruti Bhosale 等。Llama 2：开放的基础模型与微调后的聊天模型。arXiv 预印本 arXiv:2307.09288，2023。"
+      },
+      {
+        "text": "Hoang Tran, Chris Glaze, and Braden Hancock. Iterative DPO alignment. Technical report, Snorkel",
+        "x": 108,
+        "y": 658.9,
+        "w": 396,
+        "h": 10,
+        "zh": "Hoang Tran、Chris Glaze 与 Braden Hancock。迭代式 DPO 对齐。技术报告，Snorkel"
+      },
+      {
+        "text": "Laurens Van der Maaten and Geoffrey Hinton. Visualizing data using t-sne. Journal of machine learning research, 9(11), 2008.",
+        "x": 108,
+        "y": 617.6,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Laurens Van der Maaten 与 Geoffrey Hinton。用 t-SNE 可视化数据。Journal of Machine Learning Research，9(11)，2008。"
+      },
+      {
+        "text": "Haoxiang Wang, Wei Xiong, Tengyang Xie, Han Zhao, and Tong Zhang. Interpretable preferences via multi-objective reward modeling and mixture-of-experts. In EMNLP, 2024a.",
+        "x": 108,
+        "y": 587.2,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Haoxiang Wang、Wei Xiong、Tengyang Xie、Han Zhao 与 Tong Zhang。通过多目标奖励建模与混合专家得到可解释的偏好。见 EMNLP，2024a。"
+      },
+      {
+        "text": "Jeffrey G Wang, Jason Wang, Marvin Li, and Seth Neel. Pandora’s white-box: Increased training data leakage in open llms. arXiv preprint arXiv:2402.17012, 2024b.",
+        "x": 108,
+        "y": 556.9,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Jeffrey G Wang、Jason Wang、Marvin Li 与 Seth Neel。潘多拉的白盒：开放 LLM 中加剧的训练数据泄露。arXiv 预印本 arXiv:2402.17012，2024b。"
+      },
+      {
+        "text": "Yizhong Wang, Swaroop Mishra, Pegah Alipoormolabashi, Yeganeh Kordi, Amirreza Mirzaei, Atharva Naik, Arjun Ashok, Arut Selvan Dhanasekaran, Anjana Arunkumar, David Stap, Eshaan Pathak, Giannis Karamanolakis, Haizhi Lai, Ishan Purohit, Ishani Mondal, Jacob Anderson, Kirby Kuznia, Krima Doshi, Kuntal Kumar Pal, Maitreya Patel, Mehrad Moradshahi, Mihir Parmar, Mirali Purohit, Neeraj Varshney, Phani Rohitha Kaza, Pulkit Verma, Ravsehaj Singh Puri, Rushang Karia, Savan Doshi, Shailaja Keyur Sampat, Siddhartha Mishra, Sujan Reddy A, Sumanta Patro, Tanay Dixit, and Xudong Shen. Super-NaturalInstructions: Generalization via declarative instructions on 1600+ NLP tasks. In Yoav Goldberg, Zornitsa Kozareva, and Yue Zhang (eds.), Proceedings of the 2022 Conference on Empirical Methods in Natural Language Processing, pp. 5085–5109, Abu Dhabi, United Arab Emirates, December 2022. Association for Computational Linguistics. doi: 10.18653/v1/2022.emnlp-main.340. URL https://aclanthology.org/ 2022.emnlp-main.340.",
+        "x": 108,
+        "y": 417,
+        "w": 397.7,
+        "h": 130.5,
+        "zh": "Yizhong Wang、Swaroop Mishra、Pegah Alipoormolabashi、Yeganeh Kordi、Amirreza Mirzaei、Atharva Naik、Arjun Ashok、Arut Selvan Dhanasekaran、Anjana Arunkumar、David Stap、Eshaan Pathak、Giannis Karamanolakis、Haizhi Lai、Ishan Purohit、Ishani Mondal、Jacob Anderson、Kirby Kuznia、Krima Doshi、Kuntal Kumar Pal、Maitreya Patel、Mehrad Moradshahi、Mihir Parmar、Mirali Purohit、Neeraj Varshney、Phani Rohitha Kaza、Pulkit Verma、Ravsehaj Singh Puri、Rushang Karia、Savan Doshi、Shailaja Keyur Sampat、Siddhartha Mishra、Sujan Reddy A、Sumanta Patro、Tanay Dixit 与 Xudong Shen。Super-NaturalInstructions：借助陈述式指令在 1600 余项 NLP 任务上泛化。见 Yoav Goldberg、Zornitsa Kozareva 与 Yue Zhang（编），Proceedings of the 2022 Conference on Empirical Methods in Natural Language Processing，第 5085–5109 页，阿拉伯联合酋长国阿布扎比，2022 年 12 月。Association for Computational Linguistics。doi: 10.18653/v1/2022.emnlp-main.340。URL https://aclanthology.org/ 2022.emnlp-main.340。"
+      },
+      {
+        "text": "Yizhong Wang, Yeganeh Kordi, Swaroop Mishra, Alisa Liu, Noah A. Smith, Daniel Khashabi, and Hannaneh Hajishirzi. Self-instruct: Aligning language models with self-generated instructions. In Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), pp. 13484–13508, Toronto, Canada, 2023. Association for Computational",
+        "x": 108,
+        "y": 364.7,
+        "w": 396,
+        "h": 42.8,
+        "zh": "Yizhong Wang、Yeganeh Kordi、Swaroop Mishra、Alisa Liu、Noah A. Smith、Daniel Khashabi 与 Hannaneh Hajishirzi。Self-Instruct：用自行生成的指令对齐语言模型。见 Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)，第 13484–13508 页，加拿大多伦多，2023。Association for Computational"
+      },
+      {
+        "text": "Zifeng Wang, Chun-Liang Li, Vincent Perot, Long T Le, Jin Miao, Zizhao Zhang, Chen-Yu Lee, and Tomas Pfister. Codeclm: Aligning language models with tailored synthetic data. arXiv preprint arXiv:2404.05875, 2024c.",
+        "x": 108,
+        "y": 312.5,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Zifeng Wang、Chun-Liang Li、Vincent Perot、Long T Le、Jin Miao、Zizhao Zhang、Chen-Yu Lee 与 Tomas Pfister。CodeCLM：用定制合成数据对齐语言模型。arXiv 预印本 arXiv:2404.05875，2024c。"
+      },
+      {
+        "text": "Jason Wei, Maarten Bosma, Vincent Zhao, Kelvin Guu, Adams Wei Yu, Brian Lester, Nan Du, Andrew M. Dai, and Quoc V Le. Finetuned language models are zero-shot learners. In International Conference on Learning Representations, 2022. URL https://openreview.net/forum?",
+        "x": 108,
+        "y": 271.2,
+        "w": 397.2,
+        "h": 31.9,
+        "zh": "Jason Wei、Maarten Bosma、Vincent Zhao、Kelvin Guu、Adams Wei Yu、Brian Lester、Nan Du、Andrew M. Dai 与 Quoc V Le。经过微调的语言模型是零样本学习者。见 International Conference on Learning Representations，2022。URL https://openreview.net/forum?"
+      },
+      {
+        "text": "Wei Xiong, Hanze Dong, Chenlu Ye, Ziqi Wang, Han Zhong, Heng Ji, Nan Jiang, and Tong Zhang. Iterative preference learning from human feedback: Bridging theory and practice for rlhf under kl-constraint, 2024.",
+        "x": 108,
+        "y": 218.9,
+        "w": 397.7,
+        "h": 31.9,
+        "zh": "Wei Xiong、Hanze Dong、Chenlu Ye、Ziqi Wang、Han Zhong、Heng Ji、Nan Jiang 与 Tong Zhang。从人类反馈中做迭代偏好学习：在 KL 约束下连接 RLHF 的理论与实践，2024。"
+      },
+      {
+        "text": "Can Xu, Qingfeng Sun, Kai Zheng, Xiubo Geng, Pu Zhao, Jiazhan Feng, Chongyang Tao, and Daxin Jiang. Wizardlm: Empowering large language models to follow complex instructions. arXiv preprint arXiv:2304.12244, 2023a.",
+        "x": 108,
+        "y": 177.6,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Can Xu、Qingfeng Sun、Kai Zheng、Xiubo Geng、Pu Zhao、Jiazhan Feng、Chongyang Tao 与 Daxin Jiang。WizardLM：使大语言模型能够遵循复杂指令。arXiv 预印本 arXiv:2304.12244，2023a。"
+      },
+      {
+        "text": "Canwen Xu, Daya Guo, Nan Duan, and Julian McAuley. Baize: An open-source chat model with parameter-efficient tuning on self-chat data. In Houda Bouamor, Juan Pino, and Kalika Bali (eds.), Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing, pp. 6268–6278, Singapore, December 2023b. Association for Computational Linguistics. doi: 10.18653/v1/2023.emnlp-main.385. URL https://aclanthology.org/2023.",
+        "x": 108,
+        "y": 114.4,
+        "w": 400.2,
+        "h": 53.8,
+        "zh": "Canwen Xu、Daya Guo、Nan Duan 与 Julian McAuley。Baize：在自聊天数据上做参数高效微调的开源聊天模型。见 Houda Bouamor、Juan Pino 与 Kalika Bali（编），Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing，第 6268–6278 页，新加坡，2023 年 12 月（2023b）。Association for Computational Linguistics。doi: 10.18653/v1/2023.emnlp-main.385。URL https://aclanthology.org/2023。"
+      },
+      {
+        "text": "An Yang, Baosong Yang, Binyuan Hui, Bo Zheng, Bowen Yu, Chang Zhou, Chengpeng Li, Chengyuan Li, Dayiheng Liu, Fei Huang, et al.",
+        "x": 108,
+        "y": 73.1,
+        "w": 397.2,
+        "h": 20.9,
+        "zh": "An Yang、Baosong Yang、Binyuan Hui、Bo Zheng、Bowen Yu、Chang Zhou、Chengpeng Li、Chengyuan Li、Dayiheng Liu、Fei Huang 等。"
+      },
+      {
+        "text": "Qwen2 technical report. arXiv:2407.10671, 2024.",
+        "x": 118,
+        "y": 62.1,
+        "w": 316.7,
+        "h": 20.9,
+        "zh": "Qwen2 技术报告。arXiv:2407.10671，2024。"
+      }
+    ],
+    "17": [
+      {
+        "text": "Da Yin, Xiao Liu, Fan Yin, Ming Zhong, Hritik Bansal, Jiawei Han, and Kai-Wei Chang. Dynosaur: A dynamic growth paradigm for instruction-tuning data curation. arXiv preprint arXiv:2305.14327,",
+        "x": 108,
+        "y": 689.2,
+        "w": 397.4,
+        "h": 20.9,
+        "zh": "Da Yin、Xiao Liu、Fan Yin、Ming Zhong、Hritik Bansal、Jiawei Han 与 Kai-Wei Chang。Dynosaur：指令微调数据整理的动态增长范式。arXiv 预印本 arXiv:2305.14327，"
+      },
+      {
+        "text": "Weichen Yu, Tianyu Pang, Qian Liu, Chao Du, Bingyi Kang, Yan Huang, Min Lin, and Shuicheng Yan. Bag of tricks for training data extraction from language models. In International Conference on Machine Learning, pp. 40306–40320. PMLR, 2023.",
+        "x": 108,
+        "y": 637.4,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Weichen Yu、Tianyu Pang、Qian Liu、Chao Du、Bingyi Kang、Yan Huang、Min Lin 与 Shuicheng Yan。从语言模型中提取训练数据的一套技巧。见 International Conference on Machine Learning，第 40306–40320 页。PMLR，2023。"
+      },
+      {
+        "text": "Xiang Yue, Xingwei Qu, Ge Zhang, Yao Fu, Wenhao Huang, Huan Sun, Yu Su, and Wenhu",
+        "x": 108,
+        "y": 618.5,
+        "w": 396,
+        "h": 10,
+        "zh": "Xiang Yue、Xingwei Qu、Ge Zhang、Yao Fu、Wenhao Huang、Huan Sun、Yu Su 与 Wenhu。"
+      },
+      {
+        "text": "Building math generalist models through hybrid instruction tuning. ArXiv, abs/2309.05653, 2023. URL https://api.semanticscholar.org/CorpusID:",
+        "x": 117.4,
+        "y": 596.6,
+        "w": 389.6,
+        "h": 20.9,
+        "zh": "通过混合指令微调构建数学通才模型。ArXiv，abs/2309.05653，2023。URL https://api.semanticscholar.org/CorpusID:"
+      },
+      {
+        "text": "Xiang Yue, Tuney Zheng, Ge Zhang, and Wenhu Chen. Mammoth2: Scaling instructions from the",
+        "x": 108,
+        "y": 566.7,
+        "w": 396,
+        "h": 10,
+        "zh": "Xiang Yue、Tuney Zheng、Ge Zhang 与 Wenhu Chen。MAmmoTH2：扩展来自"
+      },
+      {
+        "text": "Rowan Zellers, Ari Holtzman, Yonatan Bisk, Ali Farhadi, and Yejin Choi. Hellaswag: Can a machine really finish your sentence? arXiv preprint arXiv:1905.07830, 2019.",
+        "x": 108,
+        "y": 525.8,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Rowan Zellers、Ari Holtzman、Yonatan Bisk、Ali Farhadi 与 Yejin Choi。HellaSwag：机器真的能把你的句子写完吗？arXiv 预印本 arXiv:1905.07830，2019。"
+      },
+      {
+        "text": "Wenting Zhao, Xiang Ren, Jack Hessel, Claire Cardie, Yejin Choi, and Yuntian Deng. Wildchat: 1m chatGPT interaction logs in the wild. In The Twelfth International Conference on Learning Representations, 2024. URL https://openreview.net/forum?id=Bl8u7ZRlbM.",
+        "x": 108,
+        "y": 485,
+        "w": 397.4,
+        "h": 31.9,
+        "zh": "Wenting Zhao、Xiang Ren、Jack Hessel、Claire Cardie、Yejin Choi 与 Yuntian Deng。WildChat：真实环境中的 100 万条 ChatGPT 交互日志。见 The Twelfth International Conference on Learning Representations，2024。URL https://openreview.net/forum?id=Bl8u7ZRlbM。"
+      },
+      {
+        "text": "Lianmin Zheng, Wei-Lin Chiang, Ying Sheng, Siyuan Zhuang, Zhanghao Wu, Yonghao Zhuang, Zi Lin, Zhuohan Li, Dacheng Li, Eric Xing, Hao Zhang, Joseph E. Gonzalez, and Ion Stoica. Judging LLM-as-a-judge with MT-bench and chatbot arena. In Thirty-seventh Conference on Neural Information Processing Systems Datasets and Benchmarks Track, 2023. URL https: //openreview.net/forum?id=uccHPGDlao.",
+        "x": 108,
+        "y": 422.2,
+        "w": 399,
+        "h": 53.8,
+        "zh": "Lianmin Zheng、Wei-Lin Chiang、Ying Sheng、Siyuan Zhuang、Zhanghao Wu、Yonghao Zhuang、Zi Lin、Zhuohan Li、Dacheng Li、Eric Xing、Hao Zhang、Joseph E. Gonzalez 与 Ion Stoica。用 MT-Bench 和 Chatbot Arena 评判“以 LLM 为裁判”。见 Thirty-seventh Conference on Neural Information Processing Systems Datasets and Benchmarks Track，2023。URL https: //openreview.net/forum?id=uccHPGDlao。"
+      },
+      {
+        "text": "Lianmin Zheng, Wei-Lin Chiang, Ying Sheng, Tianle Li, Siyuan Zhuang, Zhanghao Wu, Yonghao Zhuang, Zhuohan Li, Zi Lin, Eric Xing, Joseph E. Gonzalez, Ion Stoica, and Hao Zhang. LMSYSchat-1m: A large-scale real-world LLM conversation dataset.",
+        "x": 108,
+        "y": 381.4,
+        "w": 397.7,
+        "h": 31.9,
+        "zh": "Lianmin Zheng、Wei-Lin Chiang、Ying Sheng、Tianle Li、Siyuan Zhuang、Zhanghao Wu、Yonghao Zhuang、Zhuohan Li、Zi Lin、Eric Xing、Joseph E. Gonzalez、Ion Stoica 与 Hao Zhang。LMSYS-Chat-1M：大规模真实世界 LLM 对话数据集。"
+      },
+      {
+        "text": "In The Twelfth International Conference on Learning Representations, 2024. URL https://openreview.net/forum?",
+        "x": 117.6,
+        "y": 370.4,
+        "w": 387,
+        "h": 20.9,
+        "zh": "见 The Twelfth International Conference on Learning Representations，2024。URL https://openreview.net/forum?"
+      },
+      {
+        "text": "Chunting Zhou, Pengfei Liu, Puxin Xu, Srinivasan Iyer, Jiao Sun, Yuning Mao, Xuezhe Ma, Avia Efrat, Ping Yu, Lili Yu, et al. Lima: Less is more for alignment. Advances in Neural Information Processing Systems, 36, 2023.",
+        "x": 108,
+        "y": 318.6,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Chunting Zhou、Pengfei Liu、Puxin Xu、Srinivasan Iyer、Jiao Sun、Yuning Mao、Xuezhe Ma、Avia Efrat、Ping Yu、Lili Yu 等。LIMA：对齐时少即是多。Advances in Neural Information Processing Systems，36，2023。"
+      },
+      {
+        "text": "Qihao Zhu, Daya Guo, Zhihong Shao, Dejian Yang, Peiyi Wang, Runxin Xu, Y Wu, Yukun Li, Huazuo Gao, Shirong Ma, et al. Deepseek-coder-v2: Breaking the barrier of closed-source models in code intelligence. arXiv preprint arXiv:2406.11931, 2024.",
+        "x": 108,
+        "y": 277.8,
+        "w": 397.2,
+        "h": 31.9,
+        "zh": "Qihao Zhu、Daya Guo、Zhihong Shao、Dejian Yang、Peiyi Wang、Runxin Xu、Y Wu、Yukun Li、Huazuo Gao、Shirong Ma 等。DeepSeek-Coder-V2：打破代码智能中闭源模型的壁垒。arXiv 预印本 arXiv:2406.11931，2024。"
+      }
+    ],
+    "18": [
+      {
+        "text": "STATISTICS OF INSTRUCTION DATASETS GENERATED BY MAGPIE COMPARED TO OTHER INSTRUCTION DATASETS.",
+        "x": 129.5,
+        "y": 686.2,
+        "w": 328.3,
+        "h": 25.9,
+        "zh": "MAGPIE 生成的指令数据集与其他指令数据集相比较的统计。"
+      },
+      {
+        "text": "MAGPIE can be readily deployed to state-of-the-art open-weight model families, including but not limited to Llama-3 (Meta, 2024), Llama-3.1 (Dubey et al., 2024), Qwen2 (Yang et al., 2024), Gemma-2 (Team et al., 2024), and Phi-3 (Abdin et al., 2024) model families. In what follows, we compare datasets generated by MAGPIE with the above model families compared to other state-of-the-art instruction datasets. The MAGPIE dataset family encompasses over 11.4 million diverse and high-quality instructions and corresponding responses generated from state-ofthe-art open-source models. This corpus represents the largest alignment dataset for LLMs that does not rely on human-written questions or employ complex multi-stage pipelines.",
+        "x": 108,
+        "y": 578.6,
+        "w": 397.7,
+        "h": 92.7,
+        "zh": "MAGPIE 可以方便地部署到最先进的开放权重模型家族，包括但不限于 Llama-3（Meta, 2024）、Llama-3.1（Dubey et al., 2024）、Qwen2（Yang et al., 2024）、Gemma-2（Team et al., 2024）和 Phi-3（Abdin et al., 2024）。下文把 MAGPIE 用上述模型家族生成的数据集，与其他最先进的指令数据集加以比较。MAGPIE 数据集家族包含超过 1140 万条多样且高质量的指令及对应回复，由最先进的开源模型生成。该语料是不依赖人工撰写的问题、也不采用复杂多阶段流程的、规模最大的 LLM 对齐数据集。"
+      },
+      {
+        "text": "Table 4: Statistics of MAGPIE family compared to other instruction datasets. Tokens are counted using the tiktoken library (OpenAI, 2024).",
+        "x": 107.7,
+        "y": 544.1,
+        "w": 396.3,
+        "h": 20.9,
+        "zh": "表 4：MAGPIE 家族与其他指令数据集的统计。词元数用 tiktoken 库（OpenAI, 2024）统计。"
+      },
+      {
+        "text": "ShareGPT (Zheng et al., 2023) WildChat (Zhao et al., 2024) LMSYS-Chat-1M (Zheng et al., 2024)",
+        "x": 146.7,
+        "y": 457.3,
+        "w": 103.3,
+        "h": 21.4,
+        "zh": "ShareGPT（Zheng et al., 2023） WildChat（Zhao et al., 2024） LMSYS-Chat-1M（Zheng et al., 2024）"
+      },
+      {
+        "text": "OpenHermes (Teknium, 2023a) Tulu V2 Mixture (Ivison et al., 2023)",
+        "x": 146.7,
+        "y": 431.8,
+        "w": 99.6,
+        "h": 14,
+        "zh": "OpenHermes（Teknium, 2023a） Tulu V2 Mixture（Ivison et al., 2023）"
+      },
+      {
+        "text": "Figure 6: This figure shows the performance of MAGPIELM-4B-Chat and MAGPIELM-8B-Chat compared with baselines. MAGPIELM significantly outperforms baselines of similar sizes.",
+        "x": 108,
+        "y": 65.4,
+        "w": 396,
+        "h": 20.9,
+        "zh": "图 6：本图展示 MAGPIELM-4B-Chat 与 MAGPIELM-8B-Chat 相对基线的表现。MAGPIELM 显著优于规模相近的基线。"
+      }
+    ],
+    "19": [
+      {
+        "text": "In this section, we discuss the details of our MAGPIELM. To construct the SFT and DPO datasets for aligning MAGPIELM, we select 550K and 200K high-quality instructions, respectively, from the MAGPIE family. These instructions cover diverse categories, ensuring a comprehensive training set. We then generate corresponding responses using the Gemma-2-9b-it model (Team et al., 2024). The benchmark performance of both models is demonstrated in Figure 6. Notably, MAGPIELM significantly outperforms other baselines of similar model sizes across multiple benchmarks, including Alpaca Eval 2 (Li et al., 2023b), Arena Hard (Li et al., 2024b), and Wildbench (Lin et al., 2024).",
+        "x": 107.5,
+        "y": 628.4,
+        "w": 398.2,
+        "h": 81.7,
+        "zh": "本节讨论我们的 MAGPIELM 的细节。为构建用于对齐 MAGPIELM 的 SFT 与 DPO 数据集，我们分别从 MAGPIE 家族中选出 55 万条和 20 万条高质量指令。这些指令覆盖多样类别，以保证训练集全面。然后我们用 Gemma-2-9b-it 模型（Team et al., 2024）生成对应回复。两个模型的基准表现见图 6。值得注意的是，MAGPIELM 在多个基准上显著优于规模相近的其他基线，这些基准包括 AlpacaEval 2（Li et al., 2023b）、Arena-Hard（Li et al., 2024b）和 WildBench（Lin et al., 2024）。"
+      },
+      {
+        "text": "In this section, we explore potential filter configurations for selecting high-quality instructional data for fine-tuning purposes. We provide the following metrics to enable users to customize their filtered",
+        "x": 108,
+        "y": 566.6,
+        "w": 396,
+        "h": 20.9,
+        "zh": "本节探讨若干可能的过滤配置，用于挑选高质量指令数据以供微调。我们提供下列指标，使用户能够定制自己过滤后的"
+      },
+      {
+        "text": "1. Input Length: The total number of characters in the instructions. 2. Output Length: The total number of characters in the responses. 3. Task Category: The specific category of the instructions. See Appendix D.1 for details. 4. Input Quality: The clarity, specificity, and coherence of the instructions, rated as ‘very poor’, ‘poor’, ‘average’, ‘good’, and ‘excellent’. 5. Input Difficulty: The level of knowledge required to address the task described in the instruction, rated as ‘very easy’, ‘easy’, ‘medium’, ‘hard’, or ‘very hard’. 6. Minimum Neighbor Distance: The embedding distance to the nearest neighbor. Can be used for filtering out repetitive or similar instances. 7. Reward: Denoted as r . See Section 3 for details. This metric can be used to filter out low-quality responses, such as repetitions or refusals. 8. Reward Difference: Denoted as r − rbase. See Section 3 for details. We provide several off-the-shelf configurations, as demonstrated in Table 5. We defer the detailed performance analysis of each filter configuration for MAGPIE-Pro to Appendix F.4.",
+        "x": 107.5,
+        "y": 363.4,
+        "w": 396.8,
+        "h": 182.6,
+        "zh": "1. 输入长度：指令中的字符总数。2. 输出长度：回复中的字符总数。3. 任务类别：指令所属的具体类别。详见附录 D.1。4. 输入质量：指令的清晰度、具体性和连贯性，评为 very poor（很差）、poor（较差）、average（中等）、good（良好）和 excellent（优秀）。5. 输入难度：处理指令所述任务所需的知识水平，评为 very easy（很容易）、easy（容易）、medium（中等）、hard（难）或 very hard（很难）。6. 最小近邻距离：到最近邻的嵌入距离。可用于滤除重复或相似的样本。7. 奖励：记为 r。详见第 3 节。该指标可用于滤除低质量回复，例如重复或拒绝。8. 奖励差值：记为 r − rbase。详见第 3 节。我们提供若干现成配置，如表 5 所示。MAGPIE-Pro 上各过滤配置的详细性能分析见附录 F.4。"
+      },
+      {
+        "text": "Table 5: Different filter configurations we provide. We note that the Output Length filter is applied last. Specifically, this filter selects the k instances of the longest responses. In our experiments, we empirically set τ1 = −12, and τ2 = 0.",
+        "x": 107.7,
+        "y": 320,
+        "w": 396.3,
+        "h": 33.4,
+        "zh": "表 5：我们提供的不同过滤配置。需要说明，输出长度过滤最后才应用。具体而言，该过滤选出回复最长的 k 个样本。实验中我们根据经验设定 τ1 = −12，τ2 = 0。"
+      },
+      {
+        "text": "This section provides additional dataset analysis, complementing the discussions in Section 3. Statistics including lengths of instructions and responses are illustrated in Figure 7.",
+        "x": 107.7,
+        "y": 161.6,
+        "w": 398,
+        "h": 20.9,
+        "zh": "本节提供额外的数据集分析，作为第 3 节讨论的补充。指令与回复长度等统计见图 7。"
+      },
+      {
+        "text": "ADDITIONAL ANALYSIS ON DATASET COVERAGE AND ATTRIBUTES.",
+        "x": 134.4,
+        "y": 137.5,
+        "w": 289.2,
+        "h": 10,
+        "zh": "关于数据集覆盖与属性的补充分析。"
+      },
+      {
+        "text": "Figure 8 presents the t-SNE plots of MAGPIE-Pro, Alpaca, Evol Instruct, and UltraChat. Each t-SNE plot is generated by randomly sampling 10,000 instructions from the associated dataset. We observe that the t-SNE plot of MAGPIE-Pro encompasses the area covered by the plots of Alpaca, Evol Instruct, and UltraChat. This suggests that MAGPIE-Pro provides a broader or more diverse range of topics, highlighting its extensive coverage across varied themes",
+        "x": 108,
+        "y": 73.1,
+        "w": 397.2,
+        "h": 53.8,
+        "zh": "图 8 给出 MAGPIE-Pro、Alpaca、Evol Instruct 和 UltraChat 的 t-SNE 图。每张 t-SNE 图都是从对应数据集中随机抽取 10,000 条指令生成的。我们观察到，MAGPIE-Pro 的 t-SNE 图覆盖了 Alpaca、Evol Instruct 和 UltraChat 图所占据的区域。这表明 MAGPIE-Pro 提供了更广或更多样的主题范围，凸显它在不同主题上的广泛覆盖"
+      }
+    ],
+    "20": [
+      {
+        "text": "Figure 8: This figure compares the t-SNE plot of MAGPIE-Pro with those of Alpaca, Evol Instruct, and UltraChat, each of which is sampled with 10,000 instructions. The t-SNE plot of MAGPIE-Pro encompasses the area covered by the other plots,",
+        "x": 257.9,
+        "y": 469.5,
+        "w": 247.1,
+        "h": 42.8,
+        "zh": "图 8：本图比较 MAGPIE-Pro 与 Alpaca、Evol Instruct、UltraChat 的 t-SNE 图，每个数据集都抽样 10,000 条指令。MAGPIE-Pro 的 t-SNE 图覆盖了其他图所占据的区域，"
+      },
+      {
+        "text": "Figure 7: Lengths of instructions demonstrating the comprehensive coverage of MAGPIE-Pro. and responses in MAGPIE-Air/Pro.",
+        "x": 108.2,
+        "y": 451.2,
+        "w": 390.1,
+        "h": 20.9,
+        "zh": "图 7：指令的长度，用以说明 MAGPIE-Pro 覆盖全面；以及 MAGPIE-Air/Pro 中的回复。"
+      },
+      {
+        "text": "Task Categories of MAGPIE-Pro and MAGPIE-Air. tributions for MAGPIE-Pro and MAGPIE-Air, as labeled by Llama-3-Instruct. We observe that the task category distributions of these two datasets are largely similar, however, MAGPIE-Pro exhibits a higher percentage of creative writing tasks.",
+        "x": 108,
+        "y": 394.3,
+        "w": 396,
+        "h": 42.8,
+        "zh": "MAGPIE-Pro 与 MAGPIE-Air 的任务类别。二者的分布由 Llama-3-Instruct 标注。我们观察到这两个数据集的任务类别分布大体相似，不过 MAGPIE-Pro 中创意写作任务所占比例更高。"
+      },
+      {
+        "text": "Figure 9: This figure visualizes the task category of MAGPIE-Pro and MAGPIE-Air by topic tags.",
+        "x": 112.7,
+        "y": 174.4,
+        "w": 386.6,
+        "h": 10,
+        "zh": "图 9：本图用主题标签可视化 MAGPIE-Pro 与 MAGPIE-Air 的任务类别。"
+      },
+      {
+        "text": "Visualization of Root Verbs and Their Direct Noun Objects. common root verbs and their direct noun objects of MAGPIE-Air dataset. This indicates the diverse topic coverage of MAGPIE-Air.",
+        "x": 108,
+        "y": 120,
+        "w": 396,
+        "h": 31.9,
+        "zh": "词根动词及其直接名词宾语的可视化。MAGPIE-Air 数据集中常见的词根动词及其直接名词宾语。这表明 MAGPIE-Air 的主题覆盖多样。"
+      },
+      {
+        "text": "Table 6 illustrates the percentage of different unsafe categories of MAGPIE-Air and MAGPIE-Pro, as labeled by Llama-Guard-2 (Team, 2024). We have two key observations. First, the proportion of data",
+        "x": 107.7,
+        "y": 62.1,
+        "w": 396.3,
+        "h": 20.9,
+        "zh": "表 6 给出由 Llama-Guard-2（Team, 2024）标注的 MAGPIE-Air 与 MAGPIE-Pro 中各类不安全内容的比例。我们有两点主要观察。第一，数据中"
+      }
+    ],
+    "21": [
+      {
+        "text": "Figure 10: This figure demonstrates the top 20 most common root verbs (shown in the inner circle) and their top 5 direct noun objects (shown in the outer circle) within the MAGPIE-Air dataset. This indicates that MAGPIE encompasses a broad range of topics.",
+        "x": 108,
+        "y": 477.5,
+        "w": 396.7,
+        "h": 31.9,
+        "zh": "图 10：本图展示 MAGPIE-Air 数据集中最常见的 20 个词根动词（内圈）及其前 5 个直接名词宾语（外圈）。这表明 MAGPIE 涵盖了广泛的主题。"
+      },
+      {
+        "text": "containing potentially harmful queries is minimal, with less than 1% for both datasets. Second, the majority of unsafe responses fall into the category of specialized advice, which includes responses that may offer specialized financial, medical, or legal advice, or suggest that dangerous activities or",
+        "x": 108,
+        "y": 424.1,
+        "w": 396.2,
+        "h": 31.9,
+        "zh": "含有潜在有害查询的比例很小，两个数据集都不到 1%。第二，不安全回复大多落入专门建议这一类，其中包括可能提供专门的金融、医疗或法律建议的回复，或者暗示危险活动或"
+      },
+      {
+        "text": "Table 6: This table shows the percentage of different unsafe categories of MAGPIE-Air and MAGPIEPro tagged by Llama-Guard-2 Team (2024) model.",
+        "x": 107.7,
+        "y": 381.2,
+        "w": 398,
+        "h": 20.9,
+        "zh": "表 6：本表给出由 Llama-Guard-2 Team (2024) 模型标注的 MAGPIE-Air 与 MAGPIE-Pro 中各类不安全内容的比例。"
+      },
+      {
+        "text": "ABLATION ANALYSIS ON GENERATION CONFIGURATIONS",
+        "x": 134.4,
+        "y": 300.3,
+        "w": 244.5,
+        "h": 10,
+        "zh": "生成配置的消融分析"
+      },
+      {
+        "text": "(c) Average Minimum Neighbor Distances of MAGPIE-Air",
+        "x": 384.9,
+        "y": 162.9,
+        "w": 119.3,
+        "h": 18.9,
+        "zh": "（c）MAGPIE-Air 的平均最小近邻距离"
+      },
+      {
+        "text": "Figure 11: This figure illustrates the impact of varying decoding parameters on the quality, difficulty, and diversity of generated instructions. We observe that while higher temperature and top-p values may decrease the overall quality, they tend to increase both the difficulty and diversity of the",
+        "x": 108,
+        "y": 120.3,
+        "w": 397.2,
+        "h": 31.9,
+        "zh": "图 11：本图说明改变解码参数对所生成指令的质量、难度和多样性的影响。我们观察到，较高的温度和 top-p 虽然可能降低整体质量，但往往会同时提高难度和多样性，对象是"
+      },
+      {
+        "text": "Ablation Analysis on Decoding Parameters. We conduct an ablation analysis on the decoding parameters used in generating instruction with MAGPIE. Specifically, we use three different temperatures (i.e., 1, 1.1, and 1.2) and top-p values (i.e., 1, 0.995, and 0.99) during Step 1 of MAGPIE.",
+        "x": 107.6,
+        "y": 62.1,
+        "w": 398.1,
+        "h": 31.9,
+        "zh": "解码参数的消融分析。我们对 MAGPIE 生成指令时使用的解码参数做消融分析。具体而言，在 MAGPIE 的步骤 1 中，我们使用三种温度（即 1、1.1 和 1.2）以及三种 top-p（即 1、0.995 和 0.99）。"
+      }
+    ],
+    "22": [
+      {
+        "text": "We use three metrics, Average Quality Score, Average Difficulty Score and Average Minimum Neighbor Distance to characterize the quality, difficulty, and diversity of instructions using different decoding parameters. The Average Quality Score is calculated by averaging the ratings of all data within a specific temperature-top-p pair, on a scale from 1 (‘very poor’) to 5 (‘excellent’). Similarly, the Average Difficulty Score is rated on a scale from 1 (‘very easy’) to 5 (‘very hard’). The Average Minimum Neighbor Distance is calculated by averaging the minimum neighbor distances, as defined in Section 3, for all data generated using the same decoding parameters. The findings are summarized in Figure 11. We observe that higher temperature and top-p values may slightly decrease the overall quality of instructions, while simultaneously increasing the difficulty and remarkably enhancing the diversity of the instructions generated. The selection of these hyper-parameters should be tailored to the user’s specific requirements, balancing the trade-offs between quality, difficulty, and diversity.",
+        "x": 107.5,
+        "y": 551.7,
+        "w": 397.7,
+        "h": 158.4,
+        "zh": "我们用三项指标，即平均质量分、平均难度分和平均最小近邻距离，来刻画不同解码参数下指令的质量、难度和多样性。平均质量分是把某一温度与 top-p 组合下全部数据的评分取平均，量表从 1（very poor，很差）到 5（excellent，优秀）。类似地，平均难度分的量表从 1（very easy，很容易）到 5（very hard，很难）。平均最小近邻距离是对使用同一组解码参数生成的全部数据，按第 3 节的定义，把最小近邻距离取平均。结果汇总于图 11。我们观察到，较高的温度和 top-p 可能使指令的整体质量略有下降，同时提高难度，并显著增强所生成指令的多样性。这些超参数的选择应配合用户的具体需求，在质量、难度和多样性之间权衡。"
+      },
+      {
+        "text": "Ablation Analysis on the System Prompt. Figure 12 compares the use of system prompt compared with not using it in Step 1 of MAGPIE. Since the Llama-3 model does not have an official system prompt, we use the default system prompt from Vicuna (Chiang et al., 2023): A chat between a curious user and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user’s questions.",
+        "x": 107.6,
+        "y": 469,
+        "w": 245.6,
+        "h": 75.7,
+        "zh": "系统提示的消融分析。图 12 比较了在 MAGPIE 步骤 1 中使用系统提示与不使用系统提示的情形。由于 Llama-3 模型没有官方系统提示，我们使用 Vicuna（Chiang et al., 2023）的默认系统提示：一场好奇的用户与人工智能助手之间的对话。助手对用户的问题给出有帮助、详细且有礼貌的回答。"
+      },
+      {
+        "text": "(b)Comparison ofInputDifficulty w/wo System Prompts We observe that using a system prompt generally results in a decrease in the overall quality of instructions, and the instruc-",
+        "x": 107.5,
+        "y": 447.1,
+        "w": 390.4,
+        "h": 25,
+        "zh": "（b）有无系统提示时的输入难度比较。我们观察到，使用系统提示通常会降低指令的整体质量，而且这些指令"
+      },
+      {
+        "text": "Figure 12: This figure compares the tions are easier. Consequently, we recommend not appending",
+        "x": 108,
+        "y": 436.2,
+        "w": 396,
+        "h": 19.7,
+        "zh": "图 12：本图比较了。会更容易。因此，我们建议不要附加"
+      },
+      {
+        "text": "input quality and difficulty with and system prompts in default settings.",
+        "x": 108,
+        "y": 425.2,
+        "w": 396,
+        "h": 19.7,
+        "zh": "输入质量与难度，以及默认设置中的系统提示。"
+      },
+      {
+        "text": "We note that LLMs may occasionally favor its own response (Deutsch et al., 2022). In what follows, we conduct experiments to evaluate the impact of annotating models when labeling quality and difficulty of the MAGPIE-Air dataset. We used the Qwen-2-7B-Instruct model (outside the Llama-3 family) to annotate the quality and difficulty of our MAGPIE-Air dataset.",
+        "x": 107.7,
+        "y": 314.9,
+        "w": 245.6,
+        "h": 64.8,
+        "zh": "我们注意到，LLM 有时会偏爱自己的回复（Deutsch et al., 2022）。下文我们做实验，评估标注模型在为 MAGPIE-Air 数据集标注质量与难度时的影响。我们使用不属于 Llama-3 家族的 Qwen-2-7B-Instruct 模型，来标注 MAGPIE-Air 数据集的质量与难度。"
+      },
+      {
+        "text": "The statistics are summarized in Figure 13. Our findings show that even when evaluated by Qwen-2-7BInstruct, the MAGPIE-Air dataset maintains high quality and difficulty, which is even higher than those originally annotated by Llama-3-8B-Instruct. This suggests that our dataset’s quality is robust across different annotators.",
+        "x": 107.7,
+        "y": 243.2,
+        "w": 245.4,
+        "h": 70.7,
+        "zh": "统计结果汇总于图 13。我们发现，即便由 Qwen-2-7B-Instruct 来评估，MAGPIE-Air 数据集仍然保持较高的质量与难度，甚至高于原先由 Llama-3-8B-Instruct 标注的结果。这表明我们数据集的质量在不同标注者之间是稳健的。"
+      },
+      {
+        "text": "the impact of different annotators on evaluating the instruction qual-",
+        "x": 361.4,
+        "y": 189.3,
+        "w": 144.2,
+        "h": 20.9,
+        "zh": "不同标注者在评估指令质量时的影响"
+      },
+      {
+        "text": "FOR GENERATING MAGPIE-AIR AND MAGPIE-PRO",
+        "x": 108.2,
+        "y": 168.2,
+        "w": 214,
+        "h": 10,
+        "zh": "用于生成 MAGPIE-Air 与 MAGPIE-Pro"
+      },
+      {
+        "text": "As detailed in Appendix D.3, varying decoding parameters in Step 1 can significantly influence the quality, difficulty, and diversity of the generated instructions. To optimize the trade-offs among these attributes, we employ diverse decoding parameters for the generation of MAGPIE-Air and MAGPIE-Pro. Table 7 presents the configurations of MAGPIE-Air and MAGPIE-Pro, showcasing how diverse decoding parameters shape each dataset. We employ greedy decoding to generate responses in Step 2 for MAGPIE-Air and MAGPIE-Pro. The intuition is that the word with the highest probability is more likely to originate from the model’s",
+        "x": 107.5,
+        "y": 73.1,
+        "w": 396.8,
+        "h": 81.7,
+        "zh": "如附录 D.3 所述，步骤 1 中解码参数的变化会显著影响所生成指令的质量、难度和多样性。为在这些属性之间取得较好的折中，我们在生成 MAGPIE-Air 和 MAGPIE-Pro 时采用多样的解码参数。表 7 给出 MAGPIE-Air 与 MAGPIE-Pro 的配置，展示不同解码参数如何塑造每个数据集。我们在步骤 2 对 MAGPIE-Air 和 MAGPIE-Pro 使用贪心解码来生成回复。其直觉是，概率最高的词更有可能来自模型的"
+      }
+    ],
+    "23": [
+      {
+        "text": "Table 7: This table demonstrates the configurations of generating instructions of MAGPIE-Air and MAGPIE-Pro datasets with varying decoding parameters.",
+        "x": 107.7,
+        "y": 691.5,
+        "w": 396.3,
+        "h": 20.9,
+        "zh": "表 7：本表给出用不同解码参数生成 MAGPIE-Air 与 MAGPIE-Pro 数据集中的指令时所用的配置。"
+      },
+      {
+        "text": "EXPERIMENTAL SETUPS FOR INSTRUCTION TUNING AND PREFERENCE TUNING",
+        "x": 133.3,
+        "y": 430.1,
+        "w": 337.4,
+        "h": 10,
+        "zh": "指令微调与偏好微调的实验设置"
+      },
+      {
+        "text": "Supervised Fine-Tuning Hyper-parameters. Table 8 demonstrates the detailed supervised finetuning hyper-parameters. These experiments were conducted using Axolotl .",
+        "x": 108,
+        "y": 394.9,
+        "w": 397.7,
+        "h": 20.9,
+        "zh": "监督微调超参数。表 8 给出监督微调的详细超参数。这些实验使用 Axolotl 完成。"
+      },
+      {
+        "text": "Table 8: This table shows the hyper-parameters for supervised fine-tuning.",
+        "x": 157.6,
+        "y": 364.9,
+        "w": 296.5,
+        "h": 10,
+        "zh": "表 8：本表给出监督微调的超参数。"
+      },
+      {
+        "text": "Per-device Batch Size Gradient Accumulation Steps Effective Batch Size",
+        "x": 162.8,
+        "y": 266.3,
+        "w": 106.1,
+        "h": 28.9,
+        "zh": "每设备批大小 梯度累积步数 有效批大小"
+      },
+      {
+        "text": "Adamw with βs = (0.9, 0.999) and ϵ = 10 Learning Rate Scheduler",
+        "x": 162.8,
+        "y": 245.7,
+        "w": 274.3,
+        "h": 18.9,
+        "zh": "AdamW，β 为 (0.9, 0.999)，ϵ = 10。学习率调度器"
+      },
+      {
+        "text": "Preference Tuning Hyper-parameters. Table 9 demonstrates the detailed DPO hyper-parameters for aligning Llama-3-8B using MAGPIE-Air-DPO and MAGPIE-Pro-DPO. These experiments were conducted using Alignment Handbook . Decoding parameters for evaluation benchmarks. For Arena-Hard (Li et al., 2024b) and WildBench (Lin et al., 2024), we follow its default setting and use greedy decoding for all settings. For AlpacaEval 2 (Li et al., 2023b) which allows the model provider to specify decoding parameters, we also employ greedy decoding in all experiments with a slightly increased repetition penalty (RP = 1.2) to mitigate the potential repetitive outputs during the generation.",
+        "x": 107.6,
+        "y": 108.5,
+        "w": 398,
+        "h": 92.7,
+        "zh": "偏好微调超参数。表 9 给出用 MAGPIE-Air-DPO 和 MAGPIE-Pro-DPO 对齐 Llama-3-8B 时的详细 DPO 超参数。这些实验使用 Alignment Handbook 完成。评测基准的解码参数。对于 Arena-Hard（Li et al., 2024b）和 WildBench（Lin et al., 2024），我们遵循其默认设置，所有设置都使用贪心解码。对于允许模型提供方指定解码参数的 AlpacaEval 2（Li et al., 2023b），我们在全部实验中同样使用贪心解码，并把重复惩罚略微提高（RP = 1.2），以减轻生成过程中可能出现的重复输出。"
+      },
+      {
+        "text": "https://github.com/OpenAccess-AI-Collective/axolotl https://github.com/huggingface/alignment-handbook",
+        "x": 124.1,
+        "y": 62.1,
+        "w": 275.4,
+        "h": 19.8,
+        "zh": ""
+      }
+    ],
+    "24": [
+      {
+        "text": "Table 9: This table shows the hyper-parameters for direct preference optimization.",
+        "x": 142,
+        "y": 702.5,
+        "w": 327.7,
+        "h": 10,
+        "zh": "表 9：本表给出直接偏好优化的超参数。"
+      },
+      {
+        "text": "Per-device Batch Size Gradient Accumulation Steps Effective Batch Size",
+        "x": 162.8,
+        "y": 603.9,
+        "w": 106.1,
+        "h": 28.9,
+        "zh": "每设备批大小 梯度累积步数 有效批大小"
+      },
+      {
+        "text": "Adamw with βs = (0.9, 0.999) and ϵ = 10 Learning Rate Scheduler",
+        "x": 162.8,
+        "y": 583.3,
+        "w": 274.3,
+        "h": 18.9,
+        "zh": "AdamW，β 为 (0.9, 0.999)，ϵ = 10。学习率调度器"
+      },
+      {
+        "text": "Table 10 compares the performance of MAGPIE-Air-MT and MAGPIE-Pro-MT with their respective single-turn counterparts. We observe that the multi-turn datasets have enhanced performance, particularly in the Arena-Hard benchmark.",
+        "x": 107.7,
+        "y": 470.2,
+        "w": 398,
+        "h": 31.9,
+        "zh": "表 10 比较 MAGPIE-Air-MT 和 MAGPIE-Pro-MT 与各自单轮版本的表现。我们观察到，多轮数据集提升了表现，在 Arena-Hard 基准上尤其明显。"
+      },
+      {
+        "text": "Table 10: This table compares the performance of the multi-turn versions, MAGPIE-Air-MT and MAGPIE-Pro-MT, with their single-turn counterparts. All models are instruction-tuned on the Llama-",
+        "x": 107.7,
+        "y": 436.8,
+        "w": 398,
+        "h": 20.9,
+        "zh": "表 10：本表比较多轮版本 MAGPIE-Air-MT、MAGPIE-Pro-MT 与各自单轮版本的表现。所有模型都在 Llama- 上做指令微调"
+      },
+      {
+        "text": "COMPARE MAGPIE AND SELF-INSTRUCT USING LLAMA-3-8B-INSTRUCT",
+        "x": 131.9,
+        "y": 294.6,
+        "w": 308.6,
+        "h": 10,
+        "zh": "用 Llama-3-8B-Instruct 比较 MAGPIE 与 Self-Instruct"
+      },
+      {
+        "text": "To compare the performance of MAGPIE and other synthetic dataset generation methods using the same model, we follow the official Self-Instruct (Wang et al., 2023) setup and generate a 100K supervised fine-tuning dataset using Llama-3-8B-Instruct. For a fair comparison, we select the first 100K data samples from the MAGPIE-Air dataset generated by Llama-3-8B-Instruct. The performance of models fine-tuned with these two datasets is shown in the table 11. We observe a significant performance gap between models fine-tuned with datasets generated by SelfInstruct and our MAGPIE. Our analysis revealed that the instruction format in Self-Instruct-generated",
+        "x": 107.3,
+        "y": 202.1,
+        "w": 398.4,
+        "h": 81.7,
+        "zh": "为了在使用同一模型的条件下比较 MAGPIE 与其他合成数据集生成方法的表现，我们遵循官方 Self-Instruct（Wang et al., 2023）的设置，用 Llama-3-8B-Instruct 生成一个 10 万条的监督微调数据集。为公平比较，我们从由 Llama-3-8B-Instruct 生成的 MAGPIE-Air 数据集中选取前 10 万条样本。用这两个数据集微调的模型表现见表 11。我们观察到，用 Self-Instruct 生成的数据集微调的模型，与用我们的 MAGPIE 微调的模型之间存在显著的性能差距。我们的分析表明，Self-Instruct 所生成指令的格式"
+      },
+      {
+        "text": "Table 11: This table compares the performance of models fine-tuned using 100K instruction-following datasets generated by Self-Instruct and MAGPIE. All models are supervised-fine-tuned on the Llama-8B base models. We observe that MAGPIE significantly outperforms Self-Instruct across all",
+        "x": 107.7,
+        "y": 149.7,
+        "w": 396.3,
+        "h": 31.9,
+        "zh": "表 11：本表比较用 Self-Instruct 和 MAGPIE 生成的 10 万条指令遵循数据集微调后的模型表现。所有模型都在 Llama-8B 基座模型上做监督微调。我们观察到，MAGPIE 在所有"
+      }
+    ],
+    "25": [
+      {
+        "text": "datasets is predominantly constrained by the patterns defined in the seed instructions, resulting in a lack of diversity. This comparison indicates the novelty of our MAGPIE in generating diverse high-quality instructions without any seed questions.",
+        "x": 108,
+        "y": 678.3,
+        "w": 396,
+        "h": 31.9,
+        "zh": "数据集在很大程度上受种子指令中所定义模式的约束，因而缺乏多样性。这一比较表明，我们的 MAGPIE 无需任何种子问题，就能生成多样且高质量的指令，这正是它的新意所在。"
+      },
+      {
+        "text": "ABLATION ANALYSIS ON DATA QUANTITY AND QUALITY",
+        "x": 131.9,
+        "y": 653.4,
+        "w": 244.2,
+        "h": 10,
+        "zh": "数据数量与质量的消融分析"
+      },
+      {
+        "text": "In what follows, we compare within the family of datasets generated by MAGPIE in Table 12. These datasets differ in size, deployment of filtering, and models used to generate data. We observe that as the dataset’s size increases, the fine-tuned model’s performance improves, indicating that data quantity plays a critical role in enhancing instruction-following capabilities. Furthermore, the model fine-tuned with MAGPIE-Pro-300K-Filtered outperforms those fine-tuned with the same or even higher amounts of raw data. This demonstrates the effectiveness of our filtering technique, and underscores the importance of data quality. Finally, we observe that the models fine-tuned with MAGPIE-Pro consistently outperform those fine-tuned with MAGPIE-Air. The reason is that MAGPIE-Pro is generated by the more capable model, i.e., Llama-3-70B-Instruct.",
+        "x": 107.6,
+        "y": 545.2,
+        "w": 397.6,
+        "h": 97.6,
+        "zh": "下文我们在表 12 中比较 MAGPIE 所生成的数据集家族内部的差异。这些数据集在规模、是否使用过滤，以及用于生成数据的模型上有所不同。我们观察到，随着数据集规模增大，微调后模型的表现提高，说明数据数量对增强指令遵循能力起着关键作用。此外，用 MAGPIE-Pro-300K-Filtered 微调的模型，优于用相同甚至更多原始数据微调的模型。这证明了我们过滤技术的有效性，也强调了数据质量的重要性。最后，我们观察到用 MAGPIE-Pro 微调的模型始终优于用 MAGPIE-Air 微调的模型。原因是 MAGPIE-Pro 由能力更强的模型生成，即 Llama-3-70B-Instruct。"
+      },
+      {
+        "text": "Table 12: This table compares MAGPIE datasets within its family that differ in size, deployment of filtering, and models used to generate data. All models are supervised-fine-tuned on the Llama-8B",
+        "x": 107.7,
+        "y": 512.7,
+        "w": 396.3,
+        "h": 20.9,
+        "zh": "表 12：本表比较 MAGPIE 家族内部在规模、是否使用过滤以及生成数据所用模型上有所不同的数据集。所有模型都在 Llama-8B 上做监督微调"
+      },
+      {
+        "text": "We conduct an ablation analysis on various filter designs within MAGPIE-Pro to assess their impact on the performance of supervised fine-tuned models. The results are presented in Table 13. We observe that different filtering strategies yield optimal performance on different benchmarks, and no single filter consistently achieves the best performance across all benchmarks. Therefore, determining how to select instructional data to enhance the performance in supervised fine-tuning is an interesting topic for future research.",
+        "x": 107.5,
+        "y": 267.2,
+        "w": 396.5,
+        "h": 64.8,
+        "zh": "我们在 MAGPIE-Pro 内部对多种过滤器设计做消融分析，以评估它们对监督微调模型表现的影响。结果见表 13。我们观察到，不同过滤策略在不同基准上取得最优表现，没有哪一种过滤器能在所有基准上始终最好。因此，如何选择指令数据以提升监督微调中的表现，是一个有趣的未来研究课题。"
+      },
+      {
+        "text": "Table 13: This table compares the performance of different filter designs within MAGPIE-Pro. All models are supervised-fine-tuned on the Llama-8B base models.",
+        "x": 107.7,
+        "y": 234.7,
+        "w": 396.3,
+        "h": 20.9,
+        "zh": "表 13：本表比较 MAGPIE-Pro 内部不同过滤器设计的表现。所有模型都在 Llama-8B 基座模型上做监督微调。"
+      },
+      {
+        "text": "To investigate the impact of the response generator on the supervised fine-tuning performance using MAGPIE, we conduct an ablation study by replacing the response generator with Qwen-2-7B-Instruct",
+        "x": 107.7,
+        "y": 62.1,
+        "w": 396.3,
+        "h": 20.9,
+        "zh": "为考察回复生成器对使用 MAGPIE 做监督微调时表现的影响，我们做了一项消融研究，把回复生成器替换为 Qwen-2-7B-Instruct"
+      }
+    ],
+    "26": [
+      {
+        "text": "(Yang et al., 2024) within MAGPIE-Air-300K-Filtered. We note that the performance of Qwen-2-7BInstruct is comparable to, or slightly weaker than, Llama-3-8B-Instruct. The results are summarized",
+        "x": 107.7,
+        "y": 689.2,
+        "w": 398,
+        "h": 20.9,
+        "zh": "（Yang et al., 2024），替换发生在 MAGPIE-Air-300K-Filtered 之中。我们注意到，Qwen-2-7B-Instruct 的表现与 Llama-3-8B-Instruct 相当，或略弱一些。结果汇总于"
+      },
+      {
+        "text": "We observe that although there is a slight performance degradation, the model fine-tuned using Qwen-2-7B-Instruct as the response generator still outperforms all baselines, including those using GPT-4 as the response generator. These findings indicate two key points: (1) The success of MAGPIE depends little on the specific response generator used, and (2) the instructions generated by MAGPIE are of high quality and diversity.",
+        "x": 107.5,
+        "y": 617.5,
+        "w": 396.5,
+        "h": 53.8,
+        "zh": "我们观察到，尽管性能略有下降，用 Qwen-2-7B-Instruct 作为回复生成器微调的模型仍然超过所有基线，包括那些用 GPT-4 作为回复生成器的基线。这些发现说明两点：（1）MAGPIE 的成功并不太依赖于所使用的具体回复生成器；（2）MAGPIE 生成的指令质量高、多样性好。"
+      },
+      {
+        "text": "Table 14: This table compares the impact of different response generators on the model performance. All models are supervised-fine-tuned on the Llama-8B base models.",
+        "x": 107.6,
+        "y": 586.6,
+        "w": 398.1,
+        "h": 20.9,
+        "zh": "表 14：本表比较不同回复生成器对模型表现的影响。所有模型都在 Llama-8B 基座模型上做监督微调。"
+      },
+      {
+        "text": "TRUSTWORTHINESS OF MAGPIE-ALIGNED MODELS",
+        "x": 131.9,
+        "y": 487.6,
+        "w": 219,
+        "h": 10,
+        "zh": "MAGPIE 对齐模型的可信度"
+      },
+      {
+        "text": "In what follows, we conduct more experiments to compare MAGPIE model and Llama-3-8B-Instruct on the TrustLLM benchmark (Huang et al., 2024). The results for safety, fairness, ethics, privacy, and robustness are summarized in Table 15. We observe that our supervised-fine-tuned model slightly underperforms Llama-3-8B-Instruct in terms of safety and fairness. However, it outperforms the official instruct model on ethics, privacy, and robustness. Considering that our fine-tuned model uses much fewer data samples (300K compared to over 10M), these results again highlight the high quality of data generated by MAGPIE.",
+        "x": 107.5,
+        "y": 395.3,
+        "w": 396.5,
+        "h": 81.7,
+        "zh": "下文我们做更多实验，在 TrustLLM 基准（Huang et al., 2024）上比较 MAGPIE 模型与 Llama-3-8B-Instruct。安全性、公平性、伦理、隐私和鲁棒性的结果汇总于表 15。我们观察到，我们监督微调的模型在安全性和公平性上略逊于 Llama-3-8B-Instruct。不过，它在伦理、隐私和鲁棒性上超过官方 instruct 模型。考虑到我们微调的模型使用的样本少得多（30 万条，对比超过 1000 万条），这些结果再次凸显 MAGPIE 所生成数据的高质量。"
+      },
+      {
+        "text": "Table 15: This table compares the performance of model supervised-fine-tuned using MAGPIE-Pro- 300K-Filtered and the official Llama-3-8B-Instruct on the TrustLLM benchmark (Huang et al., 2024).",
+        "x": 107.7,
+        "y": 364.5,
+        "w": 398,
+        "h": 20.9,
+        "zh": "表 15：本表在 TrustLLM 基准（Huang et al., 2024）上，比较用 MAGPIE-Pro-300K-Filtered 做监督微调的模型与官方 Llama-3-8B-Instruct 的表现。"
+      },
+      {
+        "text": "Exaggerated Safety (RtA↓) Stereotype Recognition (Acc↑) Stereotype Query Test (RtA↑) Disparagement Sex (p-value↑) Disparagement Race (p-value↑) Social Chemistry 101 (Acc↑)",
+        "x": 180.2,
+        "y": 249.4,
+        "w": 109,
+        "h": 66.7,
+        "zh": "过度安全（Exaggerated Safety，RtA↓） 刻板印象识别（Stereotype Recognition，Acc↑） 刻板印象查询测试（Stereotype Query Test，RtA↑） 性别贬低（Disparagement Sex，p-value↑） 种族贬低（Disparagement Race，p-value↑） 社会化学 101（Social Chemistry 101，Acc↑）"
+      },
+      {
+        "text": "Privacy Awareness-Normal (RtA↑) Privacy Awareness-Augmented (RtA↑) Privacy Leakage (RtA↑) AdvGlue (RobustScore↑) OOD Detection (RtA↑) OOD Generalization (F1-Score↑)",
+        "x": 166.8,
+        "y": 152.6,
+        "w": 136,
+        "h": 62.1,
+        "zh": "隐私意识—常规（Privacy Awareness-Normal，RtA↑） 隐私意识—增强（Privacy Awareness-Augmented，RtA↑） 隐私泄露（Privacy Leakage，RtA↑） AdvGlue（RobustScore↑） 分布外检测（OOD Detection，RtA↑） 分布外泛化（OOD Generalization，F1-Score↑）"
+      },
+      {
+        "text": "This section presents the prompt template used to generate MAGPIE-MT and control instruction tasks, as detailed in Figure 14 and Figure 15, respectively.",
+        "x": 107.7,
+        "y": 62.1,
+        "w": 397.6,
+        "h": 20.9,
+        "zh": "本节给出用于生成 MAGPIE-MT 和控制指令任务的提示模板，分别见图 14 和图 15。"
+      }
+    ],
+    "27": [
+      {
+        "text": "<|begin_of_text|><|start_header_id|>system<|end_header_id|>",
+        "x": 122.7,
+        "y": 665,
+        "w": 249.8,
+        "h": 9,
+        "zh": ""
+      },
+      {
+        "text": "You are a helpful Al assistant. The user will engage in a multi−round conversation with you, asking initial questions and following up with additional related questions. Your goal is to provide thorough, relevant and insightful responses to help the user with their queries.<|eot_id|><|start_header_id|>user<|end_header_id|>",
+        "x": 122.7,
+        "y": 615.2,
+        "w": 359.6,
+        "h": 38.9,
+        "zh": "你是一个有帮助的 AI 助手。用户将与你进行多轮对话，先提出初始问题，再追问相关的后续问题。你的目标是提供充分、相关且有洞察的回复，以帮助用户解决他们的查询。<|eot_id|><|start_header_id|>user<|end_header_id|>"
+      },
+      {
+        "text": "{instruction}<|eot_id|><|start_header_id|>assistant<|end_header_id|>",
+        "x": 122.7,
+        "y": 595.3,
+        "w": 274.7,
+        "h": 9,
+        "zh": "{指令}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
+      },
+      {
+        "text": "{response}<|eot_id|><|start_header_id|>user<|end_header_id|>",
+        "x": 122.7,
+        "y": 575.3,
+        "w": 252.6,
+        "h": 9,
+        "zh": "{回复}<|eot_id|><|start_header_id|>user<|end_header_id|>"
+      },
+      {
+        "text": "Figure 14: Prompt for generating MAGPIE-MT. We take Llama-3-8B-Instruct as an example. The placeholder {instruction} and {response} are from the first turn.",
+        "x": 108,
+        "y": 523.3,
+        "w": 396,
+        "h": 20.9,
+        "zh": "图 14：用于生成 MAGPIE-MT 的提示。我们以 Llama-3-8B-Instruct 为例。占位符 {instruction} 和 {response} 来自第一轮。"
+      },
+      {
+        "text": "<|begin_of_text|><|start_header_id|>system<|end_header_id|>",
+        "x": 122.7,
+        "y": 454.4,
+        "w": 249.8,
+        "h": 9,
+        "zh": ""
+      },
+      {
+        "text": "{System Prompt}<|eot_id|><|start_header_id|>user<|end_header_id|>",
+        "x": 122.7,
+        "y": 434.4,
+        "w": 277,
+        "h": 9,
+        "zh": "{系统提示}<|eot_id|><|start_header_id|>user<|end_header_id|>"
+      },
+      {
+        "text": "System prompt for controlling math instruction tasks You are an AI assistant designed to provide helpful, step-by-step guidance on solving math problems. The user will ask you a wide range of complex mathematical questions. Your purpose is to assist users in understanding mathematical concepts, working through equations,",
+        "x": 108.9,
+        "y": 362.7,
+        "w": 381.7,
+        "h": 47.8,
+        "zh": "用于控制数学指令任务的系统提示。你是一名人工智能助手，旨在为求解数学问题提供有帮助的逐步指导。用户会向你提出各种各样的复杂数学问题。你的目的是帮助用户理解数学概念、逐步处理方程，"
+      },
+      {
+        "text": "System prompt for controlling code instruction tasks You are an AI assistant designed to provide helpful, step-by-step guidance on coding problems. The user will ask you a wide range of coding questions. Your purpose is to assist users in understanding coding concepts, working through code, and arriving at the correct solutions.",
+        "x": 108.9,
+        "y": 286.8,
+        "w": 382.2,
+        "h": 47.8,
+        "zh": "用于控制代码指令任务的系统提示。你是一名人工智能助手，旨在为编程问题提供有帮助的逐步指导。用户会向你提出各种各样的编程问题。你的目的是帮助用户理解编程概念、逐步处理代码，并得到正确的解答。"
+      },
+      {
+        "text": "System prompt for controlling translation tasks",
+        "x": 108.9,
+        "y": 259.7,
+        "w": 187.9,
+        "h": 10,
+        "zh": "用于控制翻译任务的系统提示"
+      },
+      {
+        "text": "You are an AI assistant designed to provide accurate and contextually appropriate translations. Users will ask you to translate text between various languages. Your purpose is to assist users in understanding and conveying meaning across languages, maintaining the original context",
+        "x": 122.1,
+        "y": 221.9,
+        "w": 369,
+        "h": 31.9,
+        "zh": "你是一名人工智能助手，旨在提供准确且符合语境的翻译。用户会请你在各种语言之间翻译文本。你的目的是帮助用户跨语言理解和传达意思，并保持原来的语境"
+      },
+      {
+        "text": "System prompt for controlling multilingual instruction generation (Japanese + Math)",
+        "x": 108.9,
+        "y": 185.9,
+        "w": 338,
+        "h": 10,
+        "zh": "用于控制多语言指令生成的系统提示（日语 + 数学）"
+      },
+      {
+        "text": "あなたはAIアシスタントで、数学のを解くために役立つ、ステップバイステップ のガイダンスを提供するようにされています。",
+        "x": 122.7,
+        "y": 154.8,
+        "w": 366.7,
+        "h": 20.9,
+        "zh": "你是一名 AI 助手，被要求提供逐步指导，用来帮助求解数学问题。"
+      },
+      {
+        "text": "Figure 15: Prompts for controlling instruction generation tasks. These examples illustrate how to guide Llama-3-8B-Instruct in generating instructions for specific domains: mathematics, coding, translation, and multilingual tasks. To adapt this approach for different instruction tasks, replace the System Prompt placeholder in the System Prompt Template with the appropriate domain-specific",
+        "x": 108,
+        "y": 88.9,
+        "w": 397.2,
+        "h": 42.8,
+        "zh": "图 15：用于控制指令生成任务的提示。这些例子说明如何引导 Llama-3-8B-Instruct 为特定领域生成指令：数学、编程、翻译和多语言任务。要把这一做法用于不同的指令任务，请把系统提示模板中的 System Prompt 占位符替换为相应的领域专用"
+      }
+    ],
+    "28": [
+      {
+        "text": "Please label the task tags for the user query.",
+        "x": 122.7,
+        "y": 667.6,
+        "w": 177.4,
+        "h": 9,
+        "zh": "请为用户查询标注任务标签。"
+      },
+      {
+        "text": "Please label the task tags for the user query. You will need to analyze the user query and select the most relevant task tag from the list below.",
+        "x": 122.7,
+        "y": 597.9,
+        "w": 352.7,
+        "h": 18.9,
+        "zh": "请为用户查询标注任务标签。你需要分析用户查询，并从下面的列表中选择最相关的任务标签。"
+      },
+      {
+        "text": "\"Information seeking\", # Users ask for specific information or facts about various topics. \"Reasoning\", # Queries require logical thinking, problem−solving, or processing of",
+        "x": 138.8,
+        "y": 558,
+        "w": 345,
+        "h": 18.9,
+        "zh": "“Information seeking”（信息寻求）：用户询问各类主题的具体信息或事实。“Reasoning”（推理）：查询需要逻辑思考、问题求解，或对……的处理"
+      },
+      {
+        "text": "\"Planning\", # Users need assistance in creating plans or strategies for activities and",
+        "x": 138.8,
+        "y": 538.1,
+        "w": 330.9,
+        "h": 9,
+        "zh": "“Planning”（规划）：用户需要帮助，为各项活动制定计划或策略，以及"
+      },
+      {
+        "text": "\"Editing\", # Involves editing, rephrasing, proofreading, or other tasks related to the",
+        "x": 138.8,
+        "y": 518.2,
+        "w": 324.1,
+        "h": 9,
+        "zh": "“Editing”（编辑）：涉及编辑、改写、校对，或其他与……相关的任务"
+      },
+      {
+        "text": "\"Coding & Debugging\", # Users seek help with writing, reviewing, or fixing code in",
+        "x": 138.8,
+        "y": 498.2,
+        "w": 322.8,
+        "h": 9,
+        "zh": "“Coding & Debugging”（编程与调试）：用户寻求帮助，以编写、审查或修复……中的代码"
+      },
+      {
+        "text": "\"Math\", # Queries related to mathematical concepts, problems, and calculations. \"Role playing\", # Users engage in scenarios requiring ChatGPT to adopt a character or",
+        "x": 138.8,
+        "y": 468.4,
+        "w": 344.1,
+        "h": 18.9,
+        "zh": "“Math”（数学）：与数学概念、问题和计算相关的查询。“Role playing”（角色扮演）：用户进入需要 ChatGPT 扮演某个角色或……的场景"
+      },
+      {
+        "text": "\"Data analysis\", # Requests involve interpreting data, statistics, or performing analytical",
+        "x": 138.8,
+        "y": 448.4,
+        "w": 345.3,
+        "h": 9,
+        "zh": "“Data analysis”（数据分析）：请求涉及解释数据、统计，或进行分析"
+      },
+      {
+        "text": "\"Creative writing\", # Users seek assistance with crafting stories, poems, or other",
+        "x": 138.8,
+        "y": 428.5,
+        "w": 317.2,
+        "h": 9,
+        "zh": "“Creative writing”（创意写作）：用户寻求帮助来构思故事、诗歌或其他"
+      },
+      {
+        "text": "\"Advice seeking\", # Users ask for recommendations or guidance on various personal or",
+        "x": 138.8,
+        "y": 408.6,
+        "w": 345.9,
+        "h": 9,
+        "zh": "“Advice seeking”（寻求建议）：用户就各种个人事务或……征求推荐或指导"
+      },
+      {
+        "text": "\"Brainstorming\", # Involves generating ideas, creative thinking, or exploring possibilities. \"Others\" # Any queries that do not fit into the above categories or are of a miscellaneous",
+        "x": 138.8,
+        "y": 378.7,
+        "w": 350,
+        "h": 18.9,
+        "zh": "“Brainstorming”（头脑风暴）：涉及产生想法、创造性思考或探索可能性。“Others”（其他）：任何不属于以上类别、或属于杂项的查询"
+      },
+      {
+        "text": "Note that you can only select a single primary tag. Other applicable tags can be added to",
+        "x": 122.7,
+        "y": 328.9,
+        "w": 352.4,
+        "h": 9,
+        "zh": "请注意，你只能选择一个主标签。其他适用的标签可以添加到"
+      },
+      {
+        "text": "Now, please output your tags below in a json format by filling in the placeholders in <...>:",
+        "x": 122.7,
+        "y": 309,
+        "w": 350.2,
+        "h": 9,
+        "zh": "现在，请在下方以 json 格式输出你的标签，填写 <...> 中的占位符："
+      },
+      {
+        "text": "\"primary_tag\": \"<primary tag>\", \"other_tags\": [\"<tag 1>\", \"<tag 2>\", ... ]",
+        "x": 138.8,
+        "y": 269.1,
+        "w": 152.2,
+        "h": 18.9,
+        "zh": "\"primary_tag\": \"<主标签>\", \"other_tags\": [\"<标签 1>\", \"<标签 2>\", ... ]"
+      },
+      {
+        "text": "Here, we present the prompt template employed to generate task categories, quality, and difficulty, as detailed in Figure 16, Figure 17, and Figure 18, respectively. The placeholder input represents the",
+        "x": 108,
+        "y": 143.4,
+        "w": 396,
+        "h": 20.9,
+        "zh": "这里给出用于生成任务类别、质量和难度的提示模板，分别见图 16、图 17 和图 18。占位符 input 表示"
+      }
+    ],
+    "29": [
+      {
+        "text": "Prompt for generating quality of instructions",
+        "x": 108.9,
+        "y": 697.7,
+        "w": 177.9,
+        "h": 10,
+        "zh": "用于生成指令质量评分的提示"
+      },
+      {
+        "text": "You need to rate the quality of the user query based on its clarity, specificity, and coherence.",
+        "x": 122.7,
+        "y": 665.6,
+        "w": 365.9,
+        "h": 9,
+        "zh": "你需要根据清晰度、具体性和连贯性，为用户查询的质量打分。"
+      },
+      {
+        "text": "− very poor: The query is unclear, vague, or incoherent. It lacks essential information and",
+        "x": 122.7,
+        "y": 635.7,
+        "w": 352.9,
+        "h": 9,
+        "zh": "− very poor（很差）：查询不清晰、含糊或缺乏连贯。它缺少必要信息，并且"
+      },
+      {
+        "text": "− poor: The query is somewhat unclear or lacks important details. It requires significant",
+        "x": 122.7,
+        "y": 615.8,
+        "w": 344.4,
+        "h": 9,
+        "zh": "− poor（较差）：查询有些不清晰，或缺少重要细节。它需要大量"
+      },
+      {
+        "text": "− average: The query is moderately clear and specific. It may require some additional",
+        "x": 122.7,
+        "y": 595.9,
+        "w": 337.5,
+        "h": 9,
+        "zh": "− average（中等）：查询比较清晰、比较具体。它可能还需要一些额外的"
+      },
+      {
+        "text": "information for a complete understanding.",
+        "x": 142.6,
+        "y": 585.9,
+        "w": 165.1,
+        "h": 9,
+        "zh": "信息，才能被完整理解。"
+      },
+      {
+        "text": "− good: The query is clear, specific, and mostly well−formed. It provides sufficient context for",
+        "x": 122.7,
+        "y": 576,
+        "w": 366.2,
+        "h": 9,
+        "zh": "− good（良好）：查询清晰、具体，并且大体格式完好。它为……提供了足够的上下文"
+      },
+      {
+        "text": "− excellent: The query is very clear, specific, and well−articulated. It contains all the necessary information and context for providing a comprehensive response.",
+        "x": 122.7,
+        "y": 546.1,
+        "w": 330.7,
+        "h": 18.9,
+        "zh": "− excellent（优秀）：查询非常清晰、具体，并且表述得当。它包含提供全面回复所需的全部必要信息和上下文。"
+      },
+      {
+        "text": "Given the user query, you first need to give an assessment, highlighting the strengths and/or weaknesses of the user query. Then, you need to output a rating from very poor to",
+        "x": 122.7,
+        "y": 476.3,
+        "w": 365.9,
+        "h": 18.9,
+        "zh": "给定用户查询后，你首先需要给出评估，指出该用户查询的优点和/或缺点。然后，你需要输出一个从 very poor 到"
+      },
+      {
+        "text": "excellent by filling in the placeholders in [...]:",
+        "x": 142.6,
+        "y": 466.4,
+        "w": 174.5,
+        "h": 9,
+        "zh": "excellent 的评分，方法是填写 [...] 中的占位符："
+      },
+      {
+        "text": "\"input_quality\": \"[very poor/poor/average/good/excellent]\"",
+        "x": 138.8,
+        "y": 426.5,
+        "w": 225.3,
+        "h": 9,
+        "zh": "\"input_quality\": \"[very poor（很差）/poor（较差）/average（中等）/good（良好）/excellent（优秀）]\""
+      },
+      {
+        "text": "Prompt for generating difficulty of instructions",
+        "x": 108.9,
+        "y": 329.9,
+        "w": 186.5,
+        "h": 10,
+        "zh": "用于生成指令难度的提示"
+      },
+      {
+        "text": "You first need to identify the given user intent and then label the difficulty level of the user",
+        "x": 122.7,
+        "y": 297.8,
+        "w": 351.9,
+        "h": 9,
+        "zh": "你首先需要识别给定的用户意图，然后为用户的"
+      },
+      {
+        "text": "query based on the content of the user query.",
+        "x": 142.6,
+        "y": 287.8,
+        "w": 181.5,
+        "h": 9,
+        "zh": "查询标注难度等级，依据是用户查询的内容。"
+      },
+      {
+        "text": "Given the user query, in your output, you first need to identify the user intent and the knowledge needed to solve the task in the user query. Then, rate the difficulty level of the user query as ‘very easy‘, ‘easy‘, ‘medium‘, ‘hard‘, or ‘very hard‘.",
+        "x": 122.7,
+        "y": 208.1,
+        "w": 357.7,
+        "h": 28.9,
+        "zh": "给定用户查询后，在你的输出中，首先要识别用户意图，以及解决该查询中的任务所需的知识。然后把用户查询的难度评为 ‘very easy’（很容易）、‘easy’（容易）、‘medium’（中等）、‘hard’（难）或 ‘very hard’（很难）。"
+      },
+      {
+        "text": "Now, please output the user intent and difficulty level below in a json format by filling in the",
+        "x": 122.7,
+        "y": 188.2,
+        "w": 357.3,
+        "h": 9,
+        "zh": "现在，请在下方以 json 格式输出用户意图和难度等级，填写"
+      },
+      {
+        "text": "\"knowledge\": \"To solve this problem, the models need to know [....]\",",
+        "x": 138.8,
+        "y": 138.4,
+        "w": 268.6,
+        "h": 9,
+        "zh": "\"knowledge\": \"要解决这个问题，模型需要知道 [....]\","
+      },
+      {
+        "text": "\"difficulty\": \"[very easy/easy/medium/hard/very hard]\"",
+        "x": 138.8,
+        "y": 128.4,
+        "w": 209.7,
+        "h": 9,
+        "zh": "\"difficulty\": \"[very easy（很容易）/easy（容易）/medium（中等）/hard（难）/very hard（很难）]\""
+      }
+    ],
+    "30": [
+      {
+        "text": "In this section, we demonstrate several representative instructions generated by MAGPIE with different task categories. The following instructions are generated by the Llama-3-70B-Instruct model.",
+        "x": 108,
+        "y": 659.3,
+        "w": 396,
+        "h": 20.9,
+        "zh": "本节展示 MAGPIE 按不同任务类别生成的若干有代表性的指令。以下指令由 Llama-3-70B-Instruct 模型生成。"
+      },
+      {
+        "text": "A few days ago, I was at a restaurant and I got a cup of coffee. However, when I went to take a sip, I realized it was a little too hot. So, I decided to let it cool down for a few minutes. As I waited, I noticed that coffee is actually two different colors. The part that was closest to the surface of the coffee is a lighter color, and the part that is deeper is a darker color. Have you",
+        "x": 122.3,
+        "y": 582,
+        "w": 367,
+        "h": 42.8,
+        "zh": "几天前，我在一家餐馆点了一杯咖啡。可是当我去抿一口时，发现它有点太烫了。于是我决定让它凉几分钟。等待的时候，我注意到咖啡其实有两种颜色。靠近咖啡表面的部分颜色更浅，更深的部分颜色更深。你有没有"
+      },
+      {
+        "text": "You have 3 switches but they are not labeled. Each switch corresponds to one of three light bulbs in a room. Each light bulb is either on or off. You can turn the switches on and off as many times as you want, but you can only enter the room one time to observe the bulbs. How can you figure out which switch corresponds to which light bulb?",
+        "x": 122.1,
+        "y": 486,
+        "w": 367.6,
+        "h": 42.8,
+        "zh": "你有 3 个开关，但它们没有标签。每个开关对应房间里三盏灯泡中的一盏。每盏灯泡要么亮着，要么熄灭。你可以随意多次拨动开关，但只能进房间一次来观察灯泡。你怎样才能弄清哪个开关对应哪盏灯泡？"
+      },
+      {
+        "text": "You are the Founder of a Financial Planning Company. As a professional financial advisor, you are scheduled to meet a new client tomorrow. Specifically, what are you planning to do to",
+        "x": 122.1,
+        "y": 422.7,
+        "w": 368.5,
+        "h": 20.9,
+        "zh": "你是一家财务规划公司的创始人。作为专业的财务顾问，你预定明天会见一位新客户。具体来说，你打算做些什么来"
+      },
+      {
+        "text": "What is the best way to re-write the sentence: \"We call this the ‘core’ product or the ‘core’ offering\" using proper quotation marks and avoiding the word \"this\"?",
+        "x": 122.2,
+        "y": 348.6,
+        "w": 368.8,
+        "h": 20.9,
+        "zh": "改写下面这个句子的最佳方式是什么：“We call this the ‘core’ product or the ‘core’ offering”？请使用正确的引号，并避免使用单词 “this”。"
+      },
+      {
+        "text": "Write a Python program that calculates the total cost of a customer’s order. The program should ask for the customer’s name, the number of items they want to purchase, and the price of each item. It should then calculate the total cost by multiplying the number of items by the price of each item and adding 8% sales tax. The program should display the customer’s name, the number of items, the price of each item, and the total cost, including sales tax.",
+        "x": 122.2,
+        "y": 252.5,
+        "w": 368.4,
+        "h": 53.8,
+        "zh": "写一个 Python 程序，计算顾客订单的总费用。程序应询问顾客姓名、想购买的商品数量，以及每件商品的价格。然后把商品数量乘以每件商品的价格，再加上 8% 的销售税，从而算出总费用。程序应显示顾客姓名、商品数量、每件商品的价格，以及含销售税的总费用。"
+      },
+      {
+        "text": "In the following problem, please use integers to solve it. A water tank has 1000 L of water. On the first day, 1/5 of the water was drained. On the second day, 3/10 of the remaining water was drained. On the third day, 2/5 of the remaining water was drained. On the fourth day, 3/4 of the remaining water was drained. How many liters of water are left after the fourth day?",
+        "x": 122.3,
+        "y": 169.4,
+        "w": 368.8,
+        "h": 42.8,
+        "zh": "下面这道题请用整数来解。一个水箱有 1000 L 水。第一天排掉了 1/5 的水。第二天排掉了剩余水的 3/10。第三天排掉了剩余水的 2/5。第四天排掉了剩余水的 3/4。第四天之后还剩多少升水？"
+      },
+      {
+        "text": "In this game, you will be the host, and I will be the contestant. You will ask me a series of questions, and I will try to answer them correctly. The questions will be multiple choice, and I will have a 25% chance of getting the correct answer if I just randomly guess. However, I am a clever contestant, and I will try to use logic and reasoning to increase my chances of",
+        "x": 122.7,
+        "y": 84.3,
+        "w": 366.7,
+        "h": 42.8,
+        "zh": "在这个游戏里，你当主持人，我当参赛者。你会问我一系列问题，我会尽量答对。题目是选择题，如果我只是随机猜，答对的概率是 25%。不过我是个聪明的参赛者，我会尽量用逻辑和推理来提高自己的机会，以便"
+      }
+    ],
+    "31": [
+      {
+        "text": "The personnel manager at a company is tasked with finding the average salary of new hires. She has collected data on the salaries of 13 new hires. She wants to know if there is a statistical difference between the average salary of new hires and the national average salary. The national average salary is $45,000. The sample of new hires has a mean salary of $42,800",
+        "x": 122.4,
+        "y": 650.9,
+        "w": 368.7,
+        "h": 42.8,
+        "zh": "一家公司的人事经理负责求出新员工的平均薪资。她收集了 13 名新员工的薪资数据。她想知道，新员工的平均薪资与全国平均薪资之间是否存在统计上的差异。全国平均薪资是 45,000 美元。新员工样本的平均薪资是 42,800 美元"
+      },
+      {
+        "text": "Write a paragraph about a mythical creature that you created. The creature is small, no larger than a house cat. It has shimmering scales that reflect light, and can emit a soft, pulsing glow from its body. It has large, round eyes that seem to see right through you, but with a gentle kindness. It has a soft, melodious voice, and can communicate with humans through a form",
+        "x": 122.2,
+        "y": 561.3,
+        "w": 367.5,
+        "h": 42.8,
+        "zh": "写一段文字，描述你创造的一种神话生物。这种生物很小，不超过家猫。它有会反光的闪亮鳞片，身体能发出柔和、脉动的光。它有一双又大又圆的眼睛，仿佛能看穿你，却带着温和的善意。它的声音轻柔悦耳，并能通过一种形式与人类交流"
+      },
+      {
+        "text": "Can you give me some ideas for a spontaneous, fun and memorable birthday celebration for",
+        "x": 122.7,
+        "y": 457.3,
+        "w": 366.8,
+        "h": 10,
+        "zh": "你能给我一些主意，办一场即兴、有趣又难忘的生日庆祝，对象是"
+      },
+      {
+        "text": "MAGPIE can also generate domain-specific instructions using models that are tailored to particular fields, as mentioned in Section 2.2. The following instructions are generated by DeepSeek-Coder-V2 (Zhu et al., 2024) and Qwen2-Math-7B-Instruct (Yang et al., 2024), respectively.",
+        "x": 107.7,
+        "y": 344.3,
+        "w": 396.5,
+        "h": 31.9,
+        "zh": "如第 2.2 节所述，MAGPIE 也可以用针对特定领域定制的模型来生成领域专用指令。以下指令分别由 DeepSeek-Coder-V2（Zhu et al., 2024）和 Qwen2-Math-7B-Instruct（Yang et al., 2024）生成。"
+      },
+      {
+        "text": "You are given a list of emails. You need to write a Python function that returns the domain,",
+        "x": 122.1,
+        "y": 305.7,
+        "w": 368.5,
+        "h": 10,
+        "zh": "给你一份电子邮件列表。你需要写一个 Python 函数，返回其中的域名，"
+      },
+      {
+        "text": "Qwen2-Math-7B-Instruct (Math Instruction)",
+        "x": 108.9,
+        "y": 264.1,
+        "w": 177.6,
+        "h": 10,
+        "zh": "Qwen2-Math-7B-Instruct（数学指令）"
+      },
+      {
+        "text": "A rectangle with length 12 units and width 8 units is scaled by a factor of 2 to form a new rectangle. Determine the dimensions of the new rectangle and calculate its area. Compare the area of the new rectangle to the area of the original rectangle.",
+        "x": 122.3,
+        "y": 226.7,
+        "w": 367.4,
+        "h": 31.9,
+        "zh": "一个长 12 个单位、宽 8 个单位的矩形，按因子 2 缩放后得到一个新矩形。求出新矩形的尺寸并计算其面积。把新矩形的面积与原来矩形的面积加以比较。"
+      },
+      {
+        "text": "We note that MAGPIE’s capabilities extend beyond generating English datasets to producing diverse multilingual datasets. The following instructions are generated by the Qwen2-72B-Instruct model.",
+        "x": 107.5,
+        "y": 187.9,
+        "w": 396.5,
+        "h": 20.9,
+        "zh": "我们指出，MAGPIE 的能力不限于生成英语数据集，还能产生多样的多语言数据集。以下指令由 Qwen2-72B-Instruct 模型生成。"
+      },
+      {
+        "text": "从给定的两个整数中找到较大的一个。但是你不能使用任何比较操作符（如>, <, !=等）或数学运算符（如+, -, *, /等）来实现它。你只能使用位操作符和逻辑操作",
+        "x": 122.7,
+        "y": 138.4,
+        "w": 367.9,
+        "h": 20.9,
+        "zh": "从给定的两个整数中找到较大的一个。但是你不能使用任何比较操作符（如 >、<、!= 等）或数学运算符（如 +、-、*、/ 等）来实现它。你只能使用位操作符和逻辑操作"
+      },
+      {
+        "text": "Das Debate-System ’Oxford-Oberhaus’ wird bei ersten Auseinandersetzungen verwendet. Bitte erklären sie, wie dieses System funktioniert.",
+        "x": 122.7,
+        "y": 73.3,
+        "w": 368.4,
+        "h": 20.9,
+        "zh": "名为 “Oxford-Oberhaus” 的辩论制度用于初次交锋。请解释这一制度如何运作。"
+      }
+    ],
+    "32": [
+      {
+        "text": "Según la encuesta anual de satisfacción al cliente que acabamos de realizar, parece que la satisfacción general de los clientes con nuestro rendimiento ha disminuido. ¿Podrías preparar una presentación detallada para la reunión del lunes que analice los resultados, identifique las áreas problemáticas y proporcione posibles soluciones basadas en los datos recogidos?",
+        "x": 122.7,
+        "y": 650.9,
+        "w": 366.8,
+        "h": 42.8,
+        "zh": "根据我们刚刚完成的年度客户满意度调查，客户对我们表现的总体满意度似乎有所下降。你能否为周一的会议准备一份详细演示，分析结果、找出问题所在，并根据收集到的数据给出可能的解决方案？"
+      },
+      {
+        "text": "Ho comprato una nuova inchiostriera sulla quale è presente la scritta \"Non manipolare\". Cosa",
+        "x": 122.7,
+        "y": 608.2,
+        "w": 366.7,
+        "h": 10,
+        "zh": "我新买了一个墨水瓶，上面写着 “Non manipolare”。什么"
+      },
+      {
+        "text": "Crie um exemplo de uma conversa entre dois personagens, um MC de hip hop e um pianista clássico, discutindo sobre seus estilos favoritos de música.",
+        "x": 122.7,
+        "y": 545.3,
+        "w": 366.7,
+        "h": 20.9,
+        "zh": "请编一段两个角色之间的对话示例：一位嘻哈 MC 和一位古典钢琴家，讨论他们各自最喜欢的音乐风格。"
+      }
+    ]
+  }
+}

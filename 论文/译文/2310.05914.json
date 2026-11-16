@@ -1,0 +1,1713 @@
+{
+  "id": "2310.05914",
+  "title": "2310.05914",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "NEFTU N E: NOISY EMBEDDINGS IMPROVE INSTRUC-",
+        "x": 108,
+        "y": 698.7,
+        "w": 395.6,
+        "h": 17.2,
+        "zh": "NEFTune：噪声嵌入改进指令"
+      },
+      {
+        "text": ", John Kirchenbauer , Hong-Min Chu , Gowthami Somepalli , Brian R. Bartoldson , Bhavya Kailkhura , Avi Schwarzschild , Aniruddha Saha , Micah Goldblum , Jonas Geiping , Tom Goldstein University of Maryland,",
+        "x": 114,
+        "y": 613.5,
+        "w": 369.7,
+        "h": 44.2,
+        "zh": "，John Kirchenbauer、Hong-Min Chu、Gowthami Somepalli、Brian R. Bartoldson、Bhavya Kailkhura、Avi Schwarzschild、Aniruddha Saha、Micah Goldblum、Jonas Geiping、Tom Goldstein，马里兰大学，"
+      },
+      {
+        "text": "We show that language model finetuning can be improved, sometimes dramatically, with a simple augmentation.",
+        "x": 143.9,
+        "y": 537,
+        "w": 324.3,
+        "h": 20.9,
+        "zh": "我们发现，语言模型的微调可以靠一种简单的数据增强来改进，而且有时改进非常明显。"
+      },
+      {
+        "text": "NEFTune adds noise to the embedding vectors during training.",
+        "x": 143.9,
+        "y": 526.1,
+        "w": 324.3,
+        "h": 20.9,
+        "zh": "NEFTune 在训练过程中向嵌入向量加入噪声。"
+      },
+      {
+        "text": "Standard finetuning of LLaMA-2-7B using Alpaca achieves 29.79% on AlpacaEval, which rises to 64.69% using noisy embeddings. NEFTune also improves over strong baselines on modern instruction datasets. Models trained with Evol-Instruct see a 10% improvement, with ShareGPT an 8% improvement, and with OpenPlatypus an 8% improvement. Even powerful models further refined with RLHF such as LLaMA-2-Chat benefit from additional training with NEFTune.",
+        "x": 143.9,
+        "y": 460.3,
+        "w": 324.3,
+        "h": 75.7,
+        "zh": "用 Alpaca 对 LLaMA-2-7B 做标准微调，在 AlpacaEval 上达到 29.79%；改用噪声嵌入后升至 64.69%。在较新的指令数据集上，NEFTune 也能超过很强的基线。用 Evol-Instruct 训练的模型提升 10%，ShareGPT 提升 8%，OpenPlatypus 提升 8%。即便是再用 RLHF 精调过的强模型，例如 LLaMA-2-Chat，也能从额外的 NEFTune 训练中受益。"
+      },
+      {
+        "text": "The ability of LLMs to follow detailed instructions is vital to their usefulness. Generative language models are typically trained on raw web data, and then subsequently fine-tuned on a comparatively small but carefully curated set of instruction data. Instruction fine-tuning is crucial to taming the power of LLMs, and the usefulness of a model is largely determined by our ability to get the most out of small instruction datasets. In this paper, we propose to add random noise to the embedding vectors of the training data during the forward pass of fine-tuning. We show that this simple trick can improve the outcome of instruction fine-tuning, often by a large margin, with no additional compute or data overhead. Noisy Embedding Instruction Fine Tuning (NEFTune), while simple, has a strong impact on downstream conversational quality. When a raw LLM like LLaMA-2-7B is finetuned with noisy embeddings, its performance on AlpacaEval improves from 29.8% to 64.7% (Figure 1) – an impressive boost of around 35 percentage points (Touvron et al., 2023b; Dubois et al., 2023). NEFTune leads to this surprising and large jump in performance on conversational tasks, maintaining performance on factual question answering baselines. This technique seems to be a free lunch for LLM fine-tuning.",
+        "x": 108,
+        "y": 263.7,
+        "w": 396,
+        "h": 158.4,
+        "zh": "大语言模型能否遵循详细指令，对它好不好用至关重要。生成式语言模型通常先在原始网页数据上训练，再在一份相对小得多、但经过仔细整理的指令数据上微调。指令微调是驾驭大语言模型的关键，而模型是否有用，很大程度上取决于我们能不能从很小的指令数据集里把效果榨到最大。本文提出，在微调的前向传播里，给训练数据的嵌入向量加上随机噪声。我们表明，这个简单的做法常常能大幅改善指令微调的结果，而且不额外增加计算或数据。带噪声嵌入的指令微调（Noisy Embedding Instruction Fine Tuning，NEFTune）虽然简单，对下游对话质量的影响却很强。像 LLaMA-2-7B 这样的原始大语言模型，一旦用噪声嵌入来微调，AlpacaEval 上的成绩就从 29.8% 升到 64.7%（图 1），大约提高 35 个百分点（Touvron et al., 2023b; Dubois et al., 2023）。NEFTune 在对话任务上带来这种出人意料的大幅跃升，同时在事实问答的基线上保持原来的表现。对大语言模型微调来说，这项技术近乎一份免费的午餐。"
+      },
+      {
+        "text": "Figure 1: AlpacaEval Win Rate percentage for LLaMA-2-7B models finetuned on various datasets with and without NEFTune. NEFTune leads to massive performance boosts across all of these datasets, showcasing the increased conversational quality of the generated answers.",
+        "x": 108,
+        "y": 97.4,
+        "w": 396,
+        "h": 31.9,
+        "zh": "图 1：在多种数据集上微调的 LLaMA-2-7B，使用与不使用 NEFTune 时的 AlpacaEval 胜率（百分比）。NEFTune 在这些数据集上都带来很大的性能提升，说明生成回答的对话质量更高了。"
+      },
+      {
+        "text": "Code is available on Github: https://github.com/neelsjain/NEFTune. Correspondence to Neel Jain: <njain17@umd.edu>.",
+        "x": 108,
+        "y": 62.1,
+        "w": 396,
+        "h": 18.9,
+        "zh": "代码见 GitHub：https://github.com/neelsjain/NEFTune。联系人为 Neel Jain：<njain17@umd.edu>。"
+      }
+    ],
+    "2": [
+      {
+        "text": "The earliest forms of instruction finetuning such as FLAN and T0 (Sanh et al., 2021; Wei et al., 2021) focused on cross-task generalization in language models. Encoder-decoder language models were finetuned on a broad range of NLP tasks (about 100) and then evaluated on a set of different tasks. This was later scaled up to include thousands of tasks, seeing further improvement over the original FLAN (Chung et al., 2022; Xu et al., 2022). Although these works showed that LLMs could be easily adapted to solve simple and classical NLP tasks, real-world scenarios require LLMs",
+        "x": 108,
+        "y": 624.4,
+        "w": 396,
+        "h": 64.8,
+        "zh": "最早的指令微调，例如 FLAN 和 T0（Sanh et al., 2021; Wei et al., 2021），关注的是语言模型的跨任务泛化。编码器–解码器语言模型先在大约 100 项 NLP 任务上微调，再拿到另一组不同的任务上评估。后来这一做法扩大到数千项任务，相对最初的 FLAN 又有进一步提升（Chung et al., 2022; Xu et al., 2022）。这些工作说明，大语言模型可以很容易地改去解决简单的经典 NLP 任务；可是真实场景要求大语言模型"
+      },
+      {
+        "text": "to provide free-form answers to open-ended queries.",
+        "x": 108,
+        "y": 613.4,
+        "w": 208.7,
+        "h": 10,
+        "zh": "对开放式提问给出自由形式的回答。"
+      },
+      {
+        "text": "InstructGPT (Ouyang et al., 2022) was the first model to tackle open-ended queries with impressive performance. OpenAI further trained GPT-3 (Brown et al., 2020) using reinforcement learning from human feedback (RLHF) to align the model. This procedure gave rise to highly popular models like ChatGPT (OpenAI, 2022) that captured the imagination of the general public and generated longer",
+        "x": 108,
+        "y": 563.6,
+        "w": 396,
+        "h": 42.8,
+        "zh": "InstructGPT（Ouyang et al., 2022）是第一个以出色表现处理开放式提问的模型。OpenAI 用人类反馈强化学习（RLHF）继续训练 GPT-3（Brown et al., 2020），让模型与人的偏好对齐。这一流程催生了 ChatGPT（OpenAI, 2022）这类非常流行的模型。它们抓住了公众的想象力，并且生成了更长的"
+      },
+      {
+        "text": "coherent text than its InstructGPT predecessor.",
+        "x": 108,
+        "y": 552.6,
+        "w": 186.3,
+        "h": 10,
+        "zh": "比前身 InstructGPT 更连贯的文本。"
+      },
+      {
+        "text": "This led to the work of Wang et al. (2022) (Self-Instruct), which used InstructGPT (Text-Davinci- 003) to produce instruction-output pairs which could be used to finetune the foundation models like LLaMA into instruction following variants like Alpaca (Taori et al., 2023). Through the rise in popularity of distilled models Taori et al. (2023), the community has constructed other datasets distilling in particular ways from other models like ChatGPT, including Xu et al. (2023). In another approach, ShareGPT (Chiang et al., 2023) was constructed by crowd sourcing real user conversations from ChatGPT. Other datasets like Lee et al. (2023) construct a dataset to improve specific aspects of the model like STEM question answering and logical reasoning. AlpaGasus (Chen et al., 2023) filters data by quality (according to GPT-4) to improve performance. It should be noted that noisy inputs have been used to improve models in various ways. The first instance of noise being used to improve language models was the FreeLB method by Zhu et al. (2019), who observed that adversarial perturbations boosted the performance of MLM models. The noise in this case is not random, but is rather computed by first adding a small Gaussian perturbation to the embeddings and then using a gradient step to find the perturbation that maximally alters model performance. This adversarial augmentation approach also improves model performance on graphs Kong et al. (2022). While our proposed scheme is non-adversarial, we adopt the noise scaling rules from these works. Training on noisy inputs has also been done for other applications, such as to improve image captioning systems (Nukrai et al., 2022), and as a common component of early",
+        "x": 108,
+        "y": 343.4,
+        "w": 396,
+        "h": 202.2,
+        "zh": "由此引出 Wang et al. (2022) 的 Self-Instruct：他们用 InstructGPT（Text-Davinci-003）生成指令–输出对，用来把 LLaMA 这类基础模型微调成 Alpaca（Taori et al., 2023）这样能遵循指令的变体。随着 Taori et al. (2023) 这类蒸馏模型流行起来，社区又造了别的数据集，用特定方式从 ChatGPT 等模型里蒸馏，其中包括 Xu et al. (2023)。另一条路是 ShareGPT（Chiang et al., 2023），用众包收集 ChatGPT 上的真实用户对话。还有 Lee et al. (2023) 这样的数据集，专门用来加强模型的某几项能力，例如 STEM 问答和逻辑推理。AlpaGasus（Chen et al., 2023）按质量过滤数据（依据是 GPT-4），以此来提高性能。还应当指出，用带噪声的输入来改进模型，已经有过多种做法。噪声被用来改进语言模型的最早例子，是 Zhu et al. (2019) 的 FreeLB：他们观察到，对抗扰动能提升掩码语言模型（MLM）的性能。这里的噪声不是随机的，而是先给嵌入加一个小的高斯扰动，再用一步梯度，找出对模型表现改变最大的那个扰动。这种对抗式增强在图上也能提升模型性能，见 Kong et al. (2022)。我们的方案不是对抗式的，但采用了这些工作里的噪声缩放规则。在噪声输入上训练也被用到其他地方，例如用来改进图像描述系统（Nukrai et al., 2022），以及作为早期"
+      },
+      {
+        "text": "differential privacy mechanisms (Dwork et al., 2014).",
+        "x": 108,
+        "y": 332.5,
+        "w": 213.4,
+        "h": 10,
+        "zh": "差分隐私机制里常见的一个组成部分（Dwork et al., 2014）。"
+      },
+      {
+        "text": "NEFTU N E: NOISY EMBEDDING INSTRUCTION FINETUNING",
+        "x": 126.5,
+        "y": 302.3,
+        "w": 300.4,
+        "h": 12,
+        "zh": "NEFTune：带噪声嵌入的指令微调"
+      },
+      {
+        "text": "Instruction models are trained on datasets comprising pairs of instructions and responses. Each step of NEFTune begins by sampling an instruction from the dataset, and converting its tokens to embedding vectors. NEFTune then departs from standard training by adding a random noise vector to the embeddings. The noise is generated by sampling iid uniform entries, each in the range√ [−1, 1], and then scaling the entire noise vector by a factor of α/ length, d is the embedding dimension, and α is a tunable parameter. This scaling rule was borrowed from the adversarial ML literature (Zhu et al., 2019; Kong et al., 2022), and results in a random vector with an expected Euclidean magnitude of approximately√",
+        "x": 108,
+        "y": 189.8,
+        "w": 396,
+        "h": 98.1,
+        "zh": "指令模型在由指令和回答配对组成的数据集上训练。NEFTune 的每一步，先从数据集里采样一条指令，再把它的 token 转成嵌入向量。随后它就和标准训练分开了：给这些嵌入加上一个随机噪声向量。噪声是这样生成的：对各分量做独立同分布的均匀采样，每个分量落在 √[−1, 1] 这一范围里，再把整个噪声向量乘以系数 α/length；d 是嵌入维度，α 是可调参数。这条缩放规则借自对抗机器学习文献（Zhu et al., 2019; Kong et al., 2022）。这样得到的随机向量，期望欧氏长度大约是 √"
+      },
+      {
+        "text": "3. Algorithm 1 describes our method in detail.",
+        "x": 127.7,
+        "y": 181.5,
+        "w": 184.3,
+        "h": 10,
+        "zh": "3。算法 1 详细描述了我们的方法。"
+      },
+      {
+        "text": "We conduct the majority of our experiments using 7B parameter LLMs. LLaMA-1, LLaMA-2, and OPT-6.7B (Touvron et al., 2023a;b; Zhang et al., 2022). These similarly shaped transformers mostly differ in tokens seen during training. OPT, LLaMA-1, and LLaMA-2 were trained using 180B, 1T, and 2T tokens respectively. This difference is to be reflected in model performance on standard benchmarks like MMLU, with LLaMA-2 performing the best and OPT",
+        "x": 108,
+        "y": 62.1,
+        "w": 396,
+        "h": 53.8,
+        "zh": "我们的大部分实验用的是 70 亿参数的大语言模型，即 LLaMA-1、LLaMA-2 和 OPT-6.7B（Touvron et al., 2023a;b; Zhang et al., 2022）。这些形状相近的 Transformer，差别主要在训练时见过多少 token。OPT、LLaMA-1 和 LLaMA-2 分别用 180B、1T 和 2T 个 token 训练。这一差别会反映到 MMLU 这类标准基准上的模型表现，其中 LLaMA-2 最好，OPT"
+      }
+    ],
+    "3": [
+      {
+        "text": "Algorithm 1 NEFTune: Noisy Embedding Instruction Finetuning Input: D = {xi, yi}1 tokenized dataset, embedding layer emb(·), rest of model f/emb(·), model parameters θ, loss(·), optimizer opt(·) NEFT Hyperparameter: base noise scale α ∈ R Initialize θ from a pretrained model.",
+        "x": 108,
+        "y": 648.8,
+        "w": 368.2,
+        "h": 61.6,
+        "zh": "算法 1　NEFTune：带噪声嵌入的指令微调。输入：已分词数据集 D = {xi, yi}1，嵌入层 emb(·)，模型其余部分 f/emb(·)，模型参数 θ，损失函数 loss(·)，优化器 opt(·)。NEFT 超参数：基础噪声尺度 α ∈ R。从预训练模型初始化 θ。"
+      },
+      {
+        "text": "▷ sample a minibatch of data and labels ▷ batch size B, seq. length L, embedding dimension d ϵ ∼ Uniform(−1, 1), R",
+        "x": 132.9,
+        "y": 613.1,
+        "w": 371.1,
+        "h": 31.9,
+        "zh": "▷ 采样一个小批量的数据和标签。▷ 批量大小 B，序列长度 L，嵌入维度 d。ϵ ∼ Uniform(−1, 1)，R"
+      },
+      {
+        "text": "▷ sample a noise vector ▷ add scaled noise to embeds a ▷ make prediction at noised embeddings θ ← opt(θ, loss( Yˆi, Yi))",
+        "x": 132.9,
+        "y": 570.8,
+        "w": 371.1,
+        "h": 52.2,
+        "zh": "▷ 采样一个噪声向量。▷ 给嵌入加上缩放后的噪声。▷ 在加噪后的嵌入上做预测。θ ← opt(θ, loss(Ŷi, Yi))"
+      },
+      {
+        "text": "▷ train step, e.g., grad descent until Stopping criteria met/max iterations.",
+        "x": 118,
+        "y": 561.3,
+        "w": 386,
+        "h": 20.9,
+        "zh": "▷ 训练一步，例如梯度下降，直到满足停止条件或达到最大迭代次数。"
+      },
+      {
+        "text": "If sequence lengths in a batch are not equivalent, then L is a vector ∈ Z>0 and the scaling factor (α/ Ld) is computed independently for each sequence in batch.",
+        "x": 108,
+        "y": 531.9,
+        "w": 396,
+        "h": 18.9,
+        "zh": "如果一个批次里的序列长度并不相同，那么 L 是一个向量，且 L ∈ Z>0，缩放因子（α/Ld）要对批次中的每条序列分别计算。"
+      },
+      {
+        "text": "performing the worst. For the 13B and 70B parameter models, we train LLaMA-2. Additionally, we improve RLHF models by finetuning the highly refined LLaMA-2-Chat (7B) model.",
+        "x": 108,
+        "y": 485.9,
+        "w": 396,
+        "h": 20.9,
+        "zh": "表现最差。13B 和 70B 参数的模型，我们训练的是 LLaMA-2。此外，我们还微调已经打磨得很细的 LLaMA-2-Chat（7B），用来改进 RLHF 模型。"
+      },
+      {
+        "text": "We focus on the following finetuning datasets either because of their wide popularity, or because they have yielded state-of-the-art results in the recent past. Note that we use only single-turn datasets because of the memory constraints of our hardware setup. • Alpaca (Taori et al., 2023) was constructed using the Self-Instruct method of Wang et al. (2022), and the Text-Davinci-003 model (Ouyang et al., 2022). Self-Instruct uses a small seed set of tasks to construct new instruction tuning tasks and filter out bad ones. • Evol-Instruct (Xu et al., 2023) contains 70k single-turn instructions that are considered more complex than Alpaca. This dataset was derived from the Alpaca dataset by using ChatGPT to evolve the initial instructions. • Open-Platypus (Lee et al., 2023) is a curated dataset amalgamated from 11 open-source datasets, curated specifically towards improving LLM performance in STEM and logical domains. This set contains 25k questions where ≈ 10% are LLM-generated and the remainder human-written. • ShareGPT (Chiang et al., 2023) is a dataset of 70K voluntarily-shared ChatGPT conversations (ShareGPT, 2023). Although ShareGPT is multiturn, we use the dataset version from Vicunav1.1 and split the multi-turn conversations closer to a single-turn format.",
+        "x": 108,
+        "y": 276.9,
+        "w": 396,
+        "h": 173.5,
+        "zh": "我们关注下面这些微调数据集，或者是因为它们用得很广，或者是因为它们在最近取得过最先进的结果。需要说明，由于这套硬件的内存限制，我们只用单轮数据集。• Alpaca（Taori et al., 2023）用 Wang et al. (2022) 的 Self-Instruct 方法，以及 Text-Davinci-003 模型（Ouyang et al., 2022）构建。Self-Instruct 用一小套种子任务来构造新的指令微调任务，并把差的滤掉。• Evol-Instruct（Xu et al., 2023）有 70k 条单轮指令，被认为比 Alpaca 更复杂。它从 Alpaca 出发，用 ChatGPT 把最初的指令“演化”出来。• Open-Platypus（Lee et al., 2023）把 11 个开源数据集合并、再专门朝 STEM 和逻辑领域整理，用来提高大语言模型在这些方面的表现。其中有 25k 个问题，约 10% 由大语言模型生成，其余是人写的。• ShareGPT（Chiang et al., 2023）是 70K 条用户自愿分享的 ChatGPT 对话（ShareGPT, 2023）。ShareGPT 本来是多轮的；我们用的是 Vicuna v1.1 的版本，并把多轮对话切得更接近单轮。"
+      },
+      {
+        "text": "Additionally, we finetune all models with the Alpaca system prompt, except for ShareGPT, where we use the Vicuna system prompt. The hyperparameters can be found in Appendix A.1. We set our hyperparameters through a coarse sweep on LLaMA-1 (7B) trained on the Alpaca dataset, where we see 6% improvement over the standard Alpaca model. We use these as the defaults on all models.",
+        "x": 108,
+        "y": 223.2,
+        "w": 396,
+        "h": 42.8,
+        "zh": "此外，除了 ShareGPT 用 Vicuna 的系统提示，其余模型都用 Alpaca 的系统提示来微调。超参数见附录 A.1。我们在用 Alpaca 训练的 LLaMA-1（7B）上做了一次粗略扫描来定超参数，相对标准的 Alpaca 模型看到 6% 的提升。这些设置就用作所有模型的默认值。"
+      },
+      {
+        "text": "Since we train using largely single-turn data, we evaluate the model’s conversational abilities using AlpacaEval. We also evaluate the tasks from the OpenLLM Leaderboard to determine if the NEFTune augmentation causes any loss in performance on standard multiple choice tasks. AlpacaEval. The AlpacaEval dataset released by Dubois et al. (2023) is used to evaluate the overall quality of generations. AlpacaEval is an automatic model-based evaluation that compares Text-Davinci-003 generations to the model generations over 805 instructions with the Win Rate reported. The Win Rate is the rate at which the model in question is preferred to Text-Davinci- 003 as determined by model evaluator (GPT-4). The 805 test prompts are scraped from Vicuna, koala, Anthropic’s hh-rlhf, and other sources, making it a fairly comprehensive and diverse test. Additionally, AlpacaEval has high agreement with humans (Dubois et al., 2023) (validated on 20K annotations). We believe at the 7B and 13B scale this evaluation is still quite reasonable. We",
+        "x": 108,
+        "y": 62.1,
+        "w": 396,
+        "h": 125.5,
+        "zh": "由于训练用的大体是单轮数据，我们用 AlpacaEval 来评估模型的对话能力。我们也评 OpenLLM Leaderboard 上的任务，看 NEFTune 这种增强会不会让标准的选择题任务掉分。AlpacaEval。Dubois et al. (2023) 发布的 AlpacaEval 数据集，用来评估生成内容的整体质量。它是一种基于模型的自动评估：在 805 条指令上，把模型的生成和 Text-Davinci-003 的生成相比较，并报告胜率。胜率是评估模型（GPT-4）判定“当前这个模型比 Text-Davinci-003 更好”的比例。这 805 条测试提示抓自 Vicuna、Koala、Anthropic 的 hh-rlhf 以及其他来源，因此测试相当全面，也相当多样。另外，AlpacaEval 和人类判断高度一致（Dubois et al., 2023）（在 20K 条标注上验证过）。我们认为，在 7B 和 13B 这个规模上，这项评估仍然相当合理。我们"
+      }
+    ],
+    "4": [
+      {
+        "text": "Table 1: AlpacaEval Win Rate versus Text-Davinci-003 for LLaMA-2 trained on different datasets, using GPT-4 as the evaluator, showing an average improvement of 15% across all datasets.",
+        "x": 108,
+        "y": 682.4,
+        "w": 396,
+        "h": 20.9,
+        "zh": "表 1：LLaMA-2 在不同数据集上训练后，相对 Text-Davinci-003 的 AlpacaEval 胜率，评估器用的是 GPT-4。所有数据集上的平均提升为 15%。"
+      },
+      {
+        "text": "Figure 2: AlpacaEval Win Rate with and without NEFTune on LLaMA-2, LLaMA-1, and OPT across Alpaca, Evol-Instruct, ShareGPT and OpenPlatypus datasets. Performance improves across different datasets and models with ChatGPT as the evaluator.",
+        "x": 108,
+        "y": 381.5,
+        "w": 396,
+        "h": 31.9,
+        "zh": "图 2：在 Alpaca、Evol-Instruct、ShareGPT 和 OpenPlatypus 上，LLaMA-2、LLaMA-1 和 OPT 使用与不使用 NEFTune 时的 AlpacaEval 胜率。评估器为 ChatGPT 时，不同数据集、不同模型上的表现都有提升。"
+      },
+      {
+        "text": "use both GPT-4 and ChatGPT as evaluators. We use ChatGPT as a precursor test to determine which models to evaluate on GPT-4. This is due to the cost and API restrictions of GPT-4. Hugging Face OpenLLM Leaderboard. The evaluation datasets used for leaderboard ranking are the verbalized multiclass classification datasets ARC (Clark et al., 2018), HellaSwag (Zellers et al., 2019), MMLU (Hendrycks et al., 2020), and TruthfulQA (Lin et al., 2022). This combination of datasets broadly evaluates the ability of a LLM to respond to factual questions and reasoning challenges, and we evaluate these datasets to confirm that model capabilities are not negatively",
+        "x": 108,
+        "y": 277.2,
+        "w": 396,
+        "h": 81.7,
+        "zh": "GPT-4 和 ChatGPT 都用作评估器。我们先用 ChatGPT 做一次前置测试，再决定哪些模型要送到 GPT-4 上评。这是因为 GPT-4 的费用和 API 限制。Hugging Face OpenLLM Leaderboard。排行榜用来排名的，是说成文本的多分类数据集：ARC（Clark et al., 2018）、HellaSwag（Zellers et al., 2019）、MMLU（Hendrycks et al., 2020）和 TruthfulQA（Lin et al., 2022）。这组数据从比较广的面上，考察大语言模型回答事实题和推理题的能力。我们评这些数据集，是为了确认模型能力没有受到负面"
+      },
+      {
+        "text": "From Table 1, we can see an increase across all datasets for the 7B scale with an average increase of 15.1%, showing that training with NEFT significantly improves conversational ability and answer quality, as measured via AlpacaEval. Additionally, we can see from Figure 2 that we also see improvements on older models, such as LLaMA-1 and OPT. Interestingly, we see less improvement on ShareGPT than on other datasets according to ChatGPT. However, this is not reflected in the GPT-4 evaluation. From Table 2, we see the Win Rate climbs from 75.03% to 88.81% (+13.78%) after adding NEFTune to the 70B parameter model trained on Evol-Instruct (hyperparameters in Appendix A.1).",
+        "x": 108,
+        "y": 132.5,
+        "w": 396,
+        "h": 86.7,
+        "zh": "从表 1 可以看到，7B 规模在所有数据集上都有提升，平均提高 15.1%。这说明用 NEFT 训练能显著提高对话能力和回答质量，衡量方式是 AlpacaEval。另外，从图 2 也可以看到，LLaMA-1 和 OPT 这些更早的模型同样有提升。有趣的是，按 ChatGPT 的评判，ShareGPT 上的提升比其他数据集小。但 GPT-4 的评估里并不是这样。从表 2 可以看到，在 Evol-Instruct 上训练的 70B 参数模型加上 NEFTune 之后（超参数见附录 A.1），胜率从 75.03% 升到 88.81%（+13.78%）。"
+      },
+      {
+        "text": "From Table 2, we see that further instruction finetuning LLaMA-2 Chat (7B) on Evol-Instruct can boost the performance of LLaMA-2-Chat by 3%. This model was already extensively tuned, using multiple rounds of RLHF. Yet, with NEFTune, we see a sizable, additional performance increase of 10%, although we note that some capabilities of this checkpoint model may be affected like its ability to refrain from outputting toxic behavior.",
+        "x": 108,
+        "y": 62.1,
+        "w": 396,
+        "h": 53.8,
+        "zh": "从表 2 还可以看到，在 Evol-Instruct 上再对 LLaMA-2 Chat（7B）做指令微调，能把 LLaMA-2-Chat 的表现提高 3%。这个模型已经用多轮 RLHF 做过大量调优。尽管如此，加上 NEFTune 之后，我们仍看到 10% 这一可观的额外提升。不过我们也注意到，这个检查点的某些能力可能会受影响，例如克制自己、不输出有毒内容的能力。"
+      }
+    ],
+    "5": [
+      {
+        "text": "Figure 3: OpenLLM Leaderboard tasks with and without NEFTune on LLaMA-2 across Alpaca, Evol-Instruct, and OpenPlatypus datasets and LLaMA-1 trained on Evol-Instruct. We observe that",
+        "x": 108,
+        "y": 425,
+        "w": 396,
+        "h": 20.9,
+        "zh": "图 3：LLaMA-2 在 Alpaca、Evol-Instruct 和 OpenPlatypus 上，以及在 Evol-Instruct 上训练的 LLaMA-1，使用与不使用 NEFTune 时的 OpenLLM Leaderboard 任务。我们观察到"
+      },
+      {
+        "text": "performance does not change across datasets and models.",
+        "x": 108,
+        "y": 414.1,
+        "w": 229.1,
+        "h": 10,
+        "zh": "不同数据集和模型上的表现都没有变化。"
+      },
+      {
+        "text": "Nevertheless, it is surprising that the conversation quality of such a refined chat model can be so",
+        "x": 108,
+        "y": 378.1,
+        "w": 396,
+        "h": 10,
+        "zh": "尽管如此，这样一个已经打磨得很精的对话模型，其对话质量竟能如此"
+      },
+      {
+        "text": "A potential concern is that NEFTune improves conversational ability only at the cost of other classical skills. We evaluate on the OpenLLM Leaderboard tasks, using the LMEval Harness (Gao et al., 2021) implementation of MMLU, ARC, HellaSwag, and TruthfulQA. These benchmarks give us a glimpse into model knowledge, reasoning, and truthfulness. Figure 3 shows that scores remain stable and that NEFTune preserves model capabilities.",
+        "x": 108,
+        "y": 295.3,
+        "w": 396,
+        "h": 53.8,
+        "zh": "一个可能的担心是：NEFTune 把对话能力提上去，只是拿其他经典能力来换。我们用 LMEval Harness（Gao et al., 2021）所实现的 MMLU、ARC、HellaSwag 和 TruthfulQA，在 OpenLLM Leaderboard 的任务上做评估。这些基准让我们看到模型的知识、推理和真实性。图 3 显示分数保持稳定，NEFTune 保留了模型原有的能力。"
+      },
+      {
+        "text": "Table 2: LLaMA-2-Chat (7B), LLaMA-2 (13B), and LLaMA-2 (70B) can be finetuned further to",
+        "x": 108,
+        "y": 260.6,
+        "w": 396,
+        "h": 10,
+        "zh": "表 2：LLaMA-2-Chat（7B）、LLaMA-2（13B）和 LLaMA-2（70B）还可以再微调，以便"
+      },
+      {
+        "text": "We show that NEFTune also improves performance in constrained resource environments by training with Quantized Low Rank Adapters (QLORA) (Dettmers et al., 2023). We use the implementation from Dettmers et al. (2023), and the default training hyperparameters for all model weights, training for only one epoch. For 30B, we double the effective batch size and half the learning rate like (Dettmers et al., 2023). Table 3 shows that when training with QLORA, AlpacaEval performance increases across all model sizes and datasets studied. However, performance gains are less stark than those seen in full scale finetuning. This may be because different hyperparameters (i.e, number of finetuning epochs) are needed, or because we are heavily quantizing to 4-bits.",
+        "x": 108,
+        "y": 62.1,
+        "w": 396,
+        "h": 103.6,
+        "zh": "我们表明，在资源受限的环境里，NEFTune 同样能提高性能：训练时使用量化低秩适配器 QLORA（Dettmers et al., 2023）。我们采用 Dettmers et al. (2023) 的实现，所有模型权重都用默认的训练超参数，并且只训练一个 epoch。对于 30B，我们照 Dettmers et al. (2023) 的做法，把有效批量大小加倍，学习率减半。表 3 显示，用 QLORA 训练时，所考察的各种模型规模和数据集上，AlpacaEval 的表现都有提高。不过提升没有全量微调那么显著。这可能是因为需要另一套超参数（例如微调的 epoch 数），也可能是因为我们把权重量化得很重，到了 4 bit。"
+      }
+    ],
+    "6": [
+      {
+        "text": "Table 3: AlpacaEval Win Rate (ChatGPT Eval.) reported across different datasets and model sizes. Even training with QLORA, we can see performance increases across the board, although",
+        "x": 108,
+        "y": 682.4,
+        "w": 396,
+        "h": 20.9,
+        "zh": "表 3：不同数据集、不同模型规模上的 AlpacaEval 胜率（ChatGPT 评估）。即便用 QLORA 训练，整体上仍能看到性能提高，尽管"
+      },
+      {
+        "text": "they are milder than regular finetuning.",
+        "x": 108,
+        "y": 671.5,
+        "w": 155.8,
+        "h": 10,
+        "zh": "这些提高比常规微调更温和。"
+      },
+      {
+        "text": "Here we show a qualitative example from LLaMA-2 trained on Alpaca with and without NEFT. We choose the quantum computing prompt from the Vicuna Eval subset of the AlpacaEval instructions. We see from this example that Alpaca produces a response that is shorter, giving only a very basic definition of quantum computing, mentioning qubits, superposition, entanglement, and increased complex computation. In the Alpaca-NEFT response, the model provides a more fluid answer, expounding on these topics with clearer explanations of superposition and quantum entanglement, and including a mention of potential applications. We feel this example is representative of the kinds of changes induced by NEFT. See the appendix for more examples",
+        "x": 108,
+        "y": 490.5,
+        "w": 396,
+        "h": 86.7,
+        "zh": "这里给出一个定性的例子：LLaMA-2 在 Alpaca 上训练，分为用 NEFT 和不用 NEFT。提示取自 AlpacaEval 指令里的 Vicuna Eval 子集，问的是量子计算。从这个例子可以看到，Alpaca 的回答更短，只给了量子计算一个很基本的定义，提到量子比特、叠加、纠缠，以及更复杂的计算。Alpaca-NEFT 的回答则更顺，把叠加和量子纠缠讲得更清楚，还提到了可能的应用。我们认为，这个例子代表了 NEFT 所带来的那一类变化。更多例子见附录"
+      },
+      {
+        "text": "AlpacaEval (Vicuna Subset) Prompt: Can you explain the basics of quantum comput-",
+        "x": 122.2,
+        "y": 455.2,
+        "w": 367.7,
+        "h": 10,
+        "zh": "AlpacaEval（Vicuna 子集）提示：你能解释一下量子计算的基础"
+      },
+      {
+        "text": "Quantum computing is based on the principles of quantum mechanics, which allow for phenomena such as superposition and entanglement between particles. information can be processed in parallel instead of sequentially like traditional computers. Quantum bits (qubits) are used to store data instead of classical bits, allowing more complex computations to take place with fewer resources than would otherwise be necessary.",
+        "x": 122.2,
+        "y": 378.5,
+        "w": 367.6,
+        "h": 53.8,
+        "zh": "量子计算基于量子力学原理。这些原理允许出现叠加，以及粒子之间的纠缠之类的现象。信息可以并行处理，而不是像传统计算机那样按顺序处理。存储数据用的是量子比特（qubit），而不是经典比特，因此能用更少的资源完成更复杂的计算。"
+      },
+      {
+        "text": "Quantum computing is based on the principles of quantum mechanics, which describe how particles such as electrons and photons behave at the subatomic level. Unlike traditional computers, which process information in binary digits (bits) that can be either 0 or 1, quantum bits (qubits) can exist in multiple states between 0 and 1 simultaneously. This phenomenon is known as superposition and allows for much more complex calculations to be performed than would otherwise be possible with classical computers. algorithms are designed to take advantage of this property by encoding data into qubit states so that it can be processed exponentially faster than conventional methods. Additionally, quantum entanglement–the ability for two particles to remain connected even over great distances–allows for large amounts of data to be sent across networks quickly and securely. The potential applications of quantum computing range from cryptography and artificial intelligence to drug discovery and material science. With continued research and development, quantum technology has the potential to revolutionize many industries.",
+        "x": 122.2,
+        "y": 225,
+        "w": 367.6,
+        "h": 141.5,
+        "zh": "量子计算基于量子力学原理，这些原理描述电子、光子等粒子在亚原子层面上如何行为。传统计算机用二进制数字（比特）处理信息，每个比特只能是 0 或 1；量子比特（qubit）则可以同时处于 0 和 1 之间的多种状态。这种现象称为叠加，因而能够做比经典计算机原本所能做的复杂得多的计算。算法利用这一性质，把数据编码进量子比特的状态，从而能以指数级快于常规方法的速度来处理。此外，量子纠缠——两个粒子即使相距很远仍能保持相连的能力——使大量数据可以快速、安全地在网络上传送。量子计算可能的应用，从密码学和人工智能，一直到药物发现和材料科学。研究与开发若能持续，量子技术就有潜力革新许多行业。"
+      },
+      {
+        "text": "We hypothesize that by adding noise to the embeddings at train time, the model overfits less to the specifics of the instruction-tuning dataset, such as formatting details, exact wording, and text length. Instead of collapsing to the exact instruction distribution, the model is more capable of providing answers that incorporate knowledge and behaviors of the pretrained base model. A very noticeable side-effect of this, that we observe immediately, is that the model is forming more coherent, longer completions. Longer, more verbose, completions are preferred by both human and machine evaluators on most datasets (Dubois et al., 2023), but we find that the increased verbosity is only the most visible side-effect from the reduced overfitting to the instruction distribution; increased verbosity alone cannot explain the measured gains in performance.",
+        "x": 108,
+        "y": 62.1,
+        "w": 396,
+        "h": 103.6,
+        "zh": "我们的假设是：训练时给嵌入加噪声，模型就不那么过拟合指令微调数据集里的具体细节，例如格式、确切用词和文本长度。它不再坍缩到那份精确的指令分布上，而更能够给出把预训练基座模型的知识和行为揉进去的回答。一个马上就能看出来、而且非常明显的副作用是：模型会写出更连贯、也更长的补全。在大多数数据集上，更长、更啰嗦的补全都会受到人类评估者和机器评估者的偏好（Dubois et al., 2023）。但我们发现，变啰嗦只是“对指令分布过拟合减轻了”之后最显眼的副作用；单靠更啰嗦，解释不了测到的性能增益。"
+      }
+    ],
+    "7": [
+      {
+        "text": "Figure 4: Left: training loss on the Alpaca dataset for models with and without NEFT, computed with no added noise. Training with NEFT yields a higher training loss. Right: loss of the same model, but evaluated on the “test” Evol-Instruct dataset. NEFT yields slightly lower loss.",
+        "x": 108,
+        "y": 536.7,
+        "w": 396,
+        "h": 31.9,
+        "zh": "图 4：左：Alpaca 数据集上，用 NEFT 和不用 NEFT 的模型的训练损失，计算时不加噪声。用 NEFT 训练，训练损失更高。右：同一个模型在当作“测试”的 Evol-Instruct 数据集上的损失。NEFT 的损失略低。"
+      },
+      {
+        "text": "In this analysis, we focus on LLaMA-2-7B models trained on the Alpaca dataset both with and without NEFTune. We examine the training loss of both models on the Alpaca dataset (both are evaluated without noise) and the “testing” loss on the Evol-Instruct dataset. See Figure 4, which shows that the NEFTune model has significantly higher training loss but slightly lower testing loss compared to the base model trained without NEFTune. This indicated less overfitting and better",
+        "x": 108,
+        "y": 438.3,
+        "w": 396,
+        "h": 53.8,
+        "zh": "这项分析关注的是在 Alpaca 上训练的 LLaMA-2-7B，一组用了 NEFTune，一组没有。我们看两个模型在 Alpaca 上的训练损失（两者评估时都不加噪声），以及在 Evol-Instruct 上的“测试”损失。见图 4：和不用 NEFTune 训练的模型相比，NEFTune 模型的训练损失明显更高，测试损失则略低一些。这表明过拟合更少，而且更好"
+      },
+      {
+        "text": "To test our overfitting hypothesis further, we also generate responses to training prompts with these models using greedy decoding. We compare the generated responses with the ground truth responses provided in the dataset and report the results in Figure 5. We use ROUGE-L (Lin, 2004) and BLEU (up to n-gram order 4) (Papineni et al., 2002) to measure the similarity between responses. Figure 5 shows that responses generated by the model trained with NEFTune have significantly lower ROUGE-L and BLEU scores. As ROUGE-L is based on longest common subsequence of words and BLEU is based on common n-grams between responses, higher scores on responses generated by the model trained without NEFT indicate that its responses contain a significantly larger portion of the same words in the same order from the ground truth response, as compared to the outputs of",
+        "x": 108,
+        "y": 322.8,
+        "w": 396,
+        "h": 97.6,
+        "zh": "为了进一步检验这个过拟合假设，我们还用这些模型、以贪心解码去回答训练提示。生成的回答与数据集里的真实回答作比较，结果见图 5。相似度用 ROUGE-L（Lin, 2004）和 BLEU（n 元最高到 4，Papineni et al., 2002）来量。图 5 显示，用 NEFTune 训练的模型所生成的回答，ROUGE-L 和 BLEU 都明显更低。ROUGE-L 依据的是词的最长公共子序列，BLEU 依据的是回答之间共有的 n-gram，因此不用 NEFT 训练的模型得分更高，说明它的回答里有大得多的一部分，与真实回答用词相同、顺序也相同；与用 NEFTune 训练的那个模型的输出相比"
+      },
+      {
+        "text": "Taken together, these observations imply that standard finetuning recipes, while tuned for maximal performance, significantly overfit to the instruction dataset, inducing exact reproduction of some responses. In contrast, NEFTune models overfit less without reduction in performance on the test set, and do not “lock-in” to the exact wording of the instruction data, as seen in the ROUGE-L",
+        "x": 108,
+        "y": 262,
+        "w": 396,
+        "h": 42.8,
+        "zh": "合起来看，这些观察说明：标准微调配方虽然是朝着尽量高的性能来调的，却会严重过拟合指令数据集，以致某些回答被原样复现。NEFTune 模型过拟合更少，测试集上的性能也没有下降，而且不会“锁死”在指令数据的精确措辞上。这一点从 ROUGE-L 可以看出"
+      },
+      {
+        "text": "Due to the strong correlation between increased length and performance on the AlpacaEval task (in our experiments and for submissions to the public leaderboard), we were curious whether the increase in length observed with NEFTune might come at a cost to the diversity of the text. To investigate this, we compute the n-gram repetition rates for LLaMA-2 trained on different finetuning datasets with and without NEFT . N-grams reoccur more frequently in longer passages, and so we must control for passage length. We compute repetition and diversity scores on a fixed-length chunk at the beginning of each sample. The fixed length cuttoffs were 50 for models trained on Alpaca, 100 for Evol-Instruct, 150 for ShareGPT, and 150 for OpenPlatypus. We choose the chunk lengths so that at least half of the generations were longer than the cutoff, and sequences of insufficient length were dropped. The diversity scores we compute are a summary measure of 2-, 3-, and 4-gram repetition rates called log-diversity, as described in Kirchenbauer et al. (2023); Li et al. (2022).",
+        "x": 108,
+        "y": 93.8,
+        "w": 396,
+        "h": 119.6,
+        "zh": "长度增加和 AlpacaEval 上的成绩强相关（我们自己的实验如此，交到公开排行榜上的结果也如此），因此我们想知道：NEFTune 观察到的变长，会不会以文本多样性为代价。为此，我们计算 LLaMA-2 在不同微调数据集上、用 NEFT 和不用 NEFT 时的 n-gram 重复率。n-gram 在更长的段落里本来就更容易再出现，所以必须把段落长度控制住。重复和多样性都在每个样本开头一段固定长度的文本上计算。固定截断是：Alpaca 上训练的模型为 50，Evol-Instruct 为 100，ShareGPT 为 150，OpenPlatypus 为 150。截断这样取，是为了让至少一半的生成长过这个截断；不够长的序列就丢掉。我们算的多样性分数，是把 2 元、3 元和 4 元的重复率汇总成一个量，叫做 log-diversity，见 Kirchenbauer et al. (2023) 与 Li et al. (2022)。"
+      },
+      {
+        "text": "Note that for all models we performed generation with a repetition penalty of 1.2, held constant across all",
+        "x": 124.1,
+        "y": 72.1,
+        "w": 379.9,
+        "h": 9,
+        "zh": "需要说明，所有模型生成时都使用 1.2 的重复惩罚，并且在所有"
+      }
+    ],
+    "8": [
+      {
+        "text": "Figure 5: Left shows the ROUGE-L of training with and without NEFT. Right shows BLEU score.",
+        "x": 108.1,
+        "y": 558.6,
+        "w": 395.8,
+        "h": 10,
+        "zh": "图 5：左图是用 NEFT 和不用 NEFT 训练时的 ROUGE-L。右图是 BLEU 分数。"
+      },
+      {
+        "text": "In Table 4 and Table 6, we see that NEFT models generate longer outputs than their counterparts. However, we also see that the 2-gram repetition rates as well as overall token log-diversity for models trained with and without NEFT are nearly identical, providing evidence that the longer responses do not come at the expense of repetition, and instead provide additional details.",
+        "x": 108,
+        "y": 493.3,
+        "w": 396,
+        "h": 42.8,
+        "zh": "从表 4 和表 6 可以看到，NEFT 模型生成的输出比对应模型更长。同时也可以看到，用 NEFT 和不用 NEFT 训练的模型，2-gram 重复率以及整体 token 的 log-diversity 几乎相同。这说明更长的回答并不是靠重复换来的，而是多提供了一些细节。"
+      },
+      {
+        "text": "To scrutinize the length–leaderboard correlation even further, we tested whether simply promoting a model to generate longer outputs was sufficient to recover the performance gains of models trained with NEFT. See Table 5. First, we try explicitly prompting the model to give longer answers. Interestingly, this boosts AlpaceEval scores by 16%. We can also coerce long completions by blocking the [EOS] token until we hit 250 tokens in length, thus forcing a standard model to produce answers as long as NEFT. This results in marginal improvements over standard finetuning. Finally, we ablate the use of uniform versus Gaussian noise in the NEFT algorithm and find that Gaussian noise induces even longer outputs, but does not come with improved performance. See Table 6. While longer generations do score better, we see that no generation-time strategy came close to the performance of NEFTune models.",
+        "x": 108,
+        "y": 342.5,
+        "w": 396,
+        "h": 114.6,
+        "zh": "为了把长度和排行榜之间的相关看得更细，我们测试了：只是促使模型把输出写长，是否就足以拿到用 NEFT 训练的模型那种性能增益。见表 5。我们先显式提示模型把回答写长。有趣的是，这能把 AlpacaEval 的分数提高 16%。也可以在长度达到 250 个 token 之前一直屏蔽 [EOS]，从而迫使标准模型写出和 NEFT 一样长的回答。这样做相对标准微调只有很小的提升。最后，我们消融 NEFT 算法里用均匀噪声还是高斯噪声，发现高斯噪声会让输出更长，但性能并没有跟着变好。见表 6。更长的生成确实分数更高，但没有任何一种放在生成阶段的策略，能接近 NEFTune 模型的表现。"
+      },
+      {
+        "text": "Table 4: (Row 1) Avg. Character lengths of AlpacaEval responses from LLaMA-2 models finetuned on different datasets. We also report average output length for each dataset (though we trained with max sequence length of 512). NEFT increases average length. (Row 2) Whitespace-tokenized lengths of generations. (Row 3) 2-Gram repetition rates. (Row 4) Log-Diversity measures.",
+        "x": 108,
+        "y": 278.2,
+        "w": 396,
+        "h": 42.8,
+        "zh": "表 4：（第 1 行）在不同数据集上微调的 LLaMA-2，其 AlpacaEval 回答的平均字符长度。我们也给出每个数据集的平均输出长度（不过训练时的最大序列长度是 512）。NEFT 会把平均长度拉高。（第 2 行）生成结果按空白分词后的长度。（第 3 行）2-gram 重复率。（第 4 行）Log-Diversity。"
+      },
+      {
+        "text": "Since our primary results are based on the AlpacaEval benchmark, which is scored by a large language model, we also run a small scale human study amongst the authors of this work. For a",
+        "x": 108,
+        "y": 62.1,
+        "w": 396,
+        "h": 20.9,
+        "zh": "我们的主要结果建立在 AlpacaEval 这个基准上，而它是由大语言模型打分的，因此我们也在本文作者当中做了一项小规模的人类研究。针对"
+      }
+    ],
+    "9": [
+      {
+        "text": "Table 5: We use the following meta-prompts to get longer responses: “Generate a long response”, “Generate a comprehensive response”, and “Generate a long and comprehensive response.” Longer responses score better, but do not close the gap with NEFT.",
+        "x": 108,
+        "y": 671.5,
+        "w": 396,
+        "h": 31.9,
+        "zh": "表 5：我们用下面这些元提示来得到更长的回答：“Generate a long response”、“Generate a comprehensive response”，以及“Generate a long and comprehensive response。”更长的回答分数更高，但并没有缩小与 NEFT 的差距。"
+      },
+      {
+        "text": "Alpaca-7B (Comprehensive) Alpaca-7B (Min New Tokens)",
+        "x": 154.8,
+        "y": 597.3,
+        "w": 120.9,
+        "h": 20.9,
+        "zh": "Alpaca-7B（要求回答全面）　Alpaca-7B（最少新 token）"
+      },
+      {
+        "text": "Win Rate (and Avg. Character Length) on AlpacaEval as evaluated by ChatGPT for different levels and types of training noise. While length does increase with noise, it is not always indicative of AlpacaEval Win Rate.",
+        "x": 108,
+        "y": 529.9,
+        "w": 396,
+        "h": 31.9,
+        "zh": "不同水平、不同类型的训练噪声下，由 ChatGPT 在 AlpacaEval 上评出的胜率（以及平均字符长度）。长度会随噪声增加，但它并不总是 AlpacaEval 胜率高的标志。"
+      },
+      {
+        "text": "subsample of 140 instructions from AlpacaEval, we present annotators with one response generated by a LLaMA-2 model finetuned on Alpaca data with NEFT and another response from a model trained without NEFT, in random order. Human annotators preferred NEFT in 88 instances, and 22 instances were a draw. This corresponds to a 74.6% win score for NEFT using the AlpacaEval formula (88/(140 − 22)). Next, we performed a modified run of AlpacaEval where, instead of asking the evaluator (GPT-4) to choose between the outputs of our model or Text-Davinci-003, we present the same pairs of responses from the standard finetuned model and a NEFT version of the same model. There, we observe a win score",
+        "x": 108,
+        "y": 317.9,
+        "w": 396,
+        "h": 92.7,
+        "zh": "从 AlpacaEval 抽出 140 条指令作为子样本。我们让标注者看两条回答，一条来自在 Alpaca 数据上用 NEFT 微调的 LLaMA-2，另一条来自不用 NEFT 训练的模型，顺序随机。人类标注者在 88 例里更偏好 NEFT，22 例是平局。按 AlpacaEval 的公式（88/(140 − 22)），这相当于 NEFT 的胜分为 74.6%。接着我们改跑了一次 AlpacaEval：不再让评估器（GPT-4）在我们模型的输出和 Text-Davinci-003 之间选择，而是把同一个模型的标准微调版和 NEFT 版配成对来看。在那里，我们观察到的胜分"
+      },
+      {
+        "text": "The success of NEFTune points to the often ignored importance of algorithms and regularizers for LLM training. Unlike the computer vision community, which has studied regularization and overfitting for years, the LLM community tends to use standardized training loops that are designed for optimizer stability and not generalization. In this environment, LLM researchers have become fixated on datasets and model scaling as the primary path forward. Given the consistent gains of NEFTune, and the tendency to overfit on small instruction datasets, it seems that regularization deserves to be revisited in the LLM setting. Our study has several limitations. We adopt AlpacaEval as our central measure of instructionfollowing ability for LLMs, which is subject to the biases of a single judge (GPT-4). Additionally, due to limited compute resources, we were not able to validate the success of NEFTune on larger 70B variants across multiple datasets, and we had to rely on fixed hyper-parameters for most NEFTune runs rather than sweeping. Finally, despite our empirical studies, we do not have a conclusive understanding of why NEFTune works.",
+        "x": 108,
+        "y": 116.9,
+        "w": 396,
+        "h": 147.4,
+        "zh": "NEFTune 的成功说明，算法和正则项对大语言模型训练的重要性常常被忽略。计算机视觉社区研究正则化和过拟合已经很多年；大语言模型社区则倾向于用一套标准化的训练循环，设计目标是优化器稳定，而不是泛化。在这种环境下，研究者把数据集和把模型做大当成了主要的前进路线。NEFTune 的收益很稳定，小的指令数据集又很容易过拟合，因此正则化似乎值得在大语言模型这个设定里重新审视。本研究有几处局限。我们把 AlpacaEval 当作衡量大语言模型指令遵循能力的核心指标，而它会受单一评判者（GPT-4）的偏见影响。另外，计算资源有限，我们没能在多个数据集上验证 NEFTune 对更大的 70B 变体是否仍然成功，大多数 NEFTune 实验也只能用固定的超参数，而不是做扫描。最后，尽管有这些实证研究，我们对 NEFTune 为什么有效还没有结论性的理解。"
+      }
+    ],
+    "10": [
+      {
+        "text": "In this work, we proposed an augmentation for instruction finetuning. Although we evaluate these models on standard benchmarks, we do not rigiously evaluate the impact of NEFTune on model safety and reliability characteristics like toxicity or refusal to provide potentially harmful responses.",
+        "x": 108,
+        "y": 655,
+        "w": 396,
+        "h": 31.9,
+        "zh": "在这项工作中，我们为指令微调提出了一种增强。这些模型虽然在标准基准上做了评估，我们并没有严格评估 NEFTune 对模型安全性和可靠性特征的影响，例如毒性，以及会不会拒绝提供可能有害的回答。"
+      },
+      {
+        "text": "We describe the models (in Section 3.1) and datasets (in Section 3.2) used in our experiments including all hyperparameters (in Section A.1). The compute infrastructure used was based on commodity-level CPUs and GPUs running open source software (expect 70B parameter finetuning).",
+        "x": 108,
+        "y": 581.4,
+        "w": 396,
+        "h": 31.9,
+        "zh": "我们说明了实验所用的模型（第 3.1 节）和数据集（第 3.2 节），包括全部超参数（第 A.1 节）。计算环境基于商用级的 CPU 和 GPU，运行开源软件（70B 参数的微调除外）。"
+      },
+      {
+        "text": "Neel Jain* – Led the project, contributed to code, ran experiments, developed the method, created",
+        "x": 108,
+        "y": 539,
+        "w": 396,
+        "h": 10,
+        "zh": "Neel Jain*：负责牵头，参与写代码、跑实验、提出方法，并创建了"
+      },
+      {
+        "text": "Ping-yeh Chiang* – Developed critical parts of the training code, contributed to the methods devel-",
+        "x": 108,
+        "y": 517.1,
+        "w": 396,
+        "h": 10,
+        "zh": "Ping-yeh Chiang*：编写了训练代码里的关键部分，并参与了方法的开发"
+      },
+      {
+        "text": "Yuxin Wen* – Ran the bulk of experiments, helped develop the method, contributed to writing. John Kirchenbauer – Performed evaluation on OpenLLM Leaderboard tasks, diversity analysis,",
+        "x": 108,
+        "y": 484.2,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Yuxin Wen*：跑了大部分实验，协助提出方法，并参与写作。John Kirchenbauer：负责 OpenLLM Leaderboard 任务上的评估和多样性分析，"
+      },
+      {
+        "text": "Hong-Min Chu, Gowthami Somepalli – Ran the experiments for overfitting and embedding anal-",
+        "x": 108,
+        "y": 462.3,
+        "w": 396,
+        "h": 10,
+        "zh": "Hong-Min Chu、Gowthami Somepalli：跑了过拟合与嵌入分析的实验"
+      },
+      {
+        "text": "ysis and contributed to the writing of these sections.",
+        "x": 108,
+        "y": 451.3,
+        "w": 207.1,
+        "h": 10,
+        "zh": "并参与了这几节的写作。"
+      },
+      {
+        "text": "Brian R. Bartoldson, Bhavya Kailkhura – Ran experiments on large model sizes and developed",
+        "x": 108,
+        "y": 440.4,
+        "w": 396,
+        "h": 10,
+        "zh": "Brian R. Bartoldson、Bhavya Kailkhura：在大尺寸模型上跑了实验，并开展了"
+      },
+      {
+        "text": "Avi Schwarzschild, Aniruddha Saha, Micah Goldblum – Contributed to writing. Jonas Geiping, Tom Goldstein – Developed the idea, made large contributions to the writing.",
+        "x": 108,
+        "y": 407.5,
+        "w": 376.7,
+        "h": 20.9,
+        "zh": "Avi Schwarzschild、Aniruddha Saha、Micah Goldblum：参与写作。Jonas Geiping、Tom Goldstein：提出了这个想法，并对写作贡献很大。"
+      },
+      {
+        "text": "This work was made possible by the ONR MURI program, the Office of Naval Research (N000142112557), and the AFOSR MURI program. Commercial support was provided by Capital One Bank, the Amazon Research Award program, and Open Philanthropy. Further support was provided by the National Science Foundation (IIS-2212182), and by the NSF TRAILS Institute",
+        "x": 108,
+        "y": 332.2,
+        "w": 396,
+        "h": 42.8,
+        "zh": "这项工作得以完成，是因为 ONR MURI 计划、海军研究办公室（N000142112557）以及 AFOSR MURI 计划。商业上的支持来自 Capital One Bank、Amazon Research Award 计划以及 Open Philanthropy。进一步的支持来自美国国家科学基金会（IIS-2212182），以及 NSF TRAILS Institute"
+      },
+      {
+        "text": "Furthermore, this work was performed under the auspices of the U.S. Department of Energy by the Lawrence Livermore National Laboratory under Contract No. DE-AC52-07NA27344. Brian Bartoldson’s and Bhavya Kailkhura’s efforts were supported by the LLNL-LDRD Program under Project No. 24-ERD-010 (LLNL-CONF-855498). We are also grateful to Amar Saini who provided",
+        "x": 108,
+        "y": 271.4,
+        "w": 396,
+        "h": 42.8,
+        "zh": "此外，本工作在美国能源部主持下，由劳伦斯利弗莫尔国家实验室依合同号 DE-AC52-07NA27344 完成。Brian Bartoldson 与 Bhavya Kailkhura 的工作得到 LLNL-LDRD 计划项目号 24-ERD-010（LLNL-CONF-855498）的支持。我们也感谢 Amar Saini，他提供了"
+      },
+      {
+        "text": "Tom Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared D Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, et al. Language models are few-shot learners. Advances in neural information processing systems, 33:1877–1901, 2020. Lichang Chen, Shiyang Li, Jun Yan, Hai Wang, Kalpa Gunaratna, Vikas Yadav, Zheng Tang, Vijay Srinivasan, Tianyi Zhou, Heng Huang, et al. Alpagasus: Training a better alpaca with fewer data.",
+        "x": 108,
+        "y": 163.9,
+        "w": 396,
+        "h": 60.8,
+        "zh": "Tom Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared D Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell 等。语言模型是少样本学习者。Advances in Neural Information Processing Systems, 33:1877–1901, 2020. Lichang Chen, Shiyang Li, Jun Yan, Hai Wang, Kalpa Gunaratna, Vikas Yadav, Zheng Tang, Vijay Srinivasan, Tianyi Zhou, Heng Huang 等。Alpagasus：用更少的数据训练出更好的 Alpaca。"
+      },
+      {
+        "text": "Wei-Lin Chiang, Zhuohan Li, Zi Lin, Ying Sheng, Zhanghao Wu, Hao Zhang, Lianmin Zheng, Siyuan Zhuang, Yonghao Zhuang, Joseph E. Gonzalez, Ion Stoica, and Eric P. Xing. Vicuna: An open-source chatbot impressing gpt-4 with 90%* chatgpt quality, March 2023. URL https:",
+        "x": 108,
+        "y": 113,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Wei-Lin Chiang, Zhuohan Li, Zi Lin, Ying Sheng, Zhanghao Wu, Hao Zhang, Lianmin Zheng, Siyuan Zhuang, Yonghao Zhuang, Joseph E. Gonzalez, Ion Stoica, and Eric P. Xing. Vicuna：一个开源聊天机器人，以相当于 ChatGPT 90%* 的质量让 GPT-4 印象深刻，2023 年 3 月。URL https:"
+      },
+      {
+        "text": "Hyung Won Chung, Le Hou, Shayne Longpre, Barret Zoph, Yi Tay, William Fedus, Eric Li, Xuezhi Wang, Mostafa Dehghani, Siddhartha Brahma, et al. Scaling instruction-finetuned language mod-",
+        "x": 108,
+        "y": 73.1,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Hyung Won Chung, Le Hou, Shayne Longpre, Barret Zoph, Yi Tay, William Fedus, Eric Li, Xuezhi Wang, Mostafa Dehghani, Siddhartha Brahma 等。扩展经指令微调的语言模型"
+      },
+      {
+        "text": "els. arXiv preprint arXiv:2210.11416, 2022.",
+        "x": 118,
+        "y": 62.1,
+        "w": 176.7,
+        "h": 10,
+        "zh": "arXiv 预印本 arXiv:2210.11416，2022。"
+      }
+    ],
+    "11": [
+      {
+        "text": "Peter Clark, Isaac Cowhey, Oren Etzioni, Tushar Khot, Ashish Sabharwal, Carissa Schoenick, and Oyvind Tafjord. Think you have solved question answering? try arc, the ai2 reasoning challenge. arXiv preprint arXiv:1803.05457, 2018.",
+        "x": 108,
+        "y": 678.3,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Peter Clark, Isaac Cowhey, Oren Etzioni, Tushar Khot, Ashish Sabharwal, Carissa Schoenick, and Oyvind Tafjord. 你以为问答已经解决了吗？试试 ARC，也就是 AI2 推理挑战。arXiv 预印本 arXiv:1803.05457，2018。"
+      },
+      {
+        "text": "Tim Dettmers, Artidoro Pagnoni, Ari Holtzman, and Luke Zettlemoyer. Qlora: Efficient finetuning of quantized llms. arXiv preprint arXiv:2305.14314, 2023.",
+        "x": 108,
+        "y": 648.1,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Tim Dettmers, Artidoro Pagnoni, Ari Holtzman, and Luke Zettlemoyer. QLoRA：量化大语言模型的高效微调。arXiv 预印本 arXiv:2305.14314，2023。"
+      },
+      {
+        "text": "Yann Dubois, Xuechen Li, Rohan Taori, Tianyi Zhang, Ishaan Gulrajani, Jimmy Ba, Carlos Guestrin, Percy Liang, and Tatsunori B Hashimoto. Alpacafarm: A simulation framework for methods that learn from human feedback. arXiv preprint arXiv:2305.14387, 2023.",
+        "x": 108,
+        "y": 607.1,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Yann Dubois, Xuechen Li, Rohan Taori, Tianyi Zhang, Ishaan Gulrajani, Jimmy Ba, Carlos Guestrin, Percy Liang, and Tatsunori B Hashimoto. AlpacaFarm：为从人类反馈中学习的方法而建的模拟框架。arXiv 预印本 arXiv:2305.14387，2023。"
+      },
+      {
+        "text": "Cynthia Dwork, Aaron Roth, et al. The algorithmic foundations of differential privacy. Foundations and Trends® in Theoretical Computer Science, 9(3–4):211–407, 2014.",
+        "x": 108,
+        "y": 577,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Cynthia Dwork, Aaron Roth 等。差分隐私的算法基础。Foundations and Trends® in Theoretical Computer Science, 9(3–4):211–407, 2014。"
+      },
+      {
+        "text": "Leo Gao, Jonathan Tow, Stella Biderman, Sid Black, Anthony DiPofi, Charles Foster, Laurence Golding, Jeffrey Hsu, Kyle McDonell, Niklas Muennighoff, Jason Phang, Laria Reynolds, Eric Tang, Anish Thite, Ben Wang, Kevin Wang, and Andy Zou. A framework for few-shot language model evaluation, September 2021. URL https://doi.org/10.5281/zenodo.",
+        "x": 108,
+        "y": 524.9,
+        "w": 396,
+        "h": 42.8,
+        "zh": "Leo Gao, Jonathan Tow, Stella Biderman, Sid Black, Anthony DiPofi, Charles Foster, Laurence Golding, Jeffrey Hsu, Kyle McDonell, Niklas Muennighoff, Jason Phang, Laria Reynolds, Eric Tang, Anish Thite, Ben Wang, Kevin Wang, and Andy Zou. 一个用于少样本语言模型评估的框架，2021 年 9 月。URL https://doi.org/10.5281/zenodo."
+      },
+      {
+        "text": "Dan Hendrycks, Collin Burns, Steven Basart, Andy Zou, Mantas Mazeika, Dawn Song, and Jacob Steinhardt. Measuring massive multitask language understanding. In International Conference on Learning Representations, 2020.",
+        "x": 108,
+        "y": 472.9,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Dan Hendrycks, Collin Burns, Steven Basart, Andy Zou, Mantas Mazeika, Dawn Song, and Jacob Steinhardt. 衡量大规模多任务语言理解。见 International Conference on Learning Representations，2020。"
+      },
+      {
+        "text": "John Kirchenbauer, Jonas Geiping, Yuxin Wen, Manli Shu, Khalid Saifullah, Kezhi Kong, Kasun Fernando, Aniruddha Saha, Micah Goldblum, and Tom Goldstein. On the reliability of watermarks for large language models. arXiv preprint arXiv:2306.04634, 2023.",
+        "x": 108,
+        "y": 431.8,
+        "w": 396,
+        "h": 31.9,
+        "zh": "John Kirchenbauer, Jonas Geiping, Yuxin Wen, Manli Shu, Khalid Saifullah, Kezhi Kong, Kasun Fernando, Aniruddha Saha, Micah Goldblum, and Tom Goldstein. 论大语言模型水印的可靠性。arXiv 预印本 arXiv:2306.04634，2023。"
+      },
+      {
+        "text": "Kezhi Kong, Guohao Li, Mucong Ding, Zuxuan Wu, Chen Zhu, Bernard Ghanem, Gavin Taylor, and Tom Goldstein. Robust optimization as data augmentation for large-scale graphs. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pp. 60–69, 2022.",
+        "x": 108,
+        "y": 390.7,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Kezhi Kong, Guohao Li, Mucong Ding, Zuxuan Wu, Chen Zhu, Bernard Ghanem, Gavin Taylor, and Tom Goldstein. 把鲁棒优化用作大规模图的数据增强。见 Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition，第 60–69 页，2022。"
+      },
+      {
+        "text": "Ariel N. Lee, Cole J. Hunter, and Nataniel Ruiz. Platypus: Quick, cheap, and powerful refinement of llms. arXiv preprint arxiv:2308.07317, 2023.",
+        "x": 108,
+        "y": 360.6,
+        "w": 396,
+        "h": 20.9,
+        "zh": "Ariel N. Lee, Cole J. Hunter, and Nataniel Ruiz. Platypus：对大语言模型做快速、便宜而有力的精炼。arXiv 预印本 arxiv:2308.07317，2023。"
+      },
+      {
+        "text": "Xiang Lisa Li, Ari Holtzman, Daniel Fried, Percy Liang, Jason Eisner, Tatsunori Hashimoto, Luke Zettlemoyer, and Mike Lewis. Contrastive decoding: Open-ended text generation as optimization. arXiv preprint arXiv:2210.15097, 2022.",
+        "x": 108,
+        "y": 319.5,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Xiang Lisa Li, Ari Holtzman, Daniel Fried, Percy Liang, Jason Eisner, Tatsunori Hashimoto, Luke Zettlemoyer, and Mike Lewis. 对比解码：把开放式文本生成当作优化。arXiv 预印本 arXiv:2210.15097，2022。"
+      },
+      {
+        "text": "Chin-Yew Lin. ROUGE: A package for automatic evaluation of summaries. In Text Summarization Branches Out, pp. 74–81, Barcelona, Spain, July 2004. Association for Computational Linguistics. URL https://www.aclweb.org/anthology/W04-1013.",
+        "x": 108,
+        "y": 278.5,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Chin-Yew Lin. ROUGE：一个自动评估摘要的软件包。见 Text Summarization Branches Out，第 74–81 页，西班牙巴塞罗那，2004 年 7 月。Association for Computational Linguistics。URL https://www.aclweb.org/anthology/W04-1013。"
+      },
+      {
+        "text": "Stephanie Lin, Jacob Hilton, and Owain Evans. TruthfulQA: Measuring how models mimic human falsehoods. In Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), pp. 3214–3252, Dublin, Ireland, May 2022. Association for Computational Linguistics. doi: 10.18653/v1/2022.acl-long.229. URL https: //aclanthology.org/2022.acl-long.229.",
+        "x": 108,
+        "y": 215.5,
+        "w": 396,
+        "h": 53.8,
+        "zh": "Stephanie Lin, Jacob Hilton, and Owain Evans. TruthfulQA：衡量模型如何模仿人类的虚假说法。见 Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)，第 3214–3252 页，爱尔兰都柏林，2022 年 5 月。Association for Computational Linguistics。doi: 10.18653/v1/2022.acl-long.229。URL https://aclanthology.org/2022.acl-long.229。"
+      },
+      {
+        "text": "David Nukrai, Ron Mokady, and Amir Globerson.",
+        "x": 108,
+        "y": 196.3,
+        "w": 221.2,
+        "h": 10,
+        "zh": "David Nukrai、Ron Mokady 与 Amir Globerson。"
+      },
+      {
+        "text": "Text-only training for image captioning using noise-injected clip.",
+        "x": 118,
+        "y": 185.4,
+        "w": 386,
+        "h": 20.9,
+        "zh": "只用文本、借助注入了噪声的 CLIP 来训练图像描述。"
+      },
+      {
+        "text": "ArXiv, abs/2211.00575, 2022. semanticscholar.org/CorpusID:253244258.",
+        "x": 118,
+        "y": 174.4,
+        "w": 271.8,
+        "h": 20.9,
+        "zh": "ArXiv, abs/2211.00575，2022。semanticscholar.org/CorpusID:253244258。"
+      },
+      {
+        "text": "OpenAI. Introducing chatgpt, 2022. URL https://openai.com/blog/chatgpt.",
+        "x": 108,
+        "y": 155.2,
+        "w": 357.7,
+        "h": 10,
+        "zh": "OpenAI。介绍 ChatGPT，2022。URL https://openai.com/blog/chatgpt。"
+      },
+      {
+        "text": "Long Ouyang, Jeffrey Wu, Xu Jiang, Diogo Almeida, Carroll Wainwright, Pamela Mishkin, Chong Zhang, Sandhini Agarwal, Katarina Slama, Alex Ray, et al. Training language models to follow instructions with human feedback.",
+        "x": 108,
+        "y": 114.2,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Long Ouyang, Jeffrey Wu, Xu Jiang, Diogo Almeida, Carroll Wainwright, Pamela Mishkin, Chong Zhang, Sandhini Agarwal, Katarina Slama, Alex Ray 等。用人类反馈训练语言模型去遵循指令。"
+      },
+      {
+        "text": "Advances in Neural Information Processing Systems, 35:",
+        "x": 268.1,
+        "y": 114.2,
+        "w": 235.9,
+        "h": 10,
+        "zh": "Advances in Neural Information Processing Systems，第 35 卷："
+      },
+      {
+        "text": "Kishore Papineni, Salim Roukos, Todd Ward, and Wei jing Zhu. Bleu: a method for automatic evaluation of machine translation. In Proceedings of the 40th annual meeting of the Association for Computational Linguistics, pp. 311–318, 2002.",
+        "x": 108,
+        "y": 62.1,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Kishore Papineni, Salim Roukos, Todd Ward, and Wei jing Zhu. BLEU：一种自动评估机器翻译的方法。见 Proceedings of the 40th annual meeting of the Association for Computational Linguistics，第 311–318 页，2002。"
+      }
+    ],
+    "12": [
+      {
+        "text": "Victor Sanh, Albert Webson, Colin Raffel, Stephen Bach, Lintang Sutawika, Zaid Alyafeai, Antoine Chaffin, Arnaud Stiegler, Arun Raja, Manan Dey, et al. Multitask prompted training enables zero-shot task generalization. In International Conference on Learning Representations, 2021.",
+        "x": 108,
+        "y": 678.3,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Victor Sanh, Albert Webson, Colin Raffel, Stephen Bach, Lintang Sutawika, Zaid Alyafeai, Antoine Chaffin, Arnaud Stiegler, Arun Raja, Manan Dey 等。多任务提示训练使零样本的任务泛化成为可能。见 International Conference on Learning Representations，2021。"
+      },
+      {
+        "text": "ShareGPT, 2023. URL https://sharegpt.com/.",
+        "x": 108,
+        "y": 659.3,
+        "w": 222.2,
+        "h": 10,
+        "zh": "ShareGPT，2023。URL https://sharegpt.com/。"
+      },
+      {
+        "text": "Rohan Taori, Ishaan Gulrajani, Tianyi Zhang, Yann Dubois, Xuechen Li, Carlos Guestrin, Percy Liang, and Tatsunori B. Hashimoto. Stanford alpaca: An instruction-following llama model. https://github.com/tatsu-lab/stanford_alpaca, 2023.",
+        "x": 108,
+        "y": 618.5,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Rohan Taori, Ishaan Gulrajani, Tianyi Zhang, Yann Dubois, Xuechen Li, Carlos Guestrin, Percy Liang, and Tatsunori B. Hashimoto. Stanford Alpaca：一个遵循指令的 LLaMA 模型。https://github.com/tatsu-lab/stanford_alpaca，2023。"
+      },
+      {
+        "text": "Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier Martinet, Marie-Anne Lachaux, Timoth´ee Lacroix, Baptiste Rozi`ere, Naman Goyal, Eric Hambro, Faisal Azhar, et al. Llama: Open and efficient foundation language models. arXiv preprint arXiv:2302.13971, 2023a.",
+        "x": 108,
+        "y": 577.6,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier Martinet, Marie-Anne Lachaux, Timothée Lacroix, Baptiste Rozière, Naman Goyal, Eric Hambro, Faisal Azhar 等。LLaMA：开放且高效的基础语言模型。arXiv 预印本 arXiv:2302.13971，2023a。"
+      },
+      {
+        "text": "Hugo Touvron, Louis Martin, Kevin Stone, Peter Albert, Amjad Almahairi, Yasmine Babaei, Nikolay Bashlykov, Soumya Batra, Prajjwal Bhargava, Shruti Bhosale, et al. Llama 2: Open foundation and fine-tuned chat models. arXiv preprint arXiv:2307.09288, 2023b.",
+        "x": 108,
+        "y": 536.8,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Hugo Touvron, Louis Martin, Kevin Stone, Peter Albert, Amjad Almahairi, Yasmine Babaei, Nikolay Bashlykov, Soumya Batra, Prajjwal Bhargava, Shruti Bhosale 等。Llama 2：开放的基础模型，以及经过微调的对话模型。arXiv 预印本 arXiv:2307.09288，2023b。"
+      },
+      {
+        "text": "Yizhong Wang, Yeganeh Kordi, Swaroop Mishra, Alisa Liu, Noah A Smith, Daniel Khashabi, and Hannaneh Hajishirzi. Self-instruct: Aligning language model with self generated instructions. arXiv preprint arXiv:2212.10560, 2022.",
+        "x": 108,
+        "y": 495.9,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Yizhong Wang, Yeganeh Kordi, Swaroop Mishra, Alisa Liu, Noah A Smith, Daniel Khashabi, and Hannaneh Hajishirzi. Self-Instruct：用模型自己生成的指令来对齐语言模型。arXiv 预印本 arXiv:2212.10560，2022。"
+      },
+      {
+        "text": "Jason Wei, Maarten Bosma, Vincent Zhao, Kelvin Guu, Adams Wei Yu, Brian Lester, Nan Du, Andrew M Dai, and Quoc V Le. Finetuned language models are zero-shot learners. In International Conference on Learning Representations, 2021.",
+        "x": 108,
+        "y": 455.1,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Jason Wei, Maarten Bosma, Vincent Zhao, Kelvin Guu, Adams Wei Yu, Brian Lester, Nan Du, Andrew M Dai, and Quoc V Le. 经过微调的语言模型是零样本学习者。见 International Conference on Learning Representations，2021。"
+      },
+      {
+        "text": "Can Xu, Qingfeng Sun, Kai Zheng, Xiubo Geng, Pu Zhao, Jiazhan Feng, Chongyang Tao, and Daxin Jiang. Wizardlm: Empowering large language models to follow complex instructions. arXiv preprint arXiv:2304.12244, 2023.",
+        "x": 108,
+        "y": 414.2,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Can Xu, Qingfeng Sun, Kai Zheng, Xiubo Geng, Pu Zhao, Jiazhan Feng, Chongyang Tao, and Daxin Jiang. WizardLM：让大语言模型能够遵循复杂指令。arXiv 预印本 arXiv:2304.12244，2023。"
+      },
+      {
+        "text": "Hanwei Xu, Yujun Chen, Yulun Du, Nan Shao, Wang Yanggang, Haiyu Li, and Zhilin Yang. Zeroprompt: Scaling prompt-based pretraining to 1,000 tasks improves zero-shot generalization. In Findings of the Association for Computational Linguistics: EMNLP 2022, pp. 4235–4252, 2022.",
+        "x": 108,
+        "y": 373.4,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Hanwei Xu, Yujun Chen, Yulun Du, Nan Shao, Wang Yanggang, Haiyu Li, and Zhilin Yang. ZeroPrompt：把基于提示的预训练扩展到 1,000 个任务，可以改善零样本泛化。见 Findings of the Association for Computational Linguistics: EMNLP 2022，第 4235–4252 页，2022。"
+      },
+      {
+        "text": "Rowan Zellers, Ari Holtzman, Yonatan Bisk, Ali Farhadi, and Yejin Choi. HellaSwag: Can a machine really finish your sentence? In Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics, pp. 4791–4800, Florence, Italy, July 2019. Association for Computational Linguistics. doi: 10.18653/v1/P19-1472. URL https://aclanthology.org/",
+        "x": 108,
+        "y": 321.6,
+        "w": 396,
+        "h": 42.8,
+        "zh": "Rowan Zellers, Ari Holtzman, Yonatan Bisk, Ali Farhadi, and Yejin Choi. HellaSwag：机器真的能把你的句子写完吗？见 Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics，第 4791–4800 页，意大利佛罗伦萨，2019 年 7 月。Association for Computational Linguistics。doi: 10.18653/v1/P19-1472。URL https://aclanthology.org/"
+      },
+      {
+        "text": "Susan Zhang, Stephen Roller, Naman Goyal, Mikel Artetxe, Moya Chen, Shuohui Chen, Christopher Dewan, Mona Diab, Xian Li, Xi Victoria Lin, et al. Opt: Open pre-trained transformer language models. arXiv preprint arXiv:2205.01068, 2022.",
+        "x": 108,
+        "y": 269.8,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Susan Zhang, Stephen Roller, Naman Goyal, Mikel Artetxe, Moya Chen, Shuohui Chen, Christopher Dewan, Mona Diab, Xian Li, Xi Victoria Lin 等。OPT：开放的预训练 Transformer 语言模型。arXiv 预印本 arXiv:2205.01068，2022。"
+      },
+      {
+        "text": "Chen Zhu, Yu Cheng, Zhe Gan, Siqi Sun, Tom Goldstein, and Jingjing Liu. Freelb: Enhanced adversarial training for natural language understanding. In International Conference on Learning Representations, 2019.",
+        "x": 108,
+        "y": 228.9,
+        "w": 396,
+        "h": 31.9,
+        "zh": "Chen Zhu, Yu Cheng, Zhe Gan, Siqi Sun, Tom Goldstein, and Jingjing Liu. FreeLB：面向自然语言理解的增强对抗训练。见 International Conference on Learning Representations，2019。"
+      }
+    ],
+    "13": [
+      {
+        "text": "Table 7: AlpacaEval Win Rate versus Text-Davinci-003 for LLaMA-2 trained on different datasets, using GPT-4 as the evaluator, showing an average improvement of 15% across all datasets.",
+        "x": 108,
+        "y": 682.4,
+        "w": 396,
+        "h": 20.9,
+        "zh": "表 7：LLaMA-2 在不同数据集上训练后，相对 Text-Davinci-003 的 AlpacaEval 胜率，评估器用的是 GPT-4。所有数据集上的平均提升为 15%。"
+      },
+      {
+        "text": "We finetune the 7B parameter models on four A5000s and 13B parameters on eight A5000s using bfloat16 precision. After doing an initial learning rate sweep on LLaMA-1 and Alpaca, we use learning rate of 5e-5 and the Adam optimizer for all 7B models after seeing 4% improvement over baseline numbers. We train all models for 3 epochs on all datasets setting the same seed for each run with an effective batch size of 128 (4 cards, batch size 4, 8 gradient accumulation steps). When finetuning with noise we train on three levels of noise, an L2 ball of 5, 10, and 15 over the sequence lengths and report the best one on AlpacaEval using ChatGPT as the evaluator. We train with sequence lengths of 512 tokens (mainly for memory and speed) like the original Alpaca setting, finding that this does not effect the outputted response length or quality as corroborated by the Alpaca Leaderboard numbers. In Table 13 we see that training with longer sequences does not change performance significantly. For ShareGPT, we split the multi-turn conversations into sequences of 512 tokens using the process described by Chiang et al. (2023). When training 70 billion parameter models, we use the finetuning hyperparameters found in Touvron et al. (2023b) except we use a sequence length of 2048; i.e., we use weight decay of 0.1, a batch size of 64, and a learning rate of 2e−5. We finetune for a total of three epochs on Evol-Instruct 70k (Xu et al., 2023). When using NEFTune on the 70B parameter model, we use α = 15 and did not explore other (potentially better) settings due to computational constraints. Additinonally, we saw an increase in average output character length from 852 to 1241 (+389).",
+        "x": 108,
+        "y": 277.2,
+        "w": 396,
+        "h": 196.3,
+        "zh": "7B 参数的模型在四块 A5000 上微调，13B 参数的模型在八块 A5000 上微调，精度为 bfloat16。先在 LLaMA-1 和 Alpaca 上做了一轮学习率扫描，看到相对基线有 4% 的提升之后，所有 7B 模型都使用学习率 5e-5 和 Adam 优化器。所有模型在所有数据集上都训练 3 个 epoch，每次运行使用同一个种子，有效批量大小为 128（4 张卡，批量大小 4，梯度累积 8 步）。加噪声微调时，我们训练三个噪声水平，即沿序列长度、大小为 5、10 和 15 的 L2 球，并用 ChatGPT 作评估器，在 AlpacaEval 上报告其中最好的一个。序列长度取 512 个 token（主要是为了内存和速度），与最初的 Alpaca 设置相同。我们发现这并不影响输出回答的长度或质量，Alpaca 排行榜上的数字也支持这一点。从表 13 可以看到，用更长的序列训练并不会显著改变性能。对于 ShareGPT，我们按 Chiang et al. (2023) 描述的做法，把多轮对话切成 512 个 token 的序列。训练 700 亿参数的模型时，采用 Touvron et al. (2023b) 中的微调超参数，只是序列长度用 2048；也就是权重衰减 0.1、批量大小 64、学习率 2e−5。我们在 Evol-Instruct 70k（Xu et al., 2023）上总共微调三个 epoch。在 70B 参数模型上使用 NEFTune 时，取 α = 15；由于计算资源限制，没有再探索其他（可能更好的）设置。此外，平均输出字符长度从 852 增加到 1241（+389）。"
+      },
+      {
+        "text": "Table 9: LLaMA-2-Chat (7B) and LLaMA-2 (13B) can be finetuned further to improve performance.",
+        "x": 108,
+        "y": 246.3,
+        "w": 396,
+        "h": 10,
+        "zh": "表 9：LLaMA-2-Chat（7B）和 LLaMA-2（13B）还可以再微调，以提升性能。"
+      },
+      {
+        "text": "We ablated uniform and gaussian noise, finding that uniform noise performs slightly better. We also ablate the decoding hyperparameters in Figure 10 finding minimal changes in performance. Thus, we use the simplest sampling strategy, greedy decoding, with a repetition penalty of 1.2. We also check to see if NEFT continues to yield improvements as you increase the number of training epochs. From Table 14, we see that there is a plateau in performance that is reached at higher epoch counts. In Table 11, we freeze different parts of the model to understand if certain parts of the model are",
+        "x": 108,
+        "y": 73.1,
+        "w": 396,
+        "h": 64.8,
+        "zh": "我们消融了均匀噪声和高斯噪声，发现均匀噪声略好一些。解码超参数的消融见图 10，性能变化很小。因此我们采用最简单的采样策略：贪心解码，重复惩罚为 1.2。我们也检查了训练 epoch 增加时，NEFT 是否还会继续带来提升。从表 14 可以看到，epoch 数更高之后，性能会进入平台期。在表 11 中，我们冻结模型的不同部分，想了解模型的某些部分是不是"
+      }
+    ],
+    "14": [
+      {
+        "text": "Table 10: AlpacaEval Win Rate with ChatGPT (GPT-4 in parentheses) evaluator under different decoding strategies from this we can see that there seems to be little variation in performance. The WizardLM and LLaMA-Chat hyperparameters were obtained from generation config files from",
+        "x": 108,
+        "y": 671.5,
+        "w": 396,
+        "h": 31.9,
+        "zh": "表 10：不同解码策略下的 AlpacaEval 胜率，评估器为 ChatGPT（括号中为 GPT-4）。从这里可以看到，性能变化似乎很小。WizardLM 和 LLaMA-Chat 的超参数取自生成配置文件，来源是"
+      },
+      {
+        "text": "Hugging Face. All sampling techniques had a repetition penalty of 1.2.",
+        "x": 108,
+        "y": 660.5,
+        "w": 283.2,
+        "h": 10,
+        "zh": "Hugging Face。所有采样方法的重复惩罚都是 1.2。"
+      },
+      {
+        "text": "Table 11: AlpacaEval Win Rate according to ChatGPT while varying the set of trainable parameters when finetuning LLaMA-2-7B on the Alpaca dataset. The top two rows have all parameters",
+        "x": 108,
+        "y": 538.9,
+        "w": 396,
+        "h": 20.9,
+        "zh": "表 11：在 Alpaca 数据集上微调 LLaMA-2-7B 时，改变可训练参数的集合，由 ChatGPT 给出的 AlpacaEval 胜率。最上面两行包含全部参数"
+      },
+      {
+        "text": "NEFT+Attention blocks frozen LLaMA-2 (no finetuning)",
+        "x": 174.5,
+        "y": 444.8,
+        "w": 123.6,
+        "h": 20.9,
+        "zh": "NEFT + 冻结注意力块　　LLaMA-2（不做微调）"
+      },
+      {
+        "text": "Since our modeling involves adding random noise to embeddings during the training stage, we examined whether the added noise changes the semantics of the token sequences in the training data. For this analysis, we sample a random 5200 samples from the Alpaca dataset, embed each training point using the embedding layer of different models, and then add different levels of noise by varying the scaling factor α. We then project the noised embeddings back to their closest neighbor in the embedding matrix. We compute the % of token flips in each sentence and average the flip rate across all the samples. We present the flip scores for 7 models in Fig. 6. While none of the sentences had any flips up to α = 15, we see some flips when α ≥ 25. Note that all the results presented in the paper use α ≤ 15. Interestingly, a LLaMA-1 model finetuned on Alpaca does not show any flips even at higher levels of α.",
+        "x": 108,
+        "y": 278.5,
+        "w": 396,
+        "h": 108.6,
+        "zh": "我们的做法是在训练阶段给嵌入加随机噪声，因此我们考察这些噪声会不会改变训练数据里 token 序列的语义。这项分析从 Alpaca 数据集随机抽了 5200 个样本，用不同模型的嵌入层把每个训练点嵌进去，再通过改变缩放因子 α 加上不同水平的噪声。然后把加噪后的嵌入投影回嵌入矩阵中的最近邻。我们计算每个句子里 token 翻转的百分比，再对所有样本取平均。7 个模型的翻转分数见图 6。直到 α = 15，没有任何一个句子发生翻转；当 α ≥ 25 时，才看到一些翻转。注意，论文里报告的所有结果都使用 α ≤ 15。有趣的是，在 Alpaca 上微调过的 LLaMA-1，即便 α 更高，也没有出现翻转。"
+      },
+      {
+        "text": "LLaMA-2 Evol-Instruct + NEFT LLaMA-2 Evol-Instruct LLaMA-2 Alpaca + NEFT",
+        "x": 258.7,
+        "y": 192.6,
+        "w": 100.9,
+        "h": 26.8,
+        "zh": ""
+      },
+      {
+        "text": "Figure 6: Percentage of tokens per sentence flipped at different levels of noise added to embeddings.",
+        "x": 108,
+        "y": 64.3,
+        "w": 396,
+        "h": 10,
+        "zh": "图 6：向嵌入加入不同水平的噪声时，每个句子中被翻转的 token 所占的百分比。"
+      }
+    ],
+    "15": [
+      {
+        "text": "Table 12: NEFT performs better than FreeLB.",
+        "x": 214.6,
+        "y": 693.4,
+        "w": 182.8,
+        "h": 10,
+        "zh": "表 12：NEFT 的表现优于 FreeLB。"
+      },
+      {
+        "text": "Table 13: Using ChatGPT as the evaluator, we observe a slight performance increase when training with longer sequences on the ShareGPT data compared to standard finetuning at the same sequence",
+        "x": 108,
+        "y": 595.6,
+        "w": 396,
+        "h": 20.9,
+        "zh": "表 13：以 ChatGPT 为评估器。我们观察到，在 ShareGPT 数据上用更长的序列训练时，相对同一序列设定下的标准微调，性能略有提高"
+      },
+      {
+        "text": "Impact of noise on embedding similarity.",
+        "x": 108,
+        "y": 507.6,
+        "w": 176.1,
+        "h": 10,
+        "zh": "噪声对嵌入相似度的影响。"
+      },
+      {
+        "text": "We also analyzed how the similarity of embeddings changes when we perform NEFT training. We looked at the top 100 singular values of the embedding similarity matrix for all the models. We present the results in Fig.6 (Right). For a given base model (LLaMA-1 or LLaMA-2), the singular value distribution did not change across the variants, with or without NEFTune. This shows that the addition of noise during training does not impact the embedding similarity distribution very much.",
+        "x": 108,
+        "y": 452.8,
+        "w": 396,
+        "h": 64.8,
+        "zh": "我们也分析了做 NEFT 训练时，嵌入之间的相似度会如何变化。我们查看了所有模型的嵌入相似矩阵中最大的 100 个奇异值，结果见图 6（右）。对给定的基座模型（LLaMA-1 或 LLaMA-2）来说，无论用不用 NEFTune，各个变体的奇异值分布都没有变化。这说明训练期间加入噪声，对嵌入相似度的分布影响很小。"
+      },
+      {
+        "text": "In the previous analysis, we evaluated whether any tokens flipped when noising sequence of real training data. We also examine the embeddings of 3 models, LLaMA-2, LLaMA-2 Alpaca, and LLaMA-2 Evol-Instruct in isolation. In this experiment, we sweep over all of the tokens in the vocabulary adding noise to each one, and count the number of noised embeddings whose nearest neighbor is different from their un-noised starting point. We present the results in Fig. 8. We vary 2 factors: base noise scale α, and the sequence length scaling factor L which is used in calculating the final noise coefficient. Even at high levels of noise, only a very small number of tokens actually flip (≤ 0.4%). This shows that NEFT training does not change the semantic relationships between the tokens. Interestingly, this experiment suggests that, if considering NEFTune as a type of data augmentation applied to the embeddings of training tokens, the actual effects of NEFT are mostly a result of perturbations in intra-token space since the noise scales used rarely amount to displacements that transform any individual token into a meaningfully different one. Nevertheless, in Figure 9 we show the tokens corresponding to embeddings of LLaMA-2 Alpaca model that do actually flip even with the lowest amount of noise utilized in our study.",
+        "x": 108,
+        "y": 269.8,
+        "w": 396,
+        "h": 169.4,
+        "zh": "前面的分析看的是：给真实训练数据的序列加噪时，有没有 token 发生翻转。我们还单独考察了 3 个模型的嵌入，即 LLaMA-2、LLaMA-2 Alpaca 和 LLaMA-2 Evol-Instruct。这个实验遍历词表中的全部 token，对每一个加噪声，并统计有多少加噪嵌入的最近邻已经不同于它未加噪时的起点。结果见图 8。我们改变两个因素：基础噪声尺度 α，以及计算最终噪声系数时用到的序列长度缩放因子 L。即便噪声水平很高，真正发生翻转的 token 也极少（≤ 0.4%）。这说明 NEFT 训练并没有改变 token 之间的语义关系。有意思的是，这个实验提示：如果把 NEFTune 看成施加在训练 token 嵌入上的一种数据增强，它实际起作用的方式主要是 token 内部空间中的扰动，因为所用的噪声尺度很少大到能把单个 token 移成另一个含义明显不同的 token。尽管如此，图 9 展示了 LLaMA-2 Alpaca 模型中、即便在本研究使用的最低噪声下仍然会翻转的那些嵌入所对应的 token。"
+      }
+    ],
+    "16": [
+      {
+        "text": "Table 14: AlpacaEval ChatGPT Win Rate as a function of the number of finetuning epochs.",
+        "x": 115.3,
+        "y": 657,
+        "w": 378.2,
+        "h": 10,
+        "zh": "表 14：AlpacaEval 上的 ChatGPT 胜率如何随微调 epoch 数变化。"
+      },
+      {
+        "text": "Figure 8: Number of tokens flipped at different levels of noise and sequence lengths (out of 32000). Model names corresponding to each plot are in the title.",
+        "x": 108,
+        "y": 302.3,
+        "w": 396,
+        "h": 20.9,
+        "zh": "图 8：不同噪声水平和序列长度下发生翻转的 token 数量（总共 32000 个）。每张图对应的模型名称写在标题中。"
+      }
+    ],
+    "17": [
+      {
+        "text": "For these qualitative examples for LLaMA-2 finetuned models, we chose one instruction that requires knowledge explanation and one that involves “creativity.” We pull these examples from AlpacaEval, particularly the Vicuna Eval subset. Note we did not actively cherry-pick these",
+        "x": 108,
+        "y": 657.1,
+        "w": 396,
+        "h": 31.9,
+        "zh": "这些给 LLaMA-2 微调模型准备的定性例子，我们选了一条需要解释知识的指令，以及一条涉及“创造性”的指令。例子取自 AlpacaEval，尤其是其中的 Vicuna Eval 子集。需要说明，我们并没有刻意去挑这些"
+      },
+      {
+        "text": "Quantum computing is based on the principles of quantum mechanics, which allow for phenomena such as superposition and entanglement between particles. information can be processed in parallel instead of sequentially like traditional computers. Quantum bits (qubits) are used to store data instead of classical bits, allowing more complex computations to take place with fewer resources than would otherwise be necessary.",
+        "x": 122.2,
+        "y": 544,
+        "w": 367.6,
+        "h": 53.8,
+        "zh": "量子计算基于量子力学原理。这些原理允许出现叠加，以及粒子之间的纠缠之类的现象。信息可以并行处理，而不是像传统计算机那样按顺序处理。存储数据用的是量子比特（qubit），而不是经典比特，因此能用更少的资源完成更复杂的计算。"
+      },
+      {
+        "text": "Quantum computing is based on the principles of quantum mechanics, which describe how particles such as electrons and photons behave at the subatomic level. Unlike traditional computers, which process information in binary digits (bits) that can be either 0 or 1, quantum bits (qubits) can exist in multiple states between 0 and 1 simultaneously. This phenomenon is known as superposition and allows for much more complex calculations to be performed than would otherwise be possible with classical computers. algorithms are designed to take advantage of this property by encoding data into qubit states so that it can be processed exponentially faster than conventional methods. ditionally, quantum entanglement–the ability for two particles to remain connected even over great distances–allows for large amounts of data to be sent across networks quickly and securely. The potential applications of quantum computing range from cryptography and artificial intelligence to drug discovery and material science. With continued research and development, quantum technology has the potential to revolutionize many industries.",
+        "x": 122.2,
+        "y": 390.6,
+        "w": 367.6,
+        "h": 141.5,
+        "zh": "量子计算基于量子力学原理，这些原理描述电子、光子等粒子在亚原子层面上如何行为。与传统计算机不同：传统计算机用只能取 0 或 1 的二进制数字（比特）处理信息，量子比特（qubit）则可以同时处于 0 和 1 之间的多种状态。这种现象称为叠加，因而能够做比经典计算机原本所能做的复杂得多的计算。算法被设计成利用这一性质，把数据编码进量子比特的状态，从而能以指数级快于常规方法的速度来处理。此外，量子纠缠——两个粒子即使相隔很远仍能保持相连的能力——使大量数据可以快速、安全地在网络上传送。量子计算可能的应用，从密码学和人工智能，一直到药物发现和材料科学。研究与开发若能持续，量子技术就有潜力革新许多行业。"
+      },
+      {
+        "text": "Quantum computers are a type of computer that use quantum-mechanical phenomena, such as superposition and entanglement, to perform operations on data. They have the potential to solve certain problems much faster than classical computers, which are limited by the laws",
+        "x": 122.2,
+        "y": 346.8,
+        "w": 367.6,
+        "h": 31.9,
+        "zh": "量子计算机是一类利用量子力学现象（例如叠加和纠缠）对数据做运算的计算机。它们有潜力比经典计算机快得多地解决某些问题，而经典计算机受到这些定律的限制"
+      },
+      {
+        "text": "One way to think about how a quantum computer works is in terms of its basic building blocks or “qubits.” Qubits can exist in multiple states at once (a property known as superposition), and they can also be linked together so that their state depends on the state of other qubits (a phenomenon called entanglement). computers to perform many calculations simultaneously, taking advantage of the principles of quantum mechanics to achieve exponential speedup for certain types of computations.",
+        "x": 122.2,
+        "y": 259.1,
+        "w": 367.6,
+        "h": 64.8,
+        "zh": "理解量子计算机如何工作的一种方式，是从它的基本构件，也就是“量子比特”来看。量子比特可以同时处于多种状态（这一性质称为叠加），也可以连在一起，使自己的状态依赖于其他量子比特的状态（这种现象称为纠缠）。计算机得以同时做许多计算，并利用量子力学原理，在某些类型的计算上获得指数级加速。"
+      },
+      {
+        "text": "Quantum computers are a type of computer that use quantum-mechanical phenomena, such as superposition and entanglement, to perform operations on data. They have the potential to solve certain problems much faster than classical computers, which are limited by the laws",
+        "x": 122.2,
+        "y": 215.3,
+        "w": 367.6,
+        "h": 31.9,
+        "zh": "量子计算机是一类利用量子力学现象（例如叠加和纠缠）对数据做运算的计算机。它们有潜力比经典计算机快得多地解决某些问题，而经典计算机受到这些定律的限制"
+      },
+      {
+        "text": "Here is a brief overview of some key concepts in quantum computing:",
+        "x": 122.2,
+        "y": 182.4,
+        "w": 279.5,
+        "h": 10,
+        "zh": "下面简要概述量子计算中的一些关键概念："
+      },
+      {
+        "text": "Superposition: In classical computing, bits can only be either 0 or 1 at any given time. However, in quantum computing, qubits (quantum bits) can exist in multiple states simultaneously, known as superpositions. This allows for many calculations to be performed simultaneously, increasing the speed of computation.",
+        "x": 122.2,
+        "y": 127.6,
+        "w": 367.6,
+        "h": 42.8,
+        "zh": "叠加：在经典计算里，比特在任一时刻只能是 0 或 1。而在量子计算里，量子比特（qubit）可以同时处于多种状态，这称为叠加。于是许多计算可以同时进行，计算速度也就提高了。"
+      },
+      {
+        "text": "When two particles become “entangled,” their properties become correlated even when they are separated by large distances. For example, if two photons are created with opposite polarizations, measuring the state of one photon will instantly determine the state of the other, regardless of how far apart they are. This property can be used to create a network of entangled qubits, allowing them to work together to solve",
+        "x": 122.2,
+        "y": 72.8,
+        "w": 367.6,
+        "h": 53.8,
+        "zh": "当两个粒子变得“纠缠”时，即便相隔很远，它们的性质也会变得相关。例如，如果两个光子以相反的偏振产生，测量其中一个光子的状态，就会立刻决定另一个光子的状态，不管它们离得多远。这一性质可以用来建成纠缠量子比特的网络，让它们协同工作，去求解"
+      }
+    ],
+    "18": [
+      {
+        "text": "Interference: Just like waves can interfere with each other to produce new patterns, qubits can also interfere with each other through a process called quantum interference. By manipulating these interferences, quantum algorithms can be designed to take advantage of the unique properties of quantum systems. 4. Measurement: One of the biggest challenges in working with quantum systems is that measurements collapse the wave function, effectively freezing the system into its final state. This means that once a measurement is taken, the information stored in the quantum system cannot be changed anymore. As a result, quantum computations must be designed carefully to ensure that the desired outcome is achieved before the measurement is taken. 5. Error correction: Because of the inherent instability of quantum systems, errors can occur during computation. implemented to detect and correct mistakes made by the quantum system. correction techniques are critical to making practical quantum computers a reality. 6. Topological Quantum Computing: Another approach to building a quantum computer uses topological phases of matter, where the order parameter takes values in a non-commutative It has been shown that certain classes of topologically ordered states can host fault-tolerant quantum computation. 7. Degrees of freedom: In classical computing, there is usually just one degree of freedom per bit - whether it is set to 0 or 1. But in quantum computing, there can be multiple degrees of freedom per qubit, leading to more possibilities for encoding information and performing",
+        "x": 122.2,
+        "y": 475.7,
+        "w": 367.6,
+        "h": 218.2,
+        "zh": "干涉：正如波可以互相干涉、产生新的图样，量子比特也可以通过称为量子干涉的过程互相干涉。操纵这些干涉，就可以设计量子算法，去利用量子系统的独特性质。4. 测量：使用量子系统时最大的困难之一，是测量会使波函数坍缩，等于把系统冻结在它的最终状态。这意味着一旦做了测量，量子系统里存放的信息就不能再改。因此量子计算必须仔细设计，确保想要的结果在测量之前就已经得到。5. 纠错：量子系统天生不稳定，计算过程中会出错。用来检测并纠正量子系统犯下的错误。纠错技术对于让实用的量子计算机成为现实至关重要。6. 拓扑量子计算：建造量子计算机的另一条路，是利用物质的拓扑相，其中序参量在一个非交换的范围里取值。已经证明，某几类拓扑有序态可以承载容错的量子计算。7. 自由度：经典计算里，每个比特通常只有一个自由度——它被置成 0 还是 1。量子计算里，每个量子比特可以有多个自由度，于是在编码信息和进行"
+      },
+      {
+        "text": "To overcome this challenge, error correction codes must be",
+        "x": 239.6,
+        "y": 574.3,
+        "w": 250.2,
+        "h": 10,
+        "zh": "要克服这一困难，纠错码必须"
+      },
+      {
+        "text": "8. Classical vs Quantum gates: Gates are basic building blocks of quantum circuits, similar to logic gates in classical computing. operations on data, the rules governing them differ significantly. For instance, while classical gates operate on binary digits (bits), quantum gates operate on qubits, and the principles underlying their behavior are fundamentally different.",
+        "x": 122.2,
+        "y": 409.9,
+        "w": 367.6,
+        "h": 53.8,
+        "zh": "8. 经典门与量子门：门是量子电路的基本构件，类似于经典计算中的逻辑门。对数据做运算时，支配它们的规则却差得很远。例如，经典门作用在二进制数字（比特）上，量子门作用在量子比特上，而且二者行为所依据的原理有根本差别。"
+      },
+      {
+        "text": "While both classical and quantum gates perform",
+        "x": 286.6,
+        "y": 442.8,
+        "w": 203.2,
+        "h": 10,
+        "zh": "虽然经典门和量子门都会执行"
+      },
+      {
+        "text": "Sure, I’d be happy to help! Quantum computing is a type of computation that uses quantum-mechanical phenomena, such as superposition and entanglement, to perform operations on data. Unlike classical computers, which use bits (which can only have one of two values, either 0 or 1) to represent information, quantum computers use qubits (which can exist in multiple states simultaneously). This allows for much faster processing times when it comes to certain",
+        "x": 122.2,
+        "y": 333.2,
+        "w": 367.6,
+        "h": 64.8,
+        "zh": "当然，我很乐意帮忙！量子计算是一种利用叠加、纠缠等量子力学现象来对数据做运算的计算。经典计算机用比特表示信息，而比特只能取 0 或 1 这两个值之一；量子计算机使用量子比特，量子比特可以同时处于多种状态。因此，在某些方面，处理时间可以快得多"
+      },
+      {
+        "text": "One way that quantum computers are different from classical computers is through their ability to perform parallel computations. In a classical computer, each bit must be processed sequentially, but in a quantum computer, many qubits can be manipulated at once using something called a quantum gate. These gates allow for complex algorithms to be executed quickly by taking advantage of the properties of quantum mechanics. Another key aspect of quantum computing is entanglement, which occurs when two or more particles become connected in such a way that the state of one particle affects the state of another, regardless of how far apart they may be. Entangled qubits can be used to perform certain types of calculations much faster than non-entangled ones because the results of measurements made on them are predetermined based on their initial state. Overall, while there is still much research being done into the potential applications of quantum computing, this new field has great promise for solving some of society’s most challenging problems related to cryptography, optimization, and simulation. LLaMA-2-Evolve70k-NEFT: Sure, I’d be happy to help! Quantum computing is a type of computation that uses quantum-mechanical phenomena, such as superposition and entanglement, to perform operations on data. Unlike classical computers, which use bits (which can only have one of two values, either 0 or 1) to represent information, quantum computers use qubits, which can exist in multiple states simultaneously. This allows for much faster processing times when it comes to certain types",
+        "x": 122.2,
+        "y": 103.1,
+        "w": 367.6,
+        "h": 218.2,
+        "zh": "量子计算机不同于经典计算机的一个地方，是它们能做并行计算。经典计算机里，每个比特必须按顺序处理；量子计算机里，许多量子比特可以借助所谓量子门同时被操纵。这些门利用量子力学的性质，让复杂算法能够很快执行。量子计算的另一个要点是纠缠：两个或更多粒子以某种方式连在一起，使一个粒子的状态影响另一个的状态，不管它们相距多远。纠缠的量子比特可以用来比没有纠缠时快得多地做某些类型的计算，因为对它们的测量结果是由初始状态预先决定的。总的来说，量子计算的潜在用途仍在大量研究之中，这个新领域很有希望去解决社会上一些与密码学、优化和模拟有关的最难问题。LLaMA-2-Evolve70k-NEFT：当然，我很乐意帮忙！量子计算是一种利用叠加、纠缠等量子力学现象来对数据做运算的计算。经典计算机用比特表示信息，比特只能取两个值之一，即 0 或 1；量子计算机用的量子比特则可以同时处于多种状态。因此，碰到某些类型时，处理时间可以快得多"
+      },
+      {
+        "text": "The basic idea behind quantum computing is to use a series of quantum gates to manipulate",
+        "x": 122.2,
+        "y": 81.1,
+        "w": 367.6,
+        "h": 10,
+        "zh": "量子计算背后的基本想法，是用一系列量子门去操纵"
+      }
+    ],
+    "19": [
+      {
+        "text": "the state of individual qubits. These gates are similar to the logic gates used in classical computer architecture, but they operate on a different level of abstraction. For example, instead of using AND and OR gates to build more complex circuits, quantum gates like the CNOT gate allow us to create entangled pairs of qubits with specific correlations between",
+        "x": 122.2,
+        "y": 662,
+        "w": 367.6,
+        "h": 42.8,
+        "zh": "单个量子比特的状态。这些门和经典计算机体系结构里用的逻辑门相似，但运作的抽象层次不同。例如，这里不是用 AND 门和 OR 门去搭建更复杂的电路，而是用 CNOT 门这类量子门，造出带有特定关联的纠缠量子比特对，这些关联存在于"
+      },
+      {
+        "text": "One of the key advantages of quantum computing is its ability to solve certain problems exponentially faster than classical computers. One famous example is factorization, where we need to find the prime factors of a large number. Using Shor’s algorithm, a quantum computer can factorize numbers much larger than what would be possible with classical",
+        "x": 122.2,
+        "y": 607.2,
+        "w": 367.6,
+        "h": 42.8,
+        "zh": "量子计算的一个关键优势，是它解决某些问题可以比经典计算机呈指数级地更快。一个有名的例子是因数分解：我们要找出一个大数的素因子。用 Shor 算法，量子计算机能分解的数，比经典方法所能处理的大得多"
+      },
+      {
+        "text": "Another area where quantum computing has shown promise is in simulating quantum systems, which could lead to new insights into materials science and chemistry. However, there are also many challenges associated with building practical quantum computers. One major issue is error correction, since any disturbance to a qubit can cause it to lose its quantum properties and become a classical bit. Researchers are currently working on developing error-correcting codes that can mitigate these errors and make quantum computations more reliable over time. Additionally, there are still many open questions about how best to architect quantum computers, including issues related to scalability and interconnectivity between components. LLaMA-2-OpenPlatypus: Quantum computing is a rapidly developing field that has the potential to revolutionize how we process and store information. It relies on the principles of quantum mechanics, which describe the behavior of matter and energy at very small scales, such as atoms and subatomic",
+        "x": 122.2,
+        "y": 464.7,
+        "w": 367.6,
+        "h": 141.5,
+        "zh": "量子计算显出希望的另一个领域，是模拟量子系统，这可能给材料科学和化学带来新的认识。不过，建造实用的量子计算机也有许多困难。一个主要问题是纠错，因为对量子比特的任何扰动，都可能让它失去量子性质，变成一个经典比特。研究人员目前正在开发能够减轻这些错误、并让量子计算随着时间更可靠的纠错码。另外，量子计算机的架构怎样才最好，仍有许多开放问题，包括与可扩展性有关的问题，以及部件之间如何互连。LLaMA-2-OpenPlatypus：量子计算是一个发展很快的领域，有潜力改变我们处理和存储信息的方式。它依靠量子力学原理。这些原理描述物质和能量在很小尺度上的行为，例如原子和亚原子"
+      },
+      {
+        "text": "In classical computers, bits represent either 0 or 1, but in a quantum computer, qubits can exist in multiple states simultaneously. quantum computers to perform many calculations in parallel, greatly increasing their processing power. Additionally, quantum computers use entanglement, where two or more particles become connected in such a way that the state of one particle instantly affects the other, regardless of the distance between them. algorithms to solve certain problems much faster than classical algorithms.",
+        "x": 122.2,
+        "y": 366.1,
+        "w": 367.6,
+        "h": 75.7,
+        "zh": "在经典计算机里，比特表示 0 或 1；在量子计算机里，量子比特可以同时处于多种状态。量子计算机因而可以并行做许多计算，处理能力大大提高。另外，量子计算机使用纠缠：两个或更多粒子以某种方式连在一起，使一个粒子的状态立刻影响另一个，与它们相距多远无关。算法解决某些问题，比经典算法快得多。"
+      },
+      {
+        "text": "This property, called superposition, allows",
+        "x": 311.7,
+        "y": 420.9,
+        "w": 178.1,
+        "h": 10,
+        "zh": "这一称为叠加的性质，使得"
+      },
+      {
+        "text": "One example of a problem that could be solved quickly by a quantum computer is factoring large numbers into prime factors. breakthrough, it would have wide-ranging implications for fields such as cryptography, since it would enable the rapid cracking of codes used to secure sensitive data. Another area where quantum computing could have a major impact is drug discovery, as it could help identify new treatments for diseases much faster than traditional methods.",
+        "x": 122.2,
+        "y": 289.4,
+        "w": 367.6,
+        "h": 64.8,
+        "zh": "量子计算机可以很快解决的一个问题，是把大数分解成素因子。一旦成为突破，它将产生广泛影响，波及密码学等领域，因为它能迅速破解用来保护敏感数据的密码。量子计算可能产生重大影响的另一个领域是药物发现，因为它可以帮助人们比传统方法快得多地找到疾病的新疗法。"
+      },
+      {
+        "text": "While this may not seem like a significant",
+        "x": 310.1,
+        "y": 333.2,
+        "w": 179.7,
+        "h": 10,
+        "zh": "虽然这看起来也许并不那么重大"
+      },
+      {
+        "text": "However, building a practical quantum computer with enough qubits to be useful remains a challenge. Currently, most quantum computers are relatively small and prone to errors due to environmental interference. Researchers are working on improving both the number of qubits and the accuracy of quantum computations, making progress towards realizing the full potential of this exciting technology. LLaMA-2-OpenPlatypus-NEFT: Quantum computing is a field of computer science that deals with the use of quantum mechanics for computation. based on the principles of quantum theory, which describe the behavior of matter and energy at very small scales. The goal of quantum computing is to take advantage of the unique properties of quantum systems, such as superposition and entanglement, to solve complex problems more efficiently than classical computers can. In classical computing, bits represent either 0 or 1, but in quantum computing, qubits (quantum bits) can be in multiple states simultaneously until they are measured. property, called superposition, allows quantum computers to perform many calculations in parallel, greatly increasing their processing power compared to classical computers. Another key feature of quantum computing is entanglement, where two or more particles become correlated such that the state of one particle instantly affects the other, regardless of the",
+        "x": 122.2,
+        "y": 81.1,
+        "w": 367.6,
+        "h": 196.3,
+        "zh": "不过，造出量子比特多到真正有用的实用量子计算机，仍然是一个挑战。目前，大多数量子计算机相对较小，而且由于环境干扰容易出错。研究人员正在同时改进量子比特的数量和量子计算的精度，朝着实现这项令人兴奋的技术的全部潜力前进。LLaMA-2-OpenPlatypus-NEFT：量子计算是计算机科学中用量子力学来做计算的一个领域。它基于量子理论的原理，这些原理描述物质和能量在非常小的尺度上如何行为。量子计算的目标，是利用量子系统的独特性质，例如叠加和纠缠，比经典计算机更高效地解决复杂问题。经典计算里，比特表示 0 或 1；量子计算里，量子比特（qubit）在被测量之前可以同时处于多种状态。称为叠加的这一性质，使量子计算机能够并行做许多计算，相对经典计算机大大提高处理能力。量子计算的另一个关键特征是纠缠：两个或更多粒子变得彼此相关，使得一个粒子的状态立刻影响另一个，无论"
+      },
+      {
+        "text": "It involves developing and studying computational models",
+        "x": 245.8,
+        "y": 190.7,
+        "w": 244,
+        "h": 10,
+        "zh": "它涉及的是开发并研究计算模型"
+      }
+    ],
+    "20": [
+      {
+        "text": "Entanglement can be used to transmit and process information instantaneously, enabling faster communication and computations. One of the main challenges in building practical quantum computers is controlling and manipulating individual quantum bits accurately enough to realize useful algorithms. Currently, most quantum computers rely on experimental platforms using trapped ions, superconducting circuits, or photons. These devices are still relatively fragile and prone to errors, known as “noise,” which must be corrected by sophisticated error-correction codes. However, significant progress has been made in recent years towards scaling up quantum computers and achieving higher levels of noise tolerance. Some potential applications of quantum computing include cryptography, optimization problems, simulation of physical systems, and drug discovery. Quantum computers could also play a role in solving some of society’s biggest challenges, such as climate change modeling, materials science, and protein folding research. While much work remains to be done before quantum computers become widely available, the field continues to attract attention from both academia and industry due to its great promise for transforming various",
+        "x": 122.2,
+        "y": 541.4,
+        "w": 367.6,
+        "h": 163.4,
+        "zh": "纠缠可以用来即时地传输和处理信息，从而使通信和计算更快。建造实用量子计算机的主要困难之一，是要把单个量子比特控制并操纵得足够准确，才能实现有用的算法。目前，大多数量子计算机依赖使用囚禁离子、超导电路或光子的实验平台。这些装置仍然比较脆弱，容易出错；这种错误称为“噪声”，必须用复杂的纠错码来纠正。不过，近年来在把量子计算机的规模做大、并达到更高的噪声容忍度方面，已经取得明显进展。量子计算的一些可能应用包括密码学、优化问题、物理系统的模拟，以及药物发现。量子计算机也可能在解决社会面临的一些最大挑战中发挥作用，例如气候变化建模、材料科学和蛋白质折叠研究。量子计算机要变得广泛可用，还有许多工作要做；这个领域继续受到学术界和工业界的关注，因为它极有希望改变各个"
+      },
+      {
+        "text": "AlpacaEval (Vicuna Subset) Instruction: Write a symphony concert review, discussing the orchestra’s performance and overall audience experience.",
+        "x": 122.2,
+        "y": 487.1,
+        "w": 367.7,
+        "h": 20.9,
+        "zh": "AlpacaEval（Vicuna 子集）指令：写一篇交响音乐会评论，讨论乐团的演奏，以及观众的整体体验。"
+      },
+      {
+        "text": "The symphony concert was truly remarkable! The orchestra played with great energy and skill, creating a beautiful soundscape for the audience to enjoy. Every piece they performed was expertly executed, from the gentle melodies of Mozart to the powerful climaxes of",
+        "x": 122.2,
+        "y": 443.2,
+        "w": 367.6,
+        "h": 31.9,
+        "zh": "这场交响音乐会真是出色！乐团演奏充满能量和技巧，为观众铺开一片动听的声音。他们演奏的每一首都很到家，从莫扎特柔和的旋律，一直到有力的高潮"
+      },
+      {
+        "text": "The acoustics in the hall were perfect; every note could be heard clearly and distinctly. The lighting design added another layer of emotion to each piece, helping to draw out the emotions within the music. Overall, it was a wonderful evening full of fantastic music and an unforgettable experience for all who attended.",
+        "x": 122.2,
+        "y": 377.5,
+        "w": 367.6,
+        "h": 42.8,
+        "zh": "厅里的音响非常好；每个音符都听得清楚、分明。灯光设计给每首曲子又加了一层情绪，有助于把音乐里的情感引出来。总的来说，这是一个美好的夜晚，充满精彩的音乐，对所有到场的人来说都是一次难忘的体验。"
+      },
+      {
+        "text": "The symphony concert was truly remarkable! The orchestra played with such passion and energy that it brought tears to my eyes. Every note they struck seemed to reverberate through the hall in perfect harmony. It was clear from their performance that each musician had put in countless hours of practice and dedication to create this beautiful sound.",
+        "x": 122.2,
+        "y": 322.7,
+        "w": 367.6,
+        "h": 42.8,
+        "zh": "这场交响音乐会真是出色！乐团演奏得那么有激情、有能量，让我热泪盈眶。他们奏出的每个音符，似乎都以完美的和声在大厅里回响。从这场演出可以清楚看出，每位乐手都投入了无数小时的练习和用心，才有了这样动听的声音。"
+      },
+      {
+        "text": "The conductor did an excellent job leading the musicians throughout the evening. movements were full of emotion as he guided them through the pieces. He would often pause for moments at a time allowing the audience to take in every moment of the piece before moving on. This allowed us all to appreciate the intricacies of each song even more.",
+        "x": 122.2,
+        "y": 267.9,
+        "w": 367.6,
+        "h": 42.8,
+        "zh": "指挥整晚带领乐手都做得很出色。一个个乐章充满情感，他引导他们把曲子演完。他常常会停上一会儿，让观众在继续之前把这一刻听进去。这让我们更能体会每首作品细微的地方。"
+      },
+      {
+        "text": "The crowd was filled with people of all ages; some who knew the songs well and others who were there to simply enjoy the night. There wasn’t one person in attendance who didn’t seem to be having a great time. Even during the quieter parts of the show, you could feel the excitement in the air. Whenever something particularly exciting happened everyone",
+        "x": 122.2,
+        "y": 213.1,
+        "w": 367.6,
+        "h": 42.8,
+        "zh": "观众里各个年龄的人都有；有的对曲子很熟，有的只是来享受这个晚上。在场没有一个人看起来不是很尽兴。即便在演出比较安静的段落，你也能感到空气里的兴奋。每当出现特别激动人心的地方，每个人"
+      },
+      {
+        "text": "Overall, I can say without a doubt that this symphony concert was one of the best experiences I have ever had. From start to finish, everything about it was absolutely amazing. If given the chance, I will definitely go back again next year.",
+        "x": 122.2,
+        "y": 169.3,
+        "w": 367.6,
+        "h": 31.9,
+        "zh": "总的来说，我可以毫不怀疑地说，这场交响音乐会是我有过的最好的体验之一。从头到尾，一切都精彩极了。如果有机会，我明年一定会再去。"
+      },
+      {
+        "text": "On Saturday evening at Carnegie Hall, I had the privilege of attending a symphony concert featuring the New York Philharmonic Orchestra under the direction of Maestro Lorin Maazel.",
+        "x": 122.2,
+        "y": 136.4,
+        "w": 367.6,
+        "h": 20.9,
+        "zh": "星期六傍晚在卡内基音乐厅，我有幸出席一场交响音乐会，由指挥大师 Lorin Maazel 执棒纽约爱乐乐团。"
+      },
+      {
+        "text": "The program for the evening consisted of three works by some of classical music’s most renowned composers - Beethoven’s “Egmont” Overture, Tchaikovsky’s Piano Concerto No. 1 with soloist Lang Lang, and Dvoˇr´ak’s Symphony No. 9 in E minor, Opus 95",
+        "x": 122.2,
+        "y": 92.6,
+        "w": 367.7,
+        "h": 31.9,
+        "zh": "当晚的曲目包括古典音乐中几位最著名作曲家的三部作品——贝多芬的《埃格蒙特》序曲、柴可夫斯基的《第一钢琴协奏曲》（独奏为郎朗），以及德沃夏克的 E 小调第九交响曲，作品 95"
+      }
+    ],
+    "21": [
+      {
+        "text": "Maestro Maazel led the orchestra through each piece with precision and passion, drawing out rich and vibrant sounds from every section of the ensemble. The strings played with great depth and emotion, while the woodwinds and brass added colorful accents throughout",
+        "x": 122.2,
+        "y": 672.9,
+        "w": 367.6,
+        "h": 31.9,
+        "zh": "Maazel 大师以精确和热情带领乐团走完每一首，从乐团的每一个声部引出丰富而有活力的声音。弦乐演奏得深沉、有情感，木管和铜管则全程添上色彩鲜明的点缀"
+      },
+      {
+        "text": "Lang Lang was a particularly impressive performer as well, displaying technical mastery and artistic sensitivity in his interpretation of Tchaikovsky’s concerto. His playing was full of energy and expression, and he seemed completely immersed in the music.",
+        "x": 122.2,
+        "y": 618.1,
+        "w": 367.6,
+        "h": 31.9,
+        "zh": "郎朗同样是一位特别出色的演奏者。诠释柴可夫斯基的协奏曲时，他既有技术上的纯熟，也有艺术上的敏感。演奏充满能量和表现力，他似乎完全沉在音乐里。"
+      },
+      {
+        "text": "As for the audience, it was clear that everyone present was there to appreciate the beauty and power of live orchestral music. There were frequent bursts of applause and cheers throughout the night, and many people around me were wiping tears of joy from their eyes during the final movement of Dvoˇr´ak’s symphony. It was a truly moving experience to be surrounded by so many people who shared a love for this timeless art form.",
+        "x": 122.2,
+        "y": 552.4,
+        "w": 367.7,
+        "h": 53.8,
+        "zh": "至于观众，显然在场的每一个人都是来体会现场管弦乐的美和力量。整晚不时爆出掌声和喝彩；德沃夏克交响曲的末乐章里，我周围许多人擦着喜悦的泪。被这么多同样热爱这门永恒艺术的人围着，真是一次让人感动的体验。"
+      },
+      {
+        "text": "Overall, the concert was a true triumph for both the musicians on stage and the audience in attendance. It was a reminder of why we continue to support and celebrate live music, and I left the hall feeling inspired and uplifted.",
+        "x": 122.2,
+        "y": 508.5,
+        "w": 367.6,
+        "h": 31.9,
+        "zh": "总的来说，这场音乐会无论对台上的乐手，还是对在场的观众，都是一次真正的成功。它提醒我们，为什么还要继续支持并庆祝现场音乐。离开大厅时，我感到受到鼓舞，精神也为之一振。"
+      },
+      {
+        "text": "On Saturday night at Carnegie Hall, the New York Philharmonic put on a breathtaking performance of Symphony No. 5 by Ludwig van Beethoven. Under the direction of Music Director Jaap van Zweden, the orchestra delivered a powerful and emotional rendition of this classic work that left the packed house in rapturous applause. The evening began with a captivating performance of Mozart’s Overture to Die Zauberfl¨ote, which set the stage for the grandeur of what was to come. As the lights dimmed and the orchestra launched into the opening notes of the Fifth Symphony, it was clear that this would be a special evening. Van Zweden expertly guided the orchestra through each movement, drawing out every nuance of the music while maintaining a sense of momentum and energy. One of the standout features of the performance was the orchestra’s dynamic range. From the softest pianissimo passages to the loudest fortissimo climaxes, every member of the ensemble played with precision and depth. The brass section, in particular, shone throughout the evening, delivering rich and full-bodied sound that filled the hall. In addition to the superlative playing of the musicians, the acoustics of Carnegie Hall were also a major factor in the success of the evening. This iconic venue has a warm and intimate atmosphere that allows listeners to fully immerse themselves in the music. seemed to hang in the air, enveloping the audience in a sonic embrace that made it easy to forget the outside world and lose oneself entirely in the beauty of the music. As the final chords of the symphony faded away, the audience erupted into thunderous applause, showering the musicians with praise and admiration. moment, one that will stay with me long after the evening came to a close. Overall, I would say that this was a once-in-a-lifetime experience that any lover of classical music should not",
+        "x": 122.2,
+        "y": 256.5,
+        "w": 367.7,
+        "h": 240.1,
+        "zh": "星期六晚上在卡内基音乐厅，纽约爱乐把路德维希·范·贝多芬的《第五交响曲》演得摄人心魄。在音乐总监 Jaap van Zweden 的指挥下，乐团对这部经典作出有力而富于情感的演绎，满座观众报以狂热的掌声。晚会以莫扎特《魔笛》序曲开场，这场演出很抓人，为后面的宏大做了铺垫。灯光暗下，乐团奏出第五交响曲开头的几个音，显然这将是一个特别的夜晚。Van Zweden 熟练地带领乐团走过每一个乐章，把音乐里的每一处细微差别都引出来，同时保持着推进和能量。演出很突出的一点是乐团的力度范围。从最轻的 pianissimo 段落，到最响的 fortissimo 高潮，乐团每一位成员都奏得精确，也有深度。铜管声部尤其整晚都亮着，送出饱满、厚实的声音，充满整个大厅。除了乐手们极好的演奏，卡内基音乐厅的音响也是当晚得以成功的重要原因。这座标志性的场馆温暖而亲近，让听的人能够完全沉进音乐。似乎悬在空气里，把观众裹进一层声音之中，使人很容易忘掉外面的世界，整个迷失在音乐的美里。交响曲最后的和弦渐渐消失时，观众爆出雷鸣般的掌声，把赞美和钦佩给了乐手。这一刻，会在晚会结束之后长久留在我心中。总的来说，我会说这是一次一生一次的体验，任何热爱古典音乐的人都不该"
+      },
+      {
+        "text": "I recently attended a symphony concert at the renowned Carnegie Hall in New York City. The evening’s program featured works by Beethoven, Mozart, and Tchaikovsky, performed by the prestigious New York Philharmonic Orchestra under the baton of maestro Alan",
+        "x": 122.2,
+        "y": 201.7,
+        "w": 367.6,
+        "h": 31.9,
+        "zh": "我最近在纽约市著名的卡内基音乐厅听了一场交响音乐会。当晚的曲目有贝多芬、莫扎特和柴可夫斯基的作品，由久负盛名的纽约爱乐乐团在指挥大师 Alan 的指挥下演出"
+      },
+      {
+        "text": "The concert began with Beethoven’s lively “Leonore” Overture No. 3, which set the tone for the evening’s festivities. The orchestra played with great energy and precision, showcasing their mastery of the classical repertoire. Maestro Gilbert conducted with grace and fluidity, drawing out each note and phrase to maximum effect. Next up was Mozart’s Symphony No. 29, a beautiful work that demonstrated the composer’s deftness with melody and harmony. The orchestra played with even greater nuance than before, creating a rich tapestry of sound that transported me to another world. I particularly enjoyed the woodwind section, whose delicate phrases added depth and dimension to the",
+        "x": 122.2,
+        "y": 103.1,
+        "w": 367.6,
+        "h": 86.7,
+        "zh": "音乐会以贝多芬活泼的《莱奥诺拉》第三序曲开场，为当晚的盛会定下基调。乐团演奏充满能量，也很精确，显出他们对古典曲目的掌握。Gilbert 大师指挥得从容、流畅，把每个音、每个乐句都发挥到最大。接下来是莫扎特的第二十九交响曲，一部优美的作品，看得出作曲家在旋律与和声上的娴熟。乐团比之前更有层次，织出一片丰富的声音，把我带到另一个世界。我特别喜欢木管声部，那些细腻的乐句给它添上了深度和立体感"
+      },
+      {
+        "text": "Finally, we were treated to Tchaikovsky’s iconic Symphony No. 5. This was undoubtedly",
+        "x": 122.2,
+        "y": 81.1,
+        "w": 367.6,
+        "h": 10,
+        "zh": "最后，我们听到了柴可夫斯基那部标志性的第五交响曲。这无疑是"
+      }
+    ],
+    "22": [
+      {
+        "text": "the highlight of the evening, as the orchestra brought all of their skill and passion to bear on this towering masterwork. From the haunting opening theme to the triumphant finale, every moment of the performance was filled with emotion and intensity. It was truly a thrilling experience to witness such accomplished musicians bring these timeless compositions to",
+        "x": 122.2,
+        "y": 662,
+        "w": 367.6,
+        "h": 42.8,
+        "zh": "当晚的高潮。乐团把全部技巧和热情都用在这部巍然的杰作上。从萦绕不去的开篇主题，到胜利的终曲，演出的每一刻都充满情感和强度。亲眼看到如此出色的乐手把这些永恒的作品呈到"
+      },
+      {
+        "text": "Overall, the evening was a resounding success. proved themselves to be among the finest ensembles in the world, playing with technical prowess and artistic sensitivity. Maestro Gilbert showed himself to be a skilled conductor, guiding the orchestra through each work with care and attention to detail. And the acoustics of Carnegie Hall itself were simply breathtaking, providing a perfect backdrop for the music. If you have the opportunity to attend a symphony concert, I highly recommend it - you won’t",
+        "x": 122.2,
+        "y": 585.3,
+        "w": 367.6,
+        "h": 64.8,
+        "zh": "总的来说，这个夜晚非常成功。证明自己属于世界上最好的乐团之列，演得既有技术功力，也有艺术上的敏感。Gilbert 大师让人看出他是一位熟练的指挥，细心、注意细节地带领乐团走完每一部作品。卡内基音乐厅本身的音响也简直让人屏息，给音乐配上了完美的背景。如果你有机会去听交响音乐会，我非常推荐——你不会"
+      },
+      {
+        "text": "As I took my seat in the concert hall, anticipation was building as the lights dimmed and the orchestra began to play. The first piece on the program was Beethoven’s Symphony No. 1, which immediately captured my attention with its powerful melodies and intricate rhythms. The conductor led the orchestra with precision and enthusiasm, and the musicians responded with a dynamic performance that showcased their exceptional skill and passion",
+        "x": 122.2,
+        "y": 508.5,
+        "w": 367.6,
+        "h": 53.8,
+        "zh": "我在音乐厅坐下。灯光暗下来，乐团开始演奏，期待一点点积起来。曲目上的第一首是贝多芬第一交响曲，有力的旋律和复杂的节奏立刻抓住我。指挥精确而热情地带领乐团，乐手们用一场有活力的演出回应，显出他们过人的技巧和热情"
+      },
+      {
+        "text": "The second movement, marked “Andante Favori,” was particularly beautiful, with delicately played strings and woodwinds creating a serene and introspective mood. The third movement, “Allegro,” was full of energy and drive, with the brass section adding a bold and assertive presence to the music. The final movement, “Alla Da Prestissimo,” was a thrilling conclusion to the symphony, with lightning fast tempos and dazzling virtuosity from all",
+        "x": 122.2,
+        "y": 431.8,
+        "w": 367.6,
+        "h": 53.8,
+        "zh": "标着“Andante Favori”的第二乐章特别美，弦乐和木管奏得很细，气氛宁静，也偏向内省。第三乐章“Allegro”充满能量和推动力，铜管给音乐加上大胆而坚定的存在感。末乐章“Alla Da Prestissimo”是这部交响曲激动人心的收束，速度快得像闪电，所有声部都展现出耀眼的技巧"
+      },
+      {
+        "text": "Throughout the performance, I was impressed by the cohesion and unity of the ensemble, as well as the individual excellence of each musician. The sound they produced was rich and full, yet also crystal clear and precise, and there were many moments where I was left breathless by the sheer beauty and power of the music.",
+        "x": 122.2,
+        "y": 366.1,
+        "w": 367.6,
+        "h": 42.8,
+        "zh": "整场演出中，乐团的凝聚和统一，以及每位乐手各自的出色，都让我印象很深。他们发出的声音饱满、厚实，同时又清楚、精确，有许多时刻，音乐纯粹的美和力量让我屏住呼吸。"
+      },
+      {
+        "text": "In addition to the excellent playing, another highlight of the evening was the warm and welcoming atmosphere created by the orchestra and conductor. They interacted with the audience throughout the performance, sharing insights into the music and encouraging us to enjoy the journey along with them. This made for a truly engaging and immersive experience, one that left me feeling inspired and uplifted long after the last note had faded away.",
+        "x": 122.2,
+        "y": 300.3,
+        "w": 367.6,
+        "h": 53.8,
+        "zh": "除了出色的演奏，当晚另一个亮点是乐团和指挥营造的温暖、亲切的气氛。演出过程中他们一直与观众互动，分享自己对音乐的理解，也鼓励我们和他们一起享受这段历程。这成了一次真正投入、沉浸的体验；最后一个音消失很久以后，我仍然感到受到鼓舞，精神振奋。"
+      },
+      {
+        "text": "Overall, this symphony concert was a remarkable event that I will remember for years to come. The orchestra’s superb performance combined with the audience’s enthusiastic support to create a magical night of music-making that I would recommend to anyone looking for a truly unforgettable musical experience.",
+        "x": 122.2,
+        "y": 245.5,
+        "w": 367.6,
+        "h": 42.8,
+        "zh": "总的来说，这场交响音乐会很不寻常，往后许多年我都会记得。乐团极好的演出，加上观众热烈的支持，造就了一个神奇的音乐之夜。任何想寻找一次真正难忘的音乐体验的人，我都会向他推荐。"
+      },
+      {
+        "text": "Title: A Night of Enchantment with the Boston Symphony Orchestra",
+        "x": 122.2,
+        "y": 223.6,
+        "w": 274.9,
+        "h": 10,
+        "zh": "标题：与波士顿交响乐团共度的迷人之夜"
+      },
+      {
+        "text": "Date: March 15th, 2023 Venue: Symphony Hall, Boston MA Review by John Doe for The Boston Globe",
+        "x": 122.2,
+        "y": 190.7,
+        "w": 172.4,
+        "h": 31.9,
+        "zh": "日期：2023 年 3 月 15 日。场地：交响乐厅，马萨诸塞州波士顿。评论作者 John Doe，写给《波士顿环球报》。"
+      },
+      {
+        "text": "The Boston Symphony Orchestra (BSO) returned to its home stage at Symphony Hall last night after a two-week hiatus, and they did not disappoint as they presented their first program under the baton of Music Director Andris Nelsons since his recent appointment extension was announced. With a captivating lineup featuring works from three different eras and composers, this evening proved to be nothing short of enchanting for both musicians",
+        "x": 122.2,
+        "y": 125,
+        "w": 367.6,
+        "h": 53.8,
+        "zh": "波士顿交响乐团（BSO）停了两周之后，昨晚回到交响乐厅这个主场，而且没有让人失望。自续任的消息公布以来，这是他们由音乐总监 Andris Nelsons 指挥的第一套曲目。曲目引人入胜，作品来自三个不同的时代和作曲家。这个夜晚对乐手们来说，都称得上迷人"
+      },
+      {
+        "text": "Opening the show was Jean Sibelius’ iconic “Finlandia,” which set the tone for what would prove to be an exquisite journey through various musical styles throughout history.",
+        "x": 122.2,
+        "y": 81.1,
+        "w": 367.6,
+        "h": 20.9,
+        "zh": "开场是 Jean Sibelius 那首有标志性的《芬兰颂》。它定下了基调：后面将是一次精致的旅程，穿过历史上的各种音乐风格。"
+      }
+    ],
+    "23": [
+      {
+        "text": "Performed without intermission, the BSO immediately captured our attention with their impeccable precision and dynamic range - particularly during the stirring brass passages that brought us into the heart of Finnish nationalism. It was clear from the outset that Maestro Nelsons had prepared his ensemble meticulously; every note seemed carefully considered yet effortlessly executed, creating a seamless blend between soloists and full orchestra.",
+        "x": 122.2,
+        "y": 651,
+        "w": 367.6,
+        "h": 53.8,
+        "zh": "演出中间没有休息。BSO 立刻以无可挑剔的精确和力度范围抓住我们的注意，尤其是那些激动人心的铜管段落，把我们带进芬兰民族主义的核心。从一开始就很清楚，Nelsons 大师把乐团准备得非常细致；每个音似乎都经过仔细考虑，奏出来却毫不费力，独奏者与整个乐团衔接得没有痕迹。"
+      },
+      {
+        "text": "Next up was Pyotr Ilyich Tchaikovsky’s beloved Violin Concerto in D Major, performed by one of today’s most acclaimed violinists, Leonidas Kavakos. first notes, it became apparent why he has earned such widespread praise; his technical prowess was on full display while also exhibiting immense depth of feeling throughout each movement. His partnership with the BSO was truly special, resulting in moments of pure magic when all eyes were fixed upon him as he soared above the orchestral accompaniment.",
+        "x": 122.2,
+        "y": 574.3,
+        "w": 367.6,
+        "h": 64.8,
+        "zh": "接下来是 Pyotr Ilyich Tchaikovsky 那部被人喜爱的 D 大调小提琴协奏曲，由当今最受赞誉的小提琴家之一 Leonidas Kavakos 演奏。最初几个音一出来，就能明白他为何赢得如此广泛的赞誉；技术实力充分展现，同时每个乐章都有很深的情感。他与 BSO 的合作确实特别。所有目光都集中在他身上、他在乐队伴奏之上翱翔时，出现了纯粹神奇的时刻。"
+      },
+      {
+        "text": "After intermission came another treat: Gustav Mahler’s Symphony No. (“Tragic”). This work often receives less attention compared to some other Mahler symphonies due to its relative brevity (approximately half an hour), but make no mistake there is much beauty and emotion packed within these few minutes. Under Mr. Nelsons’ guidance, we experienced every twist and turn along the way, culminating in a thrilling climax that left us breathless before suddenly fading away into silence.",
+        "x": 122.2,
+        "y": 497.6,
+        "w": 367.6,
+        "h": 64.8,
+        "zh": "中场之后又是一份礼物：Gustav Mahler 的交响曲（“悲剧”）。这部作品常常不如马勒的另一些交响曲受人注意，因为它相对较短（大约半小时），但不要误会，这短短几分钟里蕴含着许多美与情感。在 Nelsons 先生的引导下，我们经历了沿途的每一次转折，最终到达一个令人屏息的高潮，然后突然消入寂静。"
+      },
+      {
+        "text": "As if that weren’t enough, the encore offered something entirely unexpected: Samuel Barber’s Adagio for Strings. Originally composed as part of a string quartet arrangement, this haunting melody has since become synonymous with mourning and loss thanks largely to its inclusion in films like Platoon and The Elephant Man. provided goosebumps galore as it filled Symphony Hall from top to bottom; even those who may have been unfamiliar with the piece prior could not help but feel moved by its poignancy.",
+        "x": 122.2,
+        "y": 420.9,
+        "w": 367.6,
+        "h": 64.8,
+        "zh": "仿佛这还不够，返场完全出人意料：Samuel Barber 的《弦乐柔板》。它最初是作为一部弦乐四重奏改编的一部分写成的。此后，很大程度上因为被用进《野战排》和《象人》这类电影，这段萦绕的旋律就成了哀悼与失落的代名词。它让人起了一层又一层鸡皮疙瘩，从上到下充满整个交响乐厅；即便此前可能并不熟悉这首曲子的人，也无法不被它的酸楚打动。"
+      },
+      {
+        "text": "In conclusion, tonight’s performance demonstrated exactly why the Boston Symphony Orchestra remains one of the world’s preeminent ensembles nearly two centuries after",
+        "x": 122.2,
+        "y": 388,
+        "w": 367.6,
+        "h": 20.9,
+        "zh": "总之，今晚这场正好说明了，为什么将近两个世纪之后，波士顿交响乐团仍然是世界上数一数二的乐团之一"
+      },
+      {
+        "text": "Each musician appeared fully invested in their craft, delivering stunning interpretations of timeless classics alongside more contemporary pieces. As someone lucky enough to witness this magical event firsthand, I can confidently say that it will remain etched in my memory forever - just like many others who attended last night’s sold-out show.",
+        "x": 122.2,
+        "y": 344.2,
+        "w": 367.6,
+        "h": 42.8,
+        "zh": "每位乐手看起来都全情投入自己的技艺，既给出永恒经典的惊人诠释，也给出更当代的作品。作为有幸亲眼见证这场神奇演出的人，我可以确信地说，它会永远刻在我的记忆里——就像昨晚出席这场满座演出的其他许多人一样。"
+      },
+      {
+        "text": "Title: A Night of Enchantment with the Boston Symphony Orchestra",
+        "x": 122.2,
+        "y": 322.2,
+        "w": 274.9,
+        "h": 10,
+        "zh": "标题：与波士顿交响乐团共度的迷人之夜"
+      },
+      {
+        "text": "The Boston Symphony Orchestra (BSO) presented their latest concert at historic Symphony Hall in Boston on February 1st, 20XX. The evening was filled with captivating music from some of the most renowned composers throughout history. With conductor Andris Nelsons leading the way, this night proved to be one of enchantment for both performers and",
+        "x": 122.2,
+        "y": 267.4,
+        "w": 367.6,
+        "h": 42.8,
+        "zh": "波士顿交响乐团（BSO）于 20XX 年 2 月 1 日，在波士顿历史悠久的交响乐厅演出了他们最近的一场音乐会。这个夜晚充满历史上一些最著名作曲家的迷人音乐。在指挥 Andris Nelsons 的带领下，这一夜对演奏者以及对"
+      },
+      {
+        "text": "As we took our seats inside Symphony Hall, anticipation filled the air as people chatted excitedly about what they were expecting from tonight’s show. The hall itself is quite impressive; its ornate design featuring intricate details like marble columns and stained glass windows creating an atmosphere of grandeur perfect for such an event. Once everyone had found their seat, there was complete silence except for the occasional cough or shuffling of feet until finally, the lights dimmed signaling that it was time for the show to begin.",
+        "x": 122.2,
+        "y": 179.8,
+        "w": 367.6,
+        "h": 64.8,
+        "zh": "我们在交响乐厅里坐下，空气里都是期待，人们兴奋地聊自己觉得今晚会是什么样。大厅本身就很惊人；装饰华丽，大理石柱、彩色玻璃窗这些细处，造出一种宏大的气氛，正适合这样的活动。等大家都找到座位，除了偶尔一声咳嗽或挪一挪脚，便完全静下来，直到灯光终于暗了，表示演出要开始。"
+      },
+      {
+        "text": "The first piece performed was Jean Sibelius’ “Finlandia,” Opus 26, which set the tone for the rest of the evening – grandiose yet serene. As expected, Andris Nelsons brought out each note vibrantly while still allowing space for individual instruments to shine through. It was clear from his direction that he had prepared extensively for this performance, ensuring every aspect of the music came alive under his baton.",
+        "x": 122.2,
+        "y": 114,
+        "w": 367.6,
+        "h": 53.8,
+        "zh": "演奏的第一首是 Jean Sibelius 的《芬兰颂》，作品 26，为当晚余下的时间定下基调——宏大而又宁静。正如所料，Andris Nelsons 把每个音都处理得鲜明，同时仍留出空间，让一件件乐器透出来。从他的指挥可以清楚看出，他为这场演出做了充分准备，音乐的每个方面都在他的指挥棒下活了过来。"
+      },
+      {
+        "text": "Next up was Pyotr Ilyich Tchaikovsky’s iconic Violin Concerto in D Major, Opus 35,",
+        "x": 122.2,
+        "y": 92.1,
+        "w": 367.6,
+        "h": 10,
+        "zh": "接下来是 Pyotr Ilyich Tchaikovsky 那部有标志性的 D 大调小提琴协奏曲，作品 35，"
+      },
+      {
+        "text": "From the very first notes played by Shaham, it became",
+        "x": 254,
+        "y": 81.1,
+        "w": 235.8,
+        "h": 10,
+        "zh": "从 Shaham 奏出的头几个音开始，事情就变得"
+      }
+    ],
+    "24": [
+      {
+        "text": "apparent why he has earned critical acclaim worldwide – his technical prowess combined with emotional depth made for an unforgettable performance. He seamlessly transitioned between different styles and tempos, keeping us enthralled throughout the entirety of the concerto. Whenever he stepped back into the ensemble after his solos, you could hear a collective sigh of relief as if we had all been holding our breath waiting for him to return. Andris Nelsons conducted flawlessly alongside him, adding even more depth and beauty to",
+        "x": 122.2,
+        "y": 640,
+        "w": 367.6,
+        "h": 64.8,
+        "zh": "就明白他为什么在全世界赢得评论界的赞誉——技术功力与情感深度合在一起，造就了一场难忘的演出。他在不同风格和速度之间转换得没有痕迹，整部协奏曲里我们一直被吸引住。每当独奏结束、他退回乐团，都能听到一阵集体的松气，仿佛我们都屏住呼吸等他回来。Andris Nelsons 在一旁指挥得毫无瑕疵，又为演奏添上更多的深度和美"
+      },
+      {
+        "text": "After intermission, the BSO returned to the stage for Johannes Brahms’ Symphony No. 4 in E Minor, Opus 98. This piece marked another highlight of the evening, demonstrating once again how well these musicians can come together as one cohesive unit. Each section had its moment to shine without ever overpowering the others, resulting in a harmonious blend of sound that left us spellbound. Andris Nelsons showed great versatility here too, expertly navigating through various sections while maintaining momentum throughout",
+        "x": 122.2,
+        "y": 552.4,
+        "w": 367.6,
+        "h": 64.8,
+        "zh": "中场之后，BSO 回到台上，演奏 Johannes Brahms 的 E 小调第四交响曲，作品 98。这首是当晚的又一亮点，再次表明这些乐手能够凝聚成一个整体。每个声部都有自己闪耀的时刻，却从不过分压过其他声部，声音和谐地融在一起，让我们听得出神。Andris Nelsons 在这里也展现出很强的多面性，熟练地穿过各个段落，同时把势头一直保持到"
+      },
+      {
+        "text": "To end the night on a high note, the BSO closed with Gustav Mahler’s Symphony No. 1 in D Major (“Titan”). Right from the opening bars, it was evident that this would be no ordinary performance. There was an energy within the orchestra that seemed to infect those watching, causing many people around me to clap along enthusiastically despite not having reached the final movement just yet! Andris Nelsons continued to lead them effortlessly, guiding us through this epic journey full of emotion and passion. By the time we reached the climactic finale, cheers erupted from the crowd as if we had all been released from some sort of magical trance. It truly felt like we had witnessed something special, something that will stay with us long after the last note had died away.",
+        "x": 122.2,
+        "y": 431.8,
+        "w": 367.6,
+        "h": 97.6,
+        "zh": "为了让这个夜晚在高点上结束，BSO 以 Gustav Mahler 的 D 大调第一交响曲（“泰坦”）收尾。从开头几小节就看得出，这将不是一场普通的演出。乐团内部有一种能量，似乎感染了在看的人，使我周围许多人热烈地跟着拍手，尽管还没到末乐章！Andris Nelsons 继续毫不费力地带领他们，引导我们走过这段充满情感与激情的漫长旅程。等到高潮性的终曲，人群中爆发出欢呼，仿佛我们都从某种魔法般的恍惚中被释放出来。这真的像是我们见证了某种特别的东西，某种在最后一个音符消失之后仍会长久留存的东西。"
+      },
+      {
+        "text": "In conclusion, the Boston Symphony Orchestra put on an incredible show last night, displaying impeccable musicianship and artistry throughout their performances. dedication to bringing new life to classic works while also exploring lesser-known gems was greatly appreciated by all who attended. If you have the opportunity to catch one of their future shows, do not hesitate - allow yourself to become enchanted by their magic!",
+        "x": 122.2,
+        "y": 366.1,
+        "w": 367.6,
+        "h": 53.8,
+        "zh": "总之，波士顿交响乐团昨晚呈现了一场极为出色的演出，整场都展现出无可挑剔的音乐素养和艺术性。为经典作品注入新的生命，同时也探索那些不太知名的佳作，这份投入得到了所有到场者的欣赏。如果以后有机会去看他们的演出，不必犹豫——让自己被他们的魔力吸引吧！"
+      },
+      {
+        "text": "Here are a couple more examples from the NEFTune models that performed the best on AlpacaEval",
+        "x": 108,
+        "y": 334.7,
+        "w": 396,
+        "h": 10,
+        "zh": "下面再给几个例子，来自在 AlpacaEval 上表现最好的那些 NEFTune 模型"
+      },
+      {
+        "text": "AlpacaEval (Vicuna Eval) Instruction: What if Vincent van Gogh had been a successful",
+        "x": 122.2,
+        "y": 292,
+        "w": 367.7,
+        "h": 10,
+        "zh": "AlpacaEval（Vicuna Eval）指令：假如 Vincent van Gogh 曾经是一位成功的"
+      },
+      {
+        "text": "As an AI language model, I don’t have personal beliefs or opinions but based on historical facts and researches, it is believed that Van Gogh would not have experienced mental illness as he was recognized for his artistic talent in his early years before developing psychiatric problems later in life. He may have continued to create more masterpieces and become one of the most famous artists of all time. His legacy might also be different from what we know today since he did not achieve recognition until after his death when his brother sold some of",
+        "x": 122.2,
+        "y": 204.3,
+        "w": 367.6,
+        "h": 64.8,
+        "zh": "作为 AI 语言模型，我没有个人信念，也没有个人观点；不过根据历史事实和研究，人们认为梵高不会经历精神疾病，因为他后来出现精神方面的问题之前，早年就因艺术才能被认可了。他可能会继续画出更多杰作，并成为有史以来最著名的艺术家之一。他的遗产也可能与我们今天所知的不同，因为他直到去世之后才获得认可，那时他的兄弟卖掉了一些"
+      },
+      {
+        "text": "his paintings at auction. LLaMA-2-Evolve70k-NEFT:",
+        "x": 122.2,
+        "y": 182.4,
+        "w": 120.6,
+        "h": 20.9,
+        "zh": "他的画，是在拍卖会上。LLaMA-2-Evolve70k-NEFT："
+      },
+      {
+        "text": "As an AI language model, I don’t have personal beliefs or opinions but here are some possible scenarios based on historical facts and speculation: 1) Van Gogh would likely have continued to create art throughout his life, as he was prolific in his output even before his breakthrough success. However, with financial stability and recognition, he may have experimented more with different styles and themes, pushing",
+        "x": 122.2,
+        "y": 127.6,
+        "w": 367.6,
+        "h": 53.8,
+        "zh": "作为 AI 语言模型，我没有个人信念，也没有个人观点；不过根据历史事实和推测，下面是几种可能的情形：1）梵高很可能会终其一生持续创作，因为即便在取得突破性成功之前，他的产出就已经很大。不过，有了经济上的稳定和外界的认可，他可能会更多地试验不同的风格和题材，从而推动"
+      },
+      {
+        "text": "2) His relationships with others might also have changed. With money and fame comes social status, which could have opened up opportunities for him to mingle with other artists, writers, and intellectuals of his time. He may have formed deeper friendships and collaborations with fellow creatives, potentially leading to further innovation within the arts community.",
+        "x": 122.2,
+        "y": 72.8,
+        "w": 367.6,
+        "h": 42.8,
+        "zh": "2）他与他人的关系可能也会改变。金钱和名声带来社会地位，这可能为他打开机会，去与同时代的其他艺术家、作家和知识分子交往。他可能会与同行的创作者结成更深的友谊和合作，有可能进一步推动艺术共同体内部的创新。"
+      }
+    ],
+    "25": [
+      {
+        "text": "3) Unfortunately, mental illness can be difficult to treat, especially in the late 19th century when medical knowledge was limited. Despite his success, it’s unlikely that Van Gogh’s struggles with depression and anxiety would have disappeared. In fact, they may have intensified due to the added pressure and expectations placed upon him by society and his peers. 4) Ultimately, whether or not Van Gogh became a successful artist during his lifetime wouldn’t necessarily change the impact he made on modern art history. His work has endured through countless exhibitions, books, films, and reproductions, cementing his legacy as one of the most influential painters of all time. AlpacaEval (1st) Instruction: What are the names of some famous actors that started",
+        "x": 122.2,
+        "y": 607.2,
+        "w": 367.7,
+        "h": 97.6,
+        "zh": "3）不幸的是，精神疾病很难治疗，尤其是在 19 世纪末，当时的医学知识有限。尽管他取得了成功，梵高与抑郁和焦虑的斗争也不太可能就此消失。事实上，由于社会和同辈加在他身上的额外压力与期望，这些挣扎可能会加剧。4）归根结底，梵高是否在有生之年成为一位成功的艺术家，并不必然改变他对现代艺术史造成的影响。他的作品历经无数展览、书籍、电影和复制而留存下来，巩固了他作为有史以来最具影响力的画家之一的地位。AlpacaEval（第 1）指令：有哪些著名演员，他们起步于"
+      },
+      {
+        "text": "1. Al Pacino - He made his stage debut in 1967’s “Does a Tiger Wear a Necktie?”” and went on to star in several other Broadway productions, including “The Indian Wants the Bronx”” (1968), ”The Resistible Rise of Arturo Ui” (1969) and “Serpico” (1973). 2. Meryl Streep - She began her career on Broadway in 1975 with the play “Julia,” followed by roles in “Lost in Yonkers” (1991), “A Little Night Music” (2009) and “Three Tall",
+        "x": 122.2,
+        "y": 409.9,
+        "w": 367.6,
+        "h": 53.8,
+        "zh": "1. Al Pacino——他 1967 年在《Does a Tiger Wear a Necktie?》里第一次上台，后来又主演了另外几部百老汇作品，包括《The Indian Wants the Bronx》（1968）、《The Resistible Rise of Arturo Ui》（1969）和《Serpico》（1973）。2. Meryl Streep——她 1975 年以戏剧《Julia》在百老汇开始，后来又在《Lost in Yonkers》（1991）、《A Little Night Music》（2009）和《Three Tall》里出演"
+      },
+      {
+        "text": "3. James Earl Jones - The actor first appeared on Broadway in 1957’s “The Long Dream,” going on to star in numerous plays and musicals throughout his career, including “Of Mice and Men” (1974), “Fences” (1987) and “Driving Miss Daisy” (1987). 4. Nathan Lane - He made his Broadway debut in 1985’s “A Funny Thing Happened on the Way to the Forum,” winning a Tony Award for his performance. Other notable shows include “The Producers”” (2001), “The Nance” (2013) and “Angels in America” (2018). 5. Bette Midler - The singer-actress got her start on Broadway in 1965’s “Fiddler on the Roof,” later earning critical acclaim for her performances in “Forbidden Planet” (1989), “Golden Age” (2005) and “I’ll Eat You Last: A Chat With Sue Mengers” (2013).",
+        "x": 122.2,
+        "y": 300.3,
+        "w": 367.6,
+        "h": 97.6,
+        "zh": "3. James Earl Jones——这位演员 1957 年首次出现在百老汇的《The Long Dream》中，此后在职业生涯里主演了许多戏剧和音乐剧，包括《Of Mice and Men》（1974）、《Fences》（1987）和《Driving Miss Daisy》（1987）。4. Nathan Lane——他 1985 年以《A Funny Thing Happened on the Way to the Forum》首次登上百老汇，并因该演出获得托尼奖。其他著名剧目包括《The Producers》（2001）、《The Nance》（2013）和《Angels in America》（2018）。5. Bette Midler——这位歌手兼演员 1965 年从百老汇的《Fiddler on the Roof》起步，后来因在《Forbidden Planet》（1989）、《Golden Age》（2005）和《I’ll Eat You Last: A Chat With Sue Mengers》（2013）中的演出获得评论界赞誉。"
+      },
+      {
+        "text": "Here is a case where both LLaMA-2 models trained on Evolve-Instruct cannot output the correct",
+        "x": 108,
+        "y": 267.7,
+        "w": 396,
+        "h": 10,
+        "zh": "下面这个例子里，两个在 Evolve-Instruct 上训练的 LLaMA-2 模型，都给不出正确的"
+      },
+      {
+        "text": "AlpacaEval (Vicuna Eval) Instruction: Given that f(x) = 5x - 2x + 3, find the value of",
+        "x": 122.2,
+        "y": 231.4,
+        "w": 367.7,
+        "h": 10,
+        "zh": "AlpacaEval（Vicuna Eval）指令：已知 f(x) = 5x - 2x + 3，求"
+      },
+      {
+        "text": "To find the value of f(2), we need to substitute x=2 into the function and simplify it. We have:",
+        "x": 122.2,
+        "y": 143.7,
+        "w": 367.6,
+        "h": 10,
+        "zh": "要求出 f(2) 的值，就把 x=2 代进这个函数，再化简。我们有："
+      }
+    ]
+  }
+}

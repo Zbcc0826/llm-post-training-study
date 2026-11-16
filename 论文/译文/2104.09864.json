@@ -1,0 +1,1115 @@
+{
+  "id": "2104.09864",
+  "title": "2104.09864",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "ROFORMER: ENHANCED TRANSFORMER WITH ROTARY",
+        "x": 102.9,
+        "y": 681.2,
+        "w": 407.1,
+        "h": 17.2,
+        "zh": "RoFormer：带旋转的增强 Transformer"
+      },
+      {
+        "text": "Position encoding recently has shown effective in the transformer architecture. It enables valuable supervision for dependency modeling between elements at different positions of the sequence. In this paper, we first investigate various methods to integrate positional information into the learning process of transformer-based language models. Then, we propose a novel method named Rotary Position Embedding(RoPE) to effectively leverage the positional information. Specifically, the proposed RoPE encodes the absolute position with a rotation matrix and meanwhile incorporates the explicit relative position dependency in self-attention formulation. Notably, RoPE enables valuable properties, including the flexibility of sequence length, decaying inter-token dependency with increasing relative distances, and the capability of equipping the linear self-attention with relative position encoding. Finally, we evaluate the enhanced transformer with rotary position embedding, also called RoFormer, on various long text classification benchmark datasets. Our experiments show that it consistently overcomes its alternatives. Furthermore, we provide a theoretical analysis to explain some experimental results. RoFormer is already integrated into Huggingface: https://huggingface.co/docs/transformers/model_doc/roformer.",
+        "x": 107.5,
+        "y": 276,
+        "w": 398,
+        "h": 151.8,
+        "zh": "位置编码近来在 Transformer 结构里是有效的。它为序列中不同位置的元素做依赖建模，提供了有用的监督。本文先考察怎样把位置信息融进基于 Transformer 的语言模型的学习过程，再提出一种名为旋转位置编码（Rotary Position Embedding，RoPE）的新方法，用来有效利用位置信息。具体来说，RoPE 用旋转矩阵编码绝对位置，同时在 self-attention 的公式里写进显式的相对位置依赖。RoPE 还有几项有用的性质：序列长度可以灵活变化；token 之间的依赖随相对距离增大而衰减；线性 self-attention 也能配上相对位置编码。最后，我们在多个长文本分类基准上评估这种带旋转位置编码的增强 Transformer，也叫 RoFormer。实验表明，它稳定地胜过对照方法。我们还给出理论分析，用来解释一部分实验结果。RoFormer 已经接入 Huggingface：https://huggingface.co/docs/transformers/model_doc/roformer。"
+      },
+      {
+        "text": "Keywords Pre-trained Language Models · Position Information Encoding · Pre-training · Natural Language Processing.",
+        "x": 71.7,
+        "y": 253.2,
+        "w": 470,
+        "h": 10,
+        "zh": "关键词：预训练语言模型 · 位置信息编码 · 预训练 · 自然语言处理。"
+      },
+      {
+        "text": "The sequential order of words is of great value to natural language understanding. Recurrent neural networks (RRNs) based models encode tokens’ order by recursively computing a hidden state along the time dimension. Convolution neural networks (CNNs) based models (CNNs) Gehring et al. [2017] were typically considered position-agnostic, but recent work Islam et al. [2020] has shown that the commonly used padding operation can implicitly learn position information. Recently, the pre-trained language models (PLMs), which were built upon the transformer Vaswani et al. [2017], have achieved the state-of-the-art performance of various natural language processing (NLP) tasks, including context representation learning Devlin et al. [2019], machine translation Vaswani et al. [2017], and language modeling Radford et al. [2019], to name a few. Unlike, RRNs and CNNs-based models, PLMs utilize the self-attention mechanism to semantically capture the contextual representation of a given corpus. As a consequence, PLMs achieve a significant improvement in terms of parallelization over RNNs and improve the modeling ability of longer intra-token relations",
+        "x": 71.7,
+        "y": 102.7,
+        "w": 470.1,
+        "h": 108.1,
+        "zh": "词的先后顺序对自然语言理解很重要。基于循环神经网络（RNN）的模型沿着时间维递归计算隐状态，以此来编码 token 的顺序。基于卷积神经网络（CNN）的模型（Gehring 等人 [2017]）通常被认为与位置无关，但 Islam 等人 [2020] 的近期工作表明，常用的 padding 操作可以隐式学到位置信息。近来，建立在 Transformer（Vaswani 等人 [2017]）上的预训练语言模型（PLM）在多项自然语言处理（NLP）任务上达到了当时的最好结果，例如上下文表示学习（Devlin 等人 [2019]）、机器翻译（Vaswani 等人 [2017]）和语言建模（Radford 等人 [2019]）等。与基于 RNN 和 CNN 的模型不同，PLM 用 self-attention 从语义上抓住给定语料的上下文表示。因此，PLM 在并行化上比 RNN 有明显改进，也对更长的 token 内部关系有更强的建模能力"
+      },
+      {
+        "text": "A stack of multiple CNN layers can also capture longer intra-token relation, here we only consider single layer setting.",
+        "x": 87.8,
+        "y": 72,
+        "w": 425.7,
+        "h": 9,
+        "zh": "多层 CNN 堆起来也能抓住更长的 token 内部关系，这里只考虑单层的情形。"
+      }
+    ],
+    "2": [
+      {
+        "text": "It is noteworthy that the self-attention architecture of the current PLMs has shown to be position-agnostic Yun et al. [2020]. Following this claim, various approaches have been proposed to encode the position information into the learning process. On one side, generated absolute position encoding through a pre-defined function Vaswani et al. [2017] was added to the contextual representations, while a trainable absolute position encoding Gehring et al. [2017], Devlin et al. [2019], Lan et al. [2020], Clark et al. [2020], Radford et al. [2019], Radford and Narasimhan [2018]. On the other side, the previous work Parikh et al. [2016], Shaw et al. [2018], Huang et al. [2018], Dai et al. [2019], Yang et al. [2019], Raffel et al. [2020], Ke et al. [2020], He et al. [2020], Huang et al. [2020] focuses on relative position encoding, which typically encodes the relative position information into the attention mechanism. In addition to these approaches, the authors of Liu et al. [2020] have proposed to model the dependency of position encoding from the perspective of Neural ODE Chen et al. [2018a], and the authors of Wang et al. [2020] have proposed to model the position information in complex space. Despite the effectiveness of these approaches, they commonly add the position information to the context representation and thus render them unsuitable for the linear self-attention architecture. In this paper, we introduce a novel method, namely Rotary Position Embedding(RoPE), to leverage the positional information into the learning process of PLMS. Specifically, RoPE encodes the absolute position with a rotation matrix and meanwhile incorporates the explicit relative position dependency in self-attention formulation. Note that the proposed RoPE is prioritized over the existing methods through valuable properties, including the sequence length flexibility, decaying inter-token dependency with increasing relative distances, and the capability of equipping the linear self-attention with relative position encoding. Experimental results on various long text classification benchmark datasets show that the enhanced transformer with rotary position embedding, namely RoFormer, can give better performance compared to baseline alternatives and thus demonstrates the efficacy of the proposed RoPE. In brief, our contributions are three-folds as follows:",
+        "x": 72,
+        "y": 480.9,
+        "w": 469.7,
+        "h": 239.1,
+        "zh": "值得注意的是，现有 PLM 的 self-attention 结构已被表明与位置无关（Yun 等人 [2020]）。顺着这一结论，人们提出了多种把位置信息编进学习过程的做法。一方面，用预定义函数生成的绝对位置编码（Vaswani 等人 [2017]）被加到上下文表示上；另一类则是可训练的绝对位置编码（Gehring 等人 [2017]、Devlin 等人 [2019]、Lan 等人 [2020]、Clark 等人 [2020]、Radford 等人 [2019]、Radford 与 Narasimhan [2018]）。另一方面，Parikh 等人 [2016]、Shaw 等人 [2018]、Huang 等人 [2018]、Dai 等人 [2019]、Yang 等人 [2019]、Raffel 等人 [2020]、Ke 等人 [2020]、He 等人 [2020]、Huang 等人 [2020] 关注相对位置编码，通常是把相对位置信息编进注意力机制。除此之外，Liu 等人 [2020] 从 Neural ODE（Chen 等人 [2018a]）的角度建模位置编码的依赖，Wang 等人 [2020] 则在复数空间里建模位置信息。这些方法虽然有效，但普遍把位置信息加到上下文表示上，因此不适合线性 self-attention 结构。本文提出一种新方法，即旋转位置编码（Rotary Position Embedding，RoPE），把位置信息用到 PLM 的学习过程里。具体而言，RoPE 用旋转矩阵编码绝对位置，同时在 self-attention 的公式里纳入显式的相对位置依赖。相对已有方法，RoPE 的优势来自几项有用性质：序列长度灵活、token 间依赖随相对距离增大而衰减，以及能为线性 self-attention 配上相对位置编码。多个长文本分类基准上的实验表明，带旋转位置编码的增强 Transformer，即 RoFormer，比基线对照表现更好，从而说明所提出的 RoPE 是有效的。简言之，我们的贡献有三点："
+      },
+      {
+        "text": "• We investigated the existing approaches to the relative position encoding and found that they are mostly built based on the idea of the decomposition of adding position encoding to the context representations. We introduce a novel method, namely Rotary Position Embedding(RoPE), to leverage the positional information into the learning process of PLMS. The key idea is to encode relative position by multiplying the context representations with a rotation matrix with a clear theoretical interpretation.",
+        "x": 99.4,
+        "y": 414.3,
+        "w": 440.9,
+        "h": 53.6,
+        "zh": "• 我们考察了已有的相对位置编码方法，发现它们大多建立在这样一种想法上：把位置编码加进上下文表示，再对这个加法做分解。我们提出一种新方法，即旋转位置编码（RoPE），把位置信息用到 PLM 的学习过程里。核心想法是用一个旋转矩阵去乘上下文表示，从而编码相对位置，并且这一做法有清楚的理论解释。"
+      },
+      {
+        "text": "• We study the properties of RoPE and show that it decays with the relative distance increased, which is desired for natural language encoding. We kindly argue that previous relative position encoding-based approaches are not compatible with linear self-attention.",
+        "x": 99.4,
+        "y": 372.6,
+        "w": 440.6,
+        "h": 31.8,
+        "zh": "• 我们研究 RoPE 的性质，并说明它会随相对距离增大而衰减，这正是自然语言编码所需要的。我们认为，以往基于相对位置编码的方法与线性 self-attention 并不兼容。"
+      },
+      {
+        "text": "• We evaluate the proposed RoFormer on various long text benchmark datasets. Our experiments show that it consistently achieves better performance compared to its alternatives. Some experiments with pre-trained language models are available on GitHub: https://github.com/ZhuiyiTechnology/roformer.",
+        "x": 99.4,
+        "y": 330.8,
+        "w": 440.6,
+        "h": 31.8,
+        "zh": "• 我们在多个长文本基准数据集上评估所提出的 RoFormer。实验表明，它相对对照方法稳定地取得更好的结果。一部分预训练语言模型实验见 GitHub：https://github.com/ZhuiyiTechnology/roformer。"
+      },
+      {
+        "text": "The remaining of the paper is organized as follows. We establish a formal description of the position encoding problem in self-attention architecture and revisit previous works in Section (2). We then describe the rotary position encoding (RoPE) and study its properties in Section (3). We report experiments in Section (4). Finally, we conclude this paper in",
+        "x": 71.7,
+        "y": 286,
+        "w": 468.3,
+        "h": 31.8,
+        "zh": "本文余下部分安排如下。第 (2) 节形式化描述 self-attention 结构中的位置编码问题，并回顾已有工作。随后在第 (3) 节描述旋转位置编码（RoPE）并研究它的性质。第 (4) 节报告实验。最后，我们在"
+      },
+      {
+        "text": "Let SN = {wi}i=1 be a sequence of N input tokens with wi being the i",
+        "x": 72,
+        "y": 189.6,
+        "w": 279.9,
+        "h": 12.6,
+        "zh": "设 S_N = {w_i}_{i=1} 为 N 个输入 token 的序列，其中 w_i 是第 i"
+      },
+      {
+        "text": "element. The corresponding word embedding of SN is denoted as EN = {xi}i=1, where xi ∈ R is the d-dimensional word embedding vector of token wi without position information. The self-attention first incorporates position information to the word embeddings and transforms them into queries, keys, and value representations.",
+        "x": 72,
+        "y": 158.3,
+        "w": 468,
+        "h": 43.8,
+        "zh": "个元素。S_N 对应的词嵌入记为 E_N = {x_i}_{i=1}，其中 x_i ∈ R，是 token w_i 的 d 维词嵌入向量，不含位置信息。self-attention 先把位置信息加进词嵌入，再把它们变成 query、key 和 value 表示。"
+      },
+      {
+        "text": "positions through fq, fk and fv, respectively. The query and key values are then used to compute the attention weights, while the output is computed as the weighted sum over the value",
+        "x": 71.8,
+        "y": 72,
+        "w": 468.6,
+        "h": 20.9,
+        "zh": "各位置分别通过 f_q、f_k 和 f_v 得到。随后用 query 和 key 计算注意力权重，输出则是对 value 的加权求和"
+      }
+    ],
+    "3": [
+      {
+        "text": "The existing approaches of transformer-based position encoding mainly focus on choosing a suitable function to form",
+        "x": 71.7,
+        "y": 626.7,
+        "w": 468.3,
+        "h": 10,
+        "zh": "现有基于 Transformer 的位置编码方法，主要是在选一个合适的函数来构成"
+      },
+      {
+        "text": "ft:t∈{q,k,v}(xi, i) := Wt:t∈{q,k,v}(xi + pi),",
+        "x": 216,
+        "y": 552.7,
+        "w": 179.9,
+        "h": 12.4,
+        "zh": ""
+      },
+      {
+        "text": "where pi ∈ R is a d-dimensional vector depending of the position of token xi. Previous work Devlin et al. [2019], Lan et al. [2020], Clark et al. [2020], Radford et al. [2019], Radford and Narasimhan [2018] introduced the use of a set of trainable vectors pi ∈ {pt}t=1, where L is the maximum sequence length. The authors of Vaswani et al. [2017] have",
+        "x": 71.6,
+        "y": 512.3,
+        "w": 469.6,
+        "h": 34.3,
+        "zh": "其中 p_i ∈ R 是一个 d 维向量，取决于 token x_i 的位置。先前的工作（Devlin 等人 [2019]、Lan 等人 [2020]、Clark 等人 [2020]、Radford 等人 [2019]、Radford 与 Narasimhan [2018]）使用一组可训练向量 p_i ∈ {p_t}_{t=1}，其中 L 是最大序列长度。Vaswani 等人 [2017] 则"
+      },
+      {
+        "text": "proposed to generate pi using the sinusoidal function.",
+        "x": 72,
+        "y": 501.4,
+        "w": 214.6,
+        "h": 12.4,
+        "zh": "提出用正弦函数来生成 p_i。"
+      },
+      {
+        "text": "element of the d-dimensional vector pi. In the next section, we show that our proposed RoPE is related to this intuition from the sinusoidal function perspective. However, instead of directly adding the position to the context representation, RoPE proposes to incorporate the relative position information by multiplying with the",
+        "x": 72,
+        "y": 431.8,
+        "w": 468,
+        "h": 31.8,
+        "zh": "d 维向量 p_i 的分量。下一节将说明，我们提出的 RoPE 从正弦函数的角度看，与这一直觉有关。不过 RoPE 并不直接把位置加到上下文表示上，而是通过乘以"
+      },
+      {
+        "text": "The authors of Shaw et al. [2018] applied different settings of Equation (1) as following:",
+        "x": 71.7,
+        "y": 376.7,
+        "w": 352.7,
+        "h": 10,
+        "zh": "Shaw 等人 [2018] 把式 (1) 改成了下面这种设定："
+      },
+      {
+        "text": "fk(xn, n) := Wk(xn + ˜pr) fv(xn, n) := Wv(xn + ˜pr)",
+        "x": 247.9,
+        "y": 327.6,
+        "w": 116.2,
+        "h": 26.3,
+        "zh": ""
+      },
+      {
+        "text": "where p˜r, p˜r ∈ R are trainable relative position embeddings. Note that r = clip(m − n, rmin, rmax) represents the relative distance between position m and n. They clipped the relative distance with the hypothesis that precise relative position information is not useful beyond a certain distance. Keeping the form of Equation (3), the authors Dai et al.",
+        "x": 71.6,
+        "y": 289.2,
+        "w": 470.1,
+        "h": 31.9,
+        "zh": "其中 p̃_r、p̃_r ∈ R 是可训练的相对位置嵌入。注意 r = clip(m − n, r_min, r_max) 表示位置 m 与 n 之间的相对距离。他们把相对距离截断，依据的假设是：超过某个距离之后，精确的相对位置信息就不再有用。在保持式 (3) 形式的前提下，Dai 等人"
+      },
+      {
+        "text": "[2019] have proposed to decompose qmkn of Equation (2) as",
+        "x": 72,
+        "y": 275.8,
+        "w": 245.7,
+        "h": 12.4,
+        "zh": "[2019] 提出把式 (2) 中的 q_m k_n 分解为"
+      },
+      {
+        "text": "qmkn = xmWqWkxn + xmWqWkpn + pmWqWkxn + pmWqWkpn, the key idea is to replace the absolute position embedding pn with its sinusoid-encoded relative counterpart p˜m−n, while the absolute position pm in the third and fourth term with two trainable vectors u and v independent of the query positions. Further, Wk is distinguished for the content-based and location-based key vectors xn and pn, denoted as",
+        "x": 71.6,
+        "y": 221.1,
+        "w": 469.6,
+        "h": 50.7,
+        "zh": "q_m k_n = x_m W_q W_k x_n + x_m W_q W_k p_n + p_m W_q W_k x_n + p_m W_q W_k p_n。核心想法是，用经过正弦编码的相对位置对应项 p̃_{m−n} 替换绝对位置嵌入 p_n；第三项和第四项里的绝对位置 p_m，则换成两个与 query 位置无关的可训练向量 u 和 v。进一步，基于内容的 key 向量 x_n 和基于位置的 key 向量 p_n 使用不同的 W_k，记为"
+      },
+      {
+        "text": "It is noteworthy that the position information in the value term is removed by setting fv(xj) := Wvxj. Later work Raffel et al. [2020], He et al. [2020], Ke et al. [2020], Huang et al. [2020] followed these settings by only encoding the relative position information into the attention weights. However, the authors of Raffel et al. [2020] reformed",
+        "x": 72,
+        "y": 146.2,
+        "w": 468.2,
+        "h": 31.8,
+        "zh": "值得注意的是，令 f_v(x_j) := W_v x_j 之后，value 项里的位置信息就被去掉了。后来的工作（Raffel 等人 [2020]、He 等人 [2020]、Ke 等人 [2020]、Huang 等人 [2020]）沿用这些设定，只把相对位置信息编进注意力权重。不过 Raffel 等人 [2020] 改写了"
+      },
+      {
+        "text": "where bi,j is a trainable bias. The authors of Ke et al. [2020] investigated the middle two terms of Equation (6) and found little correlations between absolute positions and words. The authors of Raffel et al. [2020] proposed to model a",
+        "x": 71.6,
+        "y": 99.4,
+        "w": 468.4,
+        "h": 20.9,
+        "zh": "其中 b_{i,j} 是可训练偏置。Ke 等人 [2020] 考察了式 (6) 中间的两项，发现绝对位置和词之间几乎没有相关性。Raffel 等人 [2020] 提出用"
+      },
+      {
+        "text": "pair of words or positions using different projection matrices.",
+        "x": 72,
+        "y": 88.5,
+        "w": 244.5,
+        "h": 10,
+        "zh": "不同的投影矩阵来建模一对词，或一对位置。"
+      }
+    ],
+    "4": [
+      {
+        "text": "The authors of He et al. [2020] argued that the relative positions of two tokens could only be fully modeled using the middle two terms of Equation (6). As a consequence, the absolute position embeddings pm and pn were simply replaced with the relative position embeddings p˜m−n:",
+        "x": 71.7,
+        "y": 685.8,
+        "w": 468.7,
+        "h": 34.2,
+        "zh": "He 等人 [2020] 认为，两个 token 的相对位置只有用式 (6) 的中间两项才能完整建模。因此，绝对位置嵌入 p_m 和 p_n 被直接换成相对位置嵌入 p̃_{m−n}："
+      },
+      {
+        "text": "qmkn = xmWqWkxn + xmWqWkp˜m−n + ˜pm−nWqWkxn A comparison of the four variants of the relative position embeddings Radford and Narasimhan [2018] has shown that the variant similar to Equation (10) is the most efficient among the other three. Generally speaking, all these approaches attempt to modify Equation (6) based on the decomposition of Equation (3) under the self-attention settings in Equation (2), which was originally proposed in Vaswani et al. [2017]. They commonly introduced to directly add the position information to the context representations. Unlikely, our approach aims to derive the relative position encoding from Equation (1) under some constraints. Next, we show that the derived approach is more interpretable by incorporating relative position information with the rotation of context representations.",
+        "x": 71.6,
+        "y": 581.3,
+        "w": 468.7,
+        "h": 95.7,
+        "zh": "q_m k_n = x_m W_q W_k x_n + x_m W_q W_k p̃_{m−n} + p̃_{m−n} W_q W_k x_n。Radford 与 Narasimhan [2018] 比较了相对位置嵌入的四种变体，结果表明与式 (10) 相近的那种，在另外三种里效率最高。总的来说，这些方法都试图在式 (2) 的 self-attention 设定下，依据式 (3) 的分解去改式 (6)；式 (2) 最初由 Vaswani 等人 [2017] 提出。它们的共同做法是把位置信息直接加到上下文表示上。我们的做法是在若干约束下从式 (1) 推出相对位置编码。接下来要说明，把相对位置信息通过对上下文表示做旋转引进来，得到的方法更好解释。"
+      },
+      {
+        "text": "In this section, we discuss the proposed rotary position embedding (RoPE). We first formulate the relative position encoding problem in Section (3.1), we then derive the RoPE in Section (3.2) and investigate its properties in Section (3.3).",
+        "x": 72,
+        "y": 514.8,
+        "w": 469.7,
+        "h": 20.9,
+        "zh": "本节讨论所提出的旋转位置编码（RoPE）。我们先在第 (3.1) 节把相对位置编码问题写成形式化表述，再在第 (3.2) 节推导 RoPE，并在第 (3.3) 节考察它的性质。"
+      },
+      {
+        "text": "Transformer-based language modeling usually leverages the position information of individual tokens through a selfattention mechanism. As can be observed in Equation (2), qmkn typically enables knowledge conveyance between tokens at different positions. In order to incorporate relative position information, we require the inner product of query qm and key kn to be formulated by a function g, which takes only the word embeddings xm, xn, and their relative position m − n as input variables. In other words, we hope that the inner product encodes position information only in",
+        "x": 71.7,
+        "y": 423.2,
+        "w": 470,
+        "h": 53.6,
+        "zh": "基于 Transformer 的语言建模，通常靠 self-attention 机制来利用每个 token 的位置信息。从式 (2) 可以看到，q_m k_n 通常负责在不同位置的 token 之间传递信息。为了纳入相对位置信息，我们要求 query q_m 与 key k_n 的内积由函数 g 给出，而 g 只以词嵌入 x_m、x_n 以及它们的相对位置 m − n 为输入。换句话说，我们希望这个内积只在"
+      },
+      {
+        "text": "⟨fq(xm, m), fk(xn, n)⟩ = g(xm, xn, m − n).",
+        "x": 212.4,
+        "y": 380.1,
+        "w": 187.2,
+        "h": 11.5,
+        "zh": ""
+      },
+      {
+        "text": "The ultimate goal is to find an equivalent encoding mechanism to solve the functions fq(xm, m) and fk(xn, n) to conform the aforementioned relation.",
+        "x": 71.7,
+        "y": 352.3,
+        "w": 468.3,
+        "h": 20.9,
+        "zh": "最终要找一种等价的编码机制，解出函数 f_q(x_m, m) 和 f_k(x_n, n)，使之符合上面的关系。"
+      },
+      {
+        "text": "We begin with a simple case with a dimension d = 2. Under these settings, we make use of the geometric property of vectors on a 2D plane and its complex form to prove (refer Section (3.4.1) for more details) that a solution to our",
+        "x": 71.5,
+        "y": 273.8,
+        "w": 468.8,
+        "h": 20.9,
+        "zh": "我们从维度 d = 2 的简单情形开始。在这一设定下，利用二维平面上向量的几何性质及其复数形式，可以证明（详见第 (3.4.1) 节）我们的"
+      },
+      {
+        "text": "g(xm, xn, m − n) = Re[(Wqxm)(Wkxn) e where Re[·] is the real part of a complex number and (Wkxn) represents the conjugate complex number of (Wkxn). θ ∈ R is a preset non-zero constant. We can further write f{q,k} in a multiplication matrix:",
+        "x": 71.6,
+        "y": 168.4,
+        "w": 470.1,
+        "h": 41.8,
+        "zh": "g(x_m, x_n, m − n) = Re[(W_q x_m)(W_k x_n) e。其中 Re[·] 表示复数的实部，(W_k x_n) 表示 (W_k x_n) 的共轭复数。θ ∈ R 是预先取定的非零常数。我们还可以把 f_{q,k} 写成乘以一个矩阵："
+      },
+      {
+        "text": "where (xm , xm ) is xm expressed in the 2D coordinates. Similarly, g can be viewed as a matrix and thus enables the solution of formulation in Section (3.1) under the 2D case. Specifically, incorporating the relative position embedding is straightforward: simply rotate the affine-transformed word embedding vector by amount of angle multiples of its position index and thus interprets the intuition behind Rotary Position Embedding.",
+        "x": 71.6,
+        "y": 72,
+        "w": 468.4,
+        "h": 42.7,
+        "zh": "其中 (x_m, x_m) 是 x_m 在二维坐标下的写法。同样，g 也可以看成一个矩阵，于是在二维情形下就能解出第 (3.1) 节里的那个形式。具体而言，加入相对位置嵌入很直接：把经过仿射变换的词嵌入向量，旋转一个与它的位置下标成倍数的角度。这也解释了旋转位置编码（Rotary Position Embedding）背后的直觉。"
+      }
+    ],
+    "5": [
+      {
+        "text": "In order to generalize our results in 2D to any xi ∈ R where d is even, we divide the d-dimension space into d/2 sub-spaces and combine them in the merit of the linearity of the inner product, turning f{q,k} into:",
+        "x": 72,
+        "y": 678,
+        "w": 468.2,
+        "h": 22.7,
+        "zh": "为了把二维结果推广到任意 x_i ∈ R（d 为偶数），我们把 d 维空间分成 d/2 个子空间，再利用内积的线性把它们合起来，从而把 f_{q,k} 写成："
+      },
+      {
+        "text": "is the rotary matrix with pre-defined parameters Θ = {θi = 10000",
+        "x": 72,
+        "y": 527.4,
+        "w": 262.8,
+        "h": 11.5,
+        "zh": "是带有预定义参数的旋转矩阵，Θ = {θ_i = 10000"
+      },
+      {
+        "text": ", i ∈ [1, 2, ..., d/2]}. A graphic illustration of RoPE is shown in Figure (1). Applying our RoPE to self-attention in Equation (2), we obtain:",
+        "x": 72,
+        "y": 518,
+        "w": 468,
+        "h": 20.9,
+        "zh": "，i ∈ [1, 2, ..., d/2]}。图 (1) 给出了 RoPE 的图示。把 RoPE 用到式 (2) 的 self-attention 上，得到："
+      },
+      {
+        "text": "qmkn = (RΘ,mWqxm) (RΘ,nWkxn) = x WqRΘ,n−mWkxn",
+        "x": 169.8,
+        "y": 494.6,
+        "w": 271.9,
+        "h": 12.4,
+        "zh": ""
+      },
+      {
+        "text": "where RΘ,n−m = (RΘ,m) RΘ,n. Note that RΘ is an orthogonal matrix, which ensures stability during the process of encoding position information. In addition, due to the sparsity of RΘ, applying matrix multiplication directly as in Equation (16) is not computationally efficient; we provide another realization in theoretical explanation. In contrast to the additive nature of position embedding method adopted in the previous works, i.e., Equations (3) to (10), our approach is multiplicative. Moreover, RoPE naturally incorporates relative position information through rotation matrix product instead of altering terms in the expanded formulation of additive position encoding when applied with self-attention.",
+        "x": 71.6,
+        "y": 401.1,
+        "w": 469,
+        "h": 83.3,
+        "zh": "其中 R_{Θ,n−m} = (R_{Θ,m}) R_{Θ,n}。注意 R_Θ 是正交矩阵，因此在编码位置信息的过程中能保持稳定。另外，R_Θ 是稀疏的，像式 (16) 那样直接做矩阵乘法并不划算；我们在理论说明里给出另一种实现。先前工作采用的位置嵌入是加性的，即式 (3) 到式 (10)；我们的方法是乘性的。而且，在用于 self-attention 时，RoPE 通过旋转矩阵相乘，自然地把相对位置信息带进来，不必去改加性位置编码展开式里的各项。"
+      },
+      {
+        "text": ". One can prove that this setting provides a long-term decay property (refer to Section (3.4.3) for more details), which means the inner-product will decay when the relative position increase. This property coincides with the intuition that a pair of tokens with a long relative distance should have less connection.",
+        "x": 72,
+        "y": 96.9,
+        "w": 468,
+        "h": 42.7,
+        "zh": "可以证明，这一设定具有长程衰减性质（详见第 (3.4.3) 节），也就是相对位置增大时，内积会衰减。这与一种直觉相符：相对距离很远的一对 token，彼此的联系应当更弱。"
+      },
+      {
+        "text": "Following Vaswani et al. [2017], we set θi = 10000",
+        "x": 156.4,
+        "y": 128.1,
+        "w": 202.4,
+        "h": 11.5,
+        "zh": "遵循 Vaswani 等人 [2017]，我们取 θ_i = 10000"
+      },
+      {
+        "text": "The self-attention can be rewritten in a more general form.",
+        "x": 199.6,
+        "y": 72,
+        "w": 233.3,
+        "h": 10,
+        "zh": "self-attention 可以改写成更一般的形式。"
+      }
+    ],
+    "6": [
+      {
+        "text": "The original self-attention chooses sim(qm, kn) = exp(qmkn/",
+        "x": 71.7,
+        "y": 664.6,
+        "w": 265.2,
+        "h": 12.4,
+        "zh": "原始 self-attention 把相似度取为 sim(q_m, k_n) = exp(q_m k_n /"
+      },
+      {
+        "text": "d). Note that the original self-attention should compute the inner product of query and key for every pair of tokens, which has a quadratic complexity O(N ). Follow Katharopoulos et al. [2020], the linear attentions reformulate Equation (17) as",
+        "x": 72,
+        "y": 645.2,
+        "w": 468.4,
+        "h": 31.8,
+        "zh": "d)。注意，原始 self-attention 要对每一对 token 计算 query 和 key 的内积，复杂度是二次的 O(N)。按照 Katharopoulos 等人 [2020]，线性注意力把式 (17) 改写为"
+      },
+      {
+        "text": "where ϕ(·), φ(·) are usually non-negative functions. The authors of Katharopoulos et al. [2020] have proposed ϕ(x) = φ(x) = elu(x) + 1 and first computed the multiplication between keys and values using the associative property of matrix multiplication. A softmax function is used in Shen et al. [2021] to normalize queries and keys separately before the inner product, which is equivalent to ϕ(qi) = softmax(qi) and ϕ(kj) = exp(kj). For more details about linear attention, we encourage readers to refer to original papers. In this section, we focus on discussing incorporating RoPE with Equation (18). Since RoPE injects position information by rotation, which keeps the norm of hidden representations unchanged, we can combine RoPE with linear attention by multiplying the rotation matrix with the outputs of the non-negative functions.",
+        "x": 71.6,
+        "y": 511.3,
+        "w": 468.7,
+        "h": 86.3,
+        "zh": "其中 ϕ(·)、φ(·) 通常是非负函数。Katharopoulos 等人 [2020] 提出 ϕ(x) = φ(x) = elu(x) + 1，并利用矩阵乘法的结合律，先算 key 与 value 的乘积。Shen 等人 [2021] 在做内积之前用 softmax 分别归一化 query 和 key，这等价于 ϕ(q_i) = softmax(q_i)，以及 ϕ(k_j) = exp(k_j)。线性注意力的更多细节请看原文。本节着重讨论如何把 RoPE 与式 (18) 结合起来。RoPE 靠旋转注入位置信息，而且不改变隐表示的范数，因此可以把旋转矩阵乘到这些非负函数的输出上，从而与线性注意力合在一起。"
+      },
+      {
+        "text": "It is noteworthy that we keep the denominator unchanged to avoid the risk of dividing zero, and the summation in the numerator could contain negative terms. Although the weights for each value vi in Equation (19) are not strictly probabilistic normalized, we kindly argue that the computation can still model the importance of values.",
+        "x": 72,
+        "y": 426.3,
+        "w": 468.3,
+        "h": 31.8,
+        "zh": "需要说明的是，分母保持不变，以免出现除以零；分子里的求和则可能含有负项。尽管式 (19) 里每个 value v_i 的权重并没有严格按概率归一化，我们认为这一计算仍然能够刻画各个 value 的重要程度。"
+      },
+      {
+        "text": "Under the case of d = 2, we consider two-word embedding vectors xq, xk corresponds to query and key and their position m and n, respectively. According to eq. (1), their position-encoded counterparts are:",
+        "x": 72,
+        "y": 352.5,
+        "w": 468.2,
+        "h": 20.9,
+        "zh": "在 d = 2 的情形下，考虑分别对应 query 和 key 的两个词嵌入向量 x_q、x_k，以及它们的位置 m 和 n。按照式 (1)，它们经过位置编码之后是："
+      },
+      {
+        "text": "where the subscripts of qm and kn indicate the encoded positions information. Assume that there exists a function g that defines the inner product between vectors produced by f{q,k}:",
+        "x": 71.6,
+        "y": 291.8,
+        "w": 468,
+        "h": 22.7,
+        "zh": "其中 q_m 和 k_n 的下标表示已经编进去的位置信息。假设存在一个函数 g，用来定义 f_{q,k} 所产生的向量之间的内积："
+      },
+      {
+        "text": "qmkn = ⟨fq(xm, m), fk(xn, n)⟩ = g(xm, xn, n − m), we further require below initial condition to be satisfied:",
+        "x": 71.6,
+        "y": 258.6,
+        "w": 347.1,
+        "h": 26.9,
+        "zh": "q_m k_n = ⟨f_q(x_m, m), f_k(x_n, n)⟩ = g(x_m, x_n, n − m)。我们还要求下面的初始条件成立："
+      },
+      {
+        "text": "which can be read as the vectors with empty position information encoded. Given these settings, we attempt to find a solution of fq, fk. First, we take advantage of the geometric meaning of vector in 2D and its complex counter part, decompose functions in Equations (20) and (21) into:",
+        "x": 71.6,
+        "y": 189.1,
+        "w": 469.6,
+        "h": 31.8,
+        "zh": "这可以读成尚未编入位置信息的向量。在这些设定下，我们尝试求出 f_q、f_k 的一个解。首先利用二维向量的几何意义及其复数对应，把式 (20) 和式 (21) 中的函数分解成："
+      },
+      {
+        "text": "fq(xq, m) = Rq(xq, m)e fk(xk, n) = Rk(xk, n)e g(xq, xk, n − m) = Rg(xq, xk, n − m)e where Rf, Rg and Θf, Θg are the radical and angular components for f{q,k} and g, respectively. Plug them into Equation (21), we get the relation:",
+        "x": 71.6,
+        "y": 109.2,
+        "w": 468.4,
+        "h": 71.3,
+        "zh": "f_q(x_q, m) = R_q(x_q, m) e，f_k(x_k, n) = R_k(x_k, n) e，g(x_q, x_k, n − m) = R_g(x_q, x_k, n − m) e。其中 R_f、R_g 与 Θ_f、Θ_g 分别是 f_{q,k} 和 g 的径向分量与角向分量。代入式 (21)，得到关系："
+      },
+      {
+        "text": "Rq(xq, m)Rk(xk, n) = Rg(xq, xk, n − m), Θk(xk, n) − Θq(xq, m) = Θg(xq, xk, n − m),",
+        "x": 209.6,
+        "y": 68.8,
+        "w": 192.9,
+        "h": 25.4,
+        "zh": ""
+      }
+    ],
+    "7": [
+      {
+        "text": "with the corresponding initial condition as:",
+        "x": 71.6,
+        "y": 710,
+        "w": 171.3,
+        "h": 10,
+        "zh": "相应的初始条件为："
+      },
+      {
+        "text": "where ∥q∥, ∥k∥ and θq, θk are the radial and angular part of q and k on the 2D plane. Next, we set m = n in Equation (24) and take into account initial conditions in Equation (25):",
+        "x": 71.6,
+        "y": 638.5,
+        "w": 375.7,
+        "h": 26.4,
+        "zh": "其中 ∥q∥、∥k∥ 以及 θ_q、θ_k 是 q 和 k 在二维平面上的径向部分与角向部分。接下来在式 (24) 中令 m = n，并带上式 (25) 的初始条件："
+      },
+      {
+        "text": "Rq(xq, m)Rk(xk, m) = Rg(xq, xk, 0) = Rq(xq, 0)Rk(xk, 0) = ∥q∥∥k∥, Θk(xk, m) − Θq(xq, m) = Θg(xq, xk, 0) = Θk(xk, 0) − Θq(xq, 0) = θk − θq. On one hand, from, a straightforward solution of Rf could be formed from Equation (26a) :",
+        "x": 72,
+        "y": 587,
+        "w": 396.4,
+        "h": 43.4,
+        "zh": "R_q(x_q, m) R_k(x_k, m) = R_g(x_q, x_k, 0) = R_q(x_q, 0) R_k(x_k, 0) = ∥q∥∥k∥，Θ_k(x_k, m) − Θ_q(x_q, m) = Θ_g(x_q, x_k, 0) = Θ_k(x_k, 0) − Θ_q(x_q, 0) = θ_k − θ_q。一方面，由式 (26a) 可以直接得到 R_f 的一个解："
+      },
+      {
+        "text": "Rq(xq, m) = Rq(xq, 0) = ∥q∥ Rk(xk, n) = Rk(xk, 0) = ∥k∥ Rg(xq, xk, n − m) = Rg(xq, xk, 0) = ∥q∥∥k∥ which interprets the radial functions Rq, Rk and Rg are independent from the position information. On the other hand, as can be noticed in Equation (26b), Θq(xq, m) − θq = Θk(xk, m) − θk indicates that the angular functions does not dependent on query and key, we set them to Θf := Θq = Θk and term Θf(x{q,k}, m) − θ{q,k} is a function of position m and is independent of word embedding x{q,k}, we denote it as ϕ(m), yielding:",
+        "x": 71.6,
+        "y": 488.2,
+        "w": 469.6,
+        "h": 91.6,
+        "zh": "R_q(x_q, m) = R_q(x_q, 0) = ∥q∥，R_k(x_k, n) = R_k(x_k, 0) = ∥k∥，R_g(x_q, x_k, n − m) = R_g(x_q, x_k, 0) = ∥q∥∥k∥。这说明径向函数 R_q、R_k 和 R_g 与位置信息无关。另一方面，由式 (26b) 可以看到 Θ_q(x_q, m) − θ_q = Θ_k(x_k, m) − θ_k，表明角向函数并不依赖 query 和 key。我们把它们取为 Θ_f := Θ_q = Θ_k，并把 Θ_f(x_{q,k}, m) − θ_{q,k} 看成位置 m 的函数，且与词嵌入 x_{q,k} 无关，记为 ϕ(m)，于是得到："
+      },
+      {
+        "text": "Θf(x{q,k}, m) = ϕ(m) + θ{q,k}, Further, by plugging n = m + 1 to Equation (24) and consider the above equation, we can get:",
+        "x": 72,
+        "y": 452.8,
+        "w": 378.2,
+        "h": 28,
+        "zh": "Θ_f(x_{q,k}, m) = ϕ(m) + θ_{q,k}。再把 n = m + 1 代入式 (24)，并结合上式，可以得到："
+      },
+      {
+        "text": "ϕ(m + 1) − ϕ(m) = Θg(xq, xk, 1) + θq − θk, Since RHS is a constant irrelevant to m, ϕ(m) with continuous integer inputs produce an arithmetic progression:",
+        "x": 72,
+        "y": 416.7,
+        "w": 449.2,
+        "h": 28,
+        "zh": "ϕ(m + 1) − ϕ(m) = Θ_g(x_q, x_k, 1) + θ_q − θ_k。由于右端是与 m 无关的常数，当输入取连续整数时，ϕ(m) 构成等差数列："
+      },
+      {
+        "text": "where θ, γ ∈ R are constants and θ is non-zero. To summarize our solutions from Equations (27) to (30):",
+        "x": 71.6,
+        "y": 380.6,
+        "w": 418.6,
+        "h": 10,
+        "zh": "其中 θ、γ ∈ R 为常数，且 θ 不为零。把式 (27) 到式 (30) 的解汇总如下："
+      },
+      {
+        "text": "Note that we do not apply any constrains to fq and fk of Equation (22), thus fq(xm, 0) and fk(xn, 0) are left to choose freely. To make our results comparable to Equation (3), we define:",
+        "x": 72,
+        "y": 304.7,
+        "w": 468,
+        "h": 20.9,
+        "zh": "注意，式 (22) 中的 f_q 和 f_k 没有被施加任何约束，因此 f_q(x_m, 0) 和 f_k(x_n, 0) 可以自由选取。为了让结果能与式 (3) 对照，我们定义："
+      },
+      {
+        "text": "q = fq(xm, 0) = Wqxn, k = fk(xn, 0) = Wkxn. Then, we simply set γ = 0 in Equation (31) of the final solution:",
+        "x": 71.7,
+        "y": 254.7,
+        "w": 286.8,
+        "h": 42,
+        "zh": "q = f_q(x_m, 0) = W_q x_n，k = f_k(x_n, 0) = W_k x_n。然后在最终解的式 (31) 里直接令 γ = 0："
+      },
+      {
+        "text": "Computational efficient realization of rotary matrix multiplication",
+        "x": 101.9,
+        "y": 195.4,
+        "w": 281.9,
+        "h": 10,
+        "zh": "旋转矩阵乘法的高效实现"
+      },
+      {
+        "text": "Taking the advantage of the sparsity of RΘ,m in Equation (15), a more computational efficient realization of a multiplication of RΘ and x ∈ R is:",
+        "x": 71.7,
+        "y": 159.4,
+        "w": 468.3,
+        "h": 26,
+        "zh": "利用式 (15) 中 R_{Θ,m} 的稀疏性，R_Θ 与 x ∈ R 相乘可以写成计算上更高效的形式："
+      }
+    ],
+    "8": [
+      {
+        "text": "We can group entries of vectors q = Wqxm and k = Wkxn in pairs, and the inner product of RoPE in Equation (16) can be written as a complex number multiplication.",
+        "x": 71.5,
+        "y": 469.5,
+        "w": 469.1,
+        "h": 20.9,
+        "zh": "可以把向量 q = W_q x_m 与 k = W_k x_n 的分量两两配对，式 (16) 里 RoPE 的内积就可以写成复数乘法。"
+      },
+      {
+        "text": "q[2i:2i+1]k[2i:2i+1]e (RΘ,mWqxm) (RΘ,nWkxn) = Re",
+        "x": 153.8,
+        "y": 429.1,
+        "w": 264.5,
+        "h": 12.4,
+        "zh": ""
+      },
+      {
+        "text": "Denote hi = q[2i:2i+1]k[2i:2i+1] and Sj = Pj−1 ei(m−n)θi, and let h",
+        "x": 72,
+        "y": 389.6,
+        "w": 468,
+        "h": 24.8,
+        "zh": "记 h_i = q[2i:2i+1] k[2i:2i+1]，S_j = P_{j−1} e^{i(m−n)θ_i}，并令 h"
+      },
+      {
+        "text": "= 0 and S = 0, we can rewrite the summation using Abel transformation",
+        "x": 193.4,
+        "y": 389.6,
+        "w": 295.6,
+        "h": 10,
+        "zh": "= 0，且 S = 0，就可以用 Abel 变换把这个求和改写"
+      },
+      {
+        "text": "i=1 |Si| decay with the relative distance m − n increases by setting θi = 10000 Note that the value of d/2 shown in Figure (2).",
+        "x": 72,
+        "y": 168.3,
+        "w": 432.9,
+        "h": 23,
+        "zh": "从 i = 1 起，|S_i| 随相对距离 m − n 增大而衰减，此时取 θ_i = 10000。注意图 (2) 中给出的是 d/2 的取值。"
+      },
+      {
+        "text": "We evaluate the proposed RoFormer on various NLP tasks as follows. We validate the performance of the proposed solution on machine translation task Section (4.1). Then, we compare our RoPE implementation with BERTDevlin et al. [2019] during the pre-training stage in Section (4.2). Based on the pre-trained model, in Section (4.3), we further carry out evaluations across different downstream tasks from GLUE benchmarksSingh et al. [2018]. In Addition, we conduct experiments using the proposed RoPE with the linear attention of PerFormer Choromanski et al. [2020] in",
+        "x": 71.5,
+        "y": 72,
+        "w": 468.6,
+        "h": 53.6,
+        "zh": "我们按下面的方式，在多项 NLP 任务上评估所提出的 RoFormer。第 (4.1) 节在机器翻译任务上检验这一方案的表现。第 (4.2) 节在预训练阶段，把我们的 RoPE 实现与 BERT（Devlin 等人 [2019]）作比较。在预训练模型的基础上，第 (4.3) 节进一步在 GLUE 基准（Singh 等人 [2018]）的不同下游任务上做评估。此外，我们还把所提出的 RoPE 与 Performer（Choromanski 等人 [2020]）的线性注意力结合起来做实验，见"
+      }
+    ],
+    "9": [
+      {
+        "text": "Table 1: The proposed RoFormer gives better BLEU scores compared to its baseline alternative Vaswani et al. [2017]",
+        "x": 71.7,
+        "y": 713.2,
+        "w": 468.3,
+        "h": 10,
+        "zh": "表 1：与基线对照 Vaswani 等人 [2017] 相比，所提出的 RoFormer 得到更高的 BLEU"
+      },
+      {
+        "text": "on the WMT 2014 English-to-German translation taskBojar et al. [2014].",
+        "x": 72,
+        "y": 702.3,
+        "w": 291.9,
+        "h": 10,
+        "zh": "在 WMT 2014 英译德任务上（Bojar 等人 [2014]）。"
+      },
+      {
+        "text": "Section (4.4). By the end, additional tests on Chinese data are included in Section (4.5). All the experiments were run",
+        "x": 72,
+        "y": 617.3,
+        "w": 468,
+        "h": 10,
+        "zh": "第 (4.4) 节。最后，第 (4.5) 节补充了中文数据上的测试。全部实验都运行在"
+      },
+      {
+        "text": "We first demonstrate the performance of RoFormer on sequence-to-sequence language translation tasks.",
+        "x": 71.5,
+        "y": 560.8,
+        "w": 414.1,
+        "h": 10,
+        "zh": "我们首先展示 RoFormer 在序列到序列语言翻译任务上的表现。"
+      },
+      {
+        "text": "We choose the standard WMT 2014 English-German datasetBojar et al. [2014], which consists of approximately 4.5 million sentence pairs. We compare to the transformer-based baseline alternative Vaswani et al. [2017].",
+        "x": 71.5,
+        "y": 506.9,
+        "w": 468.5,
+        "h": 20.9,
+        "zh": "我们选用标准的 WMT 2014 英德数据集（Bojar 等人 [2014]），其中大约有 450 万个句对。对照的是基于 Transformer 的基线（Vaswani 等人 [2017]）。"
+      },
+      {
+        "text": "We carry out some modifications on self-attention layer of the baseline model Vaswani et al. [2017] to enable RoPE to its learning process. We replicate the setup for English-to-German translation with a vocabulary of 37k based on a joint source and target byte pair encoding(BPE)Sennrich et al. [2015]. During the evaluation, a single model is obtained by averaging the last 5 checkpoints. The result uses beam search with a beam size of 4 and length penalty 0.6. We implement the experiment in PyTorch in the fairseq toolkit (MIT License)Ott et al. [2019]. Our model is optimized with the Adam optimizer using β1 = 0.9, β2 = 0.98, learning rate is increased linearly from 1e − 7 to 5e − 4 and then decayed proportionally to the inverse square root of the step number. Label smoothing with 0.1 is also adopted. We report the BLEUPapineni et al. [2002] score on the test set as the final metric.",
+        "x": 71.5,
+        "y": 387.6,
+        "w": 468.5,
+        "h": 86.3,
+        "zh": "我们对基线模型（Vaswani 等人 [2017]）的 self-attention 层做了一些修改，使 RoPE 进入它的学习过程。我们复现英译德的设定：词表大小为 37k，由源语言和目标语言联合的 byte pair encoding（BPE，Sennrich 等人 [2015]）得到。评估时，对最后 5 个 checkpoint 取平均，得到一个模型。解码使用 beam search，beam size 为 4，长度惩罚为 0.6。实验用 PyTorch 实现，基于 fairseq 工具包（MIT 许可证，Ott 等人 [2019]）。模型用 Adam 优化，β1 = 0.9，β2 = 0.98；学习率从 1e−7 线性升到 5e−4，再按步数平方根的倒数成比例衰减。同时使用 0.1 的 label smoothing。最终指标是测试集上的 BLEU（Papineni 等人 [2002]）。"
+      },
+      {
+        "text": "We train the baseline model and our RoFormer under the same settings and report the results in Table (1). As can be seen, our model gives better BLEU scores compared to the baseline Transformer.",
+        "x": 71.5,
+        "y": 333.8,
+        "w": 468.5,
+        "h": 20.9,
+        "zh": "我们在相同设定下训练基线模型和 RoFormer，结果见表 (1)。可以看到，我们的模型比基线 Transformer 的 BLEU 更高。"
+      },
+      {
+        "text": "The second experiment is to validate the performance of our proposal in terms of learning contextual representations. To achieve this, we replace the original sinusoidal position encoding of BERT with our RoPE during the pre-training step.",
+        "x": 71.7,
+        "y": 277.2,
+        "w": 469.9,
+        "h": 20.9,
+        "zh": "第二个实验用来检验我们的方法在学习上下文表示方面的表现。为此，在预训练时，我们用 RoPE 替换 BERT 原来的正弦位置编码。"
+      },
+      {
+        "text": "We use the BookCorpus Zhu et al. [2015] and the Wikipedia Corpus Foundation [2021] from Huggingface Datasets library (Apache License 2.0) for pre-training. The corpus is further split into train and validation sets at 8:2 ratio. We use the masked language-modeling (MLM) loss values of the training process as an evaluation metric. The well-known BERT Devlin et al. [2019] is adopted as our baseline model. Note that we use bert-base-uncased in our experiments.",
+        "x": 71.5,
+        "y": 201.5,
+        "w": 468.5,
+        "h": 42.7,
+        "zh": "预训练使用 Huggingface Datasets 库（Apache License 2.0）里的 BookCorpus（Zhu 等人 [2015]）和 Wikipedia 语料（Foundation [2021]）。语料再按 8:2 分成训练集和验证集。评价指标用训练过程中的掩码语言建模（MLM）损失。基线采用常用的 BERT（Devlin 等人 [2019]）。实验里用的是 bert-base-uncased。"
+      },
+      {
+        "text": "For RoFormer, we replace the sinusoidal position encoding in the self-attention block of the baseline model with our proposed RoPE and realizes self-attention according to Equation (16). We train both BERT and RoFormer with batch size 64 and maximum sequence length of 512 for 100k steps. AdamW Loshchilov and Hutter [2017] is used as the",
+        "x": 72,
+        "y": 136.8,
+        "w": 468.2,
+        "h": 31.8,
+        "zh": "对 RoFormer，我们把基线模型 self-attention 块里的正弦位置编码换成所提出的 RoPE，并按式 (16) 实现 self-attention。BERT 和 RoFormer 都用 batch size 64、最大序列长度 512，训练 100k 步。优化器使用 AdamW（Loshchilov 与 Hutter [2017]），作为"
+      },
+      {
+        "text": "The MLM loss during pre-training is shown on the left plot of Figure (3). Compare to the vanilla BERT, RoFormer",
+        "x": 71.7,
+        "y": 82.9,
+        "w": 468.5,
+        "h": 10,
+        "zh": "预训练期间的 MLM 损失见图 (3) 的左图。与原始 BERT 相比，RoFormer"
+      }
+    ],
+    "10": [
+      {
+        "text": "Figure 3: Evaluation of RoPE in language modeling pre-training. Left: training loss for BERT and RoFormer. Right:",
+        "x": 72,
+        "y": 552.4,
+        "w": 469.4,
+        "h": 10,
+        "zh": "图 3：语言建模预训练中对 RoPE 的评估。左：BERT 与 RoFormer 的训练损失。右："
+      },
+      {
+        "text": "training loss for PerFormer with and without RoPE.",
+        "x": 72,
+        "y": 541.4,
+        "w": 206.3,
+        "h": 10,
+        "zh": "有 RoPE 和没有 RoPE 时 PerFormer 的训练损失。"
+      },
+      {
+        "text": "Consistent with the previous experiments, we fine-tune the weights of our pre-trained RoFormer across various GLUE tasks in order to evaluate its generalization ability on the downstream NLP tasks.",
+        "x": 72,
+        "y": 472.2,
+        "w": 468,
+        "h": 20.9,
+        "zh": "与前面的实验一致，我们在多项 GLUE 任务上微调预训练 RoFormer 的权重，用来评估它在下游 NLP 任务上的泛化能力。"
+      },
+      {
+        "text": "We look at several datasets from GLUE, i.e. MRPC Dolan and Brockett [2005], SST-2 Socher et al. [2013], QNLI Rajpurkar et al. [2016], STS-B Al-Natsheh [2017], QQP Chen et al. [2018b] and MNLI Williams et al. [2018]. We use F1-score for MRPC and QQP dataset, spearman correlation for STS-B, and accuracy for the remaining as the evaluation",
+        "x": 71.5,
+        "y": 401.7,
+        "w": 468.5,
+        "h": 31.8,
+        "zh": "我们看了 GLUE 里的几个数据集，即 MRPC（Dolan 与 Brockett [2005]）、SST-2（Socher 等人 [2013]）、QNLI（Rajpurkar 等人 [2016]）、STS-B（Al-Natsheh [2017]）、QQP（Chen 等人 [2018b]）和 MNLI（Williams 等人 [2018]）。MRPC 和 QQP 用 F1，STS-B 用 Spearman 相关系数，其余数据集用准确率，作为评价"
+      },
+      {
+        "text": "We use Huggingface Transformers library (Apache License 2.0)Wolf et al. [2020] to fine-tune each of the aforementioned downstream tasks for 3 epochs, with a maximum sequence length of 512, batch size of 32 and learning rates 2,3,4,5e-5. Following Devlin et al. [2019], we report the best-averaged results on the validation set.",
+        "x": 71.5,
+        "y": 320.3,
+        "w": 470.2,
+        "h": 31.8,
+        "zh": "我们用 Huggingface Transformers 库（Apache License 2.0，Wolf 等人 [2020]）对上述每个下游任务微调 3 个 epoch，最大序列长度为 512，batch size 为 32，学习率取 2、3、4、5e-5。按照 Devlin 等人 [2019] 的做法，我们报告验证集上最好的平均结果。"
+      },
+      {
+        "text": "Table 2: Comparing RoFormer and BERT by fine tuning on downstream GLEU tasks.",
+        "x": 134.6,
+        "y": 295.1,
+        "w": 342.8,
+        "h": 10,
+        "zh": "表 2：在下游 GLEU 任务上微调，比较 RoFormer 与 BERT。"
+      },
+      {
+        "text": "The evaluation results of the fine-tuning tasks are reported in Table (2). As can be seen, RoFormer can significantly outperform BERT in three out of six datasets, and the improvements are considerable.",
+        "x": 71.7,
+        "y": 167,
+        "w": 468.7,
+        "h": 20.9,
+        "zh": "微调任务的评估结果见表 (2)。可以看到，在六个数据集里的三个上，RoFormer 明显超过 BERT，而且提升相当可观。"
+      },
+      {
+        "text": "Performer Choromanski et al. [2020] introduces an alternative attention mechanism, linear attention, which is designed to avoid quadratic computation cost that scales with input sequence length. As discussed in Section (3.3), the proposed RoPE can be easily implemented in the PerFormer model to realize the relative position encoding while keeping its linearly scaled complexity in self-attention. We demonstrate its performance with the pre-training task of language",
+        "x": 72,
+        "y": 82.9,
+        "w": 468,
+        "h": 42.7,
+        "zh": "Performer（Choromanski 等人 [2020]）提出另一种注意力机制，即线性注意力，用来避开随输入序列长度呈二次增长的计算开销。如第 (3.3) 节所讨论的，所提出的 RoPE 可以方便地做进 PerFormer 模型，在 self-attention 保持线性复杂度的同时实现相对位置编码。我们用语言的预训练任务来展示它的表现"
+      }
+    ],
+    "11": [
+      {
+        "text": "We carry out tests on the Enwik8 dataset Mahoney [2006], which is from English Wikipedia that includes markup, special characters and text in other languages in addition to English text. We incorporate RoPE into the 12 layer char-based PerFormer with 768 dimensions and 12 heads . To better illustrate the efficacy of RoPE, we report the loss curves of the pre-training process with and without RoPE under the same settings, i.e., learning rate 1e-4, batch size",
+        "x": 71.5,
+        "y": 658.7,
+        "w": 469.7,
+        "h": 42.7,
+        "zh": "我们在 Enwik8 数据集（Mahoney [2006]）上做测试。这份数据来自英语维基百科，除英文正文外，还包含标记、特殊字符以及其他语言的文本。我们把 RoPE 加进一个 12 层、维度 768、12 个注意力头的字符级 PerFormer。为了更清楚地看出 RoPE 的效果，我们在相同设定下给出有 RoPE 和无 RoPE 的预训练损失曲线，设定包括学习率 1e-4、batch size"
+      },
+      {
+        "text": "128 and a fixed maximum sequence length of 1024, etc.",
+        "x": 71.3,
+        "y": 647.8,
+        "w": 222.6,
+        "h": 10,
+        "zh": "为 128，最大序列长度固定为 1024，等等。"
+      },
+      {
+        "text": "As shown on the right plot of Figure (3), substituting RoPE into Performer leads to rapid convergence and lower loss under the same amount of training steps. These improvements, in addition to the linear complexity, make Performer",
+        "x": 71.6,
+        "y": 595,
+        "w": 468.5,
+        "h": 20.9,
+        "zh": "如图 (3) 右图所示，把 RoPE 换进 Performer 之后，在同样的训练步数下收敛更快，损失也更低。这些改进，再加上线性复杂度，使 Performer"
+      },
+      {
+        "text": "In addition to experiments on English data, we show additional results on Chinese data. To validate the performance of RoFormer on long texts, we conduct experiments on long documents whose length exceeds 512 characters.",
+        "x": 72,
+        "y": 528.7,
+        "w": 468,
+        "h": 20.9,
+        "zh": "除了英文数据上的实验，我们还给出中文数据上的结果。为检验 RoFormer 在长文本上的表现，我们对长度超过 512 个字符的长文档做了实验。"
+      },
+      {
+        "text": "In these experiments, we carried out some modifications on WoBERT Su [2020] by replacing the absolute position embedding with our proposed RoPE. As a cross-comparison with other pre-trained Transformer-based models in Chinese, i.e. BERT Devlin et al. [2019], WoBERT Su [2020], and NEZHA Wei et al. [2019], we tabulate their",
+        "x": 72,
+        "y": 465.1,
+        "w": 468.2,
+        "h": 31.8,
+        "zh": "这些实验里，我们对 WoBERT（Su [2020]）做了修改，用所提出的 RoPE 替换绝对位置嵌入。为了和其他中文预训练 Transformer 模型作交叉比较，即 BERT（Devlin 等人 [2019]）、WoBERT（Su [2020]）和 NEZHA（Wei 等人 [2019]），我们把它们的"
+      },
+      {
+        "text": "tokenization level and position embedding information in Table (3).",
+        "x": 72,
+        "y": 454.2,
+        "w": 269.6,
+        "h": 10,
+        "zh": "分词层级和位置嵌入信息列在表 (3) 里。"
+      },
+      {
+        "text": "Table 3: Cross-comparison between our RoFormer and other pre-trained models on Chinese data. ’abs’ and ’rel’ annotates absolute position embedding and relative position embedding, respectively.",
+        "x": 71.7,
+        "y": 422.4,
+        "w": 470,
+        "h": 20.9,
+        "zh": "表 3：我们的 RoFormer 与其他中文预训练模型的交叉比较。abs 和 rel 分别标注绝对位置嵌入和相对位置嵌入。"
+      },
+      {
+        "text": "We pre-train RoFormer on approximately 34GB of data collected from Chinese Wikipedia, news and forums. The pre-training is carried out in multiple stages with changing batch size and maximum input sequence length in order to adapt the model to various scenarios. As shown in Table (4), the accuracy of RoFormer elevates with an increasing upper bound of sequence length, which demonstrates the ability of RoFormer in dealing with long texts. We claim that",
+        "x": 71.5,
+        "y": 288.8,
+        "w": 468.5,
+        "h": 42.7,
+        "zh": "我们用大约 34GB 的数据预训练 RoFormer，数据来自中文维基百科、新闻和论坛。预训练分多个阶段进行，并改变 batch size 和最大输入序列长度，以便让模型适应不同场景。如表 (4) 所示，序列长度的上界提高时，RoFormer 的准确率也随之提高，这说明 RoFormer 能够处理长文本。我们认为"
+      },
+      {
+        "text": "this is the attribute to the excellent generalizability of the proposed RoPE.",
+        "x": 72,
+        "y": 277.9,
+        "w": 294.1,
+        "h": 10,
+        "zh": "这要归功于所提出的 RoPE 很强的泛化能力。"
+      },
+      {
+        "text": "Table 4: Pre-training strategy of RoFormer on Chinese dataset. The training procedure is divided into various consecutive stages. In each stage, we train the model with a specific combination of maximum sequence length and batch size.",
+        "x": 71.7,
+        "y": 246.1,
+        "w": 468.3,
+        "h": 20.9,
+        "zh": "表 4：RoFormer 在中文数据集上的预训练策略。训练过程分成若干连续阶段。每个阶段用一组特定的最大序列长度和 batch size 来训练模型。"
+      },
+      {
+        "text": "We choose Chinese AI and Law 2019 Similar Case Matching (CAIL2019-SCM)Xiao et al. [2019] dataset to illustrate the ability of RoFormer in dealing with long texts, i.e., semantic text matching. CAIL2019-SCM contains 8964 triplets",
+        "x": 71.5,
+        "y": 91.1,
+        "w": 468.5,
+        "h": 20.9,
+        "zh": "我们选用 2019 中国人工智能与法律相似案例匹配数据集（CAIL2019-SCM，Xiao 等人 [2019]），用来说明 RoFormer 处理长文本的能力，任务是语义文本匹配。CAIL2019-SCM 包含 8964 个三元组"
+      },
+      {
+        "text": "For this experiment, we adopt code (MIT License) from https://github.com/lucidrains/performer-pytorch",
+        "x": 88.1,
+        "y": 72,
+        "w": 424.6,
+        "h": 9,
+        "zh": "本实验采用的代码（MIT 许可证）来自 https://github.com/lucidrains/performer-pytorch"
+      }
+    ],
+    "12": [
+      {
+        "text": "of cases published by the Supreme People’s Court of China. The input triplet, denoted as (A, B and C), are fact descriptions of three cases. The task is to predict whether the pair (A, B) is closer than (A, C) under a predefined similarity measure. Note that existing methods mostly cannot perform significantly on CAIL2019-SCM dataset due to the length of documents (i.e., mostly more than 512 characters). We split train, validation and test sets based on the well-known ratio 6:2:2.",
+        "x": 71.6,
+        "y": 666.4,
+        "w": 468.4,
+        "h": 53.6,
+        "zh": "这些案例由中国最高人民法院公布。输入三元组记为 (A, B 和 C)，是三个案件的事实描述。任务是在预先给定的相似度度量下，预测配对 (A, B) 是否比 (A, C) 更接近。需要注意，由于文档较长（大多超过 512 个字符），已有方法在 CAIL2019-SCM 上大多难以取得明显效果。我们按常见的 6:2:2 比例划分训练集、验证集和测试集。"
+      },
+      {
+        "text": "We apply the pre-trained RoFormer model to CAIL2019-SCM with different input lengths. The model is compared with the pre-trained BERT and WoBERT model on the same pre-training data, as shown in Table (5). With short text cut-offs, i.e., 512, the result from RoFormer is comparable to WoBERT and is slightly better than the BERT implementation. However, when increasing the maximum input text length to 1024, RoFormer outperforms WoBERT by an absolute improvement of 1.5%.",
+        "x": 71.5,
+        "y": 581.2,
+        "w": 470.2,
+        "h": 53.6,
+        "zh": "我们把预训练的 RoFormer 用到 CAIL2019-SCM 上，并尝试不同的输入长度。如表 (5) 所示，它与使用同一批预训练数据得到的 BERT 和 WoBERT 进行比较。在短文本截断、也就是 512 时，RoFormer 的结果与 WoBERT 相当，并略好于这里的 BERT。把最大输入文本长度提高到 1024 之后，RoFormer 比 WoBERT 绝对高出 1.5%。"
+      },
+      {
+        "text": "Table 5: Experiment results on CAIL2019-SCM task. Numbers in the first column denote the maximum cut-off sequence length. The results are presented in terms of percent accuracy.",
+        "x": 71.7,
+        "y": 549.7,
+        "w": 468.3,
+        "h": 20.9,
+        "zh": "表 5：CAIL2019-SCM 任务上的实验结果。第一列的数字表示最大截断序列长度。结果以准确率的百分比给出。"
+      },
+      {
+        "text": "Although we provide theoretical groundings as well as promising experimental justifications, our method is limited by",
+        "x": 71.6,
+        "y": 427.7,
+        "w": 468.7,
+        "h": 10,
+        "zh": "尽管已经给出了理论依据，实验上也有不错的支持，我们的方法仍然受限于"
+      },
+      {
+        "text": "• Despite the fact that we mathematically format the relative position relations as rotations under 2D sub-spaces, there lacks of thorough explanations on why it converges faster than baseline models that incorporates other position encoding strategies. • Although we have proved that our model has favourable property of long-term decay for intern-token products, Section (3.3), which is similar to the existing position encoding mechanisms, our model shows superior performance on long texts than peer models, we have not come up with a faithful explanation.",
+        "x": 99.4,
+        "y": 338.4,
+        "w": 441.8,
+        "h": 68.3,
+        "zh": "• 尽管在数学上把相对位置关系写成了二维子空间里的旋转，但对于它为什么比采用其他位置编码的基线模型收敛更快，仍然缺少充分的解释。• 尽管已经证明，模型对 token 间的乘积具有长程衰减这一有利性质（第 (3.3) 节），这一点与已有的位置编码机制类似；而模型在长文本上又优于同类模型，对此我们还没有一个可靠的解释。"
+      },
+      {
+        "text": "Our proposed RoFormer is built upon the Transformer-based infrastructure, which requires hardware resources for pre-training purpose.",
+        "x": 72,
+        "y": 307.5,
+        "w": 468.2,
+        "h": 20.9,
+        "zh": "我们提出的 RoFormer 建立在基于 Transformer 的框架之上，预训练需要相应的硬件资源。"
+      },
+      {
+        "text": "In this work, we proposed a new position embedding method that incorporates explicit relative position dependency in self-attention to enhance the performance of transformer architectures. Our theoretical analysis indicates that relative position can be naturally formulated using vector production in self-attention, with absolution position information being encoded through a rotation matrix. In addition, we mathematically illustrated the advantageous properties of the proposed method when applied to the Transformer. Finally, experiments on both English and Chinese benchmark datasets demonstrate that our method encourages faster convergence in pre-training. The experimental results also show that our proposed RoFormer can achieve better performance on long texts task.",
+        "x": 72,
+        "y": 190.8,
+        "w": 468.4,
+        "h": 75.4,
+        "zh": "本文提出一种新的位置嵌入方法，在 self-attention 中纳入显式的相对位置依赖，以提升 Transformer 结构的表现。理论分析表明，相对位置可以自然地写成 self-attention 里的向量乘积，绝对位置信息则通过旋转矩阵来编码。此外，我们从数学上说明了该方法用到 Transformer 上时的有利性质。最后，英文和中文基准上的实验表明，该方法能让预训练收敛更快。实验结果还表明，所提出的 RoFormer 在长文本任务上可以取得更好的表现。"
+      },
+      {
+        "text": "Jonas Gehring, Michael Auli, David Grangier, Denis Yarats, and Yann N Dauphin. Convolutional sequence to sequence learning. In International Conference on Machine Learning, pages 1243–1252. PMLR, 2017. Md. Amirul Islam, Sen Jia, and Neil D. B. Bruce. How much position information do convolutional neural networks encode? ArXiv, abs/2001.08248, 2020. Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, L ukasz Kaiser, and Illia Polosukhin.",
+        "x": 72,
+        "y": 82.9,
+        "w": 469.2,
+        "h": 72.1,
+        "zh": "Jonas Gehring、Michael Auli、David Grangier、Denis Yarats、Yann N. Dauphin。卷积序列到序列学习。载于 International Conference on Machine Learning，第 1243–1252 页。PMLR，2017。Md. Amirul Islam、Sen Jia、Neil D. B. Bruce。卷积神经网络编码了多少位置信息？arXiv，abs/2001.08248，2020。Ashish Vaswani、Noam Shazeer、Niki Parmar、Jakob Uszkoreit、Llion Jones、Aidan N. Gomez、Łukasz Kaiser、Illia Polosukhin。"
+      },
+      {
+        "text": "In I. Guyon, U. V. Luxburg, S. Bengio, H. Wallach, R. Fergus, S. Vishwanathan, and R. Garnett, editors, Advances in Neural Information Processing Systems,",
+        "x": 82,
+        "y": 72,
+        "w": 459.3,
+        "h": 20.9,
+        "zh": "载于 I. Guyon、U. V. Luxburg、S. Bengio、H. Wallach、R. Fergus、S. Vishwanathan、R. Garnett 编，《神经信息处理系统进展》，"
+      }
+    ],
+    "13": [
+      {
+        "text": "URL https://proceedings.neurips.cc/paper/2017/file/ 3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf. J. Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. Bert: Pre-training of deep bidirectional transformers for language understanding. In NAACL-HLT, 2019. A. Radford, Jeffrey Wu, R. Child, David Luan, Dario Amodei, and Ilya Sutskever. Language models are unsupervised multitask learners. 2019. Chulhee Yun, Srinadh Bhojanapalli, Ankit Singh Rawat, Sashank Reddi, and Sanjiv Kumar. Are transformers universal approximators of sequence-to-sequence functions? In International Conference on Learning Representations, 2020. URL https://openreview.net/forum?id=ByxRM0Ntvr. Zhenzhong Lan, Mingda Chen, Sebastian Goodman, Kevin Gimpel, Piyush Sharma, and Radu Soricut. Albert: A lite bert for self-supervised learning of language representations. In International Conference on Learning Representations, 2020. URL https://openreview.net/forum?id=H1eA7AEtvS. Kevin Clark, Minh-Thang Luong, Quoc V. Le, and Christopher D. Manning. ELECTRA: Pre-training text encoders as discriminators rather than generators. In ICLR, 2020. URL https://openreview.net/pdf?id=r1xMH1BtvB. A. Radford and Karthik Narasimhan. Improving language understanding by generative pre-training. 2018. Ankur P. Parikh, Oscar Täckström, Dipanjan Das, and Jakob Uszkoreit. A decomposable attention model for natural language inference. In EMNLP, 2016. Peter Shaw, Jakob Uszkoreit, and Ashish Vaswani. Self-attention with relative position representations. In NAACL-HLT,",
+        "x": 72,
+        "y": 496.3,
+        "w": 469.7,
+        "h": 223.7,
+        "zh": "URL https://proceedings.neurips.cc/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf。J. Devlin、Ming-Wei Chang、Kenton Lee、Kristina Toutanova。BERT：面向语言理解的深度双向 Transformer 预训练。载于 NAACL-HLT，2019。A. Radford、Jeffrey Wu、R. Child、David Luan、Dario Amodei、Ilya Sutskever。语言模型是无监督的多任务学习者。2019。Chulhee Yun、Srinadh Bhojanapalli、Ankit Singh Rawat、Sashank Reddi、Sanjiv Kumar。Transformer 是序列到序列函数的通用逼近器吗？载于 International Conference on Learning Representations，2020。URL https://openreview.net/forum?id=ByxRM0Ntvr。Zhenzhong Lan、Mingda Chen、Sebastian Goodman、Kevin Gimpel、Piyush Sharma、Radu Soricut。ALBERT：用于语言表示自监督学习的轻量 BERT。载于 International Conference on Learning Representations，2020。URL https://openreview.net/forum?id=H1eA7AEtvS。Kevin Clark、Minh-Thang Luong、Quoc V. Le、Christopher D. Manning。ELECTRA：把文本编码器预训练成判别器而不是生成器。载于 ICLR，2020。URL https://openreview.net/pdf?id=r1xMH1BtvB。A. Radford、Karthik Narasimhan。通过生成式预训练改进语言理解。2018。Ankur P. Parikh、Oscar Täckström、Dipanjan Das、Jakob Uszkoreit。用于自然语言推理的可分解注意力模型。载于 EMNLP，2016。Peter Shaw、Jakob Uszkoreit、Ashish Vaswani。带相对位置表示的 self-attention。载于 NAACL-HLT，"
+      },
+      {
+        "text": "volume 30. Curran Associates, Inc., 2017.",
+        "x": 81.7,
+        "y": 710,
+        "w": 180,
+        "h": 10,
+        "zh": "第 30 卷。Curran Associates, Inc.，2017。"
+      },
+      {
+        "text": "Cheng-Zhi Anna Huang, Ashish Vaswani, Jakob Uszkoreit, Noam Shazeer, I. Simon, C. Hawthorne, Andrew M. Dai, M. Hoffman, M. Dinculescu, and D. Eck. Music transformer. arXiv: Learning, 2018. Zihang Dai, Z. Yang, Yiming Yang, J. Carbonell, Quoc V. Le, and R. Salakhutdinov. Transformer-xl: Attentive language models beyond a fixed-length context. In ACL, 2019. Z. Yang, Zihang Dai, Yiming Yang, J. Carbonell, R. Salakhutdinov, and Quoc V. Le. Xlnet: Generalized autoregressive pretraining for language understanding. In NeurIPS, 2019. Colin Raffel, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael Matena, Yanqi Zhou, W. Li, and Peter J. Liu. Exploring the limits of transfer learning with a unified text-to-text transformer. J. Mach. Learn. Res., 21:",
+        "x": 72,
+        "y": 383.9,
+        "w": 469.4,
+        "h": 96.9,
+        "zh": "Cheng-Zhi Anna Huang、Ashish Vaswani、Jakob Uszkoreit、Noam Shazeer、I. Simon、C. Hawthorne、Andrew M. Dai、M. Hoffman、M. Dinculescu、D. Eck。Music Transformer。arXiv: Learning，2018。Zihang Dai、Z. Yang、Yiming Yang、J. Carbonell、Quoc V. Le、R. Salakhutdinov。Transformer-XL：超越固定长度上下文的注意力语言模型。载于 ACL，2019。Z. Yang、Zihang Dai、Yiming Yang、J. Carbonell、R. Salakhutdinov、Quoc V. Le。XLNet：面向语言理解的广义自回归预训练。载于 NeurIPS，2019。Colin Raffel、Noam Shazeer、Adam Roberts、Katherine Lee、Sharan Narang、Michael Matena、Yanqi Zhou、W. Li、Peter J. Liu。用统一的文本到文本 Transformer 探索迁移学习的极限。J. Mach. Learn. Res.，21："
+      },
+      {
+        "text": "Guolin Ke, Di He, and T. Liu. Rethinking positional encoding in language pre-training. ArXiv, abs/2006.15595, 2020. Pengcheng He, Xiaodong Liu, Jianfeng Gao, and Weizhu Chen. Deberta: Decoding-enhanced bert with disentangled attention. ArXiv, abs/2006.03654, 2020. Zhiheng Huang, Davis Liang, Peng Xu, and Bing Xiang. Improve transformer models with better relative position embeddings. In Findings of the Association for Computational Linguistics: EMNLP 2020, pages 3327–3335, Online, November 2020. Association for Computational Linguistics. doi:10.18653/v1/2020.findings-emnlp.298. URL https://www.aclweb.org/anthology/2020.findings-emnlp.298. Xuanqing Liu, Hsiang-Fu Yu, Inderjit S. Dhillon, and Cho-Jui Hsieh. Learning to encode position for transformer with continuous dynamical model. In Proceedings of the 37th International Conference on Machine Learning, ICML 2020, 13-18 July 2020, Virtual Event, volume 119 of Proceedings of Machine Learning Research, pages 6327–6335. PMLR, 2020. URL http://proceedings.mlr.press/v119/liu20n.html. Tian Qi Chen, Yulia Rubanova, Jesse Bettencourt, and David Duvenaud. Neural ordinary differential equations. In Samy Bengio, Hanna M. Wallach, Hugo Larochelle, Kristen Grauman, Nicolò Cesa-Bianchi, and Roman Garnett, editors, Advances in Neural Information Processing Systems 31: Annual Conference on Neural Information Processing Systems 2018, NeurIPS 2018, December 3-8, 2018, Montréal, Canada, pages 6572–6583, 2018a. URL https: //proceedings.neurips.cc/paper/2018/hash/69386f6bb1dfed68692a24c8686939b9-Abstract.html. Benyou Wang, Donghao Zhao, Christina Lioma, Qiuchi Li, Peng Zhang, and Jakob Grue Simonsen. Encoding word order in complex embeddings.",
+        "x": 72,
+        "y": 155.4,
+        "w": 470.6,
+        "h": 213.1,
+        "zh": "Guolin Ke、Di He、T. Liu。重新思考语言预训练中的位置编码。arXiv，abs/2006.15595，2020。Pengcheng He、Xiaodong Liu、Jianfeng Gao、Weizhu Chen。DeBERTa：带解耦注意力的解码增强 BERT。arXiv，abs/2006.03654，2020。Zhiheng Huang、Davis Liang、Peng Xu、Bing Xiang。用更好的相对位置嵌入改进 Transformer。载于《计算语言学协会论文集：EMNLP 2020 发现》，第 3327–3335 页，线上，2020 年 11 月。计算语言学协会。doi:10.18653/v1/2020.findings-emnlp.298。URL https://www.aclweb.org/anthology/2020.findings-emnlp.298。Xuanqing Liu、Hsiang-Fu Yu、Inderjit S. Dhillon、Cho-Jui Hsieh。用连续动力系统模型为 Transformer 学习位置编码。载于第 37 届国际机器学习大会论文集，ICML 2020，2020 年 7 月 13–18 日，线上，Proceedings of Machine Learning Research 第 119 卷，第 6327–6335 页。PMLR，2020。URL http://proceedings.mlr.press/v119/liu20n.html。Tian Qi Chen、Yulia Rubanova、Jesse Bettencourt、David Duvenaud。神经常微分方程。载于 Samy Bengio、Hanna M. Wallach、Hugo Larochelle、Kristen Grauman、Nicolò Cesa-Bianchi、Roman Garnett 编，《神经信息处理系统进展 31》：神经信息处理系统 2018 年会，NeurIPS 2018，2018 年 12 月 3–8 日，加拿大蒙特利尔，第 6572–6583 页，2018a。URL https://proceedings.neurips.cc/paper/2018/hash/69386f6bb1dfed68692a24c8686939b9-Abstract.html。Benyou Wang、Donghao Zhao、Christina Lioma、Qiuchi Li、Peng Zhang、Jakob Grue Simonsen。在复数嵌入中编码词序。"
+      },
+      {
+        "text": "In International Conference on Learning Representations, 2020. https://openreview.net/forum?id=Hke-WTVtwr. Angelos Katharopoulos, Apoorv Vyas, Nikolaos Pappas, and François Fleuret. Transformers are rnns: Fast autoregressive transformers with linear attention. In International Conference on Machine Learning, pages 5156–5165. PMLR,",
+        "x": 72,
+        "y": 119.2,
+        "w": 469.7,
+        "h": 46.2,
+        "zh": "载于 International Conference on Learning Representations，2020。https://openreview.net/forum?id=Hke-WTVtwr。Angelos Katharopoulos、Apoorv Vyas、Nikolaos Pappas、François Fleuret。Transformer 就是 RNN：带线性注意力的快速自回归 Transformer。载于 International Conference on Machine Learning，第 5156–5165 页。PMLR，"
+      },
+      {
+        "text": "Zhuoran Shen, Mingyuan Zhang, Haiyu Zhao, Shuai Yi, and Hongsheng Li. Efficient attention: Attention with linear complexities. In Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision, pages",
+        "x": 72,
+        "y": 82.9,
+        "w": 468.2,
+        "h": 20.9,
+        "zh": "Zhuoran Shen、Mingyuan Zhang、Haiyu Zhao、Shuai Yi、Hongsheng Li。高效注意力：线性复杂度的注意力。载于 IEEE/CVF 冬季计算机视觉应用会议论文集，第"
+      }
+    ],
+    "14": [
+      {
+        "text": "Amapreet Singh, Julian Michael, Felix Hill, Omer Levy, and Samuel Bowman. Glue: A multi-task benchmark and",
+        "x": 72,
+        "y": 710,
+        "w": 468,
+        "h": 10,
+        "zh": "Amapreet Singh、Julian Michael、Felix Hill、Omer Levy、Samuel Bowman。GLUE：一个多任务基准与"
+      },
+      {
+        "text": "analysis platform for natural language understanding. 04 2018.",
+        "x": 82,
+        "y": 699.1,
+        "w": 251.5,
+        "h": 10,
+        "zh": "自然语言理解的分析平台。2018 年 4 月。"
+      },
+      {
+        "text": "Krzysztof Choromanski, Valerii Likhosherstov, David Dohan, Xingyou Song, A. Gane, Tamás Sarlós, Peter Hawkins, J. Davis, Afroz Mohiuddin, Lukasz Kaiser, David Belanger, Lucy J. Colwell, and Adrian Weller. Rethinking attention",
+        "x": 72,
+        "y": 673.3,
+        "w": 469.2,
+        "h": 20.9,
+        "zh": "Krzysztof Choromanski、Valerii Likhosherstov、David Dohan、Xingyou Song、A. Gane、Tamás Sarlós、Peter Hawkins、J. Davis、Afroz Mohiuddin、Lukasz Kaiser、David Belanger、Lucy J. Colwell、Adrian Weller。重新思考注意力"
+      },
+      {
+        "text": "with performers. ArXiv, abs/2009.14794, 2020.",
+        "x": 81.6,
+        "y": 662.4,
+        "w": 189,
+        "h": 10,
+        "zh": "借助 Performer。arXiv，abs/2009.14794，2020。"
+      },
+      {
+        "text": "Ondrej Bojar, Christian Buck, Christian Federmann, Barry Haddow, Philipp Koehn, Johannes Leveling, Christof Monz, Pavel Pecina, Matt Post, Herve Saint-Amand, Radu Soricut, Lucia Specia, and Alevs Tamchyna. Findings of the 2014 workshop on statistical machine translation. pages 12–58, 06 2014. doi:10.3115/v1/W14-3302. Rico Sennrich, Barry Haddow, and Alexandra Birch. Neural machine translation of rare words with subword units. 08",
+        "x": 72,
+        "y": 610.8,
+        "w": 469.2,
+        "h": 46.7,
+        "zh": "Ondrej Bojar、Christian Buck、Christian Federmann、Barry Haddow、Philipp Koehn、Johannes Leveling、Christof Monz、Pavel Pecina、Matt Post、Herve Saint-Amand、Radu Soricut、Lucia Specia、Alevs Tamchyna。2014 年统计机器翻译研讨会的结果。第 12–58 页，2014 年 6 月。doi:10.3115/v1/W14-3302。Rico Sennrich、Barry Haddow、Alexandra Birch。用子词单元做稀有词的神经机器翻译。8 月"
+      },
+      {
+        "text": "Myle Ott, Sergey Edunov, Alexei Baevski, Angela Fan, Sam Gross, Nathan Ng, David Grangier, and Michael Auli. fairseq: A fast, extensible toolkit for sequence modeling. pages 48–53, 01 2019. doi:10.18653/v1/N19-4009. Kishore Papineni, Salim Roukos, Todd Ward, and Wei Jing Zhu. Bleu: a method for automatic evaluation of machine",
+        "x": 72,
+        "y": 559.2,
+        "w": 469.7,
+        "h": 35.8,
+        "zh": "Myle Ott、Sergey Edunov、Alexei Baevski、Angela Fan、Sam Gross、Nathan Ng、David Grangier、Michael Auli。fairseq：一个快速、可扩展的序列建模工具包。第 48–53 页，2019 年 1 月。doi:10.18653/v1/N19-4009。Kishore Papineni、Salim Roukos、Todd Ward、Wei Jing Zhu。BLEU：一种自动评价机器"
+      },
+      {
+        "text": "translation. 10 2002. doi:10.3115/1073083.1073135.",
+        "x": 82,
+        "y": 548.3,
+        "w": 212,
+        "h": 10,
+        "zh": "翻译的方法。2002 年 10 月。doi:10.3115/1073083.1073135。"
+      },
+      {
+        "text": "Yukun Zhu, Ryan Kiros, Richard Zemel, Ruslan Salakhutdinov, Raquel Urtasun, Antonio Torralba, and Sanja Fidler. Aligning books and movies: Towards story-like visual explanations by watching movies and reading books. In arXiv",
+        "x": 72,
+        "y": 522.5,
+        "w": 469.7,
+        "h": 20.9,
+        "zh": "Yukun Zhu、Ryan Kiros、Richard Zemel、Ruslan Salakhutdinov、Raquel Urtasun、Antonio Torralba、Sanja Fidler。对齐书籍与电影：通过看电影、读书，走向像故事一样的视觉解释。载于 arXiv"
+      },
+      {
+        "text": "Wikimedia Foundation. Wikimedia downloads, https://dumps.wikimedia.org, 2021. Ilya Loshchilov and Frank Hutter. Decoupled Weight Decay Regularization. arXiv e-prints, art. arXiv:1711.05101,",
+        "x": 72,
+        "y": 481.8,
+        "w": 469.2,
+        "h": 24.9,
+        "zh": "Wikimedia Foundation。维基媒体下载，https://dumps.wikimedia.org，2021。Ilya Loshchilov、Frank Hutter。解耦的权重衰减正则。arXiv e-prints，art. arXiv:1711.05101，"
+      },
+      {
+        "text": "William B. Dolan and Chris Brockett. Automatically constructing a corpus of sentential paraphrases. In Proceedings of the Third International Workshop on Paraphrasing (IWP2005), 2005. URL https://www.aclweb.org/",
+        "x": 72,
+        "y": 445.1,
+        "w": 469.7,
+        "h": 20.9,
+        "zh": "William B. Dolan、Chris Brockett。自动构建句子释义语料库。载于第三届国际释义研讨会（IWP2005）论文集，2005。URL https://www.aclweb.org/"
+      },
+      {
+        "text": "Richard Socher, A. Perelygin, J.Y. Wu, J. Chuang, C.D. Manning, A.Y. Ng, and C. Potts. Recursive deep models for semantic compositionality over a sentiment treebank. EMNLP, 1631:1631–1642, 01 2013. Pranav Rajpurkar, Jian Zhang, Konstantin Lopyrev, and Percy Liang. Squad: 100,000+ questions for machine",
+        "x": 72,
+        "y": 393.5,
+        "w": 468.2,
+        "h": 35.8,
+        "zh": "Richard Socher、A. Perelygin、J.Y. Wu、J. Chuang、C.D. Manning、A.Y. Ng、C. Potts。面向情感树库语义组合性的递归深度模型。EMNLP，1631:1631–1642，2013 年 1 月。Pranav Rajpurkar、Jian Zhang、Konstantin Lopyrev、Percy Liang。SQuAD：面向机器的 100,000 多个问题，用于"
+      },
+      {
+        "text": "comprehension of text. pages 2383–2392, 01 2016. doi:10.18653/v1/D16-1264.",
+        "x": 82,
+        "y": 382.6,
+        "w": 319.7,
+        "h": 10,
+        "zh": "文本理解。第 2383–2392 页，2016 年 1 月。doi:10.18653/v1/D16-1264。"
+      },
+      {
+        "text": "Hussein Al-Natsheh. Udl at semeval-2017 task 1: Semantic textual similarity estimation of english sentence pairs using",
+        "x": 72,
+        "y": 367.7,
+        "w": 468,
+        "h": 10,
+        "zh": "Hussein Al-Natsheh。UDL 参加 SemEval-2017 任务 1：估计英语句对的语义文本相似度，使用"
+      },
+      {
+        "text": "regression model over pairwise features. 08 2017.",
+        "x": 82,
+        "y": 356.8,
+        "w": 199.3,
+        "h": 10,
+        "zh": "成对特征上的回归模型。2017 年 8 月。"
+      },
+      {
+        "text": "Z. Chen, H. Zhang, and L. Zhang, X.and Zhao. Quora question pairs., 2018b. URL https://www.kaggle.com/c/",
+        "x": 72,
+        "y": 341.9,
+        "w": 469,
+        "h": 10,
+        "zh": "Z. Chen、H. Zhang、L. Zhang、X. Zhao。Quora 问题对。2018b。URL https://www.kaggle.com/c/"
+      },
+      {
+        "text": "Adina Williams, Nikita Nangia, and Samuel Bowman. A broad-coverage challenge corpus for sentence understanding",
+        "x": 72,
+        "y": 316.1,
+        "w": 468,
+        "h": 10,
+        "zh": "Adina Williams、Nikita Nangia、Samuel Bowman。一个覆盖面广的句子理解挑战语料"
+      },
+      {
+        "text": "through inference. pages 1112–1122, 01 2018. doi:10.18653/v1/N18-1101.",
+        "x": 82,
+        "y": 305.2,
+        "w": 301.3,
+        "h": 10,
+        "zh": "通过推理。第 1112–1122 页，2018 年 1 月。doi:10.18653/v1/N18-1101。"
+      },
+      {
+        "text": "Thomas Wolf, Lysandre Debut, Victor Sanh, Julien Chaumond, Clement Delangue, Anthony Moi, Pierric Cistac, Tim Rault, Rémi Louf, Morgan Funtowicz, Joe Davison, Sam Shleifer, Patrick von Platen, Clara Ma, Yacine Jernite, Julien Plu, Canwen Xu, Teven Le Scao, Sylvain Gugger, Mariama Drame, Quentin Lhoest, and Alexander M. Rush. Transformers: State-of-the-art natural language processing. In Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing: System Demonstrations, pages 38–45, Online, October 2020. Association for Computational Linguistics. URL https://www.aclweb.org/anthology/2020.emnlp-demos.6. Matt Mahoney. Large text compression benchmark, http://www.mattmahoney.net/dc/text.html, 2006. Jianlin Su. Wobert: Word-based chinese bert model - zhuiyiai. Technical report, 2020. URL https://github.com/",
+        "x": 72,
+        "y": 205.9,
+        "w": 469.7,
+        "h": 94.3,
+        "zh": "Thomas Wolf、Lysandre Debut、Victor Sanh、Julien Chaumond、Clement Delangue、Anthony Moi、Pierric Cistac、Tim Rault、Rémi Louf、Morgan Funtowicz、Joe Davison、Sam Shleifer、Patrick von Platen、Clara Ma、Yacine Jernite、Julien Plu、Canwen Xu、Teven Le Scao、Sylvain Gugger、Mariama Drame、Quentin Lhoest、Alexander M. Rush。Transformers：最先进的自然语言处理。载于 2020 年自然语言处理经验方法会议：系统演示，第 38–45 页，线上，2020 年 10 月。计算语言学协会。URL https://www.aclweb.org/anthology/2020.emnlp-demos.6。Matt Mahoney。大规模文本压缩基准，http://www.mattmahoney.net/dc/text.html，2006。Jianlin Su。WoBERT：基于词的中文 BERT 模型——zhuiyiai。技术报告，2020。URL https://github.com/"
+      },
+      {
+        "text": "Victor Junqiu Wei, Xiaozhe Ren, Xiaoguang Li, Wenyong Huang, Yi Liao, Yasheng Wang, Jiashu Lin, Xin Jiang, Xiao Chen, and Qun Liu. Nezha: Neural contextualized representation for chinese language understanding. 08 2019. Chaojun Xiao, Haoxi Zhong, Zhipeng Guo, Cunchao Tu, Zhiyuan Liu, Maosong Sun, Tianyang Zhang, Xianpei Han, Zhen hu, Heng Wang, and Jianfeng Xu. Cail2019-scm: A dataset of similar case matching in legal domain. 11 2019.",
+        "x": 72,
+        "y": 143.4,
+        "w": 469.7,
+        "h": 46.7,
+        "zh": "Victor Junqiu Wei、Xiaozhe Ren、Xiaoguang Li、Wenyong Huang、Yi Liao、Yasheng Wang、Jiashu Lin、Xin Jiang、Xiao Chen、Qun Liu。NEZHA：面向中文语言理解的神经上下文化表示。2019 年 8 月。Chaojun Xiao、Haoxi Zhong、Zhipeng Guo、Cunchao Tu、Zhiyuan Liu、Maosong Sun、Tianyang Zhang、Xianpei Han、Zhen Hu、Heng Wang、Jianfeng Xu。CAIL2019-SCM：法律领域的相似案例匹配数据集。2019 年 11 月。"
+      }
+    ]
+  }
+}

@@ -1,0 +1,1861 @@
+{
+  "id": "2402.09353",
+  "title": "2402.09353",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "DoRA: Weight-Decomposed Low-Rank Adaptation",
+        "x": 141.4,
+        "y": 691.1,
+        "w": 314.1,
+        "h": 14.3,
+        "zh": "DoRA：权重分解的低秩适配"
+      },
+      {
+        "text": "Among the widely used parameter-efficient finetuning (PEFT) methods, LoRA and its variants have gained considerable popularity because of avoiding additional inference costs. However, there still often exists an accuracy gap between these methods and full fine-tuning (FT). In this work, we first introduce a novel weight decomposition analysis to investigate the inherent differences between FT and LoRA. Aiming to resemble the learning capacity of FT from the findings, we propose Weight-Decomposed LowRank Adaptation (DoRA). DoRA decomposes the pre-trained weight into two components, magnitude and direction, for fine-tuning, specifically employing LoRA for directional updates to ef-",
+        "x": 75,
+        "y": 412.5,
+        "w": 196.2,
+        "h": 177.3,
+        "zh": "在常用的参数高效微调（PEFT）方法里，LoRA 及其变体很受欢迎，因为它们不会增加额外的推理开销。不过，这些方法与全参微调（FT）之间往往仍有精度差距。本文首先提出一种新的权重分解分析，用来考察 FT 和 LoRA 的内在差异。为了让学习能力接近分析里看到的 FT，我们提出权重分解低秩适配（Weight-Decomposed Low-Rank Adaptation，DoRA）。DoRA 把预训练权重分成幅度和方向两个分量来微调，方向上的更新专门用 LoRA，以便高效……"
+      },
+      {
+        "text": "Figure 1. An overview of our proposed DoRA, which decomposes ficiently minimize the number of trainable pa-",
+        "x": 75.4,
+        "y": 400.6,
+        "w": 466.1,
+        "h": 12.1,
+        "zh": ""
+      },
+      {
+        "text": "the pre-trained weight into magnitude and direction components By employing DoRA, we enhance",
+        "x": 122,
+        "y": 388.6,
+        "w": 419.4,
+        "h": 13.1,
+        "zh": "把预训练权重分成幅度和方向两个分量。借助 DoRA，我们提升"
+      },
+      {
+        "text": "for fine-tuning, especially with LoRA to efficiently update the both the learning capacity and training stabil-",
+        "x": 75.4,
+        "y": 376.7,
+        "w": 466.1,
+        "h": 14.1,
+        "zh": ""
+      },
+      {
+        "text": "direction component. Note that || · ||c denotes the vector-wise ity of LoRA while avoiding any additional in-",
+        "x": 75.4,
+        "y": 364.7,
+        "w": 466.1,
+        "h": 15.1,
+        "zh": ""
+      },
+      {
+        "text": "norm of a matrix across each column vector. DoRA consistently outperforms LoRA on fine-tuning LLaMA, LLaVA, and VL-BART on various downstream tasks, such as commonsense reasoning, visual instruc-",
+        "x": 75.4,
+        "y": 316.9,
+        "w": 391.3,
+        "h": 52,
+        "zh": "矩阵沿每个列向量计算的范数。DoRA 在微调 LLaMA、LLaVA 和 VL-BART 时，在多种下游任务上稳定优于 LoRA，例如常识推理、视觉指令……"
+      },
+      {
+        "text": "employed, involving the retraining of all model parameters. tion tuning, and image/video-text understanding.",
+        "x": 75.4,
+        "y": 304.9,
+        "w": 467.8,
+        "h": 21.1,
+        "zh": "做法是把模型的全部参数重新训练一遍。指令微调，以及图像/视频-文本理解。"
+      },
+      {
+        "text": "Nevertheless, as the size of models and datasets expand Code is available at https://github.com/",
+        "x": 75.4,
+        "y": 293,
+        "w": 466.1,
+        "h": 21.1,
+        "zh": "不过，随着模型和数据集的规模不断扩大。代码见 https://github.com/"
+      },
+      {
+        "text": "in scale, the expense associated with fine-tuning the entire model becomes prohibitively large. To address this issue, parameter-efficient fine-tuning (PEFT) methods (Houlsby et al., 2019) have been introduced to fine-",
+        "x": 307.1,
+        "y": 250.3,
+        "w": 236,
+        "h": 51.8,
+        "zh": "规模一大，微调整个模型的开销就高得难以承受。为了解决这个问题，参数高效微调（PEFT）方法（Houlsby 等人，2019）被提出，用来微调……"
+      },
+      {
+        "text": "Models that are pre-trained with extensive general domain",
+        "x": 55.4,
+        "y": 227.5,
+        "w": 234,
+        "h": 10,
+        "zh": "在大量通用领域数据上预训练的模型"
+      },
+      {
+        "text": "parameters. Among these, LoRA (Hu et al., 2022), which datasets have demonstrated remarkable generalization abil-",
+        "x": 55.4,
+        "y": 215.5,
+        "w": 486,
+        "h": 20.8,
+        "zh": ""
+      },
+      {
+        "text": "does not change the model architecture, has become notably ities, significantly benefiting a wide array of applications,",
+        "x": 55.4,
+        "y": 203.5,
+        "w": 486.3,
+        "h": 20.8,
+        "zh": ""
+      },
+      {
+        "text": "popular for its simplicity and efficacy. Nevertheless, there from natural language processing (NLP) tasks (Qin et al.,",
+        "x": 55.4,
+        "y": 191.6,
+        "w": 486,
+        "h": 20.8,
+        "zh": ""
+      },
+      {
+        "text": "is still a capacity gap between LoRA and FT, which is often 2023; Taori et al., 2023) to multi-modal tasks (Li et al., 2022;",
+        "x": 55.4,
+        "y": 179.6,
+        "w": 486,
+        "h": 20.8,
+        "zh": ""
+      },
+      {
+        "text": "attributed to the limited number of trainable parameters Liu et al., 2023a). To tailor these general models for spe-",
+        "x": 55.4,
+        "y": 167.7,
+        "w": 486,
+        "h": 20.8,
+        "zh": ""
+      },
+      {
+        "text": "without further exploration of other underlying causes (Hu cific downstream tasks, full fine-tuning (FT) is commonly",
+        "x": 55.4,
+        "y": 155.7,
+        "w": 486,
+        "h": 20.8,
+        "zh": ""
+      },
+      {
+        "text": "et al., 2022; Kopiczko et al., 2024). Drawing on Weight Normalization (Salimans & Kingma, NVIDIA HKUST. Correspondence to: Shih-Yang Liu <shihyangl@nvidia.com, sliuau@connect.ust.hk>, Min-Hung Chen",
+        "x": 55.4,
+        "y": 126.8,
+        "w": 487.2,
+        "h": 37.9,
+        "zh": ""
+      },
+      {
+        "text": "2016), which achieves faster convergence via improving the <minhungc@nvidia.com>.",
+        "x": 55.4,
+        "y": 116.8,
+        "w": 486,
+        "h": 17.9,
+        "zh": ""
+      },
+      {
+        "text": "conditioning of the gradient with weight reparameterization, we introduce a novel weight decomposition analysis that iniProceedings of the 41st International Conference on Machine",
+        "x": 55.2,
+        "y": 96.9,
+        "w": 487.9,
+        "h": 25.9,
+        "zh": ""
+      },
+      {
+        "text": "tially reparameterizes model weights into magnitude and diLearning, Vienna, Austria. PMLR 235, 2024. Copyright 2024 by",
+        "x": 55.2,
+        "y": 86.9,
+        "w": 487.9,
+        "h": 12,
+        "zh": ""
+      },
+      {
+        "text": "rectional components, subsequently examining the changes",
+        "x": 307.4,
+        "y": 76.9,
+        "w": 234,
+        "h": 10,
+        "zh": "方向分量，随后考察其中的变化"
+      }
+    ],
+    "2": [
+      {
+        "text": "DoRA: Weight-Decomposed Low-Rank Adaptation",
+        "x": 200.3,
+        "y": 737.9,
+        "w": 196.3,
+        "h": 9,
+        "zh": "DoRA：权重分解的低秩适配"
+      },
+      {
+        "text": "in magnitude and direction introduced by LoRA and FT. Our analysis reveals that LoRA and FT exhibit markedly distinct patterns of updates, leading us to surmise that these variations mirror the learning capability of each method. Inspired by our findings, we propose Weight-Decomposed Low-Rank Adaptation (DoRA), which begins by decomposing the pre-trained weight into its magnitude and directional components, then fine-tunes both. Given the substantial size of the directional component in terms of parameters, we exploit LoRA for the directional adaptation to enable efficient fine-tuning, as illustrated in Figure.1. Moreover, by showing a learning behavior similar to FT both empirically and mathematically, suggesting a learning capacity closely resembling FT, we have validated DoRA across a wide variety of tasks, from NLP to Vision-Language, and over various backbones, including LLM and LVLM. The experimental results show that DoRA consistently outperforms LoRA without sacrificing inference efficiency, such as commonsense reasoning (+3.7/+1.0 on LLaMA-7B/13B, +2.9 on LLaMA2-7B, and +4.4 on LLaMA3-8B), visual instruction tuning (+0.6 on LLaVA-7B), and image/video-text understanding (+0.9/+1.9 on VL-BART). The summary of our contributions is as follows:",
+        "x": 54,
+        "y": 446,
+        "w": 237.2,
+        "h": 279,
+        "zh": "也就是 LoRA 和 FT 在幅度与方向上带来的变化。分析表明，LoRA 和 FT 的更新模式明显不同，我们由此推测，这些差别反映了两种方法各自的学习能力。受这一发现启发，我们提出权重分解低秩适配（DoRA）：先把预训练权重分解成幅度分量和方向分量，再对两者都做微调。方向分量的参数量很大，因此方向上的适配交给 LoRA，以便高效微调，如图 1 所示。此外，DoRA 在实验和数学上都表现出与 FT 相近的学习行为，说明它的学习能力接近 FT。我们在从 NLP 到视觉-语言的多种任务上、并在 LLM 和 LVLM 等不同骨干上验证了 DoRA。实验表明，DoRA 稳定优于 LoRA，同时不牺牲推理效率。例如常识推理（LLaMA-7B/13B 上 +3.7/+1.0，LLaMA2-7B 上 +2.9，LLaMA3-8B 上 +4.4）、视觉指令微调（LLaVA-7B 上 +0.6），以及图像/视频-文本理解（VL-BART 上 +0.9/+1.9）。本文贡献概括如下："
+      },
+      {
+        "text": "add extra soft tokens (prompts) to the initial input and focus solely on fine-tuning these trainable vectors, as seen in works like (Lester et al., 2021; Razdaibiedina et al., 2023; Wang et al., 2023). However, these approaches typically face challenges due to their sensitivity to initialization, affecting their overall effectiveness. These first two categories, whether altering the model’s input or architecture, result in increased inference latency compared to the baseline model. LoRA (Hu et al., 2022) and its variants are among the third category of PEFT, notable for not adding any extra inference burden. These methods apply low-rank matrices to approximate weight changes during fine-tuning and can merge with pre-trained weights prior to inference. For example, (Zhang et al., 2023) employs SVD decomposition and prunes less significant singular values for more efficient updates. (Hyeon-Woo et al., 2022) focuses on low-rank Hadamard product for federated learning. (Qiu et al., 2023; Liu et al., 2023b) exploit orthogonal factorization in finetuning diffusion models. (Renduchintala et al., 2023) uses weight tying to further reduce the trainable parameters. (Yeh et al., 2023) introduces a unified LoRA family framework for Stable diffusion. (Ponti et al., 2022) chooses different combinations of LoRAs from the inventory with a routing function for different tasks. (Kopiczko et al., 2024) implements learnable scaling vectors to adjust a shared pair of frozen random matrices across layers. Our research also falls within this third category, and we validate the efficacy of our proposed method alongside LoRA and its variants through comprehensive experimentation.",
+        "x": 307,
+        "y": 374.3,
+        "w": 236.2,
+        "h": 350.7,
+        "zh": "在原始输入上添加额外的软 token（即 prompt），并且只微调这些可训练向量，如 Lester 等人（2021）、Razdaibiedina 等人（2023）、Wang 等人（2023）。不过，这类方法通常对初始化很敏感，因而影响整体效果。前两类方法无论是改模型输入还是改结构，都会比基线模型增加推理延迟。LoRA（Hu 等人，2022）及其变体属于 PEFT 的第三类，特点是不增加任何额外推理负担。它们用低秩矩阵近似微调时的权重变化，并且可以在推理前与预训练权重合并。例如，Zhang 等人（2023）用 SVD 分解，并剪掉不太重要的奇异值，使更新更高效。Hyeon-Woo 等人（2022）在联邦学习里关注低秩 Hadamard 积。Qiu 等人（2023）、Liu 等人（2023b）在微调扩散模型时使用正交分解。Renduchintala 等人（2023）用权重绑定进一步减少可训练参数。Yeh 等人（2023）为 Stable Diffusion 提出统一的 LoRA 家族框架。Ponti 等人（2022）用路由函数，按任务从库存里选择不同的 LoRA 组合。Kopiczko 等人（2024）用可学习的缩放向量，去调节跨层共享的一对冻结随机矩阵。我们的工作也属于这第三类，并通过充分实验，把所提方法与 LoRA 及其变体放在一起验证效果。"
+      },
+      {
+        "text": "• We introduce DoRA, a novel PEFT method that incorporates weight decomposition, achieving a learning capacity closely resembling FT without any additional inference latency over LoRA.",
+        "x": 66.9,
+        "y": 383.4,
+        "w": 224.2,
+        "h": 45.8,
+        "zh": "• 我们提出 DoRA，一种带权重分解的新 PEFT 方法。它的学习能力接近 FT，相对 LoRA 不增加任何推理延迟。"
+      },
+      {
+        "text": "• We introduce a novel weight decomposition analysis to uncover the fundamental differences in the learning patterns of FT and different PEFT methods.",
+        "x": 66.9,
+        "y": 337.8,
+        "w": 222.5,
+        "h": 33.9,
+        "zh": "• 我们提出一种新的权重分解分析，用来揭示 FT 与不同 PEFT 方法在学习模式上的根本差别。"
+      },
+      {
+        "text": "• DoRA consistently surpasses LoRA on various tasks, from NLP to Vision-Language benchmarks and across various backbones, including LLM and LVLM.",
+        "x": 66.9,
+        "y": 292.3,
+        "w": 223.8,
+        "h": 33.9,
+        "zh": "• DoRA 在多种任务上稳定超过 LoRA，从 NLP 到视觉-语言基准，骨干也覆盖 LLM 和 LVLM。"
+      },
+      {
+        "text": "Building upon the hypothesis that updates made during the fine-tuning exhibit a low “intrinsic rank”, LoRA (Hu et al., 2022) proposes using the product of two low-rank matrices to update the pre-trained weights incrementally. For a pre-trained weight matrix W0 ∈ Rd×k, LoRA models the weight update ∆W ∈ R",
+        "x": 307.1,
+        "y": 247.9,
+        "w": 236,
+        "h": 69.7,
+        "zh": "基于微调时的更新具有很低的“内在秩”这一假设，LoRA（Hu 等人，2022）提出用两个低秩矩阵的乘积，对预训练权重做增量更新。对预训练权重矩阵 W0 ∈ R^{d×k}，LoRA 把权重更新 ∆W ∈ R 建模为"
+      },
+      {
+        "text": "utilizing a low-rank decomposition, expressed as BA, where B ∈ R represent two low-rank matrices, with r ≪ min(d, k). Consequently, the fine-tuned weight W can be represented as:",
+        "x": 307.4,
+        "y": 212,
+        "w": 235.7,
+        "h": 45.8,
+        "zh": "低秩分解，写成 BA。其中 B ∈ R 表示两个低秩矩阵，且 r ≪ min(d, k)。于是，微调后的权重 W 可以写成："
+      },
+      {
+        "text": "Parameter-Efficient Fine-Tuning (PEFT) methods are designed to reduce the high expense of fine-tuning large-scale models. They achieve this by training a relatively small subset of parameters, compared to the total number of parameters, for adapting to downstream tasks. Existing PEFT methods can be divided into three categories. The first category is referred to as Adapter-based methods, which involve introducing additional trainable modules into the original frozen backbone, such as (Houlsby et al., 2019; He et al., 2021; Karimi Mahabadi et al., 2021; mahabadi et al., 2021). For example, (Houlsby et al., 2019) proposes adding linear modules in sequence to the existing layer, whereas (He et al., 2021) advocates for integrating these modules in parallel with the original layer to enhance performance. The second category is Prompt-based methods. These methods",
+        "x": 55.1,
+        "y": 76.9,
+        "w": 236,
+        "h": 177.3,
+        "zh": "参数高效微调（PEFT）用来降低大规模模型微调的高昂开销。做法是只训练相对总参数量很小的一部分参数，来适配下游任务。现有 PEFT 方法可以分成三类。第一类是基于 Adapter 的方法，在原来冻结的骨干里插入额外的可训练模块，例如 Houlsby 等人（2019）、He 等人（2021）、Karimi Mahabadi 等人（2021）、mahabadi 等人（2021）。举例来说，Houlsby 等人（2019）提出把线性模块串接在已有层之后，而 He 等人（2021）主张把这些模块与原层并联，以提升效果。第二类是基于 Prompt 的方法。这些方法"
+      },
+      {
+        "text": "W′ = W0 + ∆W = W0 + BA where W0 remains static during the fine-tuning process, and the underlined parameters are being trained. The matrix A is initialized with uniform Kaiming distribution (He et al., 2015), while B is initially set to zero, resulting in ∆W = BA being zero at the start of training. Notably, this decomposition of ∆W can be substituted with other LoRA variants, such as VeRA (Kopiczko et al., 2024). Additionally, based on Eq. (1), we can merge the learned ∆W with the pre-trained weight W0 and obtain W in advance",
+        "x": 306.6,
+        "y": 75.4,
+        "w": 236.5,
+        "h": 127.9,
+        "zh": "W′ = W0 + ∆W = W0 + BA。其中 W0 在微调过程中保持不变，带下划线的参数才参与训练。矩阵 A 用均匀的 Kaiming 分布初始化（He 等人，2015），B 初始设为 0，因此训练开始时 ∆W = BA 为 0。值得注意的是，∆W 的这种分解可以换成其他 LoRA 变体，例如 VeRA（Kopiczko 等人，2024）。另外，根据式 (1)，可以把学到的 ∆W 与预训练权重 W0 合并，提前得到 W"
+      }
+    ],
+    "3": [
+      {
+        "text": "DoRA: Weight-Decomposed Low-Rank Adaptation",
+        "x": 200.3,
+        "y": 737.9,
+        "w": 196.3,
+        "h": 9,
+        "zh": "DoRA：权重分解的低秩适配"
+      },
+      {
+        "text": "of deployment, and given that both W and W0 both fall within the dimensionality of R",
+        "x": 55.1,
+        "y": 703,
+        "w": 234.4,
+        "h": 21.9,
+        "zh": "在部署时，并且由于 W 和 W0 的维度都落在 R"
+      },
+      {
+        "text": "t training step respectively, with cos(·, ·) being the cosine similarity function. MFT and M0 are the n their respective magnitude vectors, while VFT and W0 are columns in VFT and W0. The magnitude and directional differences between WLoRA and W0 are calculated similarly, as per Eq. (3) and Eq. (4). We select checkpoints from four different training steps for analysis, comprising three intermediate steps and the final checkpoint from both FT and LoRA, and we perform weight decomposition analysis on each of these checkpoints to determine the ∆M and ∆D throughout different layers. Analysis Results: Figure 2 (a) and (b) illustrate the alterations in the query weight matrix of FT and LoRA, with each point representing a (∆D , ∆M ) pair from query weight matrices across different layers and training steps. Similarly, Figure 7 in the appendix displays the value weight matrix modifications. It is noticeable that LoRA exhibits a consistent positive slope trend across all the intermediate steps, signifying a proportional relationship between the changes in direction and magnitude. In contrast, the FT displays a more varied learning pattern with a relatively negative slope. This distinction between FT and LoRA likely mirrors their respective learning capability. While LoRA tends to either increase or decrease the magnitude and direction updates proportionally, it lacks the nuanced capability for more subtle adjustments. Specifically, LoRA does not show proficiency in executing slight directional changes alongside more significant magnitude alterations, or vice versa, a feature more characteristic of the FT method. We suspect that such limitation of LoRA might stem from the challenge of concurrent learning both magnitude and directional adaptation, which could be overly complex for LoRA. Consequently, in this work, we aim to propose a variant of LoRA that exhibits a learning pattern more closely resembling that of FT, and can improve the learning capacity over",
+        "x": 306.6,
+        "y": 302.5,
+        "w": 236.6,
+        "h": 422.4,
+        "zh": "分别为相应的训练步，其中 cos(·, ·) 是余弦相似度函数。MFT 和 M0 是各自的幅度向量，而 VFT 和 W0 是 VFT 与 W0 中的列。WLoRA 与 W0 之间的幅度差和方向差按式 (3) 和式 (4) 以同样方式计算。我们从四个不同训练步取出检查点做分析，包括 FT 和 LoRA 各自的三个中间步以及最终检查点，并对每个检查点做权重分解，以得到各层上的 ∆M 和 ∆D。分析结果：图 2 (a) 和 (b) 给出 FT 与 LoRA 的 query 权重矩阵如何变化，每个点是不同层、不同训练步上 query 权重矩阵的一个 (∆D, ∆M) 对。附录图 7 同样展示了 value 权重矩阵的变化。可以看到，LoRA 在所有中间步上都呈现稳定的正斜率，说明方向变化与幅度变化成比例。相比之下，FT 的学习模式更多样，斜率相对为负。FT 与 LoRA 的这一差别，很可能反映了它们各自的学习能力。LoRA 倾向于按比例同时增大或减小幅度更新和方向更新，缺少做更细微调的能力。具体来说，LoRA 并不擅长在方向只做轻微变化的同时大幅改变幅度，或者反过来，而这更像是 FT 的特点。我们怀疑，LoRA 的这一限制来自同时学习幅度适配和方向适配，对 LoRA 来说可能过于复杂。因此，本文希望提出一种 LoRA 变体，其学习模式更接近 FT，并能够把学习能力提升到超过"
+      },
+      {
+        "text": ", LoRA and its related variants do not introduce any extra latency during the inference compared to the original model.",
+        "x": 55.2,
+        "y": 679.1,
+        "w": 235.9,
+        "h": 33.9,
+        "zh": "，LoRA 及其相关变体在推理时相对原模型不会引入任何额外延迟。"
+      },
+      {
+        "text": "The study presented in LoRA (Hu et al., 2022) suggests that LoRA can be considered a general approximation of full fine-tuning. By gradually increasing the rank r of LoRA to align with the rank of pre-trained weights, LoRA can attain a level of expressiveness akin to that of FT. Consequently, many previous studies have attributed the discrepancy in accuracy between LoRA and FT primarily to the limited number of trainable parameters, often without further analysis (Hu et al., 2022; Kopiczko et al., 2024). Drawing inspiration from Weight Normalization (Salimans & Kingma, 2016), which reparameterizes the weight matrix into magnitude and direction for accelerating optimization, we introduce an innovative weight decomposition analysis. Our analysis restructures the weight matrix into two separate components, magnitude and direction, to reveal the inherent differences in LoRA and FT learning patterns. Analysis Method: This analysis examines the updates in both magnitude and direction of the LoRA and FT weights relative to the pre-trained weights to reveal the fundamental differences in the learning behaviors of both. The weight decomposition of W ∈ R",
+        "x": 55.1,
+        "y": 390.2,
+        "w": 236.1,
+        "h": 255,
+        "zh": "LoRA（Hu 等人，2022）中的研究表明，LoRA 可以看成全参微调的一种通用近似。只要把 LoRA 的秩 r 逐步提高到与预训练权重的秩相当，LoRA 就能达到与 FT 相近的表达能力。因此，许多先前工作把 LoRA 和 FT 的精度差主要归因于可训练参数数量有限，往往不再进一步分析（Hu 等人，2022；Kopiczko 等人，2024）。受 Weight Normalization（Salimans 与 Kingma，2016）启发——该方法把权重矩阵重参数化为幅度和方向以加速优化——我们提出一种新的权重分解分析。分析把权重矩阵重组成幅度和方向两个独立分量，以揭示 LoRA 与 FT 学习模式的内在差别。分析方法：这一分析考察 LoRA 权重和 FT 权重相对预训练权重在幅度与方向上的更新，从而揭示二者学习行为的根本差异。W ∈ R 的权重分解为"
+      },
+      {
+        "text": "is the magnitude vector, V ∈ R directional matrix, with || · ||c being the vector-wise norm of a matrix across each column. This decomposition ensures that each column of V /||V ||c remains a unit vector, and the corresponding scalar in m defines the magnitude of each",
+        "x": 55.4,
+        "y": 294.9,
+        "w": 234,
+        "h": 57.8,
+        "zh": "是幅度向量，V ∈ R 为方向矩阵，|| · ||c 表示矩阵按每一列计算的向量范数。这样分解可以保证 V/||V||c 的每一列仍是单位向量，m 中对应的标量则定义每一项的幅度。"
+      },
+      {
+        "text": "For our weight decomposition analysis, we select the VLBART model fine-tuned on four image-text tasks as outlined in (Sung et al., 2022) for a case study. Following (Sung et al., 2022), which applies LoRA only to the query/value weight matrix in the self-attention module. We decompose the pretrained weight W0, the full fine-tuned weight WFT, and the merged LoRA weight WLoRA of query/value weight matrix using Eq. (2). The magnitude and directional variations between W0 and WFT can be defined as follows:",
+        "x": 55.4,
+        "y": 167.9,
+        "w": 235.7,
+        "h": 107.1,
+        "zh": "做权重分解分析时，我们选在四项图像-文本任务上微调过的 VL-BART 作为案例，设定见 Sung 等人（2022）。沿用 Sung 等人（2022），LoRA 只加在自注意力模块的 query/value 权重矩阵上。我们用式 (2) 分解预训练权重 W0、全参微调权重 WFT，以及合并后的 LoRA 权重 WLoRA（均为 query/value 权重矩阵）。W0 与 WFT 之间的幅度变化和方向变化定义如下："
+      },
+      {
+        "text": "4.1. Weight-Decomposed Low-Rank Adaptation",
+        "x": 307.4,
+        "y": 242.6,
+        "w": 203.3,
+        "h": 10,
+        "zh": "4.1. 权重分解的低秩适配"
+      },
+      {
+        "text": "Drawing from the insights of our weight decomposition analysis, we introduce Weight-Decomposed Low-Rank Adaptation (DoRA). DoRA initially decomposes the pretrained weight into its magnitude and directional components and finetunes both of them. Because the directional component is large in terms of parameter numbers, we further decompose it with LoRA for efficient finetuning. Our intuitions are two-fold. Firstly, we believe that limiting LoRA to concentrate exclusively on directional adaptation while also allowing the magnitude component to be tunable simplifies the task compared to the original approach, where LoRA is required to learn adjustments in both mag-",
+        "x": 307.1,
+        "y": 86.5,
+        "w": 236,
+        "h": 147.4,
+        "zh": "基于权重分解分析的结论，我们提出权重分解低秩适配（DoRA）。DoRA 先把预训练权重分解成幅度分量和方向分量，再对两者都做微调。方向分量的参数量很大，因此我们再用 LoRA 分解它，以便高效微调。直觉有两点。第一，让 LoRA 只专注方向适配，同时允许幅度分量可训练，任务会比原来简单。原来的做法要求 LoRA 同时学习幅度和……"
+      },
+      {
+        "text": "Here, ∆MFT and and ∆DFT represent the magnitude difference and directional difference between W0 and WFT at",
+        "x": 55.4,
+        "y": 75.4,
+        "w": 235.7,
+        "h": 23.4,
+        "zh": "这里，∆MFT 和 ∆DFT 分别表示 W0 与 WFT 之间在该处的幅度差和方向差。"
+      }
+    ],
+    "4": [
+      {
+        "text": "DoRA: Weight-Decomposed Low-Rank Adaptation",
+        "x": 200.3,
+        "y": 737.9,
+        "w": 196.3,
+        "h": 9,
+        "zh": "DoRA：权重分解的低秩适配"
+      },
+      {
+        "text": "Figure 2. Magnitude and direction updates of (a) FT, (b) LoRA, and (c) DoRA of the query matrices across different layers and intermediate steps. Different markers represent matrices of different training steps and different colors represent the matrices of each layer.",
+        "x": 54.9,
+        "y": 578.8,
+        "w": 486.5,
+        "h": 19.9,
+        "zh": "图 2. FT (a)、LoRA (b) 和 DoRA (c) 在不同层、不同中间步上，query 矩阵的幅度更新与方向更新。不同标记表示不同训练步的矩阵，不同颜色表示各层的矩阵。"
+      },
+      {
+        "text": "nitude and direction. Secondly, the process of optimizing directional updates is made more stable through weight decomposition, which we delve into more thoroughly in Section.4.2. It is important to highlight that the main distinction between DoRA and weight normalization (Salimans & Kingma, 2016) lies in their training approaches. Weight normalization trains both components from scratch, making the method sensitive to different initializations. Conversely, DoRA avoids such initialization concerns since both components begin with pre-trained weights. We initialize DoRA with pre-trained weight W0 as outlined in Eq. (2), where m = ||W0||c and V = W0 after initialization. We then keep V frozen and m a trainable vector. The directional component is then updated through LoRA. DoRA can be formulated similar to Eq. (1) as:",
+        "x": 55.1,
+        "y": 379,
+        "w": 236,
+        "h": 177.3,
+        "zh": "幅度和方向。第二，借助权重分解，方向更新的优化会更稳定，这一点我们在第 4.2 节进一步讨论。需要强调的是，DoRA 与权重归一化（Salimans 与 Kingma，2016）的主要区别在训练方式。权重归一化从零开始训练两个分量，因此对初始化敏感。DoRA 则没有这种初始化问题，因为两个分量都从预训练权重出发。我们按式 (2) 用预训练权重 W0 初始化 DoRA，初始化后 m = ||W0||c，V = W0。随后冻结 V，并把 m 作为可训练向量。方向分量再通过 LoRA 更新。DoRA 可以写成与式 (1) 类似的形式："
+      },
+      {
+        "text": "and DoRA, and we found that both FT and DoRA exhibit negative correlation values of -0.62 and -0.31, respectively. In contrast, LoRA shows a positive correlation with a value of 0.83. In conclusion, the fact that DoRA demonstrates the ability to make only substantial directional adjustments with relatively minimal changes in magnitude or the reverse while showing learning patterns closer to FT’s signifies its superior learning capacity over LoRA.",
+        "x": 307.1,
+        "y": 462.7,
+        "w": 236.1,
+        "h": 93.6,
+        "zh": "以及 DoRA。我们发现 FT 和 DoRA 的相关系数分别为 -0.62 和 -0.31，都是负相关。相反，LoRA 呈正相关，数值为 0.83。总之，DoRA 能够只做大幅方向调整而幅度变化相对很小，或者反过来，同时学习模式更接近 FT，这说明它的学习能力优于 LoRA。"
+      },
+      {
+        "text": "In this section, we first derive the gradient of DoRA and illustrate how our proposed decomposition benefits the optimization of ∆V . Subsequently, we analyze from the gradient’s perspective to explicate the learning pattern of DoRA, which tends to have a negative slope. From Eq. (5), we can obtain the gradient of Loss L with respect to m and V = V + ∆V as:",
+        "x": 307.1,
+        "y": 341.2,
+        "w": 236,
+        "h": 87.7,
+        "zh": "本节先推导 DoRA 的梯度，说明所提出的分解如何有利于优化 ∆V。随后从梯度的角度解释 DoRA 的学习模式，它倾向于呈现负斜率。由式 (5)，可以得到损失 L 关于 m 以及 V = V + ∆V 的梯度："
+      },
+      {
+        "text": "where ∆V is the incremental directional update learned by multiplying two low-rank matrices B and A, and the underlined parameters denote the trainable parameters. The",
+        "x": 55.1,
+        "y": 310.1,
+        "w": 234.4,
+        "h": 33.9,
+        "zh": "其中 ∆V 是由两个低秩矩阵 B 和 A 相乘得到的增量方向更新，带下划线的参数表示可训练参数。"
+      },
+      {
+        "text": "are initialized in line with LoRA’s strategy to ensure that W′ equals W0 before the finetuning. Furthermore, DoRA can be merged with the pre-trained weight before inference, thereby not introducing any additional latency. We visualize the magnitude and directional differences of the query weight matrix between the merged DoRA weight and W0 in the same setting as for FT and LoRA in Figure 2 (c) and leave the visualization of the value weight matrix in the appendix. From the regression line for (∆D, ∆M) of both DoRA and FT, we reveal that in contrast to LoRA’s pattern, DoRA, and FT are characterized by a distinct negative slope. We reason that FT tends towards a negative slope because pre-trained weights already possess substantial knowledge suitable for various downstream tasks. Therefore, when provided with adequate learning capacity, having a larger magnitude or direction alteration alone is sufficient enough for downstream adaptation. We additionally compute the correlation between ∆D and ∆M for FT, LoRA,",
+        "x": 55,
+        "y": 76.9,
+        "w": 236.1,
+        "h": 231.1,
+        "zh": "初始化方式与 LoRA 一致，以保证微调开始前 W′ 等于 W0。此外，DoRA 可以在推理前与预训练权重合并，因此不引入任何额外延迟。我们在与 FT、LoRA 相同的设定下，把合并后的 DoRA 权重与 W0 在 query 权重矩阵上的幅度差和方向差画在图 2 (c)，value 权重矩阵的可视化放在附录。从 DoRA 和 FT 的 (∆D, ∆M) 回归线可以看到，与 LoRA 的模式相反，DoRA 和 FT 都有明显的负斜率。我们认为 FT 倾向负斜率，是因为预训练权重已经包含适合多种下游任务的大量知识。因此，只要学习能力足够，单独加大幅度改变或单独加大方向改变，就足以完成下游适配。我们还计算了 FT、LoRA 的 ∆D 与 ∆M 之间的相关，"
+      },
+      {
+        "text": "Eq. (6) reveals that the weight gradient ∇W′L is scaled by m/||V ||c and is projected away from the current weight matrix. These two effects contribute to aligning the gradient’s covariance matrix more closely with the identity matrix, which is advantageous for optimization (Salimans & Kingma, 2016). Additionally, given that V = V + ∆V , the gradient ∇V ′L is equivalent to ∇∆V L. Therefore, the optimization benefits derived from this decomposition are fully transferred to ∆V , enhancing the learning stability of",
+        "x": 307.1,
+        "y": 166.6,
+        "w": 236,
+        "h": 105.6,
+        "zh": "式 (6) 表明，权重梯度 ∇_{W′}L 被 m/||V||c 缩放，并被投影到远离当前权重矩阵的方向。这两种作用使梯度的协方差矩阵更接近单位矩阵，从而有利于优化（Salimans 与 Kingma，2016）。另外，由于 V′ = V + ∆V，梯度 ∇_{V′}L 等于 ∇_{∆V}L。因此，这一分解带来的优化好处会完全传递到 ∆V，从而提升……的学习稳定性"
+      },
+      {
+        "text": "We can gain further insight into the learning pattern of DoRA by referring to Eq. (7).",
+        "x": 307,
+        "y": 124.8,
+        "w": 234.5,
+        "h": 21.9,
+        "zh": "借助式 (7)，可以进一步理解 DoRA 的学习模式。"
+      },
+      {
+        "text": "In the subsequent discussion, we represent vectors using lower-case letters instead of the previous matrix form notation. = w + ∆w as the parameter update for a weight vector, where ∆w ∝ ∇w′L. In two hypothetical update",
+        "x": 307.2,
+        "y": 75.4,
+        "w": 235.9,
+        "h": 59.3,
+        "zh": "后面的讨论里，我们用小写字母表示向量，不再沿用前面的矩阵记号。= w + ∆w，作为某个权重向量的参数更新，其中 ∆w ∝ ∇_{w′}L。在两种假设的更新"
+      }
+    ],
+    "5": [
+      {
+        "text": "DoRA: Weight-Decomposed Low-Rank Adaptation",
+        "x": 200.3,
+        "y": 737.9,
+        "w": 196.3,
+        "h": 9,
+        "zh": "DoRA：权重分解的低秩适配"
+      },
+      {
+        "text": "scenarios, S1 and S2, S1 involves a smaller directional update (∆DS1), while S2 involves a larger one (∆DS2). Assuming ||∆wS1|| = ||∆wS2||, and at time 0, we have ∆v = 0 and v = v. From ∆DS1 < ∆DS2, it follows that |cos(∆wS1, w )| > |cos(∆wS2, w )|. Since ∆w ∝ ∇w′L, it implies |cos(∇w′ L, w )| > |cos(∇w′ L, w )|. From Sec 4.1, with v initialized as v0 and w time 0, we get |cos(∇w′L, w )| = |cos(∇w′L, v )| = |cos(∇w′L, v)|. Using the cosine similarity equation with",
+        "x": 54.6,
+        "y": 617.8,
+        "w": 236.6,
+        "h": 107.1,
+        "zh": "情形 S1 和 S2 中，S1 的方向更新较小（∆D_{S1}），S2 的方向更新较大（∆D_{S2}）。假设 ||∆w_{S1}|| = ||∆w_{S2}||，并且在时刻 0 有 ∆v = 0、v = v。由 ∆D_{S1} < ∆D_{S2}，可得 |cos(∆w_{S1}, w)| > |cos(∆w_{S2}, w)|。由于 ∆w ∝ ∇_{w′}L，于是 |cos(∇_{w′}L, w)| > |cos(∇_{w′}L, w)|。根据第 4.1 节，v 初始化为 v0，且在时刻 0 的 w，我们得到 |cos(∇_{w′}L, w)| = |cos(∇_{w′}L, v)| = |cos(∇_{w′}L, v)|。再用余弦相似度公式，结合"
+      },
+      {
+        "text": "the accuracy of DoRA with the modification remains unchanged for VL-BART and shows a negligible difference of only 0.2 compared to DoRA without the modification on LLaMA. For a comprehensive comparison of training memory usage and accuracy differences, please see Table 7 in the appendix. Consequently, all subsequent experiments with DoRA incorporate this adjustment.",
+        "x": 307.1,
+        "y": 643.2,
+        "w": 236,
+        "h": 81.7,
+        "zh": "加上这一改动后，DoRA 在 VL-BART 上的精度不变，在 LLaMA 上与未改动的 DoRA 相比只差 0.2，可以忽略。训练显存和精度差的完整对比见附录表 7。因此，后面所有 DoRA 实验都采用这一调整。"
+      },
+      {
+        "text": "We conduct a variety of experiments to showcase the efficacy of DoRA on various tasks including language, image, and video domains. Firstly, we evaluate DoRA against several Parameter-Efficient Fine-Tuning (PEFT) methods by fine-tuning LLaMA-7B/13B, LLaMA2-7B, and LLaMA3- 8B on commonsense reasoning tasks. Subsequently, we extend from single modality to multimodality. We compare DoRA with LoRA across multi-task image/video-text understanding tasks using VL-BART and visual instruction tuning with LLaVA-1.5-7B. Following this, we explore the compatibility of DoRA with LoRA and VeRA (Kopiczko et al., 2024) for instruction-tuning on LLaMA-7B and LLaMA2- 7B. Furthermore, we perform a series of ablation studies to illustrate that DoRA surpasses LoRA in performance, irrespective of the number of fine-tuning training samples and rank variations. Lastly, We analyze the tuning granularity of DoRA, and show that DoRA can achieve better accuracy than LoRA with fewer trainable parameters by selectively updating only the directional components of certain mod-",
+        "x": 307,
+        "y": 380.1,
+        "w": 236.1,
+        "h": 225.2,
+        "zh": "我们做了一系列实验，展示 DoRA 在语言、图像和视频任务上的效果。首先，在常识推理任务上微调 LLaMA-7B/13B、LLaMA2-7B 和 LLaMA3-8B，把 DoRA 与几种参数高效微调（PEFT）方法比较。随后从单模态扩展到多模态。我们在 VL-BART 的多任务图像/视频-文本理解上比较 DoRA 与 LoRA，并在 LLaVA-1.5-7B 的视觉指令微调上进行比较。接着，我们考察 DoRA 与 LoRA、VeRA（Kopiczko 等人，2024）在 LLaMA-7B 和 LLaMA2-7B 指令微调上的兼容性。此外，我们做了一组消融，说明无论微调样本量多少、秩如何变化，DoRA 的表现都超过 LoRA。最后，我们分析 DoRA 的微调粒度，表明只选择性更新某些模块的方向分量，DoRA 就能用更少的可训练参数取得比 LoRA 更高的精度。"
+      },
+      {
+        "text": "denote m∗ as the magnitude scalar of vector w′ then Eq. (7) w.r.t m∗ can be rewritten to:",
+        "x": 55.1,
+        "y": 542.8,
+        "w": 235,
+        "h": 24,
+        "zh": "把 m∗ 记为向量 w′ 的幅度标量，则式 (7) 关于 m∗ 可以改写成："
+      },
+      {
+        "text": "Given that ||∆wS1|| = ||∆wS2|| for S1 and S2, and ||∇S1L|| = ||∇S2L||. Therefore, with:",
+        "x": 55.4,
+        "y": 473.1,
+        "w": 234,
+        "h": 21.9,
+        "zh": "已知对 S1 和 S2 有 ||∆w_{S1}|| = ||∆w_{S2}||，并且 ||∇_{S1}L|| = ||∇_{S2}L||。因此，结合："
+      },
+      {
+        "text": "||∇w′ L|| · |cos(∇w′ L, v)| > ||∇w′ L|| · |cos(∇w′ L, v)|",
+        "x": 61,
+        "y": 449.3,
+        "w": 222.9,
+        "h": 12.4,
+        "zh": ""
+      },
+      {
+        "text": "it can be inferred that |∇m L| > |∇m L| which indicate that S1 has larger magnitude updates over S2 while having smaller directional alteration than that of S2. Our conclusion generally holds in practice, as evidenced by Figure 2 (c). Consequently, we have effectively shown how DoRA can be utilized to adjust the learning pattern, diverging from that of LoRA and aligning more closely with the pattern of FT.",
+        "x": 55.4,
+        "y": 356.2,
+        "w": 235.7,
+        "h": 81.7,
+        "zh": "可以推出 |∇_m L| > |∇_m L|，这表明 S1 的幅度更新大于 S2，同时方向改变小于 S2。这一结论在实践中大体成立，图 2 (c) 可以作证。由此，我们说明了如何用 DoRA 调整学习模式，使它离开 LoRA 的模式，并更接近 FT。"
+      },
+      {
+        "text": "We evaluate DoRA against LoRA and several baseline methods which include Prompt learning (Prefix) (Li & Liang, 2021), Series adapter (Series) (Houlsby et al., 2019), and Parallel adapter (Parallel) (He et al., 2021) on LLaMA- 7B/13B (Touvron et al., 2023) for commonsense reasoning tasks. We also include ChatGPT’s accuracy obtained with gpt-3.5-turbo API using a zero-shot Chain of Thought (OpenAI, 2023; Wei et al., 2022). The commonsense reasoning tasks comprise 8 sub-tasks, each with a predefined training and testing set. We follow the setting of (Hu et al., 2023) and amalgamate the training datasets from all 8 tasks to create the final training dataset and conduct evaluations on the individual testing dataset for each task. To ensure a fair comparison, we initially fine-tuned models with DoRA following the LoRA configuration, maintaining the same rank while adjusting only the learning rate. The marginal increase of 0.01% in the number of trainable parameters for DoRA over LoRA, as detailed in Table 1, arises from the inclusion of learnable magnitude components (parameter of size 1 × k). Then, we further halve the rank used in DoRA compared to LoRA",
+        "x": 307,
+        "y": 79.3,
+        "w": 236.1,
+        "h": 255,
+        "zh": "我们在常识推理任务上，用 LLaMA-7B/13B（Touvron 等人，2023）把 DoRA 与 LoRA 以及若干基线比较。基线包括 Prompt learning（Prefix）（Li 与 Liang，2021）、Series adapter（Series）（Houlsby 等人，2019）和 Parallel adapter（Parallel）（He 等人，2021）。我们也纳入 ChatGPT 的精度，它由 gpt-3.5-turbo API 以零样本思维链得到（OpenAI，2023；Wei 等人，2022）。常识推理包含 8 个子任务，每个子任务都有预定的训练集和测试集。我们沿用 Hu 等人（2023）的设定，把 8 个任务的训练数据合并成最终训练集，再在每个任务各自的测试集上评估。为公平比较，一开始按 LoRA 的配置用 DoRA 微调，秩保持相同，只调整学习率。如表 1 所示，DoRA 相对 LoRA 的可训练参数只多 0.01%，来自可学习的幅度分量（参数形状为 1 × k）。然后，我们再把 DoRA 使用的秩降到 LoRA 的一半"
+      },
+      {
+        "text": "In Eq. (1), the gradients of W and ∆W are the same. However, with DoRA, which redirects the low-rank adaptation towards the directional component, the gradient of the lowrank updates differs from that of W , as illustrated in Eq. (6). This divergence necessitates extra memory during backpropagation. To address this, we suggest treating ||V + ∆V ||c in Eq. (5) as a constant, thereby detaching it from the gradient graph. This means that while ||V + ∆V ||c dynamically reflects the updates of ∆V , it won’t receive any gradient during backpropagation. With this modification, the gradient w.r.t m remains unchanged, and ∇V ′L is redefined",
+        "x": 55.1,
+        "y": 191.3,
+        "w": 236.1,
+        "h": 131,
+        "zh": "在式 (1) 中，W 和 ∆W 的梯度相同。但 DoRA 把低秩适配转到方向分量上，低秩更新的梯度与 W 的梯度不同，如式 (6) 所示。这一差异使反向传播需要额外显存。为此，我们建议把式 (5) 中的 ||V + ∆V||_c 当作常数，从而把它从梯度图中断开。也就是说，||V + ∆V||_c 仍会随 ∆V 的更新而变化，但反向传播时不接收任何梯度。做了这一改动后，关于 m 的梯度保持不变，而 ∇_{V′}L 被重新定义为"
+      },
+      {
+        "text": "This approach reduces the gradient graph memory consumption drastically without a noticeable difference in accuracy. We conduct an ablation study to evaluate the impact of the proposed modification on fine-tuning LLaMA-7B and VLBART. The results indicate that the modification leads to a training memory reduction of approximately 24.4% in fine-tuning LLaMA and 12.4% in VL-BART. Furthermore,",
+        "x": 55,
+        "y": 76.9,
+        "w": 236.2,
+        "h": 81.7,
+        "zh": "这一做法大幅降低梯度图的显存占用，精度则看不出明显差别。我们做了消融，评估该改动对微调 LLaMA-7B 和 VL-BART 的影响。结果表明，微调 LLaMA 时训练显存大约降低 24.4%，VL-BART 大约降低 12.4%。此外，"
+      }
+    ],
+    "6": [
+      {
+        "text": "DoRA: Weight-Decomposed Low-Rank Adaptation",
+        "x": 200.3,
+        "y": 737.9,
+        "w": 196.3,
+        "h": 9,
+        "zh": "DoRA：权重分解的低秩适配"
+      },
+      {
+        "text": "Table 1. Accuracy comparison of LLaMA 7B/13B, LLaMA2 7B, and LLaMA3 8B with various PEFT methods on eight commonsense reasoning datasets. Results of all the baseline methods on LLaMA 7B/13B are taken from (Hu et al., 2023). Results of LoRA on LLaMA2 7B and LLaMA3 8B are obtained using the hyperparameters described in (Hu et al., 2023). DoRA : the adjusted version of DoRA with",
+        "x": 54.9,
+        "y": 686.9,
+        "w": 486.6,
+        "h": 30.9,
+        "zh": "表 1. LLaMA 7B/13B、LLaMA2 7B 和 LLaMA3 8B 在八个常识推理数据集上，用不同 PEFT 方法得到的精度对比。LLaMA 7B/13B 上所有基线的结果取自 Hu 等人（2023）。LLaMA2 7B 和 LLaMA3 8B 上 LoRA 的结果，使用 Hu 等人（2023）所述的超参数得到。DoRA：DoRA 的调整版本，其中"
+      },
+      {
+        "text": "and denote this adjusted configuration as DoRA . See Table 8 for details on the hyperparameters used. Table 1 demonstrates that DoRA consistently surpasses all baseline methods across both LLaMA-7B/13B, LLaMA2- 7B and LLaMA3-8B. Notably, in the LLaMA-7B model, where LoRA exceeds the performance of other baselines, DoRA further enhances accuracy by 3.7%, outstripping ChatGPT’s accuracy levels. Conversely, for LLaMA-13B, where LoRA’s effectiveness is inferior to the Parallel adapter, DoRA achieves superior accuracy over LoRA by 1% and comparable accuracy to the Parallel adapter, with only a",
+        "x": 55.1,
+        "y": 299.1,
+        "w": 236,
+        "h": 135.5,
+        "zh": "并把这一调整后的配置记为 DoRA。所用超参数详见第 8 表。表 1 表明，在 LLaMA-7B/13B、LLaMA2-7B 和 LLaMA3-8B 上，DoRA 都稳定超过全部基线。特别是在 LLaMA-7B 上，LoRA 已经超过其他基线，DoRA 又把精度再提高 3.7%，并超过 ChatGPT 的精度。反过来，在 LLaMA-13B 上，LoRA 的效果不如 Parallel adapter，而 DoRA 比 LoRA 高 1%，并与 Parallel adapter 相当，同时只用了"
+      },
+      {
+        "text": "LoRA/DoRA and the pre-trained weight of the query matrices quarter of the trainable parameters required by the Parallel",
+        "x": 55.4,
+        "y": 287.1,
+        "w": 486,
+        "h": 13.5,
+        "zh": ""
+      },
+      {
+        "text": "across different layers. adapter and without adding any extra inference overhead",
+        "x": 55.4,
+        "y": 275.2,
+        "w": 333.2,
+        "h": 14.5,
+        "zh": ""
+      },
+      {
+        "text": "for downstream adaptation. To further validate our hypothas the Parallel adapter. Additionally, DoRA consistently",
+        "x": 55.4,
+        "y": 263.2,
+        "w": 487.7,
+        "h": 15,
+        "zh": ""
+      },
+      {
+        "text": "esis, we used LLaMA2-7B fine-tuned with DoRA/LoRA surpasses LoRA on both LLaMA2-7B and LLaMA3-8B by",
+        "x": 55.4,
+        "y": 251.3,
+        "w": 486.4,
+        "h": 15,
+        "zh": ""
+      },
+      {
+        "text": "on commonsense reasoning datasets as a case study. We 2.1% and 4.4%, respectively. Furthermore, DoRA exceeds",
+        "x": 55.4,
+        "y": 239.3,
+        "w": 486,
+        "h": 15,
+        "zh": ""
+      },
+      {
+        "text": "visualized the magnitude (∆M) and directional difference LoRA’s performance on LLaMA-7B by 2.8%, on LLaMA-",
+        "x": 55.4,
+        "y": 227.4,
+        "w": 486,
+        "h": 15,
+        "zh": ""
+      },
+      {
+        "text": "(∆D) between the DoRA/LoRA weights and the pre-trained 13B by 1%, on LLaMA2-7B by 2.9%, and on LLaMA3-8B",
+        "x": 54.7,
+        "y": 215.4,
+        "w": 486.7,
+        "h": 15,
+        "zh": ""
+      },
+      {
+        "text": "model weights across different modules and layers. In Figby 4.2%, despite having only half as many trainable parame-",
+        "x": 55.4,
+        "y": 203.4,
+        "w": 487.7,
+        "h": 15,
+        "zh": ""
+      },
+      {
+        "text": "ure 3 (a) and (b), we observe that the DoRA fine-tuned ters as LoRA. This outcome suggests that the integration of",
+        "x": 55.4,
+        "y": 191.5,
+        "w": 486,
+        "h": 15,
+        "zh": ""
+      },
+      {
+        "text": "weights show less deviation from the pre-trained weights in DoRA enhances the learning capability of LoRA, thereby",
+        "x": 55.4,
+        "y": 179.5,
+        "w": 486,
+        "h": 15,
+        "zh": ""
+      },
+      {
+        "text": "both magnitude and direction, while the differences for the reducing the need for a higher rank to surpass LoRA in",
+        "x": 55.4,
+        "y": 167.6,
+        "w": 486,
+        "h": 15,
+        "zh": ""
+      },
+      {
+        "text": "LoRA fine-tuned weights are significantly larger. Coupled with the experimental results that DoRA significantly outAdditionally, in previous sections, we hypothesize that a",
+        "x": 55.1,
+        "y": 137.7,
+        "w": 488,
+        "h": 32.9,
+        "zh": ""
+      },
+      {
+        "text": "performs LoRA, we can conclude that our earlier hypothesis negative correlation between the magnitude update and di-",
+        "x": 55.4,
+        "y": 125.7,
+        "w": 486,
+        "h": 20.9,
+        "zh": ""
+      },
+      {
+        "text": "is valid: a robust foundation model does not require signifrectional update is more optimal than a positive correlation.",
+        "x": 55.4,
+        "y": 113.8,
+        "w": 487.7,
+        "h": 20.9,
+        "zh": ""
+      },
+      {
+        "text": "icant alterations for effective downstream adaptation and This is because pre-trained weights already contain sub-",
+        "x": 55.1,
+        "y": 101.8,
+        "w": 486.3,
+        "h": 20.9,
+        "zh": ""
+      },
+      {
+        "text": "having the ability to perform more fine-grained magnitude stantial knowledge suitable for downstream tasks, and a",
+        "x": 55.4,
+        "y": 89.9,
+        "w": 486,
+        "h": 20.9,
+        "zh": ""
+      },
+      {
+        "text": "and directional update explains the superiority of DoRA larger magnitude or direction alteration alone is sufficient",
+        "x": 55.4,
+        "y": 77.9,
+        "w": 486.4,
+        "h": 20.9,
+        "zh": ""
+      },
+      {
+        "text": "over LoRA. We leave the visualization of the value and key",
+        "x": 307.4,
+        "y": 76.9,
+        "w": 234.4,
+        "h": 10,
+        "zh": "从而优于 LoRA。value 和 key 的可视化我们先留着。"
+      }
+    ],
+    "7": [
+      {
+        "text": "DoRA: Weight-Decomposed Low-Rank Adaptation",
+        "x": 200.3,
+        "y": 737.9,
+        "w": 196.3,
+        "h": 9,
+        "zh": "DoRA：权重分解的低秩适配"
+      },
+      {
+        "text": "Table 4. Visual instruction tuning evaluation results for LLaVA- 1.5-7B on a wide range of seven vision-language tasks. We directly use checkpoints from (Liu et al., 2023a) to reproduce their results.",
+        "x": 306.8,
+        "y": 686.9,
+        "w": 236.2,
+        "h": 30.9,
+        "zh": "表 4. LLaVA-1.5-7B 在七项视觉-语言任务上的视觉指令微调评测结果。我们直接使用 Liu 等人（2023a）的检查点来复现他们的结果。"
+      },
+      {
+        "text": "Table 2. The multi-task evaluation results on VQA, GQA, NVLR and COCO Caption with the VL-BART backbone.",
+        "x": 54.9,
+        "y": 647.4,
+        "w": 230.6,
+        "h": 19.9,
+        "zh": "表 2. 以 VL-BART 为骨干，在 VQA、GQA、NVLR 和 COCO Caption 上的多任务评测结果。"
+      },
+      {
+        "text": "LLaVA-1.5-7B (Liu et al., 2023a) which is composed of a language model, Vicuna-1.5-7B (Peng et al., 2023), and a vision encoder, CLIP ViT-L/336px (Radford et al., 2021). The training datasets contain several datasets from VQA (Goyal et al., 2017; Hudson & Manning, 2019; Marino et al., 2019; Schwenk et al., 2022), OCR (Mishra et al., 2019; Sidorov et al., 2020), region-level VQA (Kazemzadeh et al., 2014; Krishna et al., 2017; Mao et al., 2016), visual conversation (Liu et al., 2023a), and language conversation data. We follow the setting of (Liu et al., 2023a) to filter the training data and construct the tunning prompt format. For a fair comparison, DoRA follows the same configuration as the LoRA configuration provided by (Liu et al., 2023a). The fine-tuned models are then evaluated on seven visionlanguage benchmarks: VQA",
+        "x": 307.1,
+        "y": 425.6,
+        "w": 236.1,
+        "h": 177.3,
+        "zh": "LLaVA-1.5-7B（Liu 等人，2023a）由语言模型 Vicuna-1.5-7B（Peng 等人，2023）和视觉编码器 CLIP ViT-L/336px（Radford 等人，2021）组成。训练数据包括若干 VQA 数据集（Goyal 等人，2017；Hudson 与 Manning，2019；Marino 等人，2019；Schwenk 等人，2022）、OCR（Mishra 等人，2019；Sidorov 等人，2020）、区域级 VQA（Kazemzadeh 等人，2014；Krishna 等人，2017；Mao 等人，2016）、视觉对话（Liu 等人，2023a）以及语言对话数据。我们按 Liu 等人（2023a）的设定过滤训练数据，并构造微调用的 prompt 格式。为公平比较，DoRA 采用 Liu 等人（2023a）给出的 LoRA 配置。微调后的模型在七个视觉-语言基准上评估：VQA"
+      },
+      {
+        "text": "Table 3. The multi-task evaluation results on TVQA, How2QA, TVC, and YC2C with the VL-BART backbone.",
+        "x": 54.9,
+        "y": 556,
+        "w": 235.7,
+        "h": 19.9,
+        "zh": "表 3. 以 VL-BART 为骨干，在 TVQA、How2QA、TVC 和 YC2C 上的多任务评测结果。"
+      },
+      {
+        "text": "Having shown that DoRA can consistently achieve better accuracy on fine-tuning LLM, we would like to see if DoRA can remain competitive on multi-modality finetuning tasks. We compare DoRA with LoRA and full finetuning on VL-BART which comprises a vision encoder (CLIP-ResNet101 (Radford et al., 2021)) and an encoderdecoder language model (BARTBase (Lewis et al., 2020)) across four different image-text tasks: VQA 2017) and GQA (Hudson & Manning, 2019) for visual question answering, NLVR (Suhr et al., 2019) for visual reasoning, and MSCOCO (Chen et al., 2015) for image captioning, and four different video-text tasks from the VALUE (Li et al., 2021) Benchmark: TVQA (Lei et al., 2018) and How2QA (Li et al., 2020) for video question answering, TVC (Lei et al., 2020) and YC2C (Zhou et al., 2018) for",
+        "x": 55.1,
+        "y": 318,
+        "w": 236,
+        "h": 177.3,
+        "zh": "已经看到 DoRA 在微调 LLM 时能稳定取得更高精度，我们想知道它在多模态微调上是否仍然有竞争力。我们在 VL-BART 上把 DoRA 与 LoRA 和全参微调比较。VL-BART 由视觉编码器（CLIP-ResNet101，Radford 等人，2021）和编码器-解码器语言模型（BART-Base，Lewis 等人，2020）组成，覆盖四项图像-文本任务：用于视觉问答的 VQA 2017）和 GQA（Hudson 与 Manning，2019），用于视觉推理的 NLVR（Suhr 等人，2019），以及用于图像描述的 MSCOCO（Chen 等人，2015）；还有 VALUE 基准（Li 等人，2021）中的四项视频-文本任务：用于视频问答的 TVQA（Lei 等人，2018）和 How2QA（Li 等人，2020），以及 TVC（Lei 等人，2020）和 YC2C（Zhou 等人，2018），用于……"
+      },
+      {
+        "text": "(Goyal et al., 2017), GQA (Hudson & Manning, 2019), VisWiz (Gurari et al., 2018) SQA (Lu et al., 2022), VQA (Singh et al., 2019), POPE (Li et al., 2023), and MMBench (Liu et al., 2023c). From Table 4, we can observe that the average accuracy of LoRA already surpasses FT, which could imply that FT might be experiencing issues with overfitting. Given that DoRA is designed to enhance LoRA’s performance to more closely resemble that of FT, in scenarios where FT is inferior to LoRA, DoRA’s improvement over LoRA might not be as pronounced as observed in other experiments where FT usually outperforms LoRA. Nonetheless, DoRA still demonstrates superior performance over both LoRA and FT, with an average improvement of 0.7% over LoRA and 1.1% over FT. See Table 10 for the hyperparameters setting and Table 12 for the score of each evaluation benchmark.",
+        "x": 307.1,
+        "y": 240.3,
+        "w": 236,
+        "h": 195.3,
+        "zh": "（Goyal 等人，2017）、GQA（Hudson 与 Manning，2019）、VisWiz（Gurari 等人，2018）、SQA（Lu 等人，2022）、VQA（Singh 等人，2019）、POPE（Li 等人，2023）和 MMBench（Liu 等人，2023c）。从表 4 可以看到，LoRA 的平均精度已经超过 FT，这可能说明 FT 出现了过拟合。DoRA 的设计是把 LoRA 的表现提升到更接近 FT；在 FT 不如 LoRA 的情形下，DoRA 相对 LoRA 的提升可能不像其他实验里 FT 通常优于 LoRA 时那么明显。尽管如此，DoRA 仍然同时优于 LoRA 和 FT，平均比 LoRA 高 0.7%，比 FT 高 1.1%。超参数设定见表 10，各评测基准的分数见表 12。"
+      },
+      {
+        "text": "We follow the same framework as (Sung et al., 2022) and fine-tuned VL-BART within a multi-task framework for both image/video-text tasks.",
+        "x": 55,
+        "y": 264.2,
+        "w": 234.6,
+        "h": 33.9,
+        "zh": "我们沿用 Sung 等人（2022）的框架，在多任务框架下对图像/视频-文本任务微调 VL-BART。"
+      },
+      {
+        "text": "We adopt the same setup as that of LoRA outlined in (Sung et al., 2022) when applying DoRA. See Table 9 for the complete hyperparameters. The result of LoRA and FT for both image/videotext tasks is directly quoted from (Sung et al., 2022). We can see that DoRA uniformly surpasses LoRA in accuracy while maintaining a similar count of trainable parameters in both Table 2 and Table 3. In particular, DoRA exceeds LoRA’s performance by nearly 1% in image-text understanding tasks, reaching the accuracy level of FT. Moreover, DoRA achieves roughly 2% higher accuracy than LoRA in video-text understanding tasks.",
+        "x": 55.1,
+        "y": 132.7,
+        "w": 236,
+        "h": 141.5,
+        "zh": "应用 DoRA 时，我们采用 Sung 等人（2022）中 LoRA 的同一设定。完整超参数见表 9。图像/视频-文本任务上 LoRA 和 FT 的结果直接引自 Sung 等人（2022）。可以看到，在表 2 和表 3 中，DoRA 的精度一律超过 LoRA，可训练参数量则与之相近。具体而言，在图像-文本理解任务上，DoRA 比 LoRA 高出近 1%，达到 FT 的精度水平。在视频-文本理解任务上，DoRA 比 LoRA 大约高 2%。"
+      },
+      {
+        "text": "5.4. Compatibility of DoRA with other LoRA variants",
+        "x": 307.4,
+        "y": 215.1,
+        "w": 228.8,
+        "h": 10,
+        "zh": "5.4. DoRA 与其他 LoRA 变体的兼容性"
+      },
+      {
+        "text": "Recall from Equation.(1) that ∆W can be adapted by different LoRA variants. With DoRA, the concept of incremental directional update ∆V introduced in Equation.(5) can likewise be replaced with alternative LoRA variants. In this section, we select VeRA (Kopiczko et al., 2024) as a case study to explore DoRA’s compatibility with other LoRA variants. VeRA suggests freezing a unique pair of random low-rank matrices to be shared across all layers, employing only minimal layer-specific trainable scaling vectors to capture each layer’s incremental updates. This approach allows VeRA to reduce trainable parameters significantly",
+        "x": 307.1,
+        "y": 76.9,
+        "w": 236,
+        "h": 129.5,
+        "zh": "回顾式 (1)，∆W 可以用不同的 LoRA 变体来适配。对 DoRA 来说，式 (5) 中的增量方向更新 ∆V 同样可以换成其他 LoRA 变体。本节以 VeRA（Kopiczko 等人，2024）为例，考察 DoRA 与其他 LoRA 变体的兼容性。VeRA 冻结一对在所有层之间共享的随机低秩矩阵，只用很少的、逐层可训练的缩放向量来捕捉每一层的增量更新。这样，VeRA 就能显著减少可训练参数。"
+      },
+      {
+        "text": "We further scale up the model size and compare DoRA to LoRA and FT on the visual instruction tuning tasks with",
+        "x": 55,
+        "y": 76.9,
+        "w": 234.5,
+        "h": 21.9,
+        "zh": "我们进一步扩大模型规模，在视觉指令微调任务上把 DoRA 与 LoRA、FT 比较，使用"
+      }
+    ],
+    "8": [
+      {
+        "text": "DoRA: Weight-Decomposed Low-Rank Adaptation",
+        "x": 200.3,
+        "y": 737.9,
+        "w": 196.3,
+        "h": 9,
+        "zh": "DoRA：权重分解的低秩适配"
+      },
+      {
+        "text": "Table 5. Average scores on MT-Bench assigned by GPT-4 to the answers generated by fine-tuned LLaMA-7B/LLaMA2-7B.",
+        "x": 54.9,
+        "y": 697.9,
+        "w": 234.5,
+        "h": 19.9,
+        "zh": "表 5. GPT-4 为微调后的 LLaMA-7B / LLaMA2-7B 所生成答案打出的 MT-Bench 平均分。"
+      },
+      {
+        "text": "Figure 4. Performance of fine-tuned LLaMA2-7B on MT-Bench using different numbers of Alpaca training samples.",
+        "x": 306.9,
+        "y": 561.7,
+        "w": 234.5,
+        "h": 19.9,
+        "zh": "图 4. 用不同数量的 Alpaca 训练样本微调后，LLaMA2-7B 在 MT-Bench 上的表现。"
+      },
+      {
+        "text": "by 10x compared to LoRA, with only a minimal impact on accuracy. We apply VeRA for the directional update in DoRA and name such combination DVoRA. We assess the effectiveness of both DVoRA and DoRA compared to VeRA and LoRA across LLaMA-7B and LLaMA2-7B, focusing on instruction tuning with the 10K subset of cleaned Alpaca dataset (Taori et al., 2023). We utilize the official implementation of VeRA to obtain the results of VeRA and LoRA and fine-tune the model with DVoRA and DoRA using the identical training settings as VeRA and LoRA (see Table 11 in the appendix for more details). The performance of the fine-tuned models is then evaluated on the MT-Bench benchmark (Zheng et al., 2023) by generating model responses to a pre-defined set of 80 multi-turn questions. These responses are then evaluated by GPT-4, which reviews each answer and assigns a numerical score out of 10. Table 5 presents the average scores for DVoRA, DoRA, VeRA, and LoRA, demonstrating that our proposed method exhibits consistent improvements over VeRA and LoRA for both LLaMA-7B and LLaMA2-7B. This effectively showcases the compatibility of DoRA with VeRA. In particular, DVoRA merges the advantageous qualities of DoRA and VeRA, attaining scores that are on par with or even surpass those of LoRA, yet with significantly fewer parameters. For example, DVoRA outperforms VeRA by 0.7/0.5 points and achieves the same level of accuracy as LoRA on LLaMA-7B and DoRA on LLaMA2-7B, respectively. Additionally, we present a selection of questions chosen from MT-Bench, accompanied by the responses from LLaMA2- 7B fine-tuned using DVoRA and VeRA in the appendix (Table 13 and 14) where we can observe that the answers given by DVoRA tend to be more precise and structural. Next, to further assess DoRA’s ability to remain competitive under varying amounts of training data, considering that in practical situations, access to extensive fine-tuning datasets is frequently limited. We compare DoRA to LoRA and DVoRA to VeRA for fine-tuning LLaMA2-7B/LLaMA-7B with a range of instruction-tuning sample sizes, specifically 1000, 4000, 7000, 10000, with 10000 being the setting of",
+        "x": 54.7,
+        "y": 76.9,
+        "w": 236.4,
+        "h": 476.2,
+        "zh": "相对 LoRA 减少到约 1/10，对精度的影响很小。我们把 VeRA 用于 DoRA 的方向更新，并把这一组合称为 DVoRA。我们在 LLaMA-7B 和 LLaMA2-7B 上评估 DVoRA 与 DoRA 相对 VeRA 和 LoRA 的效果，任务是用清洗后的 Alpaca 数据集（Taori 等人，2023）的 10K 子集做指令微调。VeRA 和 LoRA 的结果用 VeRA 的官方实现得到；DVoRA 和 DoRA 则使用与 VeRA、LoRA 相同的训练设定（详见附录表 11）。微调后的模型在 MT-Bench（Zheng 等人，2023）上评估：对预先定义的 80 道多轮问题生成回答，再由 GPT-4 审阅每个回答并给出满分 10 分的数值分数。表 5 给出 DVoRA、DoRA、VeRA 和 LoRA 的平均分，表明所提方法在 LLaMA-7B 和 LLaMA2-7B 上都稳定优于 VeRA 和 LoRA，这也说明 DoRA 与 VeRA 可以兼容。具体而言，DVoRA 兼有 DoRA 和 VeRA 的优点，分数与 LoRA 持平甚至更高，但参数少得多。例如，DVoRA 分别比 VeRA 高 0.7/0.5 分，并在 LLaMA-7B 上达到与 LoRA 相同的精度，在 LLaMA2-7B 上达到与 DoRA 相同的精度。另外，我们从 MT-Bench 中选取若干问题，把用 DVoRA 和 VeRA 微调的 LLaMA2-7B 的回答放在附录（表 13 和表 14）。可以看到，DVoRA 的回答往往更准确、结构也更好。接下来，为了进一步评估 DoRA 在训练数据量变化时是否仍有竞争力——实际中往往拿不到大规模微调数据——我们在不同指令微调样本量下比较 DoRA 与 LoRA、DVoRA 与 VeRA，用来微调 LLaMA2-7B / LLaMA-7B。样本量具体为 1000、4000、7000、10000，其中 10000 就是……所用的设定"
+      },
+      {
+        "text": "(Kopiczko et al., 2024). We visualize the average performance of each method on LLaMA2-7B in Figure 4, and on LLaMA-7B in Figure 9 in the appendix. The result shows that DoRA and DVoRA consistently outperform LoRA and VeRA across all training sample sizes. For instance, with 7000 training samples, DoRA and DVoRA surpass LoRA and VeRA by margins of 0.3 and 0.33, respectively. Even when the sample size is reduced to 1000, DoRA and DVoRA maintain their lead with advantages of 0.29 and 0.22 over LoRA and VeRA, respectively. This demonstrates that our methods persistently enhance performance over LoRA and VeRA, regardless of the training sample volume.",
+        "x": 307.1,
+        "y": 398.9,
+        "w": 236.1,
+        "h": 141.5,
+        "zh": "（Kopiczko 等人，2024）。我们把各方法在 LLaMA2-7B 上的平均表现画在图 4，LLaMA-7B 的结果见附录图 9。结果显示，在所有训练样本量下，DoRA 和 DVoRA 都稳定优于 LoRA 和 VeRA。例如在 7000 个训练样本时，DoRA 和 DVoRA 分别比 LoRA 和 VeRA 高 0.3 和 0.33。即使样本量降到 1000，DoRA 和 DVoRA 仍分别领先 LoRA 和 VeRA 0.29 和 0.22。这说明无论训练样本多少，我们的方法都能持续优于 LoRA 和 VeRA。"
+      },
+      {
+        "text": "5.5. Robustness of DoRA towards different rank settings",
+        "x": 307.4,
+        "y": 373.8,
+        "w": 234,
+        "h": 10,
+        "zh": "5.5. DoRA 在不同秩设定下的稳健性"
+      },
+      {
+        "text": "Figure 5. Average accuracy of LoRA and DoRA for varying ranks for LLaMA-7B on the commonsense reasoning tasks.",
+        "x": 306.9,
+        "y": 196.4,
+        "w": 234.5,
+        "h": 19.9,
+        "zh": "图 5. LLaMA-7B 在常识推理任务上，LoRA 与 DoRA 在不同秩下的平均精度。"
+      },
+      {
+        "text": "This section explores the impact of various rank configurations on DoRA and LoRA by adjusting r within the set {4, 8, 16, 32, 64} and assessing the performance of the fine-tuned LLaMA-7B on commonsense reasoning tasks as outlined in Sec 5.1. The average accuracies of LoRA and DoRA across different ranks are depicted in Figure 5, with detailed numbers presented in Table 15. From Figure 5, we can observe that DoRA consistently surpasses LoRA across all rank configurations. Notably, the performance gap widens for ranks",
+        "x": 306.7,
+        "y": 76.9,
+        "w": 236.4,
+        "h": 105.6,
+        "zh": "本节考察不同秩配置对 DoRA 和 LoRA 的影响：在集合 {4, 8, 16, 32, 64} 内调整 r，并按第 5.1 节的设定，评估微调后的 LLaMA-7B 在常识推理任务上的表现。LoRA 和 DoRA 在不同秩下的平均精度见图 5，具体数字见表 15。从图 5 可以看到，DoRA 在所有秩配置下都稳定超过 LoRA。尤其是当秩"
+      }
+    ],
+    "9": [
+      {
+        "text": "DoRA: Weight-Decomposed Low-Rank Adaptation",
+        "x": 200.3,
+        "y": 737.9,
+        "w": 196.3,
+        "h": 9,
+        "zh": "DoRA：权重分解的低秩适配"
+      },
+      {
+        "text": "Table 6. Accuracy comparison of LLaMA 7B/13B with two different tuning granularity of DoRA. Columns m and V designate the modules with tunable magnitude and directional components, respectively. Each module is represented by its first letter as follows: (Q)uery, (K)ey, (V)alue, (O)utput, (G)ate, (U)p, (D)own.",
+        "x": 54.9,
+        "y": 665,
+        "w": 236,
+        "h": 52.8,
+        "zh": "表 6. LLaMA 7B/13B 在 DoRA 两种不同微调粒度下的精度对比。列 m 和 V 分别表示幅度分量和方向分量可训练的模块。每个模块用首字母表示：(Q)uery、(K)ey、(V)alue、(O)utput、(G)ate、(U)p、(D)own。"
+      },
+      {
+        "text": "below 8, where LoRA’s average accuracies drop to 40.74% for r = 8 and 39.49% for r = 4. In contrast, DoRA retains a notable accuracy of 77.96% for r = 8 and 61.89% for r = 4, demonstrating its resilience and consistently superior performance over LoRA regardless of the rank setting.",
+        "x": 55.4,
+        "y": 504.1,
+        "w": 234.8,
+        "h": 57.8,
+        "zh": "低于 8 时，LoRA 的平均精度在 r = 8 时降到 40.74%，在 r = 4 时降到 39.49%。相比之下，DoRA 在 r = 8 时仍有 77.96%，在 r = 4 时仍有 61.89%，说明它更稳健，并且无论秩如何设定都稳定优于 LoRA。"
+      },
+      {
+        "text": "Figure 6. Accuracy comparison of LLaMA2-7B/LLaMA3-8B with QDoRA, QLoRA and FT on Orca-Math (Mitra et al., 2024).",
+        "x": 306.9,
+        "y": 538.3,
+        "w": 234.5,
+        "h": 19.9,
+        "zh": "图 6. LLaMA2-7B / LLaMA3-8B 上，QDoRA、QLoRA 与 FT 在 Orca-Math（Mitra 等人，2024）上的精度对比。"
+      },
+      {
+        "text": "DoRA, which narrows the gap between LoRA and FT, it is natural to also explore whether DoRA can enhance the accuracy of LoRA within the QLoRA framework. Recently, (Kerem Turgutlu, 2024) launch a project that substitutes the LoRA component in QLoRA with DoRA, dubbing it QDoRA, and incorporate the training pipeline with Fully Sharded Data Parallel (FSDP) (Zhao et al., 2023) to enable model splitting and parallel training across multiple GPUs. They conducted experiments on fine-tuning LLaMA2- 7B/LLaMA3-8B using the Orca-Math(Mitra et al., 2024) dataset with QDoRA, QLoRA, and FT. The training set included 100k samples, with 500 reserved for evaluation using the exact match score as the metric. In addition to the fine-tuned models, they also reported results from zero-shot, few-shot, and FT with post-training quantization (PTQ), where the FT model is quantized to the BnB NF4 format after training. According to Figure 6, QDoRA not only significantly surpasses QLoRA by 0.19/0.23 on LLaMA2- 7B and LLaMA3-8B, but it also slightly outperforms FT on both models, while using considerably less memory. This indicates that QDoRA can effectively combines the parameter efficiency of QLoRA with the more granular optimization of full finetuning. These initial findings suggest that QDoRA holds considerable promise and could hugely benefit the opensoure community by substantially lowering the GPU memory requirements for fine-tuning large language mod-",
+        "x": 307.1,
+        "y": 192.5,
+        "w": 236,
+        "h": 314.8,
+        "zh": "DoRA 缩小了 LoRA 与 FT 的差距，因此自然也会问：在 QLoRA 框架里，DoRA 能否提高 LoRA 的精度。最近，Kerem Turgutlu（2024）开展了一个项目，用 DoRA 替换 QLoRA 中的 LoRA 部分，称之为 QDoRA，并把训练流程与完全分片数据并行（Fully Sharded Data Parallel，FSDP）（Zhao 等人，2023）结合起来，以便把模型切分到多块 GPU 上并行训练。他们用 Orca-Math（Mitra 等人，2024）数据集，以 QDoRA、QLoRA 和 FT 微调 LLaMA2-7B / LLaMA3-8B。训练集含 10 万条样本，留出 500 条做评估，指标是精确匹配分数。除微调模型外，他们还报告了零样本、少样本，以及带训练后量化（PTQ）的 FT：FT 模型在训练后被量化为 BnB NF4 格式。根据图 6，QDoRA 在 LLaMA2-7B 和 LLaMA3-8B 上分别比 QLoRA 高出 0.19/0.23，并且在两个模型上都略优于 FT，同时显存少得多。这说明 QDoRA 可以把 QLoRA 的参数效率与全参微调更细粒度的优化结合起来。这些初步结果表明 QDoRA 很有潜力，并有望通过大幅降低微调大语言模……所需的 GPU 显存，使开源社区明显受益。"
+      },
+      {
+        "text": "The visualization in Figure 2 indicates that significant changes in magnitude often result in relatively smaller directional changes. Given this observation and the fact that directional updates account for most of the trainable parameters, it prompts an investigation into whether it is possible to decrease the number of trainable parameters by updating only the magnitude components of specific modules while continuing to update both the magnitude and directional components for the remaining linear modules. Our findings indicate that, in contrast to the original configuration suggested for LoRA in (Hu et al., 2023), which requires updates to both the Multi-head Attention and MLP layers for optimal performance, DoRA can already achieve superior accuracy by updating only the directional and magnitude components of the multi-head layers and the magnitude of the MLP layers. Specifically, as shown in Table 6, by updating the directional and magnitude components of the QKV modules and only the magnitude of the rest of the layers, DoRA surpasses LoRA by 2.8% on LLaMA-7B and 0.8% on LLaMA-13B, while utilizing only less than half of the trainable parameters compared to LoRA.",
+        "x": 55.1,
+        "y": 215.3,
+        "w": 236,
+        "h": 255,
+        "zh": "图 2 的可视化表明，幅度变化很大时，方向变化往往相对较小。基于这一观察，再加上方向更新占了大部分可训练参数，我们进而考察：能否只更新某些模块的幅度分量，其余线性模块则继续同时更新幅度和方向，从而减少可训练参数。我们发现，与 Hu 等人（2023）为 LoRA 建议的原始配置不同——那里为了达到最好效果，需要同时更新多头注意力和 MLP 层——DoRA 只要更新多头层的方向分量和幅度分量，以及 MLP 层的幅度，就已经能取得更高精度。具体如表 6 所示，更新 QKV 模块的方向分量和幅度分量，其余层只更新幅度，DoRA 在 LLaMA-7B 上比 LoRA 高 2.8%，在 LLaMA-13B 上高 0.8%，而可训练参数还不到 LoRA 的一半。"
+      },
+      {
+        "text": "While finetuning LLMs with PEFT significantly reduces training memory overhead, a considerable amount of GPU memory is still required to initially load the model weights onto the GPUs. To further decrease the memory demands of finetuning, QLoRA (Dettmers et al., 2023) suggests quantizing the pretrained model to 4-bit and finetuning LoRA on top of the frozen low-bit backbone. With our porposed",
+        "x": 55,
+        "y": 76.9,
+        "w": 236.1,
+        "h": 81.7,
+        "zh": "用 PEFT 微调 LLM 能显著降低训练显存开销，但一开始把模型权重加载到 GPU 上仍然需要相当多的显存。为了进一步降低微调的显存需求，QLoRA（Dettmers 等人，2023）建议把预训练模型量化到 4 bit，再在冻结的低比特骨干上微调 LoRA。在我们提出的"
+      },
+      {
+        "text": "Recently, as diffusion models have expanded in size, LoRA has become a popular method for efficiently fine-tuning large stable diffusion models. In this section, we aim to explore whether DoRA’s advantages over LoRA extend to the task of text-to-image generation. We follow the training pipeline of DreamBooth (Ruiz et al., 2023) for fine-tuning",
+        "x": 307.4,
+        "y": 76.9,
+        "w": 234.4,
+        "h": 69.7,
+        "zh": "最近，随着扩散模型规模变大，LoRA 已成为高效微调大型 Stable Diffusion 模型的常用方法。本节想考察：DoRA 相对 LoRA 的优势能否延伸到文生图任务。我们沿用 DreamBooth（Ruiz 等人，2023）的训练流程来微调"
+      }
+    ],
+    "10": [
+      {
+        "text": "DoRA: Weight-Decomposed Low-Rank Adaptation",
+        "x": 200.3,
+        "y": 737.9,
+        "w": 196.3,
+        "h": 9,
+        "zh": "DoRA：权重分解的低秩适配"
+      },
+      {
+        "text": "SDXL (Podell et al., 2023), utilizing the advanced training scripts developed by HuggingFace. The hyperparameter settings for LoRA and DoRA are kept the same, and we finetune the model using two challenging datasets: 3D icons and Lego sets. The sample seeds for generating the images are kept the same for LoRA and DoRA for fair comparison. The generated images are shown in Figure 10 and 11 in the appendix. The results indicate that DoRA achieves significantly better personalization than LoRA when using the same training settings, and more accurately reflects the training targets. For example, in Figure 10, the first sub-figure of DoRA’s output features a unique round square around the image, which is a feature common to all the training targets. In contrast, this feature is absent in all the LoRA outputs. A similar observation could be found with the Lego training targets, where only the DoRA outputs consistently incorporate the Lego logo in the generated images.",
+        "x": 55.1,
+        "y": 523.7,
+        "w": 236.1,
+        "h": 201.2,
+        "zh": "SDXL（Podell 等人，2023），并使用 HuggingFace 开发的进阶训练脚本。LoRA 和 DoRA 的超参数保持一致，我们用两个较难的数据集微调模型：3D icons 和 Lego sets。生成图像时，LoRA 和 DoRA 使用相同的采样种子，以便公平比较。生成图像见附录图 10 和图 11。结果表明，在相同训练设定下，DoRA 的个性化明显好于 LoRA，也更准确地反映训练目标。例如在图 10 中，DoRA 输出的第一张子图在图像周围有一圈独特的圆角方框，这是所有训练目标共有的特征；而所有 LoRA 输出都没有这一特征。Lego 训练目标上也有类似现象：只有 DoRA 的输出会稳定地把 Lego 标志画进生成图像。"
+      },
+      {
+        "text": "We extend our gratitude to Benjamin Bossan, Younes Belkada, and Sourab Mangrulkar from Hugging Face for their assistance in integrating DoRA into the PEFT package, thus making our work more accessible to the broader public. We thank Kerem Turgutlu, Jonathan Whitaker, and Jeremy Howard from Answer.AI for their work on the implementation and experiments of QDoRA/FSDP, which makes fine-tuning of large language models with DoRA on consumer GPUs a lot more feasible. We also thank Sebastian Raschka for his well-written tutorial on DoRA which offers a thorough overview of the background knowledge necessary to comprehend DoRA.",
+        "x": 307,
+        "y": 564.1,
+        "w": 236.1,
+        "h": 141.5,
+        "zh": "感谢 Hugging Face 的 Benjamin Bossan、Younes Belkada 和 Sourab Mangrulkar 协助把 DoRA 集成进 PEFT 包，让这项工作更容易被公众使用。感谢 Answer.AI 的 Kerem Turgutlu、Jonathan Whitaker 和 Jeremy Howard 在 QDoRA/FSDP 上的实现和实验，使消费级 GPU 上用 DoRA 微调大语言模型变得可行得多。也感谢 Sebastian Raschka 撰写的 DoRA 教程，它对理解 DoRA 所需的背景知识做了全面梳理。"
+      },
+      {
+        "text": "This paper presents work whose goal is to advance the field of Machine Learning. There are many potential societal consequences of our work, none of which we feel must be specifically highlighted here.",
+        "x": 307.1,
+        "y": 480.3,
+        "w": 234.3,
+        "h": 45.8,
+        "zh": "本文的目标是推动机器学习领域的进展。我们的工作可能带来许多社会影响，但我们认为其中没有任何一项需要在这里特别指出。"
+      },
+      {
+        "text": "In this work, we first conduct a novel weight decomposition analysis to reveal the distinct learning patterns between LoRA and FT. Building on these insights, we introduce DoRA, a fine-tuning method that is compatible with LoRA and its variants and exhibits a closer resemblance to FT’s learning behavior. DoRA consistently outperforms LoRA across various fine-tuning tasks and model architectures. Specifically, DoRA improves upon LoRA in commonsense reasoning and visual instruction tuning tasks. Furthermore, DoRA also shows compatibility with VeRA on the Alpaca instruction tuning task. Moreover, DoRA can be considered as a costless alternative to LoRA, as its decomposed magnitude and direction components can be merged back into the pre-trained weight after the training, ensuring that there is no extra inference overhead. For future work, we wish to explore the generalizability of DoRA in domains beyond language and vision, particularly in the field of audio.",
+        "x": 55.4,
+        "y": 284.5,
+        "w": 235.7,
+        "h": 201.2,
+        "zh": "本文首先做了一种新的权重分解分析，揭示 LoRA 与 FT 不同的学习模式。在此基础上，我们提出 DoRA。它与 LoRA 及其变体兼容，学习行为也更接近 FT。在各种微调任务和模型结构上，DoRA 都稳定优于 LoRA。具体而言，DoRA 在常识推理和视觉指令微调任务上优于 LoRA。此外，在 Alpaca 指令微调任务上，DoRA 也表现出与 VeRA 的兼容性。而且，DoRA 可以看成 LoRA 的一种零额外成本替代：训练之后，分解出的幅度分量和方向分量可以合并回预训练权重，因此没有额外的推理开销。未来工作中，我们希望探索 DoRA 在语言和视觉之外的可推广性，尤其是音频领域。"
+      },
+      {
+        "text": "Chen, X., Fang, H., Lin, T.-Y., Vedantam, R., Gupta, S., Dollar, P., and Zitnick, C. L. Microsoft coco captions:´ Data collection and evaluation server. arXiv preprint arXiv:1504.00325, 2015.",
+        "x": 307.4,
+        "y": 397.9,
+        "w": 235.4,
+        "h": 45.8,
+        "zh": "Chen, X.、Fang, H.、Lin, T.-Y.、Vedantam, R.、Gupta, S.、Dollar, P. 与 Zitnick, C. L.。Microsoft COCO Captions：数据收集与评估服务器。arXiv preprint arXiv:1504.00325，2015。"
+      },
+      {
+        "text": "Dettmers, T., Pagnoni, A., Holtzman, A., and Zettlemoyer, L. Qlora: Efficient finetuning of quantized llms. In Oh, A., Neumann, T., Globerson, A., Saenko, K., Hardt, M., and Levine, S. (eds.), Advances in Neural Information Processing Systems, volume 36, pp. 10088–10115. Curran Associates, Inc., 2023.",
+        "x": 307.4,
+        "y": 314.6,
+        "w": 235.7,
+        "h": 69.7,
+        "zh": "Dettmers, T.、Pagnoni, A.、Holtzman, A. 与 Zettlemoyer, L.。QLoRA：量化大语言模型的高效微调。见 Oh, A.、Neumann, T.、Globerson, A.、Saenko, K.、Hardt, M. 与 Levine, S.（编），Advances in Neural Information Processing Systems，第 36 卷，第 10088–10115 页。Curran Associates, Inc.，2023。"
+      },
+      {
+        "text": "Goyal, Y., Khot, T., Summers-Stay, D., Batra, D., and Parikh, D. Making the v in vqa matter: Elevating the role of image understanding in visual question answering. In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 6904–6913, 2017.",
+        "x": 307.4,
+        "y": 243.2,
+        "w": 235.7,
+        "h": 57.8,
+        "zh": "Goyal, Y.、Khot, T.、Summers-Stay, D.、Batra, D. 与 Parikh, D.。让 VQA 里的 V 真正重要：提升图像理解在视觉问答中的作用。见 Proceedings of the IEEE conference on computer vision and pattern recognition，第 6904–6913 页，2017。"
+      },
+      {
+        "text": "Gurari, D., Li, Q., Stangl, A. J., Guo, A., Lin, C., Grauman, K., Luo, J., and Bigham, J. P. Vizwiz grand challenge: Answering visual questions from blind people. In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 3608–3617, 2018.",
+        "x": 307.4,
+        "y": 171.9,
+        "w": 235.7,
+        "h": 57.8,
+        "zh": "Gurari, D.、Li, Q.、Stangl, A. J.、Guo, A.、Lin, C.、Grauman, K.、Luo, J. 与 Bigham, J. P.。VizWiz 大挑战：回答盲人提出的视觉问题。见 Proceedings of the IEEE conference on computer vision and pattern recognition，第 3608–3617 页，2018。"
+      },
+      {
+        "text": "He, J., Zhou, C., Ma, X., Berg-Kirkpatrick, T., and Neubig, G. Towards a unified view of parameter-efficient transfer learning. In International Conference on Learning Representations, 2021.",
+        "x": 307.4,
+        "y": 112.4,
+        "w": 235.7,
+        "h": 45.8,
+        "zh": "He, J.、Zhou, C.、Ma, X.、Berg-Kirkpatrick, T. 与 Neubig, G.。走向参数高效迁移学习的统一视角。见 International Conference on Learning Representations，2021。"
+      },
+      {
+        "text": "He, K., Zhang, X., Ren, S., and Sun, J. Delving deep into rectifiers: Surpassing human-level performance on",
+        "x": 307.4,
+        "y": 76.9,
+        "w": 234,
+        "h": 21.9,
+        "zh": "He, K.、Zhang, X.、Ren, S. 与 Sun, J.。深入整流器：在……上超越人类水平"
+      }
+    ],
+    "11": [
+      {
+        "text": "DoRA: Weight-Decomposed Low-Rank Adaptation",
+        "x": 200.3,
+        "y": 737.9,
+        "w": 196.3,
+        "h": 9,
+        "zh": "DoRA：权重分解的低秩适配"
+      },
+      {
+        "text": "imagenet classification. In Proceedings of the IEEE International Conference on Computer Vision, pp. 1026–1034,",
+        "x": 65.4,
+        "y": 703,
+        "w": 225.7,
+        "h": 21.9,
+        "zh": "ImageNet 分类。见 Proceedings of the IEEE International Conference on Computer Vision，第 1026–1034 页，"
+      },
+      {
+        "text": "Krishna, R., Zhu, Y., Groth, O., Johnson, J., Hata, K., Kravitz, J., Chen, S., Kalantidis, Y., Li, L.-J., Shamma, D. A., et al. Visual genome: Connecting language and vision using crowdsourced dense image annotations. International journal of computer vision, pp. 32–73, 2017.",
+        "x": 307.4,
+        "y": 667.2,
+        "w": 235.7,
+        "h": 57.8,
+        "zh": "Krishna, R.、Zhu, Y.、Groth, O.、Johnson, J.、Hata, K.、Kravitz, J.、Chen, S.、Kalantidis, Y.、Li, L.-J.、Shamma, D. A. 等人。Visual Genome：用众包的稠密图像标注连接语言与视觉。International journal of computer vision，第 32–73 页，2017。"
+      },
+      {
+        "text": "Houlsby, N., Giurgiu, A., Jastrzebski, S., Morrone, B., De Laroussilhe, Q., Gesmundo, A., Attariyan, M., and Gelly, S. Parameter-efficient transfer learning for nlp. In International Conference on Machine Learning, pp.",
+        "x": 55.4,
+        "y": 633.5,
+        "w": 235.7,
+        "h": 45.8,
+        "zh": "Houlsby, N.、Giurgiu, A.、Jastrzebski, S.、Morrone, B.、De Laroussilhe, Q.、Gesmundo, A.、Attariyan, M. 与 Gelly, S.。面向 NLP 的参数高效迁移学习。见 International Conference on Machine Learning，第"
+      },
+      {
+        "text": "Lei, J., Yu, L., Bansal, M., and Berg, T. TVQA: Localized, compositional video question answering. In Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing, pp. 1369–1379, 2018.",
+        "x": 307.4,
+        "y": 609.5,
+        "w": 235.2,
+        "h": 45.8,
+        "zh": "Lei, J.、Yu, L.、Bansal, M. 与 Berg, T.。TVQA：局部化、组合式的视频问答。见 Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing，第 1369–1379 页，2018。"
+      },
+      {
+        "text": "Hu, E. J., yelong shen, Wallis, P., Allen-Zhu, Z., Li, Y., Wang, S., Wang, L., and Chen, W. LoRA: Low-rank adaptation of large language models. In International Conference on Learning Representations, 2022.",
+        "x": 55.4,
+        "y": 563.9,
+        "w": 235.2,
+        "h": 45.8,
+        "zh": "Hu, E. J.、yelong shen、Wallis, P.、Allen-Zhu, Z.、Li, Y.、Wang, S.、Wang, L. 与 Chen, W.。LoRA：大语言模型的低秩适配。见 International Conference on Learning Representations，2022。"
+      },
+      {
+        "text": "Lei, J., Yu, L., Berg, T. L., and Bansal, M. Tvr: A large-scale dataset for video-subtitle moment retrieval. In European Conference on Computer Vision, pp. 447–463, 2020.",
+        "x": 307.4,
+        "y": 563.9,
+        "w": 234,
+        "h": 33.9,
+        "zh": "Lei, J.、Yu, L.、Berg, T. L. 与 Bansal, M.。TVR：面向视频-字幕时刻检索的大规模数据集。见 European Conference on Computer Vision，第 447–463 页，2020。"
+      },
+      {
+        "text": "Hu, Z., Wang, L., Lan, Y., Xu, W., Lim, E.-P., Bing, L., Xu, X., Poria, S., and Lee, R. LLM-adapters: An adapter family for parameter-efficient fine-tuning of large language models. In Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing,",
+        "x": 55.4,
+        "y": 494.3,
+        "w": 235.7,
+        "h": 57.8,
+        "zh": "Hu, Z.、Wang, L.、Lan, Y.、Xu, W.、Lim, E.-P.、Bing, L.、Xu, X.、Poria, S. 与 Lee, R.。LLM-adapters：用于大语言模型参数高效微调的 adapter 家族。见 Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing，"
+      },
+      {
+        "text": "Lester, B., Al-Rfou, R., and Constant, N. The power of scale for parameter-efficient prompt tuning. In Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing, pp. 3045–3059, 2021.",
+        "x": 307.4,
+        "y": 506.3,
+        "w": 234,
+        "h": 45.8,
+        "zh": "Lester, B.、Al-Rfou, R. 与 Constant, N.。规模对参数高效 prompt tuning 的作用。见 Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing，第 3045–3059 页，2021。"
+      },
+      {
+        "text": "Lewis, M., Liu, Y., Goyal, N., Ghazvininejad, M., Mohamed, A., Levy, O., Stoyanov, V., and Zettlemoyer, L. BART: Denoising sequence-to-sequence pre-training for natural language generation, translation, and comprehension. In Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics, pp. 7871–7880,",
+        "x": 307.4,
+        "y": 424.8,
+        "w": 235.7,
+        "h": 69.7,
+        "zh": "Lewis, M.、Liu, Y.、Goyal, N.、Ghazvininejad, M.、Mohamed, A.、Levy, O.、Stoyanov, V. 与 Zettlemoyer, L.。BART：用于自然语言生成、翻译与理解的去噪序列到序列预训练。见 Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics，第 7871–7880 页，"
+      },
+      {
+        "text": "Hudson, D. A. and Manning, C. D. Gqa: A new dataset for real-world visual reasoning and compositional question answering. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition, pp. 6700–",
+        "x": 55.4,
+        "y": 424.8,
+        "w": 235.5,
+        "h": 45.8,
+        "zh": "Hudson, D. A. 与 Manning, C. D.。GQA：面向真实世界视觉推理和组合式问答的新数据集。见 Proceedings of the IEEE/CVF conference on computer vision and pattern recognition，第 6700–"
+      },
+      {
+        "text": "Hyeon-Woo, N., Ye-Bin, M., and Oh, T.-H. Fedpara: Lowrank hadamard product for communication-efficient federated learning. In International Conference on Learning Representations, 2022.",
+        "x": 55.4,
+        "y": 355.2,
+        "w": 235.7,
+        "h": 45.8,
+        "zh": "Hyeon-Woo, N.、Ye-Bin, M. 与 Oh, T.-H.。FedPara：用于通信高效联邦学习的低秩 Hadamard 积。见 International Conference on Learning Representations，2022。"
+      },
+      {
+        "text": "Li, J., Li, D., Xiong, C., and Hoi, S. Blip: Bootstrapping language-image pre-training for unified vision-language understanding and generation. In International Conference on Machine Learning, pp. 12888–12900, 2022.",
+        "x": 307.4,
+        "y": 355.2,
+        "w": 235.7,
+        "h": 45.8,
+        "zh": "Li, J.、Li, D.、Xiong, C. 与 Hoi, S.。BLIP：以语言-图像预训练自举统一的视觉-语言理解与生成。见 International Conference on Machine Learning，第 12888–12900 页，2022。"
+      },
+      {
+        "text": "Karimi Mahabadi, R., Ruder, S., Dehghani, M., and Henderson, J. Parameter-efficient multi-task fine-tuning for transformers via shared hypernetworks. In Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics and the 11th International Joint Conference on Natural Language Processing (Volume 1: Long Papers), pp. 565–576, 2021.",
+        "x": 55.4,
+        "y": 261.7,
+        "w": 235.7,
+        "h": 81.7,
+        "zh": "Karimi Mahabadi, R.、Ruder, S.、Dehghani, M. 与 Henderson, J.。借助共享超网络对 Transformer 做参数高效的多任务微调。见 Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics and the 11th International Joint Conference on Natural Language Processing (Volume 1: Long Papers)，第 565–576 页，2021。"
+      },
+      {
+        "text": "Li, L., Chen, Y.-C., Cheng, Y., Gan, Z., Yu, L., and Liu, J. HERO: Hierarchical encoder for Video+Language omnirepresentation pre-training. In Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP), pp. 2046–2065, 2020.",
+        "x": 307.4,
+        "y": 285.6,
+        "w": 235.7,
+        "h": 57.8,
+        "zh": "Li, L.、Chen, Y.-C.、Cheng, Y.、Gan, Z.、Yu, L. 与 Liu, J.。HERO：面向视频+语言全方位表示预训练的层次编码器。见 Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP)，第 2046–2065 页，2020。"
+      },
+      {
+        "text": "Li, L., Lei, J., Gan, Z., Yu, L., Chen, Y.-C., Pillai, R., Cheng, Y., Zhou, L., Wang, X. E., Wang, W. Y., et al. Value: A multi-task benchmark for video-and-language understanding evaluation. In Thirty-fifth Conference on Neural Information Processing Systems Datasets and Benchmarks Track (Round 1), 2021.",
+        "x": 307.4,
+        "y": 204.1,
+        "w": 235.7,
+        "h": 69.7,
+        "zh": "Li, L.、Lei, J.、Gan, Z.、Yu, L.、Chen, Y.-C.、Pillai, R.、Cheng, Y.、Zhou, L.、Wang, X. E.、Wang, W. Y. 等人。VALUE：面向视频-语言理解评测的多任务基准。见 Thirty-fifth Conference on Neural Information Processing Systems Datasets and Benchmarks Track (Round 1)，2021。"
+      },
+      {
+        "text": "Kazemzadeh, S., Ordonez, V., Matten, M., and Berg, T. ReferItGame: Referring to objects in photographs of natural scenes. In Proceedings of the 2014 Conference on Empirical Methods in Natural Language Processing (EMNLP), pp. 787–798, 2014.",
+        "x": 55.4,
+        "y": 192.2,
+        "w": 235.7,
+        "h": 57.8,
+        "zh": "Kazemzadeh, S.、Ordonez, V.、Matten, M. 与 Berg, T.。ReferItGame：在自然场景照片中指称物体。见 Proceedings of the 2014 Conference on Empirical Methods in Natural Language Processing (EMNLP)，第 787–798 页，2014。"
+      },
+      {
+        "text": "Li, X. L. and Liang, P. Prefix-tuning: Optimizing continuous prompts for generation. In Zong, C., Xia, F., Li, W., and Navigli, R. (eds.), Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics and the 11th International Joint Conference on Natural Language Processing (Volume 1: Long Papers), pp. 4582–",
+        "x": 307.4,
+        "y": 122.6,
+        "w": 235.5,
+        "h": 69.7,
+        "zh": "Li, X. L. 与 Liang, P.。Prefix-tuning：为生成优化连续 prompt。见 Zong, C.、Xia, F.、Li, W. 与 Navigli, R.（编），Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics and the 11th International Joint Conference on Natural Language Processing (Volume 1: Long Papers)，第 4582–"
+      },
+      {
+        "text": "https://www.answer.ai/posts/ 2024-04-26-fsdp-qdora-llama3.html,",
+        "x": 65.4,
+        "y": 134.5,
+        "w": 225.2,
+        "h": 21.9,
+        "zh": ""
+      },
+      {
+        "text": "Kopiczko, D. J., Blankevoort, T., and Asano, Y. M. Vera: Vector-based random matrix adaptation. In International Conference on Learning Representations, 2024.",
+        "x": 55.4,
+        "y": 76.9,
+        "w": 235.4,
+        "h": 33.9,
+        "zh": "Kopiczko, D. J.、Blankevoort, T. 与 Asano, Y. M.。VeRA：基于向量的随机矩阵适配。见 International Conference on Learning Representations，2024。"
+      },
+      {
+        "text": "Li, Y., Du, Y., Zhou, K., Wang, J., Zhao, X., and Wen, J.-R. Evaluating object hallucination in large vision-language",
+        "x": 307.4,
+        "y": 76.9,
+        "w": 235.7,
+        "h": 21.9,
+        "zh": "Li, Y.、Du, Y.、Zhou, K.、Wang, J.、Zhao, X. 与 Wen, J.-R.。评估大视觉-语言模型中的物体幻觉"
+      }
+    ],
+    "12": [
+      {
+        "text": "DoRA: Weight-Decomposed Low-Rank Adaptation",
+        "x": 200.3,
+        "y": 737.9,
+        "w": 196.3,
+        "h": 9,
+        "zh": "DoRA：权重分解的低秩适配"
+      },
+      {
+        "text": "models. In Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing, pp.",
+        "x": 65.4,
+        "y": 703,
+        "w": 225.8,
+        "h": 21.9,
+        "zh": "模型。见 Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing，第"
+      },
+      {
+        "text": "Podell, D., English, Z., Lacey, K., Blattmann, A., Dockhorn, T., Muller, J., Penna, J., and Rombach, R.¨ proving latent diffusion models for high-resolution image synthesis. arXiv preprint arXiv:2307.01952, 2023. Ponti, E. M., Sordoni, A., Bengio, Y., and Reddy, S. Combining modular skills in multitask learning. arXiv preprint arXiv:2202.13914, 2022. Qin, C., Zhang, A., Zhang, Z., Chen, J., Yasunaga, M., and Yang, D. Is chatgpt a general-purpose natural language processing task solver?",
+        "x": 307.4,
+        "y": 594.5,
+        "w": 235.6,
+        "h": 130.4,
+        "zh": "Podell, D.、English, Z.、Lacey, K.、Blattmann, A.、Dockhorn, T.、Muller, J.、Penna, J. 与 Rombach, R.。……用于高分辨率图像合成的潜扩散模型。arXiv preprint arXiv:2307.01952，2023。Ponti, E. M.、Sordoni, A.、Bengio, Y. 与 Reddy, S.。在多任务学习中组合模块化技能。arXiv preprint arXiv:2202.13914，2022。Qin, C.、Zhang, A.、Zhang, Z.、Chen, J.、Yasunaga, M. 与 Yang, D.。ChatGPT 是通用的自然语言处理任务求解器吗？"
+      },
+      {
+        "text": "Liu, H., Li, C., Wu, Q., and Lee, Y. J. Visual instruction tuning. In Thirty-seventh Conference on Neural Information Processing Systems, 2023a.",
+        "x": 55.4,
+        "y": 645,
+        "w": 235.7,
+        "h": 33.9,
+        "zh": "Liu, H.、Li, C.、Wu, Q. 与 Lee, Y. J.。视觉指令微调。见 Thirty-seventh Conference on Neural Information Processing Systems，2023a。"
+      },
+      {
+        "text": "Liu, W., Qiu, Z., Feng, Y., Xiu, Y., Xue, Y., Yu, L., Feng, H., Liu, Z., Heo, J., Peng, S., et al. Parameter-efficient orthogonal finetuning via butterfly factorization. arXiv preprint arXiv:2311.06243, 2023b.",
+        "x": 55.4,
+        "y": 587,
+        "w": 235.2,
+        "h": 45.8,
+        "zh": "Liu, W.、Qiu, Z.、Feng, Y.、Xiu, Y.、Xue, Y.、Yu, L.、Feng, H.、Liu, Z.、Heo, J.、Peng, S. 等人。通过 butterfly 分解实现参数高效的正交微调。arXiv preprint arXiv:2311.06243，2023b。"
+      },
+      {
+        "text": "In Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing, pp. 1339–1384, 2023. Qiu, Z., Liu, W., Feng, H., Xue, Y., Feng, Y., Liu, Z., Zhang, D., Weller, A., and Scholkopf, B. Controlling text-¨ to-image diffusion by orthogonal finetuning. In Thirtyseventh Conference on Neural Information Processing",
+        "x": 307.4,
+        "y": 516.4,
+        "w": 235.7,
+        "h": 88.1,
+        "zh": "见 Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing，第 1339–1384 页，2023。Qiu, Z.、Liu, W.、Feng, H.、Xue, Y.、Feng, Y.、Liu, Z.、Zhang, D.、Weller, A. 与 Scholkopf, B.。用正交微调控制文生图扩散。见 Thirty-seventh Conference on Neural Information Processing"
+      },
+      {
+        "text": "Liu, Y., Duan, H., Zhang, Y., Li, B., Zhang, S., Zhao, W., Yuan, Y., Wang, J., He, C., Liu, Z., et al. Mmbench: Is your multi-modal model an all-around player? preprint arXiv:2307.06281, 2023c.",
+        "x": 55.4,
+        "y": 529,
+        "w": 235.2,
+        "h": 45.8,
+        "zh": "Liu, Y.、Duan, H.、Zhang, Y.、Li, B.、Zhang, S.、Zhao, W.、Yuan, Y.、Wang, J.、He, C.、Liu, Z. 等人。MMBench：你的多模态模型是全能选手吗？preprint arXiv:2307.06281，2023c。"
+      },
+      {
+        "text": "Lu, P., Mishra, S., Xia, T., Qiu, L., Chang, K.-W., Zhu, S.-C., Tafjord, O., Clark, P., and Kalyan, A. Learn to explain: Multimodal reasoning via thought chains for science question answering. Advances in Neural Information Processing Systems, pp. 2507–2521, 2022.",
+        "x": 55.4,
+        "y": 459.1,
+        "w": 235.7,
+        "h": 57.8,
+        "zh": "Lu, P.、Mishra, S.、Xia, T.、Qiu, L.、Chang, K.-W.、Zhu, S.-C.、Tafjord, O.、Clark, P. 与 Kalyan, A.。学会解释：借助思维链做科学问答中的多模态推理。Advances in Neural Information Processing Systems，第 2507–2521 页，2022。"
+      },
+      {
+        "text": "Radford, A., Kim, J. W., Hallacy, C., Ramesh, A., Goh, G., Agarwal, S., Sastry, G., Askell, A., Mishkin, P., Clark, J., et al. Learning transferable visual models from natural language supervision. In International conference on machine learning, pp. 8748–8763, 2021. Razdaibiedina, A., Mao, Y., Khabsa, M., Lewis, M., Hou, R., Ba, J., and Almahairi, A. Residual prompt tuning: improving prompt tuning with residual reparameterization. In Findings of the Association for Computational Linguistics: ACL 2023, pp. 6740–6757, 2023. Renduchintala, A., Konuk, T., and Kuchaiev, O. Tied-lora: Enhacing parameter efficiency of lora with weight tying. arXiv preprint arXiv:2311.09578, 2023. Ruiz, N., Li, Y., Jampani, V., Pritch, Y., Rubinstein, M., and Aberman, K. Dreambooth: Fine tuning text-to-image diffusion models for subject-driven generation. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pp. 22500–22510, 2023. Salimans, T. and Kingma, D. P. Weight normalization: a simple reparameterization to accelerate training of deep neural networks. In Proceedings of the 30th International Conference on Neural Information Processing Systems,",
+        "x": 307.4,
+        "y": 209.3,
+        "w": 235.7,
+        "h": 286.7,
+        "zh": "Radford, A.、Kim, J. W.、Hallacy, C.、Ramesh, A.、Goh, G.、Agarwal, S.、Sastry, G.、Askell, A.、Mishkin, P.、Clark, J. 等人。从自然语言监督中学习可迁移的视觉模型。见 International conference on machine learning，第 8748–8763 页，2021。Razdaibiedina, A.、Mao, Y.、Khabsa, M.、Lewis, M.、Hou, R.、Ba, J. 与 Almahairi, A.。残差 prompt tuning：用残差重参数化改进 prompt tuning。见 Findings of the Association for Computational Linguistics: ACL 2023，第 6740–6757 页，2023。Renduchintala, A.、Konuk, T. 与 Kuchaiev, O.。Tied-LoRA：用权重绑定提升 LoRA 的参数效率。arXiv preprint arXiv:2311.09578，2023。Ruiz, N.、Li, Y.、Jampani, V.、Pritch, Y.、Rubinstein, M. 与 Aberman, K.。DreamBooth：为特定主体生成而微调文生图扩散模型。见 Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition，第 22500–22510 页，2023。Salimans, T. 与 Kingma, D. P.。Weight Normalization：一种加速深度神经网络训练的简单重参数化。见 Proceedings of the 30th International Conference on Neural Information Processing Systems，"
+      },
+      {
+        "text": "mahabadi, R. K., Henderson, J., and Ruder, S. Compacter: Efficient low-rank hypercomplex adapter layers. In Advances in Neural Information Processing Systems, 2021.",
+        "x": 55.4,
+        "y": 413,
+        "w": 235.7,
+        "h": 33.9,
+        "zh": "mahabadi, R. K.、Henderson, J. 与 Ruder, S.。Compacter：高效的低秩超复数 adapter 层。见 Advances in Neural Information Processing Systems，2021。"
+      },
+      {
+        "text": "Mao, J., Huang, J., Toshev, A., Camburu, O., Yuille, A. L., and Murphy, K. Generation and comprehension of unambiguous object descriptions. In Proceedings of the IEEE conference on computer vision and pattern recognition,",
+        "x": 55.4,
+        "y": 355,
+        "w": 235.7,
+        "h": 45.8,
+        "zh": "Mao, J.、Huang, J.、Toshev, A.、Camburu, O.、Yuille, A. L. 与 Murphy, K.。无歧义物体描述的生成与理解。见 Proceedings of the IEEE conference on computer vision and pattern recognition，"
+      },
+      {
+        "text": "Marino, K., Rastegari, M., Farhadi, A., and Mottaghi, R. Ok-vqa: A visual question answering benchmark requiring external knowledge. In Proceedings of the IEEE/cvf conference on computer vision and pattern recognition, pp. 3195–3204, 2019.",
+        "x": 55.4,
+        "y": 273.1,
+        "w": 235.7,
+        "h": 57.8,
+        "zh": "Marino, K.、Rastegari, M.、Farhadi, A. 与 Mottaghi, R.。OK-VQA：需要外部知识的视觉问答基准。见 Proceedings of the IEEE/CVF conference on computer vision and pattern recognition，第 3195–3204 页，2019。"
+      },
+      {
+        "text": "Mishra, A., Shekhar, S., Singh, A. K., and Chakraborty, A. Ocr-vqa: Visual question answering by reading text in images. In 2019 International Conference on Document Analysis and Recognition (ICDAR), pp. 947–952, 2019.",
+        "x": 55.4,
+        "y": 215.1,
+        "w": 235.7,
+        "h": 45.8,
+        "zh": "Mishra, A.、Shekhar, S.、Singh, A. K. 与 Chakraborty, A.。OCR-VQA：通过阅读图像中的文字做视觉问答。见 2019 International Conference on Document Analysis and Recognition (ICDAR)，第 947–952 页，2019。"
+      },
+      {
+        "text": "Mitra, A., Khanpour, H., Rosset, C., and Awadallah, A. Orca-math: Unlocking the potential of slms in grade",
+        "x": 55.4,
+        "y": 181,
+        "w": 235.7,
+        "h": 21.9,
+        "zh": "Mitra, A.、Khanpour, H.、Rosset, C. 与 Awadallah, A.。Orca-Math：释放小语言模型在年级……中的潜力"
+      },
+      {
+        "text": "Schwenk, D., Khandelwal, A., Clark, C., Marino, K., and Mottaghi, R. A-okvqa: A benchmark for visual question answering using world knowledge. In European Conference on Computer Vision, pp. 146–162, 2022. Sidorov, O., Hu, R., Rohrbach, M., and Singh, A. Textcaps: a dataset for image captioning with reading comprehension. In Computer Vision–ECCV 2020: 16th European Conference, Glasgow, UK, August 23–28, 2020, Proceedings, Part II 16, pp. 742–758, 2020.",
+        "x": 307.4,
+        "y": 76.9,
+        "w": 235.7,
+        "h": 112,
+        "zh": "Schwenk, D.、Khandelwal, A.、Clark, C.、Marino, K. 与 Mottaghi, R.。A-OKVQA：使用世界知识的视觉问答基准。见 European Conference on Computer Vision，第 146–162 页，2022。Sidorov, O.、Hu, R.、Rohrbach, M. 与 Singh, A.。TextCaps：带阅读理解的图像描述数据集。见 Computer Vision–ECCV 2020: 16th European Conference, Glasgow, UK, August 23–28, 2020, Proceedings, Part II 16，第 742–758 页，2020。"
+      },
+      {
+        "text": "Welcome to the openai platform, URL https://platform.openai.com/docs/",
+        "x": 65.4,
+        "y": 134.9,
+        "w": 225.2,
+        "h": 21.9,
+        "zh": "欢迎使用 OpenAI 平台，URL https://platform.openai.com/docs/"
+      },
+      {
+        "text": "Peng, B., Li, C., He, P., Galley, M., and Gao, J. Instruction tuning with gpt-4. arXiv preprint arXiv:2304.03277,",
+        "x": 55.4,
+        "y": 88.9,
+        "w": 235.7,
+        "h": 21.9,
+        "zh": "Peng, B.、Li, C.、He, P.、Galley, M. 与 Gao, J.。用 GPT-4 做指令微调。arXiv preprint arXiv:2304.03277，"
+      }
+    ],
+    "13": [
+      {
+        "text": "DoRA: Weight-Decomposed Low-Rank Adaptation",
+        "x": 200.3,
+        "y": 737.9,
+        "w": 196.3,
+        "h": 9,
+        "zh": "DoRA：权重分解的低秩适配"
+      },
+      {
+        "text": "Singh, A., Natarajan, V., Shah, M., Jiang, Y., Chen, X., Batra, D., Parikh, D., and Rohrbach, M. Towards vqa models that can read. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition, pp. 8317–8326, 2019.",
+        "x": 55.4,
+        "y": 667.2,
+        "w": 235.2,
+        "h": 57.8,
+        "zh": "Singh, A.、Natarajan, V.、Shah, M.、Jiang, Y.、Chen, X.、Batra, D.、Parikh, D. 与 Rohrbach, M.。走向能够阅读的 VQA 模型。见 Proceedings of the IEEE/CVF conference on computer vision and pattern recognition，第 8317–8326 页，2019。"
+      },
+      {
+        "text": "Zheng, L., Chiang, W.-L., Sheng, Y., Zhuang, S., Wu, Z., Zhuang, Y., Lin, Z., Li, Z., Li, D., Xing, E., Zhang, H., Gonzalez, J. E., and Stoica, I. Judging LLM-as-a-judge with MT-bench and chatbot arena. In Thirty-seventh Conference on Neural Information Processing Systems Datasets and Benchmarks Track, 2023.",
+        "x": 307.4,
+        "y": 655.2,
+        "w": 235.2,
+        "h": 69.7,
+        "zh": "Zheng, L.、Chiang, W.-L.、Sheng, Y.、Zhuang, S.、Wu, Z.、Zhuang, Y.、Lin, Z.、Li, Z.、Li, D.、Xing, E.、Zhang, H.、Gonzalez, J. E. 与 Stoica, I.。用 MT-Bench 和 Chatbot Arena 评判“以 LLM 为裁判”。见 Thirty-seventh Conference on Neural Information Processing Systems Datasets and Benchmarks Track，2023。"
+      },
+      {
+        "text": "Suhr, A., Zhou, S., Zhang, A., Zhang, I., Bai, H., and Artzi, Y. A corpus for reasoning about natural language grounded in photographs. In Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics, pp. 6418–6428, 2019.",
+        "x": 55.4,
+        "y": 596.3,
+        "w": 234,
+        "h": 57.8,
+        "zh": "Suhr, A.、Zhou, S.、Zhang, A.、Zhang, I.、Bai, H. 与 Artzi, Y.。一个用于推理照片中自然语言的语料库。见 Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics，第 6418–6428 页，2019。"
+      },
+      {
+        "text": "Zhou, L., Xu, C., and Corso, J. Towards automatic learning of procedures from web instructional videos. In Proceedings of the AAAI Conference on Artificial Intelligence,",
+        "x": 307.4,
+        "y": 611.4,
+        "w": 235.7,
+        "h": 33.9,
+        "zh": "Zhou, L.、Xu, C. 与 Corso, J.。从网络教学视频中自动学习操作流程。见 Proceedings of the AAAI Conference on Artificial Intelligence，"
+      },
+      {
+        "text": "Sung, Y.-L., Cho, J., and Bansal, M. Vl-adapter: Parameterefficient transfer learning for vision-and-language tasks. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pp. 5227–5237,",
+        "x": 55.4,
+        "y": 537.3,
+        "w": 235.7,
+        "h": 45.8,
+        "zh": "Sung, Y.-L.、Cho, J. 与 Bansal, M.。VL-Adapter：面向视觉-语言任务的参数高效迁移学习。见 Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition，第 5227–5237 页，"
+      },
+      {
+        "text": "Taori, R., Gulrajani, I., Zhang, T., Dubois, Y., Li, X., Guestrin, C., Liang, P., and Hashimoto, T. B.",
+        "x": 55.4,
+        "y": 490.3,
+        "w": 235.2,
+        "h": 21.9,
+        "zh": ""
+      },
+      {
+        "text": "An instruction-following llama model, 2023. URL https://github.com/tatsu-lab/",
+        "x": 65.4,
+        "y": 466.4,
+        "w": 225.3,
+        "h": 21.9,
+        "zh": "一个遵循指令的 LLaMA 模型，2023。URL https://github.com/tatsu-lab/"
+      },
+      {
+        "text": "Touvron, H., Lavril, T., Izacard, G., Martinet, X., Lachaux, M.-A., Lacroix, T., Roziere, B., Goyal, N., Hambro, E.,` Azhar, F., et al. Llama: Open and efficient foundation language models. arXiv preprint arXiv:2302.13971, 2023.",
+        "x": 55.4,
+        "y": 395.5,
+        "w": 235.7,
+        "h": 45.8,
+        "zh": "Touvron, H.、Lavril, T.、Izacard, G.、Martinet, X.、Lachaux, M.-A.、Lacroix, T.、Roziere, B.、Goyal, N.、Hambro, E.、Azhar, F. 等人。LLaMA：开放且高效的基础语言模型。arXiv preprint arXiv:2302.13971，2023。"
+      },
+      {
+        "text": "Wang, Y., Wu, J., Dabral, T., Zhang, J., Brown, G., Lu, C.-T., Liu, F., Liang, Y., Pang, B., Bendersky, M., et al. Nonintrusive adaptation: Input-centric parameter-efficient fine-tuning for versatile multimodal modeling. arXiv preprint arXiv:2310.12100, 2023.",
+        "x": 55.4,
+        "y": 324.6,
+        "w": 235.7,
+        "h": 57.8,
+        "zh": "Wang, Y.、Wu, J.、Dabral, T.、Zhang, J.、Brown, G.、Lu, C.-T.、Liu, F.、Liang, Y.、Pang, B.、Bendersky, M. 等人。非侵入式适配：面向通用多模态建模、以输入为中心的参数高效微调。arXiv preprint arXiv:2310.12100，2023。"
+      },
+      {
+        "text": "Wei, J., Wang, X., Schuurmans, D., Bosma, M., brian ichter, Xia, F., Chi, E. H., Le, Q. V., and Zhou, D. Chain of thought prompting elicits reasoning in large language models. In Advances in Neural Information Processing",
+        "x": 55.4,
+        "y": 265.7,
+        "w": 235.2,
+        "h": 45.8,
+        "zh": "Wei, J.、Wang, X.、Schuurmans, D.、Bosma, M.、brian ichter、Xia, F.、Chi, E. H.、Le, Q. V. 与 Zhou, D.。思维链提示激发大语言模型中的推理。见 Advances in Neural Information Processing"
+      },
+      {
+        "text": "Yeh, S.-Y., Hsieh, Y.-G., Gao, Z., Yang, B. B., Oh, G., and Gong, Y. Navigating text-to-image customization: From lycoris fine-tuning to model evaluation. arXiv preprint arXiv:2309.14859, 2023.",
+        "x": 55.4,
+        "y": 194.8,
+        "w": 234,
+        "h": 45.8,
+        "zh": "Yeh, S.-Y.、Hsieh, Y.-G.、Gao, Z.、Yang, B. B.、Oh, G. 与 Gong, Y.。探索文生图定制：从 LyCORIS 微调到模型评估。arXiv preprint arXiv:2309.14859，2023。"
+      },
+      {
+        "text": "Zhang, Q., Chen, M., Bukharin, A., He, P., Cheng, Y., Chen, W., and Zhao, T. Adaptive budget allocation for parameter-efficient fine-tuning. In The Eleventh International Conference on Learning Representations, 2023.",
+        "x": 55.4,
+        "y": 135.9,
+        "w": 235.7,
+        "h": 45.8,
+        "zh": "Zhang, Q.、Chen, M.、Bukharin, A.、He, P.、Cheng, Y.、Chen, W. 与 Zhao, T.。面向参数高效微调的自适应预算分配。见 The Eleventh International Conference on Learning Representations，2023。"
+      },
+      {
+        "text": "Zhao, Y., Gu, A., Varma, R., Luo, L., Huang, C.-C., Xu, M., Wright, L., Shojanazeri, H., Ott, M., Shleifer, S., et al. Pytorch fsdp: experiences on scaling fully sharded data parallel. arXiv preprint arXiv:2304.11277, 2023.",
+        "x": 55.4,
+        "y": 76.9,
+        "w": 235.7,
+        "h": 45.8,
+        "zh": "Zhao, Y.、Gu, A.、Varma, R.、Luo, L.、Huang, C.-C.、Xu, M.、Wright, L.、Shojanazeri, H.、Ott, M.、Shleifer, S. 等人。PyTorch FSDP：扩展完全分片数据并行的经验。arXiv preprint arXiv:2304.11277，2023。"
+      }
+    ],
+    "14": [
+      {
+        "text": "DoRA: Weight-Decomposed Low-Rank Adaptation",
+        "x": 200.3,
+        "y": 737.9,
+        "w": 196.3,
+        "h": 9,
+        "zh": "DoRA：权重分解的低秩适配"
+      },
+      {
+        "text": "A.1. Weight decomposition analysis on the value weight matrix",
+        "x": 55.4,
+        "y": 695.6,
+        "w": 266,
+        "h": 10,
+        "zh": "A.1. value 权重矩阵上的权重分解分析"
+      },
+      {
+        "text": "In this section, we illustrate the changes in magnitude and direction within the value weight matrix for FT, LoRA, and DoRA across different training steps and layers, as shown in Figure 7. This reveals patterns similar to those seen in the query weight matrix depicted in Figure 2, indicating that DoRA is capable of displaying learning behaviors that closely",
+        "x": 55.4,
+        "y": 653,
+        "w": 486.3,
+        "h": 33.9,
+        "zh": "本节给出 FT、LoRA 和 DoRA 的 value 权重矩阵在不同训练步、不同层上的幅度与方向变化，如图 7 所示。可以看到，其模式与图 2 中 query 权重矩阵相似，说明 DoRA 能够表现出十分接近……的学习行为。"
+      },
+      {
+        "text": "mirror those of FT across various modules.",
+        "x": 55.4,
+        "y": 641.1,
+        "w": 171.6,
+        "h": 10,
+        "zh": "在各个模块上都与 FT 相仿。"
+      },
+      {
+        "text": "Figure 7. Magnitude and Directional changes of FT (a), LoRA (b), and DoRA (c) of the V weight matrices across different layers and",
+        "x": 54.9,
+        "y": 494.5,
+        "w": 486.5,
+        "h": 9,
+        "zh": "图 7. V 权重矩阵在不同层上，FT (a)、LoRA (b) 和 DoRA (c) 的幅度变化与方向变化，以及"
+      },
+      {
+        "text": "A.2. Ablation study for the modification to reduce DoRA training cost",
+        "x": 55.4,
+        "y": 444.1,
+        "w": 295.7,
+        "h": 10,
+        "zh": "A.2. 为降低 DoRA 训练开销所做改动的消融"
+      },
+      {
+        "text": "Table 7 presents the GPU cost and the average accuracy of DoRA with and without the proposed modification for commonsense reasoning tasks and image-text understanding tasks. The results indicate that the modification leads to a training memory reduction of approximately 24.4% in fine-tuning LLaMA and 12.4% in VL-BART. Furthermore, the accuracy of DoRA with the modification remains unchanged for VL-BART and shows a negligible difference of only 0.2",
+        "x": 55.1,
+        "y": 389.6,
+        "w": 486.5,
+        "h": 45.8,
+        "zh": "表 7 给出 DoRA 在有无这一改动时，于常识推理任务和图像-文本理解任务上的 GPU 开销与平均精度。结果表明，该改动使微调 LLaMA 的训练显存大约降低 24.4%，VL-BART 大约降低 12.4%。此外，加上改动后，DoRA 在 VL-BART 上的精度不变，只出现可以忽略的 0.2 之差"
+      },
+      {
+        "text": "compared to DoRA without the modification on LLaMA.",
+        "x": 55.4,
+        "y": 377.6,
+        "w": 228.6,
+        "h": 10,
+        "zh": "与 LLaMA 上未做该改动的 DoRA 相比。"
+      },
+      {
+        "text": "Table 7. GPU cost and accuracy of DoRA with or without the modification on the commonsense reasoning tasks and image-text",
+        "x": 54.9,
+        "y": 347.4,
+        "w": 486.5,
+        "h": 9,
+        "zh": "表 7. DoRA 在有无该改动时，于常识推理任务和图像-文本"
+      }
+    ],
+    "15": [
+      {
+        "text": "DoRA: Weight-Decomposed Low-Rank Adaptation",
+        "x": 200.3,
+        "y": 737.9,
+        "w": 196.3,
+        "h": 9,
+        "zh": "DoRA：权重分解的低秩适配"
+      },
+      {
+        "text": "Table 8. Hyperparameter configurations of DoRA for LLaMA-7B/13B, LLaMA2-7B, and LLaMA3-8B on the commonsense reasoning",
+        "x": 54.9,
+        "y": 684.2,
+        "w": 486.6,
+        "h": 9,
+        "zh": "表 8. DoRA 在常识推理任务上微调 LLaMA-7B/13B、LLaMA2-7B 和 LLaMA3-8B 时的超参数配置"
+      },
+      {
+        "text": "Table 9. Hyperparameter configurations of DoRA for fine-tuning VL-Bart on image/video-text tasks.",
+        "x": 117.3,
+        "y": 517.4,
+        "w": 362.3,
+        "h": 9,
+        "zh": "表 9. 在图像/视频-文本任务上微调 VL-BART 时，DoRA 的超参数配置。"
+      },
+      {
+        "text": "Table 10. Hyperparameter configurations of DoRA and LoRA for fine-tuning LLaVA-1.5-7B with visual instruction tuning datasets.",
+        "x": 54.9,
+        "y": 359.8,
+        "w": 473.7,
+        "h": 9,
+        "zh": "表 10. 用视觉指令微调数据微调 LLaVA-1.5-7B 时，DoRA 和 LoRA 的超参数配置。"
+      }
+    ],
+    "16": [
+      {
+        "text": "DoRA: Weight-Decomposed Low-Rank Adaptation",
+        "x": 200.3,
+        "y": 737.9,
+        "w": 196.3,
+        "h": 9,
+        "zh": "DoRA：权重分解的低秩适配"
+      },
+      {
+        "text": "Table 11. Hyperparameter configurations of DoRA and DVoRA for fine-tuning LLaMA-7B and LLaMA2-7B with cleaned Alpaca dataset.",
+        "x": 54.9,
+        "y": 454.7,
+        "w": 488.1,
+        "h": 9,
+        "zh": "表 11. 用清洗后的 Alpaca 数据集微调 LLaMA-7B 和 LLaMA2-7B 时，DoRA 和 DVoRA 的超参数配置。"
+      }
+    ],
+    "17": [
+      {
+        "text": "DoRA: Weight-Decomposed Low-Rank Adaptation",
+        "x": 200.3,
+        "y": 737.9,
+        "w": 196.3,
+        "h": 9,
+        "zh": "DoRA：权重分解的低秩适配"
+      },
+      {
+        "text": "A.4. Magnitude and Direction difference between DoRA/LoRA fine-tuned weight and the pre-triained weight of",
+        "x": 55.4,
+        "y": 715,
+        "w": 472.9,
+        "h": 10,
+        "zh": "A.4. DoRA/LoRA 微调权重与预训练权重之间的幅度差和方向差，比较对象是"
+      },
+      {
+        "text": "LLaMA2-7B for the commonsesne reasoning tasks",
+        "x": 75.1,
+        "y": 703,
+        "w": 214.6,
+        "h": 10,
+        "zh": "常识推理任务上的 LLaMA2-7B"
+      },
+      {
+        "text": "Figure 8 depicts the magnitude and direction differences in the weights of the query, key, and value matrices between LoRA/DoRA fine-tuned models and the pre-trained model across various layers of LLaMA2-7B for the commonsense reasoning tasks. The figure shows that the DoRA fine-tuned weights deviate less from the pre-trained weights in both magnitude and direction, supporting our hypothesis that a robust foundation model does not need substantial changes for",
+        "x": 55.4,
+        "y": 648.5,
+        "w": 486.2,
+        "h": 45.8,
+        "zh": "图 8 画出了在常识推理任务上，LLaMA2-7B 各层中 query、key 和 value 矩阵的权重，在 LoRA/DoRA 微调模型与预训练模型之间的幅度差和方向差。该图表明，DoRA 微调后的权重在幅度和方向上都更少偏离预训练权重，支持我们的假设：一个扎实的基础模型并不需要大幅改动来"
+      },
+      {
+        "text": "Figure 8. Magnitude and direction differences in the weights of the query, key, and value matrices between LoRA/DoRA fine-tuned models and the pre-trained model across various layers of LLaMA2-7B for the commonsense reasoning tasks.",
+        "x": 54.9,
+        "y": 129.3,
+        "w": 486.5,
+        "h": 19.9,
+        "zh": "图 8. 在常识推理任务上，LLaMA2-7B 各层中，LoRA/DoRA 微调模型与预训练模型的 query、key、value 矩阵权重在幅度和方向上的差异。"
+      }
+    ],
+    "18": [
+      {
+        "text": "DoRA: Weight-Decomposed Low-Rank Adaptation",
+        "x": 200.3,
+        "y": 737.9,
+        "w": 196.3,
+        "h": 9,
+        "zh": "DoRA：权重分解的低秩适配"
+      },
+      {
+        "text": "A.5. Visual instruction tuning evaluation result",
+        "x": 55.4,
+        "y": 715,
+        "w": 198.8,
+        "h": 10,
+        "zh": "A.5. 视觉指令微调的评测结果"
+      },
+      {
+        "text": "Table 12 presents the evaluation result of LLaVA-1.5-7B fine-tuned using DoRA, LoRA, and FT with visual instruction tuning data. The evaluation is conducted on an array of seven different vision-language benchmarks. From the table, we can see that DoRA consistently outmatch FT, and can achieve an average accuracy better than LoRA.",
+        "x": 55.1,
+        "y": 672.4,
+        "w": 486.3,
+        "h": 33.9,
+        "zh": "表 12 给出用视觉指令微调数据、以 DoRA、LoRA 和 FT 微调后的 LLaVA-1.5-7B 的评测结果。评测覆盖七个不同的视觉-语言基准。从表中可以看到，DoRA 稳定胜过 FT，平均精度也能好于 LoRA。"
+      },
+      {
+        "text": "Table 12. Visual instruction tuning evaluation result of DoRA, LoRA, and FT for LLaVA-1.5-7B on a wide range of 7 vision-language",
+        "x": 54.9,
+        "y": 642.2,
+        "w": 486.5,
+        "h": 9,
+        "zh": "表 12. DoRA、LoRA 和 FT 对 LLaVA-1.5-7B 做视觉指令微调后的评测结果，覆盖较广的 7 项视觉-语言"
+      }
+    ],
+    "19": [
+      {
+        "text": "DoRA: Weight-Decomposed Low-Rank Adaptation",
+        "x": 200.3,
+        "y": 737.9,
+        "w": 196.3,
+        "h": 9,
+        "zh": "DoRA：权重分解的低秩适配"
+      },
+      {
+        "text": "A.6. Instruction-tuning evaluation examples",
+        "x": 55.4,
+        "y": 715,
+        "w": 186.6,
+        "h": 10,
+        "zh": "A.6. 指令微调的评测示例"
+      },
+      {
+        "text": "We sample two questions from the MT-Bench question set and present the respective responses from DVoRA and VeRA, including the scores and comments provided by GPT-4. From these examples, we can observe that responses from DVoRA are generally more accurate and well-organized compared to those from VeRA. For instance, in response to Question 24, DVoRA leverages a well-known superhero story that is familiar to children, whereas VeRA’s response begins with an",
+        "x": 55,
+        "y": 660.5,
+        "w": 487.7,
+        "h": 45.8,
+        "zh": "我们从 MT-Bench 的问题集中抽取两道题，并给出 DVoRA 和 VeRA 各自的回答，以及 GPT-4 给出的分数和评语。从这些例子可以看到，DVoRA 的回答总体上比 VeRA 更准确、组织得更好。例如在回答问题 24 时，DVoRA 借用了一个孩子熟悉的知名超级英雄故事，而 VeRA 的回答以一种"
+      },
+      {
+        "text": "uncertain tone, potentially making it less engaging than DVoRA’s reply.",
+        "x": 55.4,
+        "y": 648.5,
+        "w": 285.1,
+        "h": 10,
+        "zh": "不确定的语气开头，因此可能不如 DVoRA 的回答吸引人。"
+      },
+      {
+        "text": "Table 13. Question 24 from MT-Bench alongside with response from LLaMA2-7B fine-tuned with DVoRA and VeRA, and the evaluation",
+        "x": 54.9,
+        "y": 618.3,
+        "w": 486.6,
+        "h": 9,
+        "zh": "表 13. MT-Bench 的问题 24，以及用 DVoRA 和 VeRA 微调的 LLaMA2-7B 的回答与评测"
+      },
+      {
+        "text": "As a superhero, how would you explain your origin story to a curious child? Well, I’m not really sure where I come from. All I know is that one day, I woke up with special powers and abilities that allowed me to help people. I decided to use my powers to fight crime and protect the innocent, and that’s how I became a superhero As a superhero, I have the ability to use my super powers to protect people and fight against evil. My origin story begins when I was just a regular kid like you, but one day, I was bitten by a radioactive spider, and it gave me incredible powers. I could climb walls, shoot webs, and see in the dark. I decided to use my powers to help people, and that’s how I became your friendly neighborhood",
+        "x": 145,
+        "y": 494.8,
+        "w": 390.8,
+        "h": 103.7,
+        "zh": "作为一名超级英雄，你会怎样向一个好奇的孩子解释自己的起源故事？嗯，我其实不太确定自己从哪里来。我只知道，有一天我醒来时拥有了特殊的力量和能力，可以去帮助别人。我决定用这些力量打击犯罪、保护无辜的人，就这样成了一名超级英雄。作为一名超级英雄，我能用超能力保护人们、对抗邪恶。我的起源故事要从我还是个和你一样的普通小孩说起。有一天，我被一只放射性蜘蛛咬了，于是获得了不可思议的力量。我能爬墙、喷射蛛丝，还能在黑暗中看见东西。我决定用这些力量帮助别人，就这样成了你友好的邻居"
+      },
+      {
+        "text": "Score: 5 7. Assistant 1’s response starts with an uncertain tone, which might not be very engaging for a child. The explanation is quite vague and doesn’t offer a clear or imaginative origin story that could captivate a child’s interest. It does, however, maintain the theme of using powers for good, which is a positive message. Assistant 2’s response is more detailed and uses a familiar superhero origin story (Spider-Man’s) that many children can relate to and understand. It’s engaging and provides a clear narrative of how an ordinary person can become a superhero. However, it directly references Spider-Man, which is not an original origin story and could be misleading if the assistant is supposed to be a unique superhero. Despite this, the response is more likely to resonate with a child due to its clarity and reliability. Both responses could be improved by providing an original and imaginative origin story that doesn’t rely on existing superhero narratives. They should also ensure that the story is simple enough for a child to understand while being engaging and inspiring.",
+        "x": 144.6,
+        "y": 346.3,
+        "w": 392.1,
+        "h": 129.5,
+        "zh": "分数：5、7。助手 1 的回答以不确定的语气开头，对孩子来说可能不太吸引人。解释相当含糊，没有给出清晰或富有想象的起源故事来抓住孩子的兴趣。不过，它确实保住了“把力量用于做好事”这一主题，这是正面的信息。助手 2 的回答更具体，用了一个许多孩子都能对上号、也听得懂的熟悉超级英雄起源（蜘蛛侠的故事）。它很吸引人，并清楚讲了一个普通人怎样变成超级英雄。不过，它直接提到蜘蛛侠，这并不是原创的起源故事；如果助手应当是一个独特的超级英雄，这一点可能会误导人。尽管如此，由于清楚、可靠，这个回答更可能引起孩子的共鸣。两个回答都可以改进：给出原创、有想象力的起源故事，不要依赖已有的超级英雄叙事。故事也应当简单到孩子能懂，同时有趣、能鼓舞人。"
+      }
+    ],
+    "20": [
+      {
+        "text": "DoRA: Weight-Decomposed Low-Rank Adaptation",
+        "x": 200.3,
+        "y": 737.9,
+        "w": 196.3,
+        "h": 9,
+        "zh": "DoRA：权重分解的低秩适配"
+      },
+      {
+        "text": "Table 14. Question 33 from MT-Bench alongside with response from LLaMA2-7B fine-tuned with DVoRA and VeRA, and the evaluation",
+        "x": 54.9,
+        "y": 644.8,
+        "w": 486.6,
+        "h": 9,
+        "zh": "表 14. MT-Bench 的问题 33，以及用 DVoRA 和 VeRA 微调的 LLaMA2-7B 的回答与评测"
+      },
+      {
+        "text": "Why might someone choose to use a paper map or ask for directions instead of relying on a GPS",
+        "x": 145,
+        "y": 622.1,
+        "w": 390.5,
+        "h": 10,
+        "zh": "为什么有人会选择使用纸质地图或问路，而不是依赖 GPS"
+      },
+      {
+        "text": "There are several reasons why someone might choose to use a paper map or ask for directions instead of relying on a GPS device or smartphone app. Some people may prefer the physical act of navigating with a paper map, as it can be more tactile and interactive. Others may prefer to have a hard copy of the map in case the GPS or app fails or the battery dies. Additionally, some people may not have access to a GPS device or smartphone, or may not want to rely on technology for navigation. Finally, some people may simply prefer the security and peace of mind that comes with knowing exactly where they are and how to get to their destination There are several reasons why someone might choose to use a paper map or ask for directions instead of relying on a GPS device or smartphone app. Here are some of them: 1. Navigation accuracy: GPS devices and smartphone apps rely on satellite signals to pinpoint your location, but this technology is not foolproof. GPS signals can be blocked by tall buildings, tunnels, or other obstacles, resulting in inaccurate or missing information. Paper maps, on the other hand, are based on accurate, up-to-date information that is not subject to these limitations. 2. Cost: GPS devices and smartphone apps can be expensive to purchase and maintain. Paper maps are free to use and do not require an ongoing subscription or data plan. 3. Personal preference: Some people prefer the tactile experience of using a paper map, which can be easier to read and navigate than a screen. Others enjoy the challenge of navigating without technology, which can help them learn more about the area they are visiting. 4. Battery life: GPS devices and smartphone apps can drain batteries quickly, especially when used for navigation. Paper maps do not require power, so they can be used for extended periods without recharging. 5. Offline use: GPS devices and smartphone apps rely on an internet connection to function properly. If there is no signal, the device will not be able to provide accurate information. Paper maps, on the other hand, can be used offline, making them ideal for use in remote or unpopulated areas. In summary, there are several reasons why someone might choose to use a paper map or ask for directions instead of relying on a GPS device or smartphone app. These include navigation accuracy, cost, personal preference, battery life, and offline use. Score: 6 8. Assistant 1’s response is somewhat brief and lacks specific details that could be helpful to the user. It mentions the tactile nature of paper maps, the possibility of technology failure, lack of access to technology, and a general preference for security and peace of mind. However, it does not delve into the practical considerations such as GPS signal limitations, cost, battery life, or offline use, which are important factors in deciding between paper maps and digital navigation tools. Assistant 2’s response is more comprehensive and provides a structured list of reasons, including navigation accuracy, cost, personal preference, battery life, and offline use. Each point is explained clearly, giving the user a better understanding of the potential advantages of paper maps over GPS devices or smartphone apps. The response is relevant, accurate, and detailed, making it more helpful to the user. Both assistants provided relevant and accurate information, but Assistant 2’s answer is more detailed and structured, which is why it receives a higher score. The scores reflect the level of detail and the usefulness of the information provided to the user, with Assistant 2 offering a more",
+        "x": 144.6,
+        "y": 152.8,
+        "w": 392.6,
+        "h": 450.4,
+        "zh": "有人会选择纸质地图或问路，而不是依赖 GPS 设备或手机应用，原因有好几个。有些人更喜欢用地图实际走路线，因为这样更有触感、也更有互动。另一些人希望手里有一份纸质地图，以防 GPS 或应用失灵，或者电池耗尽。此外，有些人没有 GPS 设备或智能手机，或者不想靠技术来导航。最后，有些人只是更喜欢那种确切知道自己在哪、也知道怎么到达目的地所带来的安心。有人会选择纸质地图或问路，而不是依赖 GPS 设备或手机应用，原因有好几个。下面列出其中一些：1. 导航精度：GPS 设备和手机应用靠卫星信号定位，但这套技术并不是万无一失。高楼、隧道或其他障碍物会挡住 GPS 信号，导致信息不准或缺失。纸质地图则基于准确、最新的信息，不受这些限制。2. 费用：GPS 设备和手机应用的购买与维护可能很贵。纸质地图可以免费使用，不需要持续订阅或流量套餐。3. 个人偏好：有些人喜欢纸质地图的触感，读起来、用来找路也比屏幕更容易。另一些人喜欢不靠技术找路的挑战，这能帮助他们更多地了解所到之处。4. 电池续航：GPS 设备和手机应用很耗电，导航时尤其如此。纸质地图不需要电，可以长时间使用而无需充电。5. 离线使用：GPS 设备和手机应用要靠网络才能正常工作。没有信号时，设备就无法提供准确信息。纸质地图则可以离线使用，因此适合偏远或人烟稀少的地区。总之，有人会选择纸质地图或问路，而不是依赖 GPS 设备或手机应用，原因有好几个，包括导航精度、费用、个人偏好、电池续航和离线使用。分数：6、8。助手 1 的回答偏简略，缺少对用户可能有用的具体细节。它提到了纸质地图的触感、技术可能失灵、接触不到技术，以及总体上更想要安心。不过，它没有展开 GPS 信号受限、费用、电池续航或离线使用这些实际考量，而这些正是在纸质地图和数字导航之间做选择时的重要因素。助手 2 的回答更完整，并按条目列出原因，包括导航精度、费用、个人偏好、电池续航和离线使用。每一点都解释清楚了，让用户更好地理解纸质地图相对 GPS 设备或手机应用的潜在好处。这个回答相关、准确、具体，对用户更有帮助。两位助手都提供了相关且准确的信息，但助手 2 的回答更详细、结构更好，因此得分更高。分数反映的是细节程度，以及提供给用户的信息有多有用，其中助手 2 给出了更"
+      }
+    ],
+    "21": [
+      {
+        "text": "DoRA: Weight-Decomposed Low-Rank Adaptation",
+        "x": 200.3,
+        "y": 737.9,
+        "w": 196.3,
+        "h": 9,
+        "zh": "DoRA：权重分解的低秩适配"
+      },
+      {
+        "text": "A.7. Robustness towards different numbers of instruction tunning examples",
+        "x": 55.4,
+        "y": 715,
+        "w": 321.1,
+        "h": 10,
+        "zh": "A.7. 面对不同数量的指令微调样本时的稳健性"
+      },
+      {
+        "text": "Figure 9 depicts the score of DoRA, LoRA, DVoRA, and VeRA for fine-tuning LLaMA-7B with varying instruction-tuning sample sizes, including 1000, 4000, 7000, and 10000. From the figure, we can observe that similar to that of the result on LLaMA2-7B, both DoRA and DVoRA consistently outperform LoRA and VeRA across the entire range of training sample",
+        "x": 55.4,
+        "y": 672.4,
+        "w": 486,
+        "h": 33.9,
+        "zh": "图 9 给出用不同指令微调样本量微调 LLaMA-7B 时，DoRA、LoRA、DVoRA 和 VeRA 的分数，样本量包括 1000、4000、7000 和 10000。从图中可以看到，与 LLaMA2-7B 上的结果类似，DoRA 和 DVoRA 在整个训练样本范围内都稳定优于 LoRA 和 VeRA。"
+      },
+      {
+        "text": "Figure 9. Performance of LLaMA-7B fine-tuned with LoRA, DoRA, VeRA, and DVoRA on MT-Bench using different numbers of training",
+        "x": 54.9,
+        "y": 491.6,
+        "w": 486.5,
+        "h": 9,
+        "zh": "图 9. 用 LoRA、DoRA、VeRA 和 DVoRA 微调的 LLaMA-7B 在 MT-Bench 上的表现，所用训练"
+      },
+      {
+        "text": "samples from Alpaca dataset (Taori et al., 2023).",
+        "x": 55.4,
+        "y": 480.6,
+        "w": 174.6,
+        "h": 9,
+        "zh": "样本来自 Alpaca 数据集（Taori 等人，2023）。"
+      }
+    ],
+    "22": [
+      {
+        "text": "DoRA: Weight-Decomposed Low-Rank Adaptation",
+        "x": 200.3,
+        "y": 737.9,
+        "w": 196.3,
+        "h": 9,
+        "zh": "DoRA：权重分解的低秩适配"
+      },
+      {
+        "text": "A.8. Robustness of DoRA towards different rank",
+        "x": 55.4,
+        "y": 715,
+        "w": 206.5,
+        "h": 10,
+        "zh": "A.8. DoRA 面对不同秩时的稳健性"
+      },
+      {
+        "text": "Table 15 shows a comparison of the average accuracy between LoRA and DoRA method across various rank settings for commonsense reasoning tasks. DoRA consistently outperforms LoRA at all rank settings, with the performance gap widening as the rank decreases. This suggests that our method effectively enhances the learning capacity of LoRA, enabling",
+        "x": 55.1,
+        "y": 672.4,
+        "w": 486.4,
+        "h": 33.9,
+        "zh": "表 15 比较了 LoRA 和 DoRA 在常识推理任务上、不同秩设定下的平均精度。DoRA 在所有秩设定下都稳定优于 LoRA，而且秩越小，差距越大。这说明我们的方法有效提升了 LoRA 的学习能力，使它能够"
+      },
+      {
+        "text": "it to achieve better accuracy with fewer trainable parameters.",
+        "x": 55.4,
+        "y": 660.5,
+        "w": 242.4,
+        "h": 10,
+        "zh": "用更少的可训练参数取得更高的精度。"
+      },
+      {
+        "text": "Table 15. Accuracy comparison of LoRA and DoRA with varying ranks for LLaMA-7B on the commonsense reasoning tasks.",
+        "x": 54.9,
+        "y": 630.3,
+        "w": 452.9,
+        "h": 9,
+        "zh": "表 15. LLaMA-7B 在常识推理任务上，LoRA 与 DoRA 在不同秩下的精度对比。"
+      },
+      {
+        "text": "BoolQ PIQA SIQA HellaSwag WinoGrande ARC-e ARC-c OBQA Avg.",
+        "x": 220.4,
+        "y": 609,
+        "w": 314.2,
+        "h": 9.2,
+        "zh": "BoolQ、PIQA、SIQA、HellaSwag、WinoGrande、ARC-e、ARC-c、OBQA、平均"
+      }
+    ],
+    "23": [
+      {
+        "text": "DoRA: Weight-Decomposed Low-Rank Adaptation",
+        "x": 200.3,
+        "y": 737.9,
+        "w": 196.3,
+        "h": 9,
+        "zh": "DoRA：权重分解的低秩适配"
+      },
+      {
+        "text": "Figures 10 and 11 show the images produced by SDXL fine-tuned with DoRAand LoRA via DreamBooth (Ruiz et al., 2023) personalization techniques on two distinct training sets: 3D Icon and Lego . The results reveal that DoRA can achieve considerably better personalization than LoRA with identical training configurations, more closely matching the",
+        "x": 55.4,
+        "y": 672.4,
+        "w": 487.2,
+        "h": 33.9,
+        "zh": "图 10 和图 11 展示了用 DreamBooth（Ruiz 等人，2023）个性化技术，在两个不同训练集（3D Icon 和 Lego）上以 DoRA 和 LoRA 微调 SDXL 后生成的图像。结果表明，在相同训练配置下，DoRA 的个性化可以明显好于 LoRA，也更接近"
+      },
+      {
+        "text": "Figure 10. Images generated with SDXL finetuned with LoRA and DoRA on the 3D Icon training sets.",
+        "x": 113.5,
+        "y": 434.1,
+        "w": 369.9,
+        "h": 9,
+        "zh": "图 10. 在 3D Icon 训练集上用 LoRA 和 DoRA 微调 SDXL 后生成的图像。"
+      },
+      {
+        "text": "Figure 11. Images generated with SDXL finetuned with LoRA and DoRA on the Lego training sets.",
+        "x": 118.9,
+        "y": 195.4,
+        "w": 359.1,
+        "h": 9,
+        "zh": "图 11. 在 Lego 训练集上用 LoRA 和 DoRA 微调 SDXL 后生成的图像。"
+      },
+      {
+        "text": "https://huggingface.co/datasets/linoyts/3d_icon https://huggingface.co/datasets/merve/lego_sets_latest",
+        "x": 71.6,
+        "y": 76.9,
+        "w": 290.5,
+        "h": 19.8,
+        "zh": ""
+      }
+    ]
+  }
+}

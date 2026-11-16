@@ -1,0 +1,1155 @@
+{
+  "id": "2101.06840",
+  "title": "2101.06840",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "ZeRO-Offload: Democratizing Billion-Scale Model Training",
+        "x": 122.6,
+        "y": 690.2,
+        "w": 366.7,
+        "h": 14.3,
+        "zh": "ZeRO-Offload：普及十亿级模型训练"
+      },
+      {
+        "text": "Jie Ren , Samyam Rajbhandari , Reza Yazdani Aminabadi , Olatunji Ruwase",
+        "x": 128.1,
+        "y": 652.6,
+        "w": 380.5,
+        "h": 12,
+        "zh": "Jie Ren、Samyam Rajbhandari、Reza Yazdani Aminabadi、Olatunji Ruwase"
+      },
+      {
+        "text": "Shuangyan Yang , Minjia Zhang , Dong Li , Yuxiong He",
+        "x": 177.6,
+        "y": 637.9,
+        "w": 281.4,
+        "h": 12,
+        "zh": "Shuangyan Yang、Minjia Zhang、Dong Li、Yuxiong He"
+      },
+      {
+        "text": "Microsoft , University of California, Merced {jren6, syang127, dli35}@ucmerced.edu, {samyamr, yazdani.reza, olruwase, minjiaz, yuxhe}@microsoft.com",
+        "x": 60,
+        "y": 609.3,
+        "w": 521.6,
+        "h": 25.9,
+        "zh": "微软，加州大学默塞德分校 {jren6, syang127, dli35}@ucmerced.edu，{samyamr, yazdani.reza, olruwase, minjiaz, yuxhe}@microsoft.com"
+      },
+      {
+        "text": "parameters. With the three orders of magnitude growth in model size since 2017, the model accuracy continues to imLarge-scale model training has been a playing ground for a",
+        "x": 54,
+        "y": 547.8,
+        "w": 505.7,
+        "h": 28.2,
+        "zh": "参数。自 2017 年以来，模型规模增长了三个数量级，模型精度仍在继续提高｜大规模模型训练一直是这样一块场地，只留给"
+      },
+      {
+        "text": "prove with the model size [12]. Recent studies in fact show limited few requiring complex model refactoring and access to",
+        "x": 54,
+        "y": 535.8,
+        "w": 504.4,
+        "h": 16.3,
+        "zh": "并随着模型规模提高 [12]。近期研究实际上也给出了证据。｜少数既要做复杂的模型重构，又要能够用上"
+      },
+      {
+        "text": "that larger models are more resource-efficient to train than prohibitively expensive GPU clusters. ZeRO-Offload changes",
+        "x": 54,
+        "y": 523.9,
+        "w": 504,
+        "h": 16.3,
+        "zh": "更大的模型训练起来更省资源。｜贵到难以负担的 GPU 集群。ZeRO-Offload 改变了"
+      },
+      {
+        "text": "smaller ones [12] for a given accuracy target. As a result, we the large model training landscape by making large model",
+        "x": 54,
+        "y": 511.9,
+        "w": 504,
+        "h": 16.3,
+        "zh": "在给定精度目标下更小的模型 [12]。因此，我们｜大模型训练的格局，办法是让大模型"
+      },
+      {
+        "text": "expect the model size to continue growing in the future. training accessible to nearly everyone. It can train models with",
+        "x": 54,
+        "y": 500,
+        "w": 485.9,
+        "h": 16.3,
+        "zh": "预期模型规模今后还会继续增长。｜训练变得几乎人人都能做。它能训练的模型拥有"
+      },
+      {
+        "text": "However, accessibility to large model training is severely over 13 billion parameters on a single GPU, a 10x increase",
+        "x": 54,
+        "y": 488,
+        "w": 504.4,
+        "h": 14.3,
+        "zh": "然而，大模型训练能否真正用上，受到严重｜在单块 GPU 上超过 130 亿个参数，这是 10 倍的规模提升"
+      },
+      {
+        "text": "limited by the nature of state-of-art system technologies. in size compared to popular framework such as PyTorch, and",
+        "x": 54,
+        "y": 476,
+        "w": 505.7,
+        "h": 14.3,
+        "zh": "现有系统技术本身特性的限制。｜相对 PyTorch 这类常用框架而言，而且"
+      },
+      {
+        "text": "Those technologies make entry into the large model trainit does so without requiring any model change from the data",
+        "x": 54,
+        "y": 464.1,
+        "w": 505.7,
+        "h": 14.3,
+        "zh": "这些技术使踏入大模型训练｜它做到这一点，并不要求对模型做任何改动，这件事落在数据"
+      },
+      {
+        "text": "ing space prohibitively expensive. To be more specific, disscientists or sacrificing computational efficiency.",
+        "x": 54,
+        "y": 452.1,
+        "w": 505.7,
+        "h": 14.3,
+        "zh": "领域的门槛抬到高不可攀。说得更具体些，分布式｜科学家这一边，同时也不牺牲计算效率。"
+      },
+      {
+        "text": "tributed parallel DL training technologies such as pipeline ZeRO-Offload enables large model training by offloading",
+        "x": 64,
+        "y": 439.6,
+        "w": 494,
+        "h": 14.9,
+        "zh": "并行深度学习训练技术，比如流水线｜ZeRO-Offload 让大模型训练成为可能，靠的是把"
+      },
+      {
+        "text": "parallelism [10], model parallelism [28], and ZeRO [21] data and compute to CPU. To preserve compute efficiency,",
+        "x": 54,
+        "y": 427.6,
+        "w": 504,
+        "h": 14.9,
+        "zh": "并行 [10]、模型并行 [28] 和 ZeRO [21]｜数据和计算卸到 CPU。为了保住计算效率，"
+      },
+      {
+        "text": "(Zero Redundancy Optimizer) allow transcending the memit is designed to minimize the data movement to/from GPU,",
+        "x": 54,
+        "y": 415.7,
+        "w": 505.7,
+        "h": 14.9,
+        "zh": "（Zero Redundancy Optimizer，零冗余优化器）得以跨过内存｜它的设计是尽量减少进出 GPU 的数据搬运，"
+      },
+      {
+        "text": "ory boundaries of single GPU/accelerator device by splitting and reduce CPU compute time while maximizing memory",
+        "x": 54,
+        "y": 403.7,
+        "w": 504,
+        "h": 14.9,
+        "zh": "单块 GPU 或加速器的边界，做法是切分｜同时缩短 CPU 计算时间，并把内存这边尽量做到最大"
+      },
+      {
+        "text": "the model states (parameters, gradients and optimizer states) savings on GPU. As a result, ZeRO-Offload can achieve 40",
+        "x": 54,
+        "y": 391.8,
+        "w": 504.7,
+        "h": 14.9,
+        "zh": "模型状态（参数、梯度以及优化器状态）｜省下来的是 GPU 上的内存。因此，ZeRO-Offload 可以达到 40"
+      },
+      {
+        "text": "across multiple GPU devices, enabling massive models that TFlops/GPU on a single NVIDIA V100 GPU for 10B pa-",
+        "x": 53.7,
+        "y": 379.8,
+        "w": 504.3,
+        "h": 14.9,
+        "zh": "到多块 GPU 设备上，从而让那些巨大的模型成为可能，这些模型｜TFlops/GPU，在单块 NVIDIA V100 GPU 上对应 10B 参数的"
+      },
+      {
+        "text": "would otherwise simply not fit in a single GPU memory. All rameter model compared to 30TF using PyTorch alone for a",
+        "x": 54,
+        "y": 367.9,
+        "w": 504,
+        "h": 14.9,
+        "zh": "本来一块 GPU 的内存根本放不下。所有｜模型；对照是只用 PyTorch 得到的 30TF，训练的是一个"
+      },
+      {
+        "text": "record-breaking large models such as GPT-2, Megatron-LM, 1.4B parameter model, the largest that can be trained without",
+        "x": 53.3,
+        "y": 355.9,
+        "w": 506,
+        "h": 14.9,
+        "zh": "破纪录的大模型，如 GPT-2、Megatron-LM、｜1.4B 参数的模型，这也是还能训练下去的最大模型，只要不"
+      },
+      {
+        "text": "Turing-NLG, GPT-3, were trained using a combination of the running out of memory. ZeRO-Offload is also designed to",
+        "x": 54,
+        "y": 344,
+        "w": 504,
+        "h": 14.9,
+        "zh": "Turing-NLG、GPT-3，都是把多种技术合在一起训练出来的｜把内存耗尽。ZeRO-Offload 在设计上还能够"
+      },
+      {
+        "text": "aforementioned technologies. However, all of these DL parscale on multiple-GPUs when available, offering near linear",
+        "x": 54,
+        "y": 332,
+        "w": 505.7,
+        "h": 14.9,
+        "zh": "前面说的那些技术。不过，所有这些深度学习并行｜在有多块 GPU 时扩展，并给出接近线性的"
+      },
+      {
+        "text": "allel technologies require having enough GPU devices such speedup on up to 128 GPUs. Additionally, it can work to-",
+        "x": 54,
+        "y": 320.1,
+        "w": 504,
+        "h": 14.9,
+        "zh": "技术都要求 GPU 数量足够多，从而｜加速，最多可以到 128 块 GPU。此外，它还能一起"
+      },
+      {
+        "text": "that the aggregated GPU memory can hold the model states gether with model parallelism to train models with over 70",
+        "x": 54,
+        "y": 308.1,
+        "w": 504,
+        "h": 14.9,
+        "zh": "加总的 GPU 内存放得下模型状态｜模型并行一起工作，从而训练超过 70"
+      },
+      {
+        "text": "required for the training. For example, training a 10B parambillion parameters on a single DGX-2 box, a 4.5x increase in",
+        "x": 54,
+        "y": 296.1,
+        "w": 505.7,
+        "h": 14.9,
+        "zh": "，而训练需要这些状态。例如，要训练一个 10B 参数｜十亿个参数，放在单台 DGX-2 上，增幅是 4.5 倍，增加的是"
+      },
+      {
+        "text": "eter model efficiently requires a DGX-2 equivalent node with model size compared to using model parallelism alone.",
+        "x": 54,
+        "y": 284.2,
+        "w": 504,
+        "h": 14.9,
+        "zh": "的模型并训得高效，就需要一台相当于 DGX-2 的节点，配备｜模型规模，对照是只用模型并行。"
+      },
+      {
+        "text": "16 NVIDIA V100 cards, which cost over 100K, beyond the By combining compute and memory efficiency with ease-",
+        "x": 64,
+        "y": 271.7,
+        "w": 494,
+        "h": 15.5,
+        "zh": "16 张 NVIDIA V100，花费超过 100K，已经超出了｜把计算效率、内存效率和易用"
+      },
+      {
+        "text": "reach of many data scientists, and even many academic and of-use, ZeRO-Offload democratizes large-scale model train-",
+        "x": 54,
+        "y": 259.7,
+        "w": 504,
+        "h": 15.5,
+        "zh": "许多数据科学家的承受范围，甚至许多学术界以及｜性合在一起，ZeRO-Offload 把大规模模型训练"
+      },
+      {
+        "text": "industrial institutions. ing making it accessible to even data scientists with access to",
+        "x": 54,
+        "y": 247.7,
+        "w": 350.8,
+        "h": 15.5,
+        "zh": "工业界机构也够不到。｜变得谁都能碰，哪怕数据科学家手头只有"
+      },
+      {
+        "text": "Heterogeneous DL training is a promising approach to reduce GPU memory requirement by exploiting CPU memory. Many efforts have been made in this direction [8, 9, 11, 17, 23, 23, 24, 32–34]. Nearly all of them target CNN based models, where activation memory is the memory Since the advent of the attention-based deep learning (DL)",
+        "x": 54,
+        "y": 179.6,
+        "w": 504.3,
+        "h": 69.7,
+        "zh": "异构深度学习训练是一条有希望的路：利用 CPU 内存来降低 GPU 内存需求。这个方向已经有不少工作 [8, 9, 11, 17, 23, 23, 24, 32–34]。它们几乎都针对基于 CNN 的模型，在这些模型里占内存的是激活｜自基于注意力的深度学习（DL）出现以来"
+      },
+      {
+        "text": "bottleneck, and model size is fairly small (less than 500M). models in 2017, we have seen an exponential growth in DL",
+        "x": 54,
+        "y": 167.6,
+        "w": 505.7,
+        "h": 21.9,
+        "zh": "成了瓶颈，而且模型规模相当小（不到 500M）。｜模型在 2017 年问世之后，我们看到深度学习出现了指数级增长，增长的是"
+      },
+      {
+        "text": "However, the primary memory bottleneck for recent attention model size, fueled by substantial quality gains that these atten-",
+        "x": 54,
+        "y": 155.7,
+        "w": 504,
+        "h": 21.9,
+        "zh": "然而，对最近这一类基于注意力的模型，首要内存瓶颈在｜模型规模，推动力是质量上的大幅提升，这些提升来自这些基于注意"
+      },
+      {
+        "text": "based large model training are the model states, instead of tion based models can offer with the increase in the number",
+        "x": 54,
+        "y": 143.7,
+        "w": 504,
+        "h": 21.9,
+        "zh": "大模型训练，瓶颈是模型状态，而不是｜力的模型，随着参数数量增加所能提供的"
+      },
+      {
+        "text": "activation memory. There is an absence in literature studying of parameters. For example, the largest language model in",
+        "x": 54,
+        "y": 131.8,
+        "w": 504,
+        "h": 21.9,
+        "zh": "激活内存。文献里还没有工作去研究｜参数。例如，文献中最大的语言模型在"
+      },
+      {
+        "text": "these workloads for heterogeneous DL training. Additionally, literature had less than 100M parameters in 2017, it grew",
+        "x": 54,
+        "y": 119.8,
+        "w": 505.2,
+        "h": 21.9,
+        "zh": "异构深度学习训练下的这类负载。此外，｜2017 年还不到 100M 个参数，后来增长"
+      },
+      {
+        "text": "existing efforts on heterogeneous training are further limited to over 300M with BERT [6] in 2018, increasing to tens of",
+        "x": 54,
+        "y": 107.9,
+        "w": 504,
+        "h": 21.9,
+        "zh": "现有的异构训练工作还受到进一步限制｜到 300M 以上，也就是 2018 年的 BERT [6]，并继续增加到数十"
+      },
+      {
+        "text": "in two major ways: i) nearly all of them exploit CPU memory, billions in 2019 with models such as GPT-2 [3], T5 [20],",
+        "x": 54,
+        "y": 95.9,
+        "w": 505.2,
+        "h": 21.9,
+        "zh": "，主要是两个方面：其一，它们几乎都只用 CPU 的内存，｜亿的规模，时间是 2019 年，模型包括 GPT-2 [3]、T5 [20]，"
+      },
+      {
+        "text": "but not CPU compute, which we show can be used to signifiMegatron-LM [28] and Turing-NLG [25]. Today, the largest",
+        "x": 54,
+        "y": 84,
+        "w": 505.7,
+        "h": 21.9,
+        "zh": "却没有用 CPU 的计算；我们会说明，这些计算可以显著｜以及 Megatron-LM [28] 和 Turing-NLG [25]。今天，最大的"
+      },
+      {
+        "text": "cantly reduce the CPU-GPU communication overhead, and language model GPT-3 [2] has a staggering number of 175B",
+        "x": 54,
+        "y": 72,
+        "w": 504,
+        "h": 21.9,
+        "zh": "降低 CPU 与 GPU 之间的通信开销，而且｜语言模型 GPT-3 [2]，参数数量达到惊人的 175B"
+      },
+      {
+        "text": "ii) they are mostly designed for and evaluated on single GPU",
+        "x": 317.9,
+        "y": 72,
+        "w": 240.1,
+        "h": 10,
+        "zh": "其二，它们大多只为单块 GPU 设计，评估也是在单块 GPU 上做的"
+      }
+    ],
+    "2": [
+      {
+        "text": "[9, 11, 23, 34], without a clear path to scaling efficiently on multiple GPUs that is crucial for large model training. Addressing the aforementioned limitation, we attempt to democratize large model training by developing ZeRO-Offload, a novel heterogeneous DL training technology designed specifically for large model training. ZeRO-Offload exploits both CPU memory and compute for offloading, while offering a clear path towards efficiently scaling on multiple GPUs by working with ZeRO-powered data parallelism [21]. Additionally, our first principle analysis shows that ZeRO-Offload provides an optimal and the only optimal solution in maximizing memory saving while minimizing communication overhead and CPU compute overhead for large model training. ZeRO-Offload is designed around three main pillars: i) Efficiency, ii) Scalabilty, and iii) Usability. Efficiency: The offload strategy is designed with the goal of achieving comparable compute efficiency to the state-of-art non-offload strategies but for significantly larger models. To achieve this goal, we rely on first principle analysis to identify a unique optimal computation and data partitioning strategy between CPU and GPU devices that is optimal in three key aspects: i) it requires orders-of-magnitude fewer computation on CPU compared to GPU, preventing the CPU compute from becoming a performance bottleneck, ii) it minimizes the communication volume between CPU and GPU preventing communication from being a bottleneck, and iii) it provably maximizes memory savings on GPU while achieving minimum communication volume. Our analysis shows that to be optimal in the aforementioned regards, we must offload the gradients, optimizer states and optimizer computation to CPU, while keeping the parameters and forward and backward computation on GPU. This strategy enables a 10x increase in model size, with minimum communication and limited CPU computation, which allows us to train 13B parameters on a single NVIDIA V100 GPU at 40 TFLOPS, compared to 30 TFLOPS on the same GPU with 1.2B parameters, the largest model that can be trained without any CPU offloading. Offloading optimizer computation requires CPU to perform O(M) computation compared to O(MB) on GPU where M and B are the model size and batch sizes. In most cases, the batch size is large, and CPU computation is not a bottleneck, but for small batch sizes, the CPU compute can be a bottleneck. We address this using two optimizations: i) an efficient CPU optimizer that is up to 6x faster than the-state-of-art , and ii)One-step delayed parameter update that allows overlapping the CPU optimizer step with GPU compute, while preserving accuracy. Together, they preserve efficiency for ZeRO-Offload even with small batch sizes. Scalability: Good scalability is crucial to take advantage of multiple GPUs that may be available to some data scientists. In the DL community, data parallelism is generally used as the de facto standard to scale DL training to multiple GPUs [5, 26, 35]. However, it is not designed to work with",
+        "x": 53.6,
+        "y": 72,
+        "w": 242.1,
+        "h": 648,
+        "zh": "[9, 11, 23, 34]，也没有一条能在多块 GPU 上高效扩展的明确路径，而大模型训练恰恰需要这种扩展。针对上述限制，我们尝试用 ZeRO-Offload 来普及大模型训练。这是一种专为大模型训练设计的新型异构深度学习训练技术。ZeRO-Offload 在卸载时同时使用 CPU 的内存和计算，并通过与 ZeRO 所支持的数据并行 [21] 配合，给出一条在多 GPU 上高效扩展的明确路径。此外，我们的第一性原理分析表明：若要在尽量节省内存的同时，把通信开销和 CPU 计算开销都压到最低，ZeRO-Offload 给出的是最优解，而且是唯一的最优解。ZeRO-Offload 围绕三根支柱来设计：效率、可扩展性，以及易用性。效率：卸载策略的目标，是在模型大得多的情况下，计算效率仍能与当前最好的非卸载方案相当。为此，我们依靠第一性原理分析，找出 CPU 与 GPU 之间一套独特的最优计算和数据划分。它在三个关键方面都是最优的：第一，CPU 上的计算量比 GPU 少几个数量级，因此 CPU 计算不会成为性能瓶颈；第二，它把 CPU 与 GPU 之间的通信量降到最低，因此通信不会成为瓶颈；第三，在通信量已经最小的同时，它可以证明 GPU 上省下的内存是最多的。分析表明，要在上述几点上同时达到最优，就必须把梯度、优化器状态和优化器计算卸到 CPU，而把参数以及前向、反向计算留在 GPU。这一策略把模型规模提高 10 倍，通信最少，CPU 计算也有限，因此我们可以在单块 NVIDIA V100 GPU 上以 40 TFLOPS 训练 13B 参数；同一块 GPU 上不做任何 CPU 卸载时，最大只能训练 1.2B 参数，吞吐是 30 TFLOPS。把优化器计算卸出去，意味着 CPU 要做 O(M) 的计算，GPU 上则是 O(MB)，其中 M 和 B 分别是模型规模和 batch size。多数情况下 batch size 很大，CPU 计算不是瓶颈；但 batch size 很小时，CPU 计算可能成为瓶颈。我们用两项优化来处理：第一，一个高效的 CPU 优化器，最多比现有最好的实现快 6 倍；第二，一步延迟的参数更新，让 CPU 上的优化器步骤与 GPU 计算重叠，同时保住精度。两者合在一起，使 ZeRO-Offload 即使在小 batch 下也能维持效率。可扩展性：扩展性好很关键，这样才能用上一些数据科学家手头可能有的多块 GPU。在深度学习社区里，数据并行通常被当作把训练扩展到多 GPU 的事实标准 [5, 26, 35]。不过，它的设计并不是为了和"
+      },
+      {
+        "text": "Figure 1: ZeRO-Offload can be enabled with a few lines of change. The code on left shows a standard training pipeline, while the right shows the same pipeline with ZeRO-Offload enabled. heterogeneous training and presents scalability challenges because of the replication of data and computation in data parallel training. Data parallel training replicates all the model states such as optimizer states, parameters, and gradients, and it also replicates the optimizer computation on each GPU. Therefore, offloading model states or optimizer computation to CPU in combination with data parallelism will result in significant replication of communication and CPU compute: increase the CPU memory requirement proportionally to the data parallelism degree while limiting throughput scalability due to the increased communication. To address these challenges, ZeRO-Offload combines our offload strategy with ZeRO [21] powered data parallelism instead of traditional data parallelism. The symbiosis allows ZeRO-Offload to maintain a single copy of the optimizer states on the CPU memory regardless of the data parallel degree. Furthermore, it keeps the aggregate communication volume between GPU and CPU, as well as the aggregate CPU computation a constant regardless of data parallelism, allowing ZeRO-Offload to effectively utilize the linear increase in CPU compute with the increase in the data parallelism degree. As a result, ZeRO-Offload achieves excellent scalability on",
+        "x": 317.5,
+        "y": 311.1,
+        "w": 242.2,
+        "h": 300.2,
+        "zh": "图 1：改几行就能打开 ZeRO-Offload。左边是一条标准训练流程，右边是同一条流程打开 ZeRO-Offload 之后的样子。异构训练配合，因此会碰到扩展上的困难，原因是数据并行训练会把数据和计算都复制一份。数据并行会复制全部模型状态，例如优化器状态、参数和梯度，优化器计算也会在每块 GPU 上各做一遍。所以，若把模型状态或优化器计算卸到 CPU，同时又用数据并行，通信和 CPU 计算都会被大量复制：CPU 内存需求会随着数据并行度成比例上升，增加的通信还会限制吞吐的扩展。为了解决这些问题，ZeRO-Offload 不与传统数据并行组合，而是把我们的卸载策略和 ZeRO [21] 所支持的数据并行合在一起。这种配合让 ZeRO-Offload 无论数据并行度是多少，CPU 内存里都只保留一份优化器状态。它还让 GPU 与 CPU 之间的总通信量，以及 CPU 上的总计算量，都不随数据并行度改变，从而能够用上数据并行度提高时线性增加的那部分 CPU 算力。因此，ZeRO-Offload 的扩展性很好，可以扩展到"
+      },
+      {
+        "text": "In addition to working with ZeRO powered data parallelism, ZeRO-Offload can be combined with model parallelism [27, 28] to achieve higher memory savings, when multiple GPUs are available. Usability: ZeRO-Offload is available as part of an OpenSource PyTorch library, DeepSpeed (www.deepspeed.ai). Unlike most strategies discussed in Section 2, ZeRO-Offload does not require model refactoring to work. In fact, PyTorch users can enable ZeRO-Offload with few lines of code change to their existing training pipeline as shown in Figure 1, allowing to train 10x larger models easily. For detailed tutorial, please see: https://www.deepspeed.ai/tutorials/",
+        "x": 317.9,
+        "y": 155.7,
+        "w": 241.9,
+        "h": 141.5,
+        "zh": "除了与 ZeRO 所支持的数据并行一起用，当有多块 GPU 时，ZeRO-Offload 还可以和模型并行 [27, 28] 合用，从而省下更多内存。易用性：ZeRO-Offload 放在开源 PyTorch 库 DeepSpeed（www.deepspeed.ai）里。和第 2 节讨论的大多数方法不同，ZeRO-Offload 不需要重构模型就能工作。事实上，PyTorch 用户只改几行代码，就能在现有训练流程里打开 ZeRO-Offload，如图 1 所示，从而轻松训练大 10 倍的模型。详细教程见：https://www.deepspeed.ai/tutorials/"
+      },
+      {
+        "text": "Contributions Our contributions are as follows: • A unique optimal offload strategy for heterogeneous large model training on GPU + CPU system that enables 10x larger model on a single GPU without sacrificing efficiency",
+        "x": 317.9,
+        "y": 95.9,
+        "w": 240.5,
+        "h": 45.8,
+        "zh": "贡献。我们的贡献如下：一套面向 GPU 加 CPU 系统的、独特且最优的异构大模型训练卸载策略，能在单块 GPU 上把模型扩大 10 倍，同时不牺牲效率"
+      },
+      {
+        "text": "• Highly scalable multi-GPU design through i) a symbiotic",
+        "x": 317.9,
+        "y": 72,
+        "w": 240.1,
+        "h": 10,
+        "zh": "一套高度可扩展的多 GPU 设计，途径是：其一，一种共生式的"
+      }
+    ],
+    "3": [
+      {
+        "text": "combination of offload strategy with ZeRO powered data parallelism (Sec. 4.2), allowing ZeRO-Offload to achieve near linear scalability, and ii) seamless integration with model-parallel training [28], enabling even larger models than using ZeRO-Offload or model parallelism alone",
+        "x": 62.5,
+        "y": 662.2,
+        "w": 233.3,
+        "h": 57.8,
+        "zh": "把卸载策略与 ZeRO 所支持的数据并行结合起来（第 4.2 节），使 ZeRO-Offload 达到接近线性的扩展；其二，与模型并行训练 [28] 无缝集成，从而训出比单独使用 ZeRO-Offload 或单独使用模型并行都更大的模型"
+      },
+      {
+        "text": "GB and 284 GB, respectively, which are clearly beyond the memory capacity of even the current flagship NVIDIA A100 GPU with 80 GB of memory. Significant amount of work has been done in the recent years to enable large model training, which requires more memory than what is available on a single GPU to fit these model and residual states. These efforts can be classified broadly into two categories: i) scale-out training and ii) scaleup training based approaches. We discuss them as follows. Scale out large model training. Scale-out training uses aggregate memory of multiple GPUs to satisfy the memory requirement for large model training. Two prominent examples of scale out training is model parallelism [5, 28] and pipeline parallelism [7, 10], both partitioning the model states and the residual states across multiple GPUs. Model parallelism [5, 28] partitions the model vertically and distributes the model partitions to multiple GPU devices in order to train large models. Pipeline parallelism [7, 10] on the other hand parallelizes model training by partitioning the model horizontally across layers. Both of these approaches must change the user model to work, therefore can limit usability. A recent work, ZeRO [21], provides an alternative to model and pipeline parallelisms to train large models. ZeRO splits the training batch across multiple GPUs similar to data parallel training [5, 26, 35], but unlike data parallel training which replicates all the model states on each GPU, ZeRO partitions them across all GPUs, and uses communication collectives to gather individual parameters as needed during the training. ZeRO does not require changes to the user model to work, making it more generic than model or pipeline parallel training. It also offers better compute efficiency and scalability. Despite the ability of model and pipeline parallelisms, and ZeRO to train large models, they all require multiple GPUs such that the aggregate GPU memory can hold the model and residual states for training large models. In contrast, ZeROOffload is designed to fit a larger model by offloading model states to CPU memory and can train a 10x larger model on a single GPU without sacrificing efficiency. When multiple GPUs are available, ZeRO-Offload is designed to work together with ZeRO to offer excellent scalability, or in conjunction with model parallelism to fit even larger model sizes that is not possible with ZeRO-Offload or model parallelism alone. Scale up large model training. Existing work scales up model size in a single GPU through three major approaches. The first approach trades computation for memory saving from activations (residual memory) by recomputing from checkpoints [4]. The second approach uses compression techniques such as using low or mixed precision [16] for model training, saving on both model states and activations. The third approach uses an external memory such as the CPU memory as an extension of GPU memory to increase memory capacity during training [8, 9, 11, 17, 23, 24, 33]. Our work, ZeRO-Offload falls under the third approach. Unlike ZeRO-Offload, the above efforts only offload data to",
+        "x": 317.6,
+        "y": 72,
+        "w": 242.2,
+        "h": 648,
+        "zh": "GB 和 284 GB，显然连当前旗舰 NVIDIA A100 GPU 的 80 GB 内存也放不下。近几年已有大量工作在推进大模型训练，因为要把这些模型状态和残余状态装进去，所需内存超过单块 GPU。这些工作大体可以分成两类：向外扩展的训练，以及向上扩展的训练。下面分别讨论。向外扩展的大模型训练。向外扩展使用多块 GPU 的合计内存，来满足大模型训练的内存需求。两个突出的例子是模型并行 [5, 28] 和流水线并行 [7, 10]，二者都把模型状态和残余状态划分到多块 GPU 上。模型并行 [5, 28] 沿纵向切开模型，把各个分片放到多块 GPU 上，以便训练大模型。流水线并行 [7, 10] 则按层把模型横向切开，从而把训练并行起来。这两种做法都必须改用户的模型才能工作，因此会限制易用性。较近的一项工作 ZeRO [21] 提供了另一条训练大模型的路，用来替代模型并行和流水线并行。ZeRO 像数据并行训练 [5, 26, 35] 那样，把训练 batch 分到多块 GPU 上；但数据并行会在每块 GPU 上复制全部模型状态，ZeRO 则把这些状态划分到所有 GPU 上，并在训练过程中用通信集合操作按需把单个参数收集起来。ZeRO 不需要改用户模型就能工作，因此比模型并行或流水线并行更通用。它的计算效率和扩展性也更好。尽管模型并行、流水线并行和 ZeRO 都能训练大模型，它们都要求有多块 GPU，而且各块 GPU 的内存加起来必须放得下大模型训练所需的模型状态和残余状态。ZeRO-Offload 则是把模型状态卸到 CPU 内存，从而在单块 GPU 上装下更大的模型，并能在不牺牲效率的前提下把可训练模型扩大 10 倍。有多块 GPU 时，ZeRO-Offload 可以和 ZeRO 一起用，以获得很好的扩展性；也可以和模型并行合用，装下单独使用 ZeRO-Offload 或单独使用模型并行都放不下的更大模型。向上扩展的大模型训练。已有工作在单块 GPU 上把模型做大，主要有三条路。第一条用重计算换激活（残余内存）上的节省，从检查点重新算一遍 [4]。第二条用压缩，例如低精度或混合精度 [16] 来训练，模型状态和激活都能省。第三条把 CPU 内存这类外部内存当作 GPU 内存的延伸，在训练时加大内存容量 [8, 9, 11, 17, 23, 24, 33]。我们的工作 ZeRO-Offload 属于第三条。与 ZeRO-Offload 相比，上面这些工作只卸载数据，卸到的是"
+      },
+      {
+        "text": "• Optimized CPU execution through: i) High-performance CPU Adam optimizer design and implementation offering over 6x speedup over state-of-the-art Adam implementations (Sec. 5.1), and ii) One-step delayed parameter update to overlap CPU parameter update with GPU forward and backward pass (Sec. 5.2). • Open-source implementation of ZeRO-Offload in PyTorch. • Extensive evaluation demonstrating i) Model Scale: 10x increase in model size with up to 13B on a single GPU and 4x increase in model size over model parallelism with up to 70 B parameters on a DGX-2 node. ii) Efficiency: Over 40 TFlops for a 10B parameters on a single NVIDIA V100, compared to 30 TFLOPS on the same GPU with 1.2B parameters, the largest model that can be trained without any CPU offloading. iii) Scalability: Near-perfect linear scalability for a 10B parameter model on up to 128 GPUs. iv) CPU overhead reduction with our ADAM implementation with 6x speedup over PyTorch optimizer and up to 1.5X improvement in end-to-end throughput with delayed parameter update optimizations (Sec. 6).",
+        "x": 54,
+        "y": 411.2,
+        "w": 241.9,
+        "h": 237.1,
+        "zh": "经过优化的 CPU 执行，包括：其一，高性能 CPU Adam 优化器的设计与实现，相对当前最好的 Adam 实现加速超过 6 倍（第 5.1 节）；其二，一步延迟的参数更新，让 CPU 上的参数更新与 GPU 上的前向和反向重叠（第 5.2 节）。ZeRO-Offload 在 PyTorch 中的开源实现。广泛的评估表明：其一，模型规模：单块 GPU 上模型扩大 10 倍，最大到 13B；相对模型并行，在一台 DGX-2 上模型规模再提高 4 倍，最大到 70 B 参数。其二，效率：10B 参数的模型在单块 NVIDIA V100 上超过 40 TFlops；同一块 GPU 上不做任何 CPU 卸载时，最大只能训练 1.2B 参数，吞吐是 30 TFLOPS。其三，扩展性：10B 参数的模型在最多 128 块 GPU 上接近完美的线性扩展。其四，CPU 开销下降：我们的 ADAM 实现相对 PyTorch 优化器加速 6 倍；加上延迟参数更新，端到端吞吐最多提高 1.5 倍（第 6 节）。"
+      },
+      {
+        "text": "Memory consumption in large model training. The full spectrum of memory consumption during DNN model training can be classified into two parts: i) model states and ii) residual states [21]. Model states include parameters, gradients, and optimizer states (such as momentum and variances in Adam [13]); Residual states include activations, temporary buffers, and unusable fragmented memory. Model states are the primary source of memory bottleneck in large model training. We consider the memory consumption due to model states for large transformer models such as Megatron-LM (8 billion) [28], T5 (11 billion) [20], and Turing-NLG [25] (17.2 billion). They are trained with float-16 mixed precision training [16] and Adam optimizer [13]. Mixed precision training often keeps two copies of the parameters, one in float-16 (fp16) and the other in float-32 (fp32). The gradients are stored in fp16. In addition to the parameters and gradients, the Adam optimizer keeps track of the momentum and variance of the gradients. These optimizer states are stored in fp32. Therefore, training a model in mixed precision with the Adam optimizer requires at least 2 bytes of memory for each fp16 parameter and gradient, and 4 byte of memory for each fp32 parameter, and the moementum and variance of each gradient. In total, a model with M parameters requires 16×M bytes of memory. Therefore, the model states for Megatron-LM, T5 and Turing-NLG require 128 GB, 176",
+        "x": 53.7,
+        "y": 72,
+        "w": 242.1,
+        "h": 297,
+        "zh": "大模型训练的内存消耗。DNN 模型训练时的内存消耗可以分成两部分：模型状态，以及残余状态 [21]。模型状态包括参数、梯度，以及优化器状态（例如 Adam [13] 里的动量和方差）；残余状态包括激活、临时缓冲区，以及无法使用的碎片内存。大模型训练里，内存瓶颈主要来自模型状态。我们考察大型 Transformer 模型的模型状态内存，例如 Megatron-LM（80 亿）[28]、T5（110 亿）[20] 和 Turing-NLG [25]（172 亿）。它们用 float-16 混合精度训练 [16] 和 Adam 优化器 [13]。混合精度训练通常保留两份参数，一份是 float-16（fp16），另一份是 float-32（fp32）。梯度以 fp16 存放。除了参数和梯度，Adam 优化器还要记录梯度的动量和方差。这些优化器状态以 fp32 存放。因此，用 Adam 做混合精度训练时，每个 fp16 参数和梯度至少要 2 字节，每个 fp32 参数以及每条梯度的动量和方差各要 4 字节。加起来，有 M 个参数的模型需要 16×M 字节内存。因此 Megatron-LM、T5 和 Turing-NLG 的模型状态分别需要 128 GB、176"
+      }
+    ],
+    "4": [
+      {
+        "text": "CPU but not compute, and they use smaller models training. In contrast, a recent work called L2L [18] can enable multibillion parameter training by managing memory usage in GPU layer by layer. In particular, L2L synchronously moves tensors needed in the upcoming layer into GPU memory for computation and keeps the rest of tensors into CPU memory for memory saving. In comparison on ZeRO-Offload, it offers limited efficiency due to extra communication overhead, does not offer a way to scale out across devices, and requires model refactoring, making it difficult to use. ZeRO powered data parallel training. ZeRO-Offload works with ZeRO to scale DL training to multiple GPUs. ZeRO has three stages, ZeRO-1, ZeRO-2 and ZeRO-3 corresponding to the partitioning of the three different model states, optimizer states, gradients and parameters, respectively. ZeRO-1 partitions the optimizer states only, while ZeRO-2 partitions gradients in addition to optimizer states, and ZeRO- 3 partitions all model states. ZeRO-Offload works symbiotically with ZeRO-2, and therefore we discuss it further. In ZeRO-2, each GPU stores a replica of all the parameters, but only updates a mutually exclusive portion of it during the parameter update at the end of each training step. As each GPU only updates a portion of the parameters, they only store optimizer states and gradients required to make that update. After the update, each GPU sends its portion of the updated parameters to all the other GPUs using an all-gather communication collective. ZeRO-2 computation and communication schedule is described below: During the forward pass, each GPU computes the loss with respect to a different mini-batch. During the backward propagation, as each gradient is computed, it is averaged using a reduce operator at the GPU/GPUs that owns the gradient or part of the gradient. After the backward pass, each GPU updates its portion of the parameters and optimizer states using the averaged gradients corresponding to that portion. After this, an all-gather is performed to receive the rest of the parameter update computed on other GPUs.",
+        "x": 53.6,
+        "y": 279.7,
+        "w": 242.2,
+        "h": 440.3,
+        "zh": "CPU，却不卸载计算，而且它们训练的是更小的模型。与此相对，最近一项叫 L2L [18] 的工作可以按层管理 GPU 内存，从而训练数十亿参数的模型。具体来说，L2L 同步地把下一层要用的张量搬进 GPU 内存来计算，其余张量留在 CPU 内存里以节省显存。和 ZeRO-Offload 比，它因为额外的通信开销，效率有限，也没有给出跨设备向外扩展的办法，还要求重构模型，因此难用。由 ZeRO 驱动的数据并行训练。ZeRO-Offload 与 ZeRO 配合，把深度学习训练扩展到多块 GPU。ZeRO 有三个阶段：ZeRO-1、ZeRO-2 和 ZeRO-3，分别对应三种模型状态的划分，也就是优化器状态、梯度和参数。ZeRO-1 只划分优化器状态；ZeRO-2 在优化器状态之外再划分梯度；ZeRO-3 划分全部模型状态。ZeRO-Offload 与 ZeRO-2 是共生关系，因此下面着重讨论 ZeRO-2。在 ZeRO-2 里，每块 GPU 都存有全部参数的一份副本，但每个训练步结束做参数更新时，只更新其中互不重叠的一部分。既然每块 GPU 只更新一部分参数，它们就只保存完成这次更新所需的优化器状态和梯度。更新之后，每块 GPU 用 all-gather 通信集合操作，把自己那部分更新后的参数发给所有其他 GPU。ZeRO-2 的计算与通信调度如下：前向时，每块 GPU 针对不同的 mini-batch 计算损失。反向传播时，每算出一个梯度，就在拥有该梯度或其中一部分的那块或那几块 GPU 上，用 reduce 算子做平均。反向结束后，每块 GPU 用对应该部分的平均梯度，更新自己那部分参数和优化器状态。随后做一次 all-gather，接收其他 GPU 上算出的其余参数更新。"
+      },
+      {
+        "text": "ways to offload model states to CPU memory, each with a different trade-off in terms of CPU computation, and GPUCPU communication, both of which can limit the training",
+        "x": 317.5,
+        "y": 686.1,
+        "w": 242.1,
+        "h": 33.9,
+        "zh": "把模型状态卸到 CPU 内存的做法有很多种，彼此在 CPU 计算量以及 GPU 与 CPU 的通信量上取舍不同，而这两者都可能限制训练"
+      },
+      {
+        "text": "To identify the optimal offload strategy, ZeRO-Offload models the DL training as data-flow graph and uses first principle analysis to efficiently partition this graph between CPU and GPU devices. ZeRO-Offload partitions the graph in a way that is optimal in three key aspects: i) it requires orders-ofmagnitude fewer computation on the CPU compared to GPU that prevents CPU from becoming a performance bottleneck, ii) it guarantees the minimization of communication volume between CPU and GPU memory, and iii) it provably maximizes the memory savings while achieving minimum communication volume. In fact, ZeRO-Offload can achieve high efficiency during training that is comparable to non-offload training and it is unique optimal, meaning no other solution can offer better memory savings without increasing the communication volume or increasing CPU computation. In this section, we discuss the derivation of our unique optimal offload strategy. Our strategy is specifically designed for mixed precision training with Adam optimizer which is the de facto training recipe for large model training.",
+        "x": 317.9,
+        "y": 439,
+        "w": 241.8,
+        "h": 229.2,
+        "zh": "为了找出最优卸载策略，ZeRO-Offload 把深度学习训练建成数据流图，并用第一性原理分析，把这张图高效地划分到 CPU 和 GPU 上。划分在三个关键方面都是最优的：第一，CPU 上的计算量比 GPU 少几个数量级，因此 CPU 不会成为性能瓶颈；第二，它保证 CPU 与 GPU 内存之间的通信量最小；第三，在通信量已经最小的同时，它可以证明省下的内存是最多的。事实上，ZeRO-Offload 在训练时可以达到与非卸载训练相当的高效率，而且这个最优是唯一的：没有任何别的方案能在不增加通信量、也不增加 CPU 计算的前提下，省下更多内存。本节推导这套唯一的最优卸载策略。它专门针对混合精度训练配合 Adam 优化器，而这正是大模型训练的事实标准配方。"
+      },
+      {
+        "text": "The DL training workload can be represented as a weighted directed graph of data and computation, as shown in the figure 2, where the circular nodes represents model states (parameter16, gradient16, parameter32, momentum32, variance32), and the rectangular nodes represents computation (forward, backward, param update). The edges in the graph represents the data flow between the nodes, and the weight of an edge is the total data volume in bytes that flows through it during any given training iteration. For a model with M parameters, the weight of the edges in this graph is either 2M where the source node produces fp16 model states, or 4M where the source node produces fp32 model states. An offload strategy between GPU and CPU can be represented using a two-way partitioning of this graph, such that computation nodes in a partition would be executed on the device that owns the partition, and the data nodes in the partition will be stored on device that owns the partition. The total data volume that must be communicated between the GPU and CPU is given by the weight of edges running across two",
+        "x": 317.6,
+        "y": 147.8,
+        "w": 242.1,
+        "h": 229.2,
+        "zh": "深度学习训练负载可以表示成一张带权有向图，图上既有数据也有计算，如图 2 所示。圆形节点表示模型状态（parameter16、gradient16、parameter32、momentum32、variance32），矩形节点表示计算（前向、反向、参数更新）。边上是节点之间的数据流，边权是任意一次训练迭代里流过该边的总数据量，单位是字节。对有 M 个参数的模型，图中边权要么是 2M，对应源节点产出 fp16 模型状态，要么是 4M，对应源节点产出 fp32 模型状态。GPU 与 CPU 之间的一种卸载策略，可以表示成对这张图的二划分：某个划分里的计算节点，在拥有该划分的设备上执行；该划分里的数据节点，则存放在拥有该划分的设备上。GPU 与 CPU 之间必须传送的总数据量，就是跨越两个"
+      },
+      {
+        "text": "Unique Optimal Offload Strategy ZeRO-Offload is designed to enable efficient large model training on a single or multiple GPUs by offloading some of the model states from GPU to CPU memory during training. As discussed in Sec. 2, model states: parameters, gradients, and the optimizer states, are the primary source of memory bottleneck in large model training. By offloading some of these model states to CPU, ZeRO-Offload can enable training of significantly larger models",
+        "x": 53.6,
+        "y": 149.1,
+        "w": 242.2,
+        "h": 112.9,
+        "zh": "唯一的最优卸载策略。ZeRO-Offload 的设计，是在单块或多块 GPU 上高效地训练大模型：训练过程中把一部分模型状态从 GPU 卸到 CPU 内存。如第 2 节所说，模型状态——参数、梯度以及优化器状态——是大模型训练内存瓶颈的主要来源。把其中一部分卸到 CPU，ZeRO-Offload 就能训练大得多的模型"
+      },
+      {
+        "text": ". However, identifying the optimal offloading strategy is non-trivial. There are numerous",
+        "x": 54,
+        "y": 137.2,
+        "w": 240.1,
+        "h": 21.9,
+        "zh": "。不过，找出最优的卸载策略并不容易。做法有很多种"
+      },
+      {
+        "text": "There are numerous ways to partition this graph. In the following sections, we use first principles to simplify the data flow graph to reduce the number possible choices based on three different efficiency metric: i) CPU computation overhead, ii) communication overhead, and iii) memory savings.",
+        "x": 317.9,
+        "y": 72,
+        "w": 241.8,
+        "h": 57.8,
+        "zh": "划分这张图的方式有很多。下面几节用第一性原理来简化数据流图，依据三项效率指标减少可选择的划分：CPU 计算开销、通信开销，以及内存节省。"
+      },
+      {
+        "text": "1ZeRO-Offload only offloads model states. Offloading secondary sources of memory bottleneck such as activation memory is beyond scope of our offload strategy. Given that they are significantly smaller than model states, we ignore them for the purpose of our analysis. Furthermore, the first and second approaches described in Sec. 2 can be used in conjunction with ZeRO-Offload to reduce activation memory",
+        "x": 53.7,
+        "y": 72,
+        "w": 241.4,
+        "h": 56.2,
+        "zh": "脚注 1：ZeRO-Offload 只卸载模型状态。激活内存这类次要内存瓶颈不在本卸载策略的范围内。它们比模型状态小得多，因此分析时我们将其忽略。另外，第 2 节描述的前两种做法可以和 ZeRO-Offload 一起用，用来减少激活内存"
+      }
+    ],
+    "5": [
+      {
+        "text": "at least two edges, each of which have a edge weight of at least 2M, resulting in a total communication of at least 4M. If we choose to limit the communication volume to this bare minimum, we can greatly simplify our data-flow graph and reduce the number of partitioning strategies to a handful: Creating fp32 super-node: Notice that any partitioning strategy that does not co-locate the fp32 model states its producer and consumer nodes cannot achieve the minimum communication volume of 4M. Such a partition must cut at least one edge with a weight of 4M, and the other with at least 2M, resulting in a communication volume of at least 6M . Therefore, to achieve the minimum communication volume, all offload strategies must co-locate fp32 model states with its producer and consumer operators, i.e., the fp32 model states (momentum 32, variance 32 and p32) must be co-located with the Param Update and the float2half computations. This constraint allows us to treat all the aforementioned fp32 data and compute nodes in the data flow graph as a single super-node that we refer to as Update Super. We show this reduced data flow graph in figure 2, consisting of only four nodes: FWD-BWD Super node, p16 data node, g16 data node, and Update Super node. p16 assignment: To achieve the minimum communication volume, p16 must be co-located with FWD-BWD Super because the edge weight between these two nodes is 4M. Separating these two nodes, would increase the communication volume to 6M(4M +2M). Since, we have already assigned node FWD-BWD Super to GPU to limit computation on CPU, p16 must also be assigned to GPU.",
+        "x": 317.6,
+        "y": 375.3,
+        "w": 242.2,
+        "h": 344.7,
+        "zh": "至少两条边，每条边的权重至少是 2M，因此总通信量至少是 4M。如果把通信量限制在这个最低限度，数据流图可以大大简化，划分策略也只剩下少数几种。构造 fp32 超节点：注意，任何不把 fp32 模型状态与其生产者、消费者节点放在一起的划分，都达不到 4M 这个最小通信量。这样的划分至少要切开一条权重为 4M 的边，另一条至少 2M，通信量至少是 6M。因此，要达到最小通信量，所有卸载策略都必须把 fp32 模型状态和它的生产者、消费者算子放在一起，也就是 fp32 模型状态（momentum 32、variance 32 和 p32）必须与参数更新以及 float2half 计算放在一起。这一约束让我们可以把数据流图里上述全部 fp32 数据和计算节点看成一个超节点，称为 Update Super。简化后的数据流图如图 2 所示，只剩四个节点：FWD-BWD 超节点、p16 数据节点、g16 数据节点，以及 Update Super 节点。p16 的归属：要达到最小通信量，p16 必须与 FWD-BWD 超节点放在一起，因为这两个节点之间的边权是 4M。把它们分开，通信量会增加到 6M（4M + 2M）。既然为了限制 CPU 上的计算，已经把 FWD-BWD 超节点分给 GPU，p16 也必须分给 GPU。"
+      },
+      {
+        "text": "Figure 2: The dataflow of fully connected neural networks with M parameters. We use activation checkpoint to reduce activation memory to avoid activation migration between CPU and GPU.",
+        "x": 54,
+        "y": 572.7,
+        "w": 240.1,
+        "h": 30.9,
+        "zh": "图 2：含 M 个参数的全连接神经网络的数据流。我们用激活检查点降低激活内存，以免激活在 CPU 和 GPU 之间迁移。"
+      },
+      {
+        "text": "Limiting CPU computation The CPU computation throughput is multiple orders of magnitude slower than the GPU computation throughput. Therefore, offloading large computation graph to CPU will severely limit training efficiency. As such, we must avoid offloading compute intensive components to the CPU. The compute complexity of DL training per iteration is generally given by O(MB), where M is the model size and B is the effective batch size. To avoid CPU computation form becoming a bottleneck, only those computations that have a compute complexity lower than O(MB) should be offloaded to the CPU. This means that the forward propagation and backward propagation both of which have a compute complexity of O(MB) must be done on the GPU, while remaining computations such as norm calculations, weight updates etc that have a complexity of O(M) maybe offloaded to the CPU. Based on this simple observation we fuse the forward and backward nodes in our data flow graph into a single supernode (FWD-BWD) and assign it on the GPU.",
+        "x": 53.7,
+        "y": 331.9,
+        "w": 242.2,
+        "h": 229.3,
+        "zh": "限制 CPU 计算。CPU 的计算吞吐比 GPU 慢几个数量级。因此，把大块计算图卸到 CPU 会严重限制训练效率。所以必须避免把计算密集的部分卸到 CPU。深度学习训练每次迭代的计算复杂度一般是 O(MB)，M 是模型规模，B 是有效 batch size。为了不让 CPU 计算成为瓶颈，只有复杂度低于 O(MB) 的计算才应该卸到 CPU。这意味着前向传播和反向传播的复杂度都是 O(MB)，必须在 GPU 上做；其余计算，例如范数、权重更新等，复杂度是 O(M)，可以卸到 CPU。基于这一观察，我们把数据流图里的前向节点和反向节点融合成一个超节点（FWD-BWD），并把它放在 GPU 上。"
+      },
+      {
+        "text": "After simplifying the data flow graph to minimize communication volume, only g16 and Update Super remain to be assigned. Notice that at this point, all partitions will result in minimum communication volume, so we can prune the choices further to maximize the memory savings on the GPU. Table 1 shows the memory savings of all valid partitioning strategies that minimize the communication volume. The maximum memory savings of 8x can be achieved by offloading both g16 and Update Super to CPU. Table 1: Memory savings for offload strategies that minimizes communication volume compared to the baseline.",
+        "x": 317.5,
+        "y": 208.2,
+        "w": 242.2,
+        "h": 130.3,
+        "zh": "把数据流图简化到通信量最小之后，只剩下 g16 和 Update Super 还没分配。此时任何划分都会得到最小通信量，因此可以继续筛选，把 GPU 上省下的内存做到最大。表 1 给出了所有通信量最小的合法划分各自的内存节省。把 g16 和 Update Super 都卸到 CPU，内存节省最大，达到 8 倍。表 1：相对基线，通信量最小的那些卸载策略所能节省的内存。"
+      },
+      {
+        "text": "The CPU memory bandwidth is at least an order of magnitude faster than the PCI-E bandwidth between CPU and GPU, while the GPU memory is another order of magnitude faster than even the CPU memory. Therefore, we must minimize the communication volume between CPU and GPU memory to prevent the PCI-E bandwidth from becoming a training performance bottleneck. To do so we must first identify the theoretical minimum communication volume for a model state offload strategy. The minimum communication volume for any model state offload strategy is given by 4M . Note that after fusing the forward and backward into a single super-node as discussed in Sec. 3.2, each node in our data flow graph is part of a cycle. Therefore, any partitioning of this graph would require cutting",
+        "x": 53.6,
+        "y": 128.4,
+        "w": 242.2,
+        "h": 165.5,
+        "zh": "CPU 内存带宽至少比 CPU 与 GPU 之间的 PCI-E 带宽快一个数量级，而 GPU 内存又比 CPU 内存再快一个数量级。因此必须把 CPU 与 GPU 内存之间的通信量降到最低，免得 PCI-E 带宽成为训练性能的瓶颈。为此，先要确定模型状态卸载策略在理论上的最小通信量。任何模型状态卸载策略的最小通信量都是 4M。注意，如第 3.2 节所说，把前向和反向融合成一个超节点之后，数据流图里的每个节点都处在某个环上。因此，对这张图的任何划分都至少要切开"
+      },
+      {
+        "text": "ZeRO-Offload allocates all the fp32 model states along with the fp16 gradients on the CPU memory, and it also computes the parameter updates on the CPU. The fp16 parameters are kept on the GPU and the forward and backward computations are also done on the GPU.",
+        "x": 317.9,
+        "y": 72,
+        "w": 240.1,
+        "h": 57.8,
+        "zh": "ZeRO-Offload 把全部 fp32 模型状态连同 fp16 梯度放在 CPU 内存里，参数更新也在 CPU 上计算。fp16 参数留在 GPU 上，前向和反向计算也在 GPU 上完成。"
+      },
+      {
+        "text": "Please note that it is possible to reduce the communication volume further by only offloading partial model states. For simplification, we assume that an offload of a model state implies that we offload the entire model state. Our analysis on the memory savings per communication volume, still holds even if we offload partial model states",
+        "x": 54,
+        "y": 72,
+        "w": 241.5,
+        "h": 45.8,
+        "zh": "需要说明的是，如果只卸载一部分模型状态，通信量还可以进一步降低。为简化起见，我们假定卸载某个模型状态，就是把该状态全部卸走。即便只卸载一部分，我们关于单位通信量所能节省内存的分析仍然成立"
+      }
+    ],
+    "6": [
+      {
+        "text": "We arrive at this offload strategy by simplifying our data flow graph and eliminating all other partitioning strategies as they do not limit CPU computation, minimize communication volume, or maximize memory savings. Therefore, ZeRO-Offload is not only optimal in terms of the aforementioned metrics, it is also unique; there can be no other strategy that can offer more memory savings than ZeRO-Offload without increasing the compute complexity on the CPU or incur additional GPU-CPU communication volume.",
+        "x": 54,
+        "y": 537.4,
+        "w": 241.8,
+        "h": 105.6,
+        "zh": "我们得到这一卸载策略的办法，是简化数据流图，并排除所有其他划分：那些划分要么限制不住 CPU 计算，要么做不到最小通信量，要么做不到最大的内存节省。因此 ZeRO-Offload 不仅在上述指标上是最优的，而且是唯一的；不存在另一种策略，能在不提高 CPU 上的计算复杂度、也不增加额外 GPU 与 CPU 通信量的前提下，比 ZeRO-Offload 省下更多内存。"
+      },
+      {
+        "text": "ZeRO-Offload in its entirety is a symbiotic integration of ZeRO-Offload strategy described in Sec. 3 and ZeROpowered data parallelism discussed in Sec. 2, which allows ZeRO-Offload to scale to hundreds of GPUs efficiently. ZeROOffload preserves the model state partitioning strategy of ZeRO Stage-2 (optimizer state and gradient partitioning), while offloading the partitioned gradients, optimizer states and the corresponding parameter updates to the CPU. The key benefit of doing this partitioning before offloading is that for systems with more than 1 GPU, each data parallel process is only responsible for updating a subset of the parameters. The aggregated communication volume from all the data parallel GPUs to the CPU remains constant, and CPU resources are used in parallel to jointly compute a single weight update. As a result the total CPU update time decreases with increased data parallelism, since the CPU compute resources increase linearly with the increase in the number of compute nodes. This allows ZeRO-Offload to achieve very good scalability, as the overhead of communication across GPUs is offset by the reduction in the CPU optimizer step. ZeRO-Offload partitions gradients and optimizer states among different GPUs, and each GPU offloads the partition it owns to the CPU memory and keeps it there for the entire training. During the backward propagation, gradients are computed and averaged using reduce-scatter on the GPU, and each GPU only offloads the averaged gradients belonging to its partition to the CPU memory. Once the gradients are available on the CPU, optimizer state partitions are updated in parallel by each data parallel process directly on the CPU. After the update, parameter partitions are moved back to GPU followed by an all-gather operation on the GPU similar to ZeRO-2 to gather all the parameters. Figure 4 shows the data placement model parameters, gradients and optimizer states for ZeRO-Offload and the details of the ZeRO-Offload data parallel schedule is presented in Figure 5. The all gather operation described above is shown as a sequence of broadcast operations in the Figure. Model Parallel training ZeRO-Offload can also work together with tensor-slicing based model parallelism (MP) frameworks such as Megatron-LM [28]. It does so by offloading the gradients, optimizer states and the optimizer computation corresponding to each MP process allowing ZeROOffload to train significantly larger models than possible than",
+        "x": 317.5,
+        "y": 72,
+        "w": 242.2,
+        "h": 517.1,
+        "zh": "完整的 ZeRO-Offload，是第 3 节的 ZeRO-Offload 策略与第 2 节由 ZeRO 驱动的数据并行的共生结合，因此可以高效扩展到数百块 GPU。ZeRO-Offload 保留 ZeRO 第 2 阶段的模型状态划分方式（划分优化器状态和梯度），同时把划分后的梯度、优化器状态以及对应的参数更新卸到 CPU。先划分再卸载的关键好处是：系统里不止一块 GPU 时，每个数据并行进程只负责更新参数的一个子集。所有数据并行 GPU 发往 CPU 的合计通信量保持不变，CPU 资源则并行地共同算出同一次权重更新。因此，数据并行度提高时，CPU 更新的总时间会下降，因为计算节点变多，CPU 计算资源线性增加。这让 ZeRO-Offload 的扩展性很好：跨 GPU 通信的开销，被 CPU 优化器步骤变短所抵消。ZeRO-Offload 把梯度和优化器状态划分到不同 GPU，每块 GPU 把自己拥有的那一份卸到 CPU 内存，并在整个训练过程中留在那里。反向传播时，梯度在 GPU 上用 reduce-scatter 计算并平均，每块 GPU 只把属于自己那一份的平均梯度卸到 CPU 内存。梯度到达 CPU 之后，每个数据并行进程直接在 CPU 上并行更新自己的那份优化器状态。更新之后，参数分片移回 GPU，再像 ZeRO-2 那样在 GPU 上做 all-gather，把全部参数收集起来。图 4 给出了 ZeRO-Offload 中模型参数、梯度和优化器状态的数据放置，图 5 给出了 ZeRO-Offload 数据并行调度的细节。上面说的 all-gather，在图中画成一串 broadcast。模型并行训练。ZeRO-Offload 也可以和基于张量切分的模型并行（MP）框架一起用，例如 Megatron-LM [28]。做法是把每个 MP 进程对应的梯度、优化器状态和优化器计算卸走，从而使 ZeRO-Offload 能训练的模型比原先可能达到的规模大得多，而且大于"
+      },
+      {
+        "text": "ZeRO-Offload Schedule In this section, we discuss the concrete computation and communication schedule for implementing ZeRO-Offload on a single GPU system based on our offload strategy. We then show how we extend this schedule to work effectively on multi-GPU systems by combining our offload strategy with ZeRO data parallelism and model parallelism.",
+        "x": 54,
+        "y": 428.2,
+        "w": 241.8,
+        "h": 89.7,
+        "zh": "ZeRO-Offload 的调度。本节给出在单 GPU 系统上、按我们的卸载策略实现 ZeRO-Offload 时，具体的计算与通信调度。然后说明如何把这套调度扩展到多 GPU：把卸载策略与 ZeRO 数据并行以及模型并行结合起来，使它在多 GPU 上仍然有效。"
+      },
+      {
+        "text": "As discussed in Sec. 3, ZeRO-Offload partitions the data such that the fp16 parameters are stored in GPU while the fp16 gradients, and all the optimizer states such as fp32 momentum, variance and parameters are stored in CPU. During the training, we begin by computing the loss via the forward propagation. Since the fp16 parameters are already presented on the GPU, no CPU communication is required for this part of the computation. During the backward propagation on the loss, the gradient for different parameters are computed at different point in the backward schedule. ZeRO-Offload can transfer these gradients for each parameter individually or in small groups to the CPU memory immediately after they are computed. Therefore, only a small amount of memory is required to temporarily hold the gradients on the GPU memory before they are transferred to CPU memory. Furthermore, each gradient transfer can be overlapped with the backpropagation on the remainder of the backward graph, allowing ZeRO-Offload to hide a significant portion of the",
+        "x": 53.6,
+        "y": 179.9,
+        "w": 242.1,
+        "h": 213.5,
+        "zh": "如第 3 节所说，ZeRO-Offload 这样划分数据：fp16 参数放在 GPU，fp16 梯度以及全部优化器状态（例如 fp32 的动量、方差和参数）放在 CPU。训练开始时，先用前向传播计算损失。fp16 参数已经在 GPU 上，这一步不需要与 CPU 通信。对损失做反向传播时，不同参数的梯度在反向调度的不同时刻算出来。ZeRO-Offload 可以在每个参数的梯度一算完，就单独或分成小组立刻传到 CPU 内存。因此 GPU 上只需要很少的内存临时存放梯度，随后就转到 CPU。而且，每一次梯度传输都可以和反向图剩余部分的反向传播重叠，从而使 ZeRO-Offload 把其中很大一部分隐藏掉"
+      },
+      {
+        "text": "After the backward propagation, ZeRO-Offload updates the fp32 parameters and the remaining optimizer states (such as momentum and variance) directly on the CPU, and copies the updated fp32 parameters from the CPU memory to the fp16 parameters on the GPU memory. Figure 3 shows the computation and communication in each step of ZeRO-Offload diagrammatically, and Figure 5 shows the concrete schedule",
+        "x": 54,
+        "y": 84,
+        "w": 241.8,
+        "h": 81.7,
+        "zh": "反向传播之后，ZeRO-Offload 直接在 CPU 上更新 fp32 参数以及其余优化器状态（例如动量和方差），再把更新后的 fp32 参数从 CPU 内存拷贝到 GPU 内存里的 fp16 参数。图 3 用图示出 ZeRO-Offload 每一步的计算和通信，图 5 给出具体调度"
+      }
+    ],
+    "7": [
+      {
+        "text": "We use three levels of parallelism for improving the performance of the CPU optimizer.. 1) SIMD vector instruction [15] for fully exploiting the hardware parallelism supported on CPU architectures. 2) Loop unrolling [31], an effective technique for increasing instruction level parallelism that is crucial for better memory bandwidth utilization. 3) OMP multithreading for effective utilization of multiple cores and threads on the CPU in parallel. Using these technique, we present a significantly faster implementation of Adam optimizer compared to state-of-art PyTorch implementation.",
+        "x": 317.4,
+        "y": 582.3,
+        "w": 242.2,
+        "h": 117.6,
+        "zh": "我们用三层并行来提高 CPU 优化器的性能。1）SIMD 向量指令 [15]，用来充分使用 CPU 体系结构上的硬件并行。2）循环展开 [31]，这是提高指令级并行的有效办法，对用满内存带宽很关键。3）OMP 多线程，用来并行用好多核 CPU 上的多个核心和线程。借助这些技术，我们给出一个比当前最好的 PyTorch 实现快得多的 Adam 优化器。"
+      },
+      {
+        "text": "Mixed Precision Training with Adam timization algorithm used for deep-learning training, which takes the loss gradients together with their first and second momentums to update the parameters. Therefore, in addition to the model parameters, ADAM requires two more matrices of the same size (M) saved during the training. In the mixed precision training mode, there are two versions of the parameters stored in memory: one in FP16 (p16) used for computing the activations in the forward pass (on GPU), and one master copy in FP32 (p32) which is updated by the optimizer (on CPU). The p16 is updated with the p32 through f loat2hal f casting, at each training step. Moreover, the momentum and variance of the gradients are saved in FP32 (on CPU), to prevent the precision loss for updating the parameters. Please refer to [13] for further detail on ADAM’s algorithm.",
+        "x": 317.6,
+        "y": 384.2,
+        "w": 242,
+        "h": 177.3,
+        "zh": "与 Adam 配合的混合精度训练。这是深度学习训练使用的优化算法，它用损失的梯度，连同梯度的一阶矩和二阶矩，来更新参数。因此除了模型参数，ADAM 在训练过程中还要保存两份同样大小（M）的矩阵。混合精度模式下，内存里有两个版本的参数：FP16 的 p16，用于前向里计算激活（在 GPU 上）；FP32 的主副本 p32，由优化器更新（在 CPU 上）。每个训练步，p16 都通过 float2half 转换，用 p32 来更新。另外，梯度的动量和方差以 FP32 保存在 CPU 上，以免更新参数时损失精度。ADAM 算法的进一步细节见 [13]。"
+      },
+      {
+        "text": "Algorithm 2 CPU-ADAM Optimizer Input: p32, g32, m32, v32, β1, β2, α , step, eps Output: p16, p32, m32, v32 Parameter: tile_width, simd_width, unroll_width 1: biascorrection1 ← −α/(1−β1 ) 2: biascorrection2 ← 1/ 1−β2 3: simd_count ← sizeo f(32) / simd_width",
+        "x": 317.5,
+        "y": 299,
+        "w": 149.9,
+        "h": 69.8,
+        "zh": "算法 2：CPU-ADAM 优化器。输入：p32、g32、m32、v32、β1、β2、α、step、eps。输出：p16、p32、m32、v32。参数：tile_width、simd_width、unroll_width。1：biascorrection1 ← −α/(1−β1)。2：biascorrection2 ← 1/(1−β2)。3：simd_count ← sizeof(32) / simd_width"
+      },
+      {
+        "text": "Figure 5: Code representing ZeRO-Offload that combines unique optimal CPU offload strategy with ZeRO-powered data parallelism.",
+        "x": 54,
+        "y": 283.3,
+        "w": 240.1,
+        "h": 19.9,
+        "zh": "图 5：表示 ZeRO-Offload 的代码，它把唯一的最优 CPU 卸载策略与 ZeRO 所支持的数据并行合在一起。"
+      },
+      {
+        "text": "gv, pv, mv, vv = g32[i],p32[i],m32[i],v32[i] mv = FMA(gv, (1 - β1), β1*mv) vv = FMA(g√v*gv, (1 - β2), β2*vv) gv = FMA( vv, biascorrection2, eps)",
+        "x": 345.3,
+        "y": 242.2,
+        "w": 119.2,
+        "h": 31.9,
+        "zh": ""
+      },
+      {
+        "text": "using model parallelism alone. Sec. 6 provides more details.",
+        "x": 54,
+        "y": 248.9,
+        "w": 239.8,
+        "h": 10,
+        "zh": "只用模型并行的情形。第 6 节会给出更多细节。"
+      },
+      {
+        "text": "pv = FMA(gv, biascorrection1, pv) p32[i],m32[i],v32[i] = pv, mv, vv",
+        "x": 345.8,
+        "y": 218.3,
+        "w": 97.8,
+        "h": 16,
+        "zh": "pv 由 FMA(gv, biascorrection1, pv) 得到，再把 pv、mv、vv 写回 p32[i]、m32[i]、v32[i]"
+      },
+      {
+        "text": "Optimized Implementation Algorithm 1 elaborates the ADAM’s implementation detail using SIMD operations. As shown, the Adam function receives the optimizer parameters such as β1, β2, and α, and the gradient, momentum, variance and master copy of parameters (p32) as the input. We also use some parameters specific to the implementation, like the simd_width and unroll_width. The Adam optimizer sends back the updated variance, momentum, and parameter in both FP16 (to GPU) and FP32 (to CPU) .",
+        "x": 317.5,
+        "y": 72,
+        "w": 240.5,
+        "h": 105.6,
+        "zh": "优化后的实现。算法 1 用 SIMD 操作展开了 ADAM 的实现细节。如图所示，Adam 函数接收优化器参数，例如 β1、β2 和 α，以及梯度、动量、方差和参数的主副本（p32）作为输入。实现上还有一些专用参数，例如 simd_width 和 unroll_width。Adam 优化器返回更新后的方差、动量和参数，同时给出 FP16（送往 GPU）和 FP32（留在 CPU）两份。"
+      },
+      {
+        "text": "We speedup the CPU execution time for the parameter updates with two optimizations. First, we implement a fast CPU Adam optimizer using high performance computing techniques offering significant speedup over state-of-art Pytorch implementation. Second, we develop a one-step delayed parameter update schedule that overlaps the CPU parameter update computation with the forward and backward computation on the GPU, hiding the CPU execution time when enabled.",
+        "x": 53.5,
+        "y": 72,
+        "w": 242.2,
+        "h": 93.6,
+        "zh": "我们用两项优化来加快参数更新的 CPU 执行时间。第一，用高性能计算技术实现一个很快的 CPU Adam 优化器，相对当前最好的 PyTorch 实现有显著加速。第二，设计一步延迟的参数更新调度，让 CPU 上的参数更新与 GPU 上的前向和反向重叠，打开之后就能把 CPU 的执行时间隐藏起来。"
+      }
+    ],
+    "8": [
+      {
+        "text": "Table 2: Hardware overview of experimental system.",
+        "x": 342.1,
+        "y": 712.3,
+        "w": 191.4,
+        "h": 9,
+        "zh": "表 2：实验系统的硬件概况。"
+      },
+      {
+        "text": "We firstly read the data, including parameter, gradient, momentum and variance, into the vector registers (line 7). Then, we use several fused multiply-add (FMA) vector operations to preform the main execution pipeline which is repeated by the unrolling width. Note that the rest of operations, such as multiply, division, and sqrt, also run in vector mode. For the best performance we use AVX512 simd instruction set and an unroll_width of 8 based on auto-tuning results. In addition to the CPU-Adam optimizer, we implement the CPU-to-GPU 16FP parameter-copy in a tiled manner (line 15). We overlap the CPU and GPU execution by parallelizing the Adam computation and copying the parameters over to GPU. As we process Adam computation of the current tile of data on CPU, we write the parameters back to GPU for the previously processed tile. This way, we reduce the idle time of GPU to start the processing of the next training step.",
+        "x": 53.3,
+        "y": 527.7,
+        "w": 242.5,
+        "h": 192.3,
+        "zh": "我们先把参数、梯度、动量和方差读进向量寄存器（第 7 行）。然后用若干条融合乘加（FMA）向量操作完成主执行流水线，并按展开宽度重复。其余操作，例如乘法、除法和开方，也在向量模式下执行。为了拿到最好的性能，我们根据自动调优结果使用 AVX512 SIMD 指令集，并把 unroll_width 设为 8。除了 CPU-Adam 优化器，我们还按分块方式实现 CPU 到 GPU 的 FP16 参数拷贝（第 15 行）。Adam 计算和把参数拷到 GPU 是并行的，从而使 CPU 与 GPU 的执行重叠。CPU 上处理当前数据块的 Adam 计算时，就把上一块已经算完的参数写回 GPU。这样，GPU 开始下一步训练之前的空闲时间就缩短了。"
+      },
+      {
+        "text": "16 NVIDIA Tesla V100 Tensor Core GPUs 32GB HBM2 on each GPU 2 Intel Xeon Platinum 8168 Processors",
+        "x": 381.2,
+        "y": 671.2,
+        "w": 138.8,
+        "h": 26.9,
+        "zh": "16 块 NVIDIA Tesla V100 Tensor Core GPU。每块 GPU 上 32GB HBM2。两颗 Intel Xeon Platinum 8168 处理器"
+      },
+      {
+        "text": "L1, L2, and L3 are 32K, 1M, and 33M, respectively bidirectional 32 GBps PCIe",
+        "x": 381.2,
+        "y": 642.8,
+        "w": 165.3,
+        "h": 17.4,
+        "zh": "L1、L2 和 L3 分别为 32K、1M 和 33M。双向 32 GBps 的 PCIe"
+      },
+      {
+        "text": "This section seeks to answer the following questions, in comparison to the state-of-the-art: (i) How does ZeRO-Offload scale the trainable model size compared to existing multi-billion parameter training solutions on a single GPU/DGX-2 node? (ii) What is the training throughput of ZeRO-Offload on single GPU/DGX-2 node? (iii) How does the throughput of ZeRO-Offload scale on up",
+        "x": 317.6,
+        "y": 520.7,
+        "w": 242.1,
+        "h": 94.3,
+        "zh": "本节相对当前最好的方法，试图回答下面几个问题：（i）在单块 GPU 或一台 DGX-2 上，ZeRO-Offload 能把可训练模型规模扩大到什么程度，相对现有的数十亿参数训练方案如何？（ii）ZeRO-Offload 在单块 GPU 或一台 DGX-2 上的训练吞吐是多少？（iii）ZeRO-Offload 的吞吐如何随规模扩展，一直扩展到"
+      },
+      {
+        "text": "(iv) What is the impact of our CPU-Adam and delay parameter update (DPU) on improving throughput, and does DPU change model convergence?",
+        "x": 318.7,
+        "y": 472.9,
+        "w": 241,
+        "h": 33.9,
+        "zh": "（iv）CPU-Adam 和延迟参数更新（DPU）对吞吐有什么影响，DPU 会不会改变模型收敛？"
+      },
+      {
+        "text": "Despite using a highly optimized CPU optimizer, the CPU computation overhead can become a bottleneck during training with very small batch sizes, when the GPU computation time is not much larger than CPU compute. For such limited cases, we develop one-step delayed parameter update (DPU) that overlaps CPU and GPU compute to hide the CPU computation overhead by delaying the parameter update by a single step. We verify that DPU does not impact the final accuracy of training in the evaluation. DPU training schedule Figure 6 shows the workflow of ZeRO-Offload training process with delayed parameter upThe first N−1 steps, are trained without DPU to avoid destabilizing the training during the early stages where gradients change rapidly. À On step N, we obtain the gradients from the GPU, but we skip the CPU optimizer step, and do not update the fp16 parameters on the GPU either. Ã At step N +1, we compute the parameter updates on the CPU using gradients from step N, while computing the forward and backward pass on the GPU in parallel using parameters updated at step N −1. From this step onwards, the model at (i+1) will be trained using the parameters updated with gradients",
+        "x": 53.6,
+        "y": 218.4,
+        "w": 242.1,
+        "h": 252,
+        "zh": "尽管 CPU 优化器已经高度优化，batch 非常小、GPU 计算时间并没有比 CPU 计算长多少的时候，CPU 计算开销仍可能成为训练瓶颈。针对这种有限的情形，我们设计了一步延迟参数更新（DPU）：把参数更新推迟一步，让 CPU 与 GPU 的计算重叠，从而把 CPU 计算开销隐藏起来。评估中我们验证了 DPU 不影响训练的最终精度。DPU 的训练调度。图 6 给出带延迟参数更新的 ZeRO-Offload 训练流程。前 N−1 步不用 DPU，以免在梯度变化很快的早期阶段把训练搞不稳定。在第 N 步，我们从 GPU 取回梯度，但跳过 CPU 上的优化器步骤，也不更新 GPU 上的 fp16 参数。在第 N+1 步，CPU 用第 N 步的梯度计算参数更新，同时 GPU 用第 N−1 步更新过的参数并行做前向和反向。从这一步起，第 (i+1) 步的模型将使用由梯度更新得到的参数来训练"
+      },
+      {
+        "text": "Testbed. For the evaluation of model scale and throughput, we conduct our experiments on a single DGX-2 node, whose details are shown in Table 2. For the evaluation of throughput scalability, we conduct experiments on 8 Nvidia DGX-2 nodes connected together with InfiniBand using a 648-port Mellanox MLNX-OS CS7500 switch. Workloads. For the performance evaluation, we focus on evaluating GPT-2 [19] like Transformer based models [30]. We vary the hidden dimension and the number of Transformer blocks to obtain models with a different number of parameters. Note that scaling the depth alone is often not sufficient because it would make training more difficult [12]. Table 3 shows the configuration parameters used in our experiments. For convergence analysis, such as the delayed parameter update, we use GPT-2 [19] and BERT [6], both of which are commonly used as pre-trained language models and have demonstrated superior performance in many NLP tasks (e.g., natural language understanding and inference) than recurrent neural networks or convolutional neural networks. We use BERT-large, same as the one from [6], which has 24layer, 1024-hidden, 16-heads, and 336M parameters. Similar to [21, 28], we fine-tune BERT on the Stanford Question Answering Dataset (SQuAD) [1], which is one of the most widely used reading comprehension benchmark [22]. Unless otherwise stated, we follow the same training procedure and hyperparameter settings as in [6, 19]. Baseline. We compare the effectiveness of ZeRO-Offload with state-of-arts multi-billion parameter training solutions: • PyTorch DDP: This is the existing PyTorch Transformer implementation using DistributedDataParallel [14].",
+        "x": 317.4,
+        "y": 72,
+        "w": 242.4,
+        "h": 359.1,
+        "zh": "实验平台。评估模型规模和吞吐时，实验在单台 DGX-2 上进行，配置见表 2。评估吞吐扩展性时，实验用 8 台 Nvidia DGX-2，经 InfiniBand 互联，交换机是 648 端口的 Mellanox MLNX-OS CS7500。负载。性能评估聚焦于类似 GPT-2 [19] 的、基于 Transformer 的模型 [30]。我们改变隐藏维度和 Transformer 块的数量，得到参数量不同的模型。只加深网络往往不够，因为那样会让训练更难 [12]。表 3 给出实验使用的配置。做收敛分析（例如延迟参数更新）时，我们用 GPT-2 [19] 和 BERT [6]。二者都是常用的预训练语言模型，在许多 NLP 任务上（例如自然语言理解和推理）表现优于循环神经网络或卷积神经网络。我们使用的 BERT-large 与 [6] 中的相同：24 层、隐藏维度 1024、16 个注意力头、336M 参数。与 [21, 28] 类似，我们在斯坦福问答数据集（SQuAD）[1] 上微调 BERT，这是使用最广的阅读理解基准之一 [22]。除非另有说明，训练流程和超参数都遵循 [6, 19]。基线。我们把 ZeRO-Offload 与当前最好的数十亿参数训练方案比较：PyTorch DDP，即现有的 PyTorch Transformer 实现，使用 DistributedDataParallel [14]。"
+      },
+      {
+        "text": "step instead of parameters updated at i overlapping CPU compute with GPU compute. Accuracy trade-off. Since DPU changes the semantics of the training, it is reasonable to ask if there is a trade-off between model accuracy and training efficiency. To answer this question, we evaluated DPU on multiple training workloads and found that DPU does not hurt convergence if we introduce DPU after a few dozen iterations instead of introducing it at the beginning. Our evaluation result in Sec. 6 shows that compared with training with ZeRO-Offload only, training with delayed parameter update achieves same model training accuracy with higher training throughput.",
+        "x": 53.6,
+        "y": 72,
+        "w": 242.1,
+        "h": 144.4,
+        "zh": "那一步，而不是第 i 步更新出来的参数，同时让 CPU 计算与 GPU 计算重叠。精度上的取舍。DPU 改变了训练的语义，因此有理由问：模型精度和训练效率之间有没有取舍。为回答这个问题，我们在多个训练负载上评估了 DPU，发现如果在几十次迭代之后再引入 DPU，而不是一开头就用，DPU 不会损害收敛。第 6 节的评估结果表明：相对只用 ZeRO-Offload 的训练，加上延迟参数更新之后，模型训练精度相同，训练吞吐更高。"
+      }
+    ],
+    "9": [
+      {
+        "text": "Table 3: Model configuration in evaluation.",
+        "x": 95.3,
+        "y": 584.5,
+        "w": 157.1,
+        "h": 9,
+        "zh": "表 3：评估中的模型配置。"
+      },
+      {
+        "text": "and the majority of gradients to CPU memory. On the other hand, L2L is able to train even larger models (e.g., 17B) on a single GPU by frequently moving weights from unused layers to CPU memory. However, the largest model size does not increase when training L2L with multiple GPUs, which is",
+        "x": 317.9,
+        "y": 534.4,
+        "w": 240.3,
+        "h": 57.8,
+        "zh": "以及绝大部分梯度卸到 CPU 内存。另一方面，L2L 在单块 GPU 上能训练更大的模型（例如 17B），办法是频繁地把暂时用不到的层的权重搬到 CPU 内存。不过，用多块 GPU 训练 L2L 时，最大模型规模并不会增加，这一点"
+      },
+      {
+        "text": "We further perform model scale tests with 4 and 16 GPUs in a single DGX-2 node, respectively. As shown, the maximum trainable model size stays the same for both PyTorch and L2L, because both of them do not handle memory redundancies in data parallelism. As a result, their scalability is bounded by the model scale on a single GPU. Both Megatron and ZeRO-2 support large model training with more GPUs, but they cannot scale efficiently beyond 15B parameters, even with 16 GPUs. Megatron supports larger models than ZeRO-2, because ZeRO-2 still incurs memory redundancies on model weights. On the other hand, ZeRO-Offload easily enables training of up to 70B parameter models by partitioning and offloading optimizer states and gradients to CPU memory combined with model parallelism. Overall, ZeRO-Offload increases the model scale on a single DGX-2 node by 50X, 4.5X, 7.8X, and 4.2X than using PyTorch, Megatron, ZeRO-2, and L2L, respectively.",
+        "x": 317.9,
+        "y": 301.4,
+        "w": 241.9,
+        "h": 201.2,
+        "zh": "我们进一步在单台 DGX-2 上分别用 4 块和 16 块 GPU 做模型规模测试。如图所示，PyTorch 和 L2L 的最大可训练模型规模都保持不变，因为二者都不处理数据并行里的内存冗余。因此，它们的扩展上限就是单块 GPU 上的模型规模。Megatron 和 ZeRO-2 都能借助更多 GPU 训练大模型，但即使有 16 块 GPU，它们也无法高效扩展到 15B 参数以上。Megatron 能支持的模型比 ZeRO-2 更大，因为 ZeRO-2 在模型权重上仍有内存冗余。ZeRO-Offload 则把优化器状态和梯度划分并卸到 CPU 内存，再结合模型并行，可以轻松训练最多 70B 参数的模型。总体上，在单台 DGX-2 上，ZeRO-Offload 把模型规模相对 PyTorch、Megatron、ZeRO-2 和 L2L 分别提高了 50 倍、4.5 倍、7.8 倍和 4.2 倍。"
+      },
+      {
+        "text": "• Megatron [28]: One of the current state-of-the-art multibillion parameter model training solutions, which employs model parallelism to train up to 8.3B parameter models using 512 GPUs. • L2L [18]: L2L enables training of deep Transformer networks by keeping one Transformer block at a time in GPU memory and only moves tensors in the upcoming Transformer block into GPU memory when needed. • ZeRO [21]: ZeRO extends data parallelism by eliminating memory redundancies across multiple GPUs, allowing to train models up to 170B parameters with high training throughput using 25 DGX-2 nodes. We refer to the open-sourced implementation of ZeRO as ZeRO- 2. ZeRO-2 achieves the SOTA results for large model training and is a strong baseline.",
+        "x": 65.5,
+        "y": 308.7,
+        "w": 230.3,
+        "h": 177.3,
+        "zh": "Megatron [28]：当前最好的数十亿参数模型训练方案之一，用模型并行在 512 块 GPU 上训练最多 8.3B 参数的模型。L2L [18]：L2L 每次只在 GPU 内存里保留一个 Transformer 块，需要时才把下一个 Transformer 块的张量搬进 GPU 内存，从而能训练很深的 Transformer 网络。ZeRO [21]：ZeRO 扩展了数据并行，去掉多 GPU 之间的内存冗余，用 25 台 DGX-2 就能以很高的训练吞吐训练最多 170B 参数的模型。我们把开源的 ZeRO 实现称为 ZeRO-2。ZeRO-2 在大模型训练上达到了当前最好的结果，是一个很强的基线。"
+      },
+      {
+        "text": "Next, we compare the training throughput of ZeRO-Offload and L2L, for models with billion-scale parameters, on a single GPU. We do not include Megatron and ZeRO-2 in this comparison, because both of them cannot train models bigger than 1.4B parameters due to OOM. We evaluate ZeRO-Offload and L2L with the same training batch size (e.g., 512) and same micro-batch sizes (shown in table 3), with gradient accumulation enabled. We also disable delayed parameter update in this experiment so that the comparison is only from the system efficiency perspective. We evaluate the performance improvement and its impact on the convergence of delayed parameter update in Section 6.2.4. Figure 8 shows that ZeRO-Offload outperforms L2L by 14% on average (up to 22%) in throughput (TFLOPS). The performance benefit of ZeRO-Offload comes from the following two aspects. First, ZeRO-Offload has a lower communica-",
+        "x": 317.1,
+        "y": 72,
+        "w": 242.5,
+        "h": 189.9,
+        "zh": "接下来，在单块 GPU 上比较 ZeRO-Offload 和 L2L 对十亿级参数模型的训练吞吐。这个比较不纳入 Megatron 和 ZeRO-2，因为二者一旦模型超过 1.4B 参数就会 OOM。ZeRO-Offload 和 L2L 使用相同的训练 batch（例如 512）和相同的 micro-batch（见表 3），并打开梯度累积。本实验关掉延迟参数更新，这样比较的只是系统效率。延迟参数更新的性能提升及其对收敛的影响放在第 6.2.4 节。图 8 表明，ZeRO-Offload 的吞吐（TFLOPS）平均比 L2L 高 14%（最多高 22%）。ZeRO-Offload 的性能好处来自两方面。第一，ZeRO-Offload 的通信更低"
+      },
+      {
+        "text": "As an important step toward democratizing large model training, in this part, we first test the largest trainable models on a single GPU as well as 16 GPUs in a single DGX-2 node.",
+        "x": 53.6,
+        "y": 218.4,
+        "w": 242.1,
+        "h": 33.9,
+        "zh": "作为普及大模型训练的重要一步，这一部分我们先测试单块 GPU 上，以及单台 DGX-2 里 16 块 GPU 上，能够训练的最大模型。"
+      },
+      {
+        "text": "The largest model can be trained using PyTorch DDP on a single GPU with 32GB memory is 1.4B, before running out of memory, as shown in 7. Both Megatron and ZeRO-2 do not increase the trainable model size on a single GPU in comparison to PyTorch, because they both utilize the aggregated GPU memory to fit larger models. In contrast, ZeRO-Offload enables 13B model training on a single GPU, which is more than 9X larger than using PyTorch, Megatron, and ZeRO-2. This is mainly because of ZeROOffload’s strategy for maximizing the memory savings on GPU by offloading expensive states such as optimizer states",
+        "x": 53.7,
+        "y": 72,
+        "w": 242.1,
+        "h": 129.5,
+        "zh": "在 32GB 内存的单块 GPU 上，PyTorch DDP 能训练的最大模型是 1.4B，再大就会耗尽内存，如图 7 所示。Megatron 和 ZeRO-2 相对 PyTorch 并没有提高单块 GPU 上的可训练模型规模，因为它们都是靠多块 GPU 的合计内存来装下更大的模型。相比之下，ZeRO-Offload 能在单块 GPU 上训练 13B 的模型，规模是 PyTorch、Megatron 和 ZeRO-2 的 9 倍以上。这主要是因为 ZeRO-Offload 的策略是把优化器状态这类昂贵的状态卸走，从而把 GPU 上省下的内存做到最大"
+      }
+    ],
+    "10": [
+      {
+        "text": "Figure 7: The size of the biggest model that Figure 8: The training throughput with Py- Figure 9: The training throughput is comcan be trained on single GPU, 4 and 16 GPUs Torch, L2L, and ZeRO-Offload on a single pared for w/o DPU and w/ DPU to GPT-2.",
+        "x": 54,
+        "y": 601.3,
+        "w": 500.4,
+        "h": 19.9,
+        "zh": "图 7：单块 GPU、4 块 GPU 和 16 块 GPU 上能训练的最大模型规模。图 8：PyTorch、L2L 和 ZeRO-Offload 在单块 GPU 上的训练吞吐。图 9：对 GPT-2 比较不开 DPU 与打开 DPU 时的训练吞吐。"
+      },
+      {
+        "text": "tion cost between CPU and GPU than L2L. For a model with M parameters, L2L requires 28M data communication volume between GPU and CPU, which is a sum of the weights, gradients, and optimizer states of each layer of the model. As analyzed in Sec. 4.1, the communication volume between CPU and GPU memory in ZeRO-Offload is 4M, which is 7x smaller than L2L. The reduced communication volume significantly mitigates the bottleneck from CPU-GPU communication. Second, compared with L2L, the parameter update of ZeRO-Offload happens on CPU instead of GPU, but our optimized CPU-Adam implementation achieves a quite comparable parameter update performance than the PyTorch Adam implementation on GPU (evaluated in Sec. 6.2.4). Therefore, although the optimizer update on GPU in L2L is slightly faster than the optimizer update on CPU in ZeRO-Offload, the communication overhead introduced by L2L leads to an overall slower throughput than ZeRO-Offload. Multi-GPU in single DGX-2. Next, we compare the training throughput of PyTorch, ZeRO-2, Megatron, ZeRO-Offload without model parallelism (w/o MP), and ZeRO-Offload with model parallelism (w/ MP) in one DGX-2 node. When using MP, we use a MP degree that gives the best performance for both baseline and ZeRO-Offload. We use a total batch size of 512 for all the experiments using a combination of micro-batch per GPU and gradient accumulation. To get the best performance for each configuration, we use the largest micro batch that it can support without OOM. We exclude L2L [29] in this test because its implementation does not support multi-GPU training. Figure 10 shows the throughput per GPU results when training on multiple GPUs. We make the following observations: • For 1B to 15B models, ZeRO-Offload achieves the highest throughput and has up to 1.33X, 1.11X, 1.64X higher speeds than PyTorch, ZeRO-2, and Megatron, respectively. By offloading all the optimizer states to CPU with low overhead, ZeRO-Offload can train with larger micro-batch sizes giving higher throughput. • ZeRO-2 runs out of memory once the model size is beyond 8B due to lack of enough aggregate GPU memory to store the model states on 16 GPUs. Instead, ZeROOffload scales to 13B, without model parallelism because it offloads optimizer states and the majority of",
+        "x": 53.6,
+        "y": 72,
+        "w": 242.1,
+        "h": 500.2,
+        "zh": "开销比 L2L 更低，通信发生在 CPU 与 GPU 之间。对有 M 个参数的模型，L2L 在 GPU 与 CPU 之间需要 28M 的数据通信量，这是模型每一层的权重、梯度和优化器状态之和。如第 4.1 节的分析，ZeRO-Offload 在 CPU 与 GPU 内存之间的通信量是 4M，比 L2L 小 7 倍。通信量降下来之后，CPU 与 GPU 通信这个瓶颈就明显缓解了。第二，和 L2L 相比，ZeRO-Offload 的参数更新发生在 CPU 上而不是 GPU 上，但我们优化过的 CPU-Adam 在参数更新上的性能，与 GPU 上的 PyTorch Adam 相当接近（第 6.2.4 节有评估）。因此，虽然 L2L 在 GPU 上做优化器更新比 ZeRO-Offload 在 CPU 上稍快，L2L 引入的通信开销仍使它的整体吞吐慢于 ZeRO-Offload。单台 DGX-2 上的多 GPU。接下来，在一台 DGX-2 上比较 PyTorch、ZeRO-2、Megatron、不带模型并行的 ZeRO-Offload（w/o MP），以及带模型并行的 ZeRO-Offload（w/ MP）的训练吞吐。使用 MP 时，我们为基线和 ZeRO-Offload 都选取性能最好的 MP 度数。所有实验的总 batch 都是 512，由每块 GPU 上的 micro-batch 和梯度累积组合而成。为了让每种配置都达到最好性能，我们使用它在不 OOM 的前提下能支持的最大 micro batch。本测试排除 L2L [29]，因为它的实现不支持多 GPU 训练。图 10 给出在多块 GPU 上训练时每块 GPU 的吞吐。我们观察到：对 1B 到 15B 的模型，ZeRO-Offload 吞吐最高，相对 PyTorch、ZeRO-2 和 Megatron 最快分别达到 1.33 倍、1.11 倍和 1.64 倍。由于以很低的开销把全部优化器状态卸到 CPU，ZeRO-Offload 可以用更大的 micro-batch，从而得到更高吞吐。ZeRO-2 在模型超过 8B 之后就会耗尽内存，因为 16 块 GPU 的合计显存不够存放模型状态。ZeRO-Offload 则可以扩展到 13B，而且不用模型并行，因为它把优化器状态以及其中的绝大部分"
+      },
+      {
+        "text": "Figure 10: Training throughput with PyTorch, ZeRO-2, MegatronLM, ZeRO-Offload without model parallelism and ZeRO-Offload with model parallelism.",
+        "x": 317.6,
+        "y": 434,
+        "w": 241.9,
+        "h": 30.9,
+        "zh": "图 10：PyTorch、ZeRO-2、Megatron-LM、不带模型并行的 ZeRO-Offload，以及带模型并行的 ZeRO-Offload 的训练吞吐。"
+      },
+      {
+        "text": "gradients to CPU memory. • When combined with model parallelism, ZeRO-Offload enables training up to 70B parameter models with more than 30 TFLOPS throughput per GPU. In contrast, Megatron supports only up to 15B parameter models before running out of memory, using just model parallelism. • Compared ZeRO-Offload with ZeRO-2 and Megatron, ZeRO-Offload outperforms ZeRO-2 and Megatron in throughput for 1–8B and 1–13B parameter models, respectively. ZeRO-Offload is faster than Megatron, because it eliminates frequent communication between different GPUs and can train with larger micro batch sizes. ZeRO-Offload outperforms ZeRO-2 also due to larger micro batch sizes.",
+        "x": 329.3,
+        "y": 259.9,
+        "w": 230.3,
+        "h": 165.4,
+        "zh": "梯度卸到了 CPU 内存。与模型并行合用时，ZeRO-Offload 能训练最多 70B 参数的模型，每块 GPU 的吞吐超过 30 TFLOPS。相比之下，Megatron 只用模型并行，模型到 15B 参数就会耗尽内存。把 ZeRO-Offload 与 ZeRO-2、Megatron 比较，ZeRO-Offload 在 1–8B 参数上吞吐高于 ZeRO-2，在 1–13B 参数上吞吐高于 Megatron。ZeRO-Offload 比 Megatron 快，是因为它去掉了不同 GPU 之间的频繁通信，而且可以用更大的 micro batch。ZeRO-Offload 也高于 ZeRO-2，同样是因为 micro batch 更大。"
+      },
+      {
+        "text": "We compare the throughput scalability of ZeRO-2 and ZeROOffload3 on up to 128 GPUs in Figure 11 and make the following key observations: First, ZeRO-Offload achieves near perfect linear speedup in terms of aggregate throughput (green line) running at over 30 TFlops per GPU (blue bars). Second, from 1 to 16 GPUs, while ZeRO-2 runs out of memory, ZeROOffload can effectively train the model, turning the model training from infeasible to feasible. Third, with 32 GPUs,",
+        "x": 317.4,
+        "y": 129,
+        "w": 242.2,
+        "h": 93.6,
+        "zh": "我们在图 11 里比较 ZeRO-2 和 ZeRO-Offload 在最多 128 块 GPU 上的吞吐扩展，主要观察如下。第一，按合计吞吐（绿线）看，ZeRO-Offload 达到接近完美的线性加速，每块 GPU 超过 30 TFlops（蓝条）。第二，从 1 块到 16 块 GPU，ZeRO-2 会耗尽内存，ZeRO-Offload 仍能有效训练这个模型，把原本做不成的训练变成做得到。第三，到了 32 块 GPU，"
+      },
+      {
+        "text": "We do not include comparison against Megatron because it consistently performs worse than ZeRO-Offload, as shown in Figure 10. Given the communication overhead added by model parallelism, scaling out Megatron training can not achieve higher throughput than ZeRO-Offload even with",
+        "x": 317.9,
+        "y": 81.5,
+        "w": 241.4,
+        "h": 36.4,
+        "zh": "我们没有拿 Megatron 来比，因为它始终比 ZeRO-Offload 差，如图 10 所示。模型并行会增加通信开销，因此即使 Megatron 能线性扩展，向外扩展 Megatron 训练也得不到比 ZeRO-Offload 更高的吞吐，即便在"
+      }
+    ],
+    "11": [
+      {
+        "text": "Table 4: Adam latency (s) for PyTorch (PT) and CPU-Adam.",
+        "x": 327.6,
+        "y": 712.3,
+        "w": 220.5,
+        "h": 9,
+        "zh": "表 4：PyTorch（PT）与 CPU-Adam 的 Adam 延迟（秒）。"
+      },
+      {
+        "text": "loss curves of fine-tuning Bert-large model on SQuAD using ZeRO-Offload without DPU, and ZeRO-Offload with DPU. In both cases, DPU is enabled after 40 iterations allowing the training to stabilize in its early stage before introducing DPU. We observe that the training curves of the unmodified GPT- 2 and ZeRO-Offload w/o DPU are exactly overlapped, because ZeRO-Offload w/o DPU performs only system optimizations and does not alter training dynamics. On the other hand, the training curve from ZeRO-Offload with DPU converges slightly slower at the very beginning of the training (e.g., barely can be seen at 2K-5K iterations) and quickly catches up after 5K iterations. For the remaining of the training, the training loss matches the original training until the",
+        "x": 317.6,
+        "y": 465.2,
+        "w": 242.2,
+        "h": 153.8,
+        "zh": "在 SQuAD 上微调 Bert-large 的损失曲线，分别是不开 DPU 的 ZeRO-Offload 和打开 DPU 的 ZeRO-Offload。两种情况下，DPU 都在 40 次迭代之后才打开，让训练先在早期稳定下来，再引入 DPU。我们观察到，未修改的 GPT-2 与不开 DPU 的 ZeRO-Offload，训练曲线完全重合，因为不开 DPU 的 ZeRO-Offload 只做系统优化，不改变训练动态。另一方面，打开 DPU 的 ZeRO-Offload 在训练刚开始时收敛稍慢（例如在 2K 到 5K 次迭代之间几乎看不出来），5K 次迭代之后很快赶上。此后直到"
+      },
+      {
+        "text": "Figure 11: Comparison of training throughput between ZeROOffload and ZeRO-2 using 1–128 GPUs for a 10B parameter GPT2.",
+        "x": 54,
+        "y": 597.6,
+        "w": 241.6,
+        "h": 19.9,
+        "zh": "图 11：在 1 到 128 块 GPU 上，比较 ZeRO-Offload 与 ZeRO-2 训练 10B 参数 GPT-2 的吞吐。"
+      },
+      {
+        "text": "ZeRO-Offload slightly outperforms ZeRO-2 in throughput. The improvement comes from additional memory savings on GPU from ZeRO-Offload, which allows training the model with larger batch sizes that lead to increased GPU computation efficiency. Fourth, with more GPUs (such as 64 and 128), ZeRO-2 starts to outperform ZeRO-Offload, because both can now run similar batch sizes, achieving similar computation efficiency, whereas ZeRO-2 does not suffer from the additional overhead of CPU-GPU communication. In summary, ZeRO-Offload complements ZeRO-2 and enables large model training from a single device to thousands of devices with good computation efficiency.",
+        "x": 53.6,
+        "y": 442.5,
+        "w": 242.2,
+        "h": 141.5,
+        "zh": "ZeRO-Offload 的吞吐略高于 ZeRO-2。提升来自 ZeRO-Offload 在 GPU 上额外省下的内存，因此可以用更大的 batch 训练，GPU 计算效率随之提高。第四，GPU 再多一些（例如 64 块和 128 块）时，ZeRO-2 开始超过 ZeRO-Offload，因为此时二者都能用相近的 batch，计算效率接近，而 ZeRO-2 没有 CPU 与 GPU 通信的额外开销。总的来说，ZeRO-Offload 补上了 ZeRO-2 的缺口，使大模型训练从单台设备一直覆盖到数千台设备，同时保持不错的计算效率。"
+      },
+      {
+        "text": "For Bert-Large fine-uning, we can see that although the training losses are not exactly the same, they converge in the same trend and are largely overlapped. Without changing any hyperparameters, ZeRO-Offload + DPU achieves the same final F1 score (92.8) as the baseline. From these results on both GPT-2 pretraining, and Bert-Large fine-tuning, we empirically verify that DPU is an effective technique to improve the training throughput of ZeRO-Offload without hurting model convergence and accuracy.The 1-step staleness introduced by DPU is well tolerated by the iterative training process once the model has passed the initial training phase.",
+        "x": 317.9,
+        "y": 321.4,
+        "w": 241.8,
+        "h": 129.5,
+        "zh": "对 Bert-Large 的微调可以看到，虽然训练损失并不完全相同，但收敛趋势一致，而且大体重合。不改任何超参数，ZeRO-Offload 加 DPU 的最终 F1 与基线相同，都是 92.8。从 GPT-2 预训练和 Bert-Large 微调这两边的结果，我们从经验上确认：DPU 能提高 ZeRO-Offload 的训练吞吐，同时不损害模型收敛和精度。DPU 引入的 1 步陈旧，只要模型过了最初的训练阶段，迭代训练过程就能很好地容忍。"
+      },
+      {
+        "text": "In this part, we evaluate our A. CPU-Adam efficiency. Adam implementation against the PyTorch Adam on CPU. Table 4 shows the optimizer execution time of the two implementations for model parameters from 1 to 10 billion. Compared to PyTorch (PT-CPU), CPU-Adam reduces the execution time by over 5X for all the configurations and 6.4X for the case with 1B parameters. The CPU-Adam optimizer achieves high speedups by exploiting the instruction-level parallelism, thread-level parallelism, and the tile-based data copy scheme (as shown in line 15 of Algorithm 1). Meanwhile, although CPU-Adam has a slower speed than the PyTorch Adam implementation on GPU (PT-GPU), the performance gap is not very huge, and the CPU computation is not a bottleneck of the training throughout. B. One-step Delayed parameter update (DPU). shows the comparison of the training throughput of GPT-2 with and without DPU. As shown, with DPU enabled, the training achieves 1.12–1.59, updated times higher throughput than without it, for a wide range of model sizes for a small micro batch size of 8. This is expected because DPU allows the optimizer updates to overlap with the next forward computation such that the GPU does not have to be slowed down by the CPU computation and CPU-GPU communication. But, what about accuracy? Convergence impact We study the convergence impact of DPU on both GPT-2 and BERT. Figure 12 shows the pre-training loss curves over 100K training iterations using PyTorch (unmodified GPT-2), and Figure 13 shows the",
+        "x": 53.6,
+        "y": 72,
+        "w": 242.2,
+        "h": 333.8,
+        "zh": "这一部分评估 CPU-Adam 的效率。我们把自己的 Adam 实现与 CPU 上的 PyTorch Adam 比较。表 4 给出两种实现对 1 到 100 亿参数的优化器执行时间。相对 PyTorch（PT-CPU），CPU-Adam 在所有配置上把执行时间缩短超过 5 倍，在 1B 参数时达到 6.4 倍。CPU-Adam 的高加速来自指令级并行、线程级并行，以及按块拷贝数据的方案（如算法 1 第 15 行）。同时，虽然 CPU-Adam 比 GPU 上的 PyTorch Adam（PT-GPU）慢，差距并不很大，而且 CPU 计算并不是整个训练的瓶颈。一步延迟参数更新（DPU）。图 9 比较 GPT-2 在打开和关闭 DPU 时的训练吞吐。如图所示，打开 DPU 后，在很小的 micro batch（大小为 8）下，多种模型规模的吞吐都比关闭时高出 1.12 到 1.59 倍。这是预期之中的，因为 DPU 让优化器更新与下一次前向计算重叠，GPU 就不必被 CPU 计算以及 CPU 与 GPU 的通信拖慢。那么精度呢？对收敛的影响。我们在 GPT-2 和 BERT 上研究 DPU 对收敛的影响。图 12 给出用 PyTorch（未修改的 GPT-2）预训练、超过 10 万次训练迭代的损失曲线，图 13 给出的是"
+      },
+      {
+        "text": "Figure 12: The training loss Figure 13: The fine-tuning loss curve of unmodified GPT-2, curve of BERT, ZeRO-Offload ZeRO-Offload w/o DPU and w/o DPU and ZeRO-Offload ZeRO-Offload with DPU.",
+        "x": 317.9,
+        "y": 179.6,
+        "w": 229.2,
+        "h": 42.2,
+        "zh": "图 12：未修改的 GPT-2、不开 DPU 的 ZeRO-Offload，以及打开 DPU 的 ZeRO-Offload 的训练损失曲线。图 13：BERT、不开 DPU 的 ZeRO-Offload，以及打开 DPU 的 ZeRO-Offload 的微调损失曲线。"
+      },
+      {
+        "text": "We presented ZeRO-Offload, a powerful GPU-CPU hybrid DL training technology with high compute efficiency and near linear throughput scalability, that can allows data scientists to train models with multi-billion parameter models even on a single GPU, without requiring any model refactoring. We open-sourced ZeRO-Offload as part of the DeepSpeed",
+        "x": 317.4,
+        "y": 72,
+        "w": 242.3,
+        "h": 69.7,
+        "zh": "我们提出了 ZeRO-Offload，一种 GPU 与 CPU 混合的深度学习训练技术。它的计算效率高，吞吐扩展接近线性，让数据科学家即使只有一块 GPU，也能训练数十亿参数的模型，而且不需要重构模型。我们把 ZeRO-Offload 作为 DeepSpeed 的一部分开源"
+      }
+    ],
+    "12": [
+      {
+        "text": "library (www.deepspeed.ai) with the hope to democratize large model training, allowing data scientist everywhere to harness the potential of truly massive DL models.",
+        "x": 54,
+        "y": 686.1,
+        "w": 240.1,
+        "h": 33.9,
+        "zh": "放进这个库（www.deepspeed.ai），希望借此普及大模型训练，让各地的数据科学家都能发挥真正巨大的深度学习模型的潜力。"
+      }
+    ],
+    "13": [
+      {
+        "text": "for Programming Languages and Operating Systems, ASPLOS ’20, page 1341–1355, New York, NY, USA, 2020. Association for Computing Machinery. [10] Yanping Huang, Youlong Cheng, Ankur Bapna, Orhan Firat, Mia Xu Chen, Dehao Chen, HyoukJoong Lee, Jiquan Ngiam, Quoc V. Le, Yonghui Wu, and Zhifeng Chen. Gpipe: Efficient training of giant neural networks using pipeline parallelism, 2018. [11] Hai Jin, Bo Liu, Wenbin Jiang, Yang Ma, Xuanhua Shi, Bingsheng He, and Shaofeng Zhao. Layer-centric memory reuse and data migration for extreme-scale deep learning on many-core architectures. ACM Trans. Archit. Code Optim., 15(3), September 2018. [12] Jared Kaplan, Sam McCandlish, Tom Henighan, Tom B. Brown, Benjamin Chess, Rewon Child, Scott Gray, Alec Radford, Jeffrey Wu, and Dario Amodei. Scaling laws for neural language models, 2020. [13] Diederik P. Kingma and Jimmy Ba. Adam: A method for stochastic optimization, 2014. [14] Shen Li, Yanli Zhao, Rohan Varma, Omkar Salpekar, Pieter Noordhuis, Teng Li, Adam Paszke, Jeff Smith, Brian Vaughan, Pritam Damania, and Soumith Chintala. Pytorch distributed: Experiences on accelerating data parallel training. Proc. VLDB Endow., 13(12):3005–",
+        "x": 317.9,
+        "y": 403,
+        "w": 241.9,
+        "h": 317,
+        "zh": "编程语言与操作系统，ASPLOS ’20，第 1341–1355 页，美国纽约州纽约市，2020。Association for Computing Machinery。[10] Yanping Huang、Youlong Cheng、Ankur Bapna、Orhan Firat、Mia Xu Chen、Dehao Chen、HyoukJoong Lee、Jiquan Ngiam、Quoc V. Le、Yonghui Wu、Zhifeng Chen。GPipe：用流水线并行高效训练巨型神经网络，2018。[11] Hai Jin、Bo Liu、Wenbin Jiang、Yang Ma、Xuanhua Shi、Bingsheng He、Shaofeng Zhao。面向众核架构上超大规模深度学习的以层为中心的内存复用与数据迁移。ACM Trans. Archit. Code Optim.，15(3)，2018 年 9 月。[12] Jared Kaplan、Sam McCandlish、Tom Henighan、Tom B. Brown、Benjamin Chess、Rewon Child、Scott Gray、Alec Radford、Jeffrey Wu、Dario Amodei。神经语言模型的缩放定律，2020。[13] Diederik P. Kingma、Jimmy Ba。Adam：一种随机优化方法，2014。[14] Shen Li、Yanli Zhao、Rohan Varma、Omkar Salpekar、Pieter Noordhuis、Teng Li、Adam Paszke、Jeff Smith、Brian Vaughan、Pritam Damania、Soumith Chintala。PyTorch distributed：加速数据并行训练的经验。Proc. VLDB Endow.，13(12):3005–"
+      },
+      {
+        "text": "[1] The Stanford Question Answering Dataset (SQuAD)",
+        "x": 59,
+        "y": 687.7,
+        "w": 235.8,
+        "h": 10,
+        "zh": "[1] 斯坦福问答数据集（SQuAD）"
+      },
+      {
+        "text": "[2] Tom B. Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, Sandhini Agarwal, Ariel Herbert-Voss, Gretchen Krueger, Tom Henighan, Rewon Child, Aditya Ramesh, Daniel M. Ziegler, Jeffrey Wu, Clemens Winter, Christopher Hesse, Mark Chen, Eric Sigler, Mateusz Litwin, Scott Gray, Benjamin Chess, Jack Clark, Christopher Berner, Sam McCandlish, Alec Radford, Ilya Sutskever, and Dario Amodei. Language models are few-shot learn-",
+        "x": 59,
+        "y": 536,
+        "w": 236.8,
+        "h": 117.6,
+        "zh": "[2] Tom B. Brown、Benjamin Mann、Nick Ryder、Melanie Subbiah、Jared Kaplan、Prafulla Dhariwal、Arvind Neelakantan、Pranav Shyam、Girish Sastry、Amanda Askell、Sandhini Agarwal、Ariel Herbert-Voss、Gretchen Krueger、Tom Henighan、Rewon Child、Aditya Ramesh、Daniel M. Ziegler、Jeffrey Wu、Clemens Winter、Christopher Hesse、Mark Chen、Eric Sigler、Mateusz Litwin、Scott Gray、Benjamin Chess、Jack Clark、Christopher Berner、Sam McCandlish、Alec Radford、Ilya Sutskever、Dario Amodei。语言模型是少样本学习者"
+      },
+      {
+        "text": "[3] Yu Cao, Wei Bi, Meng Fang, and Dacheng Tao. Pretrained language models for dialogue generation with multiple input sources, 2020.",
+        "x": 59,
+        "y": 479.9,
+        "w": 236.8,
+        "h": 33.9,
+        "zh": "[3] Yu Cao、Wei Bi、Meng Fang、Dacheng Tao。用多个输入源做对话生成的预训练语言模型，2020。"
+      },
+      {
+        "text": "[4] Tianqi Chen, Bing Xu, Chiyuan Zhang, and Carlos Guestrin. Training deep nets with sublinear memory cost. arXiv: Learning, 2016.",
+        "x": 59,
+        "y": 435.9,
+        "w": 235.5,
+        "h": 33.9,
+        "zh": "[4] Tianqi Chen、Bing Xu、Chiyuan Zhang、Carlos Guestrin。以亚线性内存代价训练深度网络。arXiv: Learning，2016。"
+      },
+      {
+        "text": "[5] Jeffrey Dean, Greg Corrado, Rajat Monga, Kai Chen, Matthieu Devin, Mark Mao, Marc’aurelio Ranzato, Andrew Senior, Paul Tucker, Ke Yang, Quoc V. Le, and Andrew Y. Ng. Large scale distributed deep networks. In F. Pereira, C. J. C. Burges, L. Bottou, and K. Q. Weinberger, editors, Advances in Neural Information Processing Systems 25, pages 1223–1231. Curran Associates,",
+        "x": 59,
+        "y": 344,
+        "w": 236.9,
+        "h": 81.7,
+        "zh": "[5] Jeffrey Dean、Greg Corrado、Rajat Monga、Kai Chen、Matthieu Devin、Mark Mao、Marc’aurelio Ranzato、Andrew Senior、Paul Tucker、Ke Yang、Quoc V. Le、Andrew Y. Ng。大规模分布式深度网络。见 F. Pereira、C. J. C. Burges、L. Bottou、K. Q. Weinberger 编，《神经信息处理系统进展》第 25 卷，第 1223–1231 页。Curran Associates，"
+      },
+      {
+        "text": "[15] Gaurav Mitra, Beau Johnston, Alistair Rendell, Eric McCreath, and Jun Zhou. Use of simd vector operations to accelerate application code performance on lowpowered arm and intel platforms. pages 1107–1116, 05",
+        "x": 317.9,
+        "y": 336.8,
+        "w": 241.8,
+        "h": 45.8,
+        "zh": "[15] Gaurav Mitra、Beau Johnston、Alistair Rendell、Eric McCreath、Jun Zhou。用 SIMD 向量操作加速低功耗 ARM 和 Intel 平台上的应用程序代码。第 1107–1116 页，05"
+      },
+      {
+        "text": "[6] Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. Bert: Pre-training of deep bidirectional transformers for language understanding. arXiv preprint arXiv:1810.04805, 2018.",
+        "x": 59,
+        "y": 276,
+        "w": 236.8,
+        "h": 45.8,
+        "zh": "[6] Jacob Devlin、Ming-Wei Chang、Kenton Lee、Kristina Toutanova。BERT：面向语言理解的深度双向 Transformer 预训练。arXiv 预印本 arXiv:1810.04805，2018。"
+      },
+      {
+        "text": "Automatic Mixed Precision for Deep https://developer.nvidia.com/ automatic-mixed-precision, 2019. [17] Xuan Peng, Xuanhua Shi, Hulin Dai, Hai Jin, Weiliang Ma, Qian Xiong, Fan Yang, and Xuehai Qian. Capuchin: Tensor-based gpu memory management for deep learning. In Proceedings of the Twenty-Fifth International Conference on Architectural Support for Programming Languages and Operating Systems, ASPLOS ’20, page 891–905, New York, NY, USA, 2020. Association for Computing Machinery. [18] Bharadwaj Pudipeddi, Maral Mesmakhosroshahi, Jinwen Xi, and Sujeeth Bharadwaj. Training large neural networks with constant memory using a new execution algorithm. June 2020. [19] Alec Radford, Jeffrey Wu, Rewon Child, David Luan, Dario Amodei, and Ilya Sutskever. Language models are unsupervised multitask learners. OpenAI blog, 1(8):9,",
+        "x": 317.9,
+        "y": 84,
+        "w": 241.8,
+        "h": 232.5,
+        "zh": "深度学习的自动混合精度。https://developer.nvidia.com/automatic-mixed-precision，2019。[17] Xuan Peng、Xuanhua Shi、Hulin Dai、Hai Jin、Weiliang Ma、Qian Xiong、Fan Yang、Xuehai Qian。Capuchin：面向深度学习的基于张量的 GPU 内存管理。见第 25 届编程语言与操作系统体系结构支持国际会议论文集，ASPLOS ’20，第 891–905 页，美国纽约州纽约市，2020。Association for Computing Machinery。[18] Bharadwaj Pudipeddi、Maral Mesmakhosroshahi、Jinwen Xi、Sujeeth Bharadwaj。用一种新的执行算法，以恒定内存训练大型神经网络。2020 年 6 月。[19] Alec Radford、Jeffrey Wu、Rewon Child、David Luan、Dario Amodei、Ilya Sutskever。语言模型是无监督的多任务学习者。OpenAI blog，1(8):9，"
+      },
+      {
+        "text": "[7] Aaron Harlap, Deepak Narayanan, Amar Phanishayee, Vivek Seshadri, Nikhil Devanur, Greg Ganger, and Phil Gibbons. Pipedream: Fast and efficient pipeline parallel",
+        "x": 59,
+        "y": 231.9,
+        "w": 236.4,
+        "h": 33.9,
+        "zh": "[7] Aaron Harlap、Deepak Narayanan、Amar Phanishayee、Vivek Seshadri、Nikhil Devanur、Greg Ganger、Phil Gibbons。PipeDream：快速高效的流水线并行"
+      },
+      {
+        "text": "[8] Mark Hildebrand, Jawad Khan, Sanjeev Trika, Jason Lowe-Power, and Venkatesh Akella. Autotm: Automatic tensor movement in heterogeneous memory systems using integer linear programming. In Proceedings of the Twenty-Fifth International Conference on Architectural Support for Programming Languages and Operating Systems, ASPLOS ’20, 2020.",
+        "x": 59,
+        "y": 128,
+        "w": 235.1,
+        "h": 81.7,
+        "zh": "[8] Mark Hildebrand、Jawad Khan、Sanjeev Trika、Jason Lowe-Power、Venkatesh Akella。AutoTM：用整数线性规划在异构内存系统中自动搬动张量。见第 25 届编程语言与操作系统体系结构支持国际会议论文集，ASPLOS ’20，2020。"
+      },
+      {
+        "text": "[9] Chien-Chin Huang, Gu Jin, and Jinyang Li. Swapadvisor: Pushing deep learning beyond the gpu memory limit via smart swapping. In Proceedings of the TwentyFifth International Conference on Architectural Support",
+        "x": 59,
+        "y": 72,
+        "w": 236.8,
+        "h": 45.8,
+        "zh": "[9] Chien-Chin Huang、Gu Jin、Jinyang Li。SwapAdvisor：靠聪明的换入换出，把深度学习推出 GPU 内存上限。见第 25 届编程语言与操作系统体系结构支持国际会议论文集"
+      }
+    ],
+    "14": [
+      {
+        "text": "[20] Colin Raffel, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael Matena, Yanqi Zhou, Wei Li, and Peter J. Liu. Exploring the limits of transfer learning with a unified text-to-text transformer, 2020.",
+        "x": 54,
+        "y": 674.2,
+        "w": 240.3,
+        "h": 45.8,
+        "zh": "[20] Colin Raffel、Noam Shazeer、Adam Roberts、Katherine Lee、Sharan Narang、Michael Matena、Yanqi Zhou、Wei Li、Peter J. Liu。用统一的文本到文本 Transformer 探索迁移学习的极限，2020。"
+      },
+      {
+        "text": "models using model parallelism. CoRR, abs/1909.08053,",
+        "x": 339.5,
+        "y": 710,
+        "w": 219.8,
+        "h": 10,
+        "zh": "模型，使用的是模型并行。CoRR，abs/1909.08053，"
+      },
+      {
+        "text": "[29] Roman Tezikov. PyTorch implementation of L2L execution algorithm. https://github.com/TezRomacH/ layer-to-layer-pytorch, 2020.",
+        "x": 317.9,
+        "y": 654.2,
+        "w": 241.8,
+        "h": 33.9,
+        "zh": "[29] Roman Tezikov。L2L 执行算法的 PyTorch 实现。https://github.com/TezRomacH/layer-to-layer-pytorch，2020。"
+      },
+      {
+        "text": "[21] Samyam Rajbhandari, Jeff Rasley, Olatunji Ruwase, and Yuxiong He. ZeRO: Memory Optimizations Toward Training Trillion Parameter Models. In International Conference for High Performance Computing, Networking, Storage and Analysis (SC), 2020.",
+        "x": 54,
+        "y": 606.4,
+        "w": 241.8,
+        "h": 57.8,
+        "zh": "[21] Samyam Rajbhandari、Jeff Rasley、Olatunji Ruwase、Yuxiong He。ZeRO：面向万亿参数模型训练的内存优化。见高性能计算、网络、存储与分析国际会议（SC），2020。"
+      },
+      {
+        "text": "[30] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, and Illia Polosukhin.",
+        "x": 317.9,
+        "y": 610.4,
+        "w": 241.4,
+        "h": 33.9,
+        "zh": "[30] Ashish Vaswani、Noam Shazeer、Niki Parmar、Jakob Uszkoreit、Llion Jones、Aidan N. Gomez、Lukasz Kaiser、Illia Polosukhin。"
+      },
+      {
+        "text": "Attention is all you need. Isabelle Guyon, Ulrike von Luxburg, Samy Bengio, Hanna M. Wallach, Rob Fergus, S. V. N. Vishwanathan, and Roman Garnett, editors, Advances in Neural Information Processing Systems 30: Annual Conference on Neural Information Processing Systems 2017, December 4-9, 2017, Long Beach, CA, USA, pages 5998–6008,",
+        "x": 339.1,
+        "y": 538.7,
+        "w": 220.5,
+        "h": 81.7,
+        "zh": "注意力就是你所需要的一切。Isabelle Guyon、Ulrike von Luxburg、Samy Bengio、Hanna M. Wallach、Rob Fergus、S. V. N. Vishwanathan、Roman Garnett 编，《神经信息处理系统进展 30》：2017 年神经信息处理系统年会，2017 年 12 月 4–9 日，美国加利福尼亚州长滩，第 5998–6008 页，"
+      },
+      {
+        "text": "[22] Pranav Rajpurkar, Jian Zhang, Konstantin Lopyrev, and Percy Liang. Squad: 100, 000+ questions for machine comprehension of text. In Jian Su, Xavier Carreras, and Kevin Duh, editors, Proceedings of the 2016 Conference on Empirical Methods in Natural Language Processing, EMNLP 2016, Austin, Texas, USA, November 1-4, 2016, pages 2383–2392. The Association for Computational",
+        "x": 54,
+        "y": 514.7,
+        "w": 241.9,
+        "h": 81.7,
+        "zh": "[22] Pranav Rajpurkar、Jian Zhang、Konstantin Lopyrev、Percy Liang。SQuAD：超过 100,000 个用于机器阅读文本的问题。见 Jian Su、Xavier Carreras、Kevin Duh 编，2016 年自然语言处理经验方法会议论文集，EMNLP 2016，美国得克萨斯州奥斯汀，2016 年 11 月 1–4 日，第 2383–2392 页。计算语言学协会"
+      },
+      {
+        "text": "[31] G. Velkoski, M. Gusev, and S. Ristov. The performance impact analysis of loop unrolling. In 2014 37th International Convention on Information and Communication Technology, Electronics and Microelectronics (MIPRO), pages 307–312, 2014.",
+        "x": 317.9,
+        "y": 459,
+        "w": 241.8,
+        "h": 57.8,
+        "zh": "[31] G. Velkoski、M. Gusev、S. Ristov。循环展开的性能影响分析。见 2014 年第 37 届信息与通信技术、电子与微电子国际会议（MIPRO），第 307–312 页，2014。"
+      },
+      {
+        "text": "[23] Jie Ren, Jiaolin Luo, Kai Wu, Minjia Zhang, Hyeran Jeon, and Dong Li. Sentinel: Efficient Tensor Migration and Allocation on Heterogeneous Memory Systems for Deep Learning. In International Symposium on High Performance Computer Architecture (HPCA), 2020.",
+        "x": 54,
+        "y": 434.9,
+        "w": 240.3,
+        "h": 57.8,
+        "zh": "[23] Jie Ren、Jiaolin Luo、Kai Wu、Minjia Zhang、Hyeran Jeon、Dong Li。Sentinel：面向深度学习的异构内存系统上高效的张量迁移与分配。见高性能计算机体系结构国际研讨会（HPCA），2020。"
+      },
+      {
+        "text": "[32] Oreste Villa, Mark Stephenson, David Nellans, and Stephen Keckler. Buddy Compression: Enabling Larger Memory for Deep Learning and HPC Workloads on GPUs. In International Symposium on Computer Archi-",
+        "x": 317.9,
+        "y": 403.2,
+        "w": 241.8,
+        "h": 45.8,
+        "zh": "[32] Oreste Villa、Mark Stephenson、David Nellans、Stephen Keckler。Buddy Compression：让 GPU 上的深度学习和 HPC 负载用上更大的内存。见计算机体系结构国际研讨会"
+      },
+      {
+        "text": "[24] Minsoo Rhu, Natalia Gimelshein, Jason Clemons, Arslan Zulfiqar, and Stephen W. Keckler. vdnn: Virtualized deep neural networks for scalable, memory-efficient neural network design. In The 49th Annual IEEE/ACM International Symposium on Microarchitecture, MICRO-49,",
+        "x": 54,
+        "y": 367.1,
+        "w": 241.8,
+        "h": 57.8,
+        "zh": "[24] Minsoo Rhu、Natalia Gimelshein、Jason Clemons、Arslan Zulfiqar、Stephen W. Keckler。vDNN：可扩展、省内存的虚拟化深度神经网络设计。见第 49 届 IEEE/ACM 微体系结构国际研讨会，MICRO-49，"
+      },
+      {
+        "text": "[33] Linnan Wang, Jinmian Ye, Yiyang Zhao, Wei Wu, Ang Li, Shuaiwen Leon Song, Zenglin Xu, and Tim Kraska. Superneurons: Dynamic gpu memory management for training deep neural networks. In Proceedings of the 23rd ACM SIGPLAN Symposium on Principles and Practice of Parallel Programming, PPoPP ’18, page 41–53, New York, NY, USA, 2018. Association for Com-",
+        "x": 317.9,
+        "y": 299.6,
+        "w": 241.9,
+        "h": 81.7,
+        "zh": "[33] Linnan Wang、Jinmian Ye、Yiyang Zhao、Wei Wu、Ang Li、Shuaiwen Leon Song、Zenglin Xu、Tim Kraska。SuperNeurons：训练深度神经网络时的动态 GPU 内存管理。见第 23 届 ACM SIGPLAN 并行编程原理与实践研讨会论文集，PPoPP ’18，第 41–53 页，美国纽约州纽约市，2018。Association for Computing"
+      },
+      {
+        "text": "[25] Corby Rosset. Turing-nlg: A 17-billion-parameter language model by microsoft, 2020.",
+        "x": 54,
+        "y": 323.2,
+        "w": 241.8,
+        "h": 21.9,
+        "zh": "[25] Corby Rosset。Turing-NLG：微软的 170 亿参数语言模型，2020。"
+      },
+      {
+        "text": "[26] Christopher J. Shallue, Jaehoon Lee, Joseph Antognini, Jascha Sohl-Dickstein, Roy Frostig, and George E. Dahl. Measuring the Effects of Data Parallelism on Neural Network Training. Journal of Machine Learning Re-",
+        "x": 54,
+        "y": 267.4,
+        "w": 241.9,
+        "h": 45.8,
+        "zh": "[26] Christopher J. Shallue、Jaehoon Lee、Joseph Antognini、Jascha Sohl-Dickstein、Roy Frostig、George E. Dahl。度量数据并行对神经网络训练的影响。《机器学习研究期刊》"
+      },
+      {
+        "text": "[34] Junzhe Zhang, Sai-Ho Yeung, Yao Shu, Bingsheng He, and Wei Wang. Efficient memory management for gpubased deep learning systems. CoRR, abs/1903.06631,",
+        "x": 317.9,
+        "y": 243.8,
+        "w": 241.8,
+        "h": 33.9,
+        "zh": "[34] Junzhe Zhang、Sai-Ho Yeung、Yao Shu、Bingsheng He、Wei Wang。面向基于 GPU 的深度学习系统的高效内存管理。CoRR，abs/1903.06631，"
+      },
+      {
+        "text": "[27] Noam Shazeer, Youlong Cheng, Niki Parmar, Dustin Tran, Ashish Vaswani, Penporn Koanantakool, Peter Hawkins, HyoukJoong Lee, Mingsheng Hong, Cliff Young, Ryan Sepassi, and Blake A. Hechtman. Meshtensorflow: Deep learning for supercomputers. In Samy Bengio, Hanna M. Wallach, Hugo Larochelle, Kristen Grauman, Nicolò Cesa-Bianchi, and Roman Garnett, editors, Advances in Neural Information Processing Systems 31: Annual Conference on Neural Information Processing Systems 2018, NeurIPS 2018, December 3-8, 2018, Montréal, Canada, pages 10435–10444, 2018.",
+        "x": 54,
+        "y": 115.9,
+        "w": 241.9,
+        "h": 129.5,
+        "zh": "[27] Noam Shazeer、Youlong Cheng、Niki Parmar、Dustin Tran、Ashish Vaswani、Penporn Koanantakool、Peter Hawkins、HyoukJoong Lee、Mingsheng Hong、Cliff Young、Ryan Sepassi、Blake A. Hechtman。Mesh-TensorFlow：面向超级计算机的深度学习。见 Samy Bengio、Hanna M. Wallach、Hugo Larochelle、Kristen Grauman、Nicolò Cesa-Bianchi、Roman Garnett 编，《神经信息处理系统进展 31》：2018 年神经信息处理系统年会，NeurIPS 2018，2018 年 12 月 3–8 日，加拿大蒙特利尔，第 10435–10444 页，2018。"
+      },
+      {
+        "text": "[35] M. A. Zinkevich, M.Weimer, A. Smola, and L. Li. Parallelized Stochastic Gradient Descent. In International Conference on Neural Information Processing Systems,",
+        "x": 317.9,
+        "y": 188,
+        "w": 241.8,
+        "h": 33.9,
+        "zh": "[35] M. A. Zinkevich、M.Weimer、A. Smola、L. Li。并行化的随机梯度下降。见神经信息处理系统国际会议，"
+      },
+      {
+        "text": "[28] Mohammad Shoeybi, Mostofa Patwary, Raul Puri, Patrick LeGresley, Jared Casper, and Bryan Catanzaro. Megatron-lm: Training multi-billion parameter language",
+        "x": 54,
+        "y": 72,
+        "w": 241.9,
+        "h": 33.9,
+        "zh": "[28] Mohammad Shoeybi、Mostofa Patwary、Raul Puri、Patrick LeGresley、Jared Casper、Bryan Catanzaro。Megatron-LM：用模型并行训练数十亿参数的语言"
+      }
+    ]
+  }
+}

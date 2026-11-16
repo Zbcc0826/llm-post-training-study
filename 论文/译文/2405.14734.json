@@ -1,0 +1,2703 @@
+{
+  "id": "2405.14734",
+  "title": "2405.14734",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "Computer Science Department, University of Virginia Princeton Language and Intelligence (PLI), Princeton University",
+        "x": 183.1,
+        "y": 583.8,
+        "w": 257.8,
+        "h": 21.3,
+        "zh": "弗吉尼亚大学计算机科学系；普林斯顿大学普林斯顿语言与智能（PLI）"
+      },
+      {
+        "text": "yumeng5@virginia.edu {mengzhou,danqic}@cs.princeton.edu",
+        "x": 208.1,
+        "y": 562,
+        "w": 203.2,
+        "h": 20.9,
+        "zh": ""
+      },
+      {
+        "text": "Direct Preference Optimization (DPO) is a widely used offline preference optimization algorithm that reparameterizes reward functions in reinforcement learning from human feedback (RLHF) to enhance simplicity and training stability. In this work, we propose SimPO, a simpler yet more effective approach. The effectiveness of SimPO is attributed to a key design: using the average log probability of a sequence as the implicit reward. This reward formulation better aligns with model generation and eliminates the need for a reference model, making it more compute and memory efficient. Additionally, we introduce a target reward margin to the Bradley-Terry objective to encourage a larger margin between the winning and losing responses, further improving the algorithm’s performance. We compare SimPO to DPO and its recent variants across various state-of-the-art training setups, including both base and instruction-tuned models such as Mistral, Llama 3, and Gemma 2. We evaluate on extensive chat-based evaluation benchmarks, including AlpacaEval 2, MT-Bench, and Arena-Hard. Our results demonstrate that SimPO consistently and significantly outperforms existing approaches without substantially increasing response length. Specifically, SimPO outperforms DPO by up to 6.4 points on AlpacaEval 2 and by up to 7.5 points on Arena-Hard. Our top-performing model, built on Gemma-2-9B-it, achieves a 72.4% length-controlled win rate on AlpacaEval 2, a 59.1% win rate on Arena-Hard, and ranks 1st on Chatbot Arena among <10B models with real user votes.",
+        "x": 143.5,
+        "y": 290.3,
+        "w": 326.3,
+        "h": 217.2,
+        "zh": "直接偏好优化（DPO）是一种广泛使用的离线偏好优化算法。它把基于人类反馈的强化学习（RLHF）中的奖励函数重新参数化，从而更简单、训练也更稳定。本文提出 SimPO，一种更简单、也更有效的方法。SimPO 的效果来自一个关键设计：把序列的平均对数概率当作隐式奖励。这种奖励与模型生成更一致，而且不再需要参考模型，计算和显存都更省。此外，我们在 Bradley-Terry 目标中加入目标奖励间隔，鼓励获胜回答和落败回答拉开更大差距，从而进一步提高算法表现。我们在多种前沿训练设定下比较 SimPO 与 DPO 及其近期变体，既有基座模型，也有 Mistral、Llama 3、Gemma 2 这类指令微调模型。评测覆盖多种对话基准，包括 AlpacaEval 2、MT-Bench 和 Arena-Hard。结果表明，SimPO 稳定且显著地优于现有方法，同时并没有把回答明显拉长。具体而言，SimPO 在 AlpacaEval 2 上最多领先 DPO 6.4 个点，在 Arena-Hard 上最多领先 7.5 个点。我们表现最好的模型基于 Gemma-2-9B-it，在 AlpacaEval 2 上达到 72.4% 的长度控制胜率，在 Arena-Hard 上达到 59.1% 的胜率，并在 Chatbot Arena 上以真实用户投票，在小于 10B 的模型中排名第一。"
+      },
+      {
+        "text": "values and intentions [51], ensuring they are helpful, honest, and harmless [5]. Reinforcement learning from human feedback (RLHF) [18, 62, 73] is a popular method for fine-tuning language models to achieve effective alignment. While the classical RLHF approach [62, 70] has shown impressive results, it presents optimization challenges due to its multi-stage procedure, which involves training a reward model and then optimizing a policy model to maximize that reward [13]. Recently, researchers have been exploring simpler offline algorithms. Direct Preference Optimization (DPO) [66] is one such approach. DPO reparameterizes the reward function in RLHF to directly learn a policy model from preference data, eliminating the need for an explicit reward model. It has gained widespread practical adoption due to its simplicity and stability. In DPO, the implicit reward is formulated using the log ratio of the likelihood of a response between the current policy model and the supervised fine-tuned (SFT) model. However, this reward formulation is not directly aligned with",
+        "x": 107.7,
+        "y": 108.9,
+        "w": 396.7,
+        "h": 124.5,
+        "zh": "价值观和意图 [51]，使它们有帮助、诚实且无害 [5]。基于人类反馈的强化学习（RLHF）[18, 62, 73] 是微调语言模型、实现有效对齐的常用方法。经典 RLHF [62, 70] 效果很好，但它是多阶段流程：先训练奖励模型，再优化策略模型以最大化该奖励 [13]，因此优化起来很困难。近来，研究者开始探索更简单的离线算法。直接偏好优化（DPO）[66] 就是其中之一。DPO 把 RLHF 中的奖励函数重新参数化，从而直接从偏好数据学习策略模型，不再需要显式奖励模型。它简单、稳定，因而在实践中被广泛采用。在 DPO 中，隐式奖励写成当前策略模型与监督微调（SFT）模型对同一回答似然的对数比。然而，这种奖励形式并不直接对齐于"
+      },
+      {
+        "text": "Code and models can be found at https://github.com/princeton-nlp/SimPO.",
+        "x": 124.1,
+        "y": 80.6,
+        "w": 328.9,
+        "h": 9,
+        "zh": "代码和模型见 https://github.com/princeton-nlp/SimPO。"
+      },
+      {
+        "text": "38th Conference on Neural Information Processing Systems (NeurIPS 2024).",
+        "x": 108,
+        "y": 52.1,
+        "w": 277.2,
+        "h": 9,
+        "zh": "第 38 届神经信息处理系统会议（NeurIPS 2024）。"
+      }
+    ],
+    "2": [
+      {
+        "text": "Figure 1: SimPO and DPO mainly differ in their reward formulation, as indicated in the shaded box. SimPO outperforms DPO significantly across a range of settings on AlpacaEval 2 and Arena-Hard.",
+        "x": 108,
+        "y": 617.8,
+        "w": 397.7,
+        "h": 20.9,
+        "zh": "图 1：SimPO 与 DPO 的主要差别在于奖励形式，如阴影框所示。在 AlpacaEval 2 和 Arena-Hard 的多种设定下，SimPO 都显著优于 DPO。"
+      },
+      {
+        "text": "the metric used to guide generation, which is approximately the average log likelihood of a response generated by the policy model. We hypothesize that this discrepancy between training and inference may lead to suboptimal performance. In this work, we propose SimPO, a simple",
+        "x": 108,
+        "y": 556.5,
+        "w": 396,
+        "h": 48.2,
+        "zh": "用来指导生成的那个指标，它大约是策略模型所生成回答的平均对数似然。我们推测，训练与推理之间的这种不一致可能导致次优表现。本文提出 SimPO，一种简单"
+      },
+      {
+        "text": "Table 1: Length-controlled (LC) and raw win rate (WR), yet effective offline preference optimiza-",
+        "x": 107.8,
+        "y": 545.6,
+        "w": 397.5,
+        "h": 20.5,
+        "zh": "表 1：长度控制（LC）胜率与原始胜率（WR）；却是有效的离线偏好优化"
+      },
+      {
+        "text": "and generation lengths of top models on the AlpacaEval tion algorithm (Figure 1).",
+        "x": 108,
+        "y": 534.6,
+        "w": 396,
+        "h": 20.5,
+        "zh": "以及 AlpacaEval 上顶尖模型的生成长度；算法（图 1）。"
+      },
+      {
+        "text": "2 Leaderboard. Bold are the models we trained. our algorithm aligns the reward function in the preference optimization objective with the generation metric. SimPO consists of two major components: (1) a lengthnormalized reward, calculated as the average log probability of all tokens in a re-",
+        "x": 107.6,
+        "y": 469.2,
+        "w": 366.8,
+        "h": 75.1,
+        "zh": "2 排行榜。加粗的是我们训练的模型。我们的算法让偏好优化目标中的奖励函数与生成指标对齐。SimPO 包含两个主要部分：（1）按长度归一化的奖励，按一条回答中全部 token 的平均对数概率来计算，"
+      },
+      {
+        "text": "Llama-3-8B-Instruct-SimPO sponse using the policy model, and (2) a target reward margin to ensure the reward",
+        "x": 108,
+        "y": 447.4,
+        "w": 299.1,
+        "h": 27.5,
+        "zh": "Llama-3-8B-Instruct-SimPO。由策略模型给出；以及（2）目标奖励间隔，用来保证奖励"
+      },
+      {
+        "text": "Llama-3-8B-Instruct-DPO difference between winning and losing re-",
+        "x": 108,
+        "y": 436.5,
+        "w": 289.9,
+        "h": 16.7,
+        "zh": "Llama-3-8B-Instruct-DPO。获胜回答与落败回答之间的差距"
+      },
+      {
+        "text": "Llama-3-70B-Instruct sponses exceeds this margin. In summary, SimPO has the following properties:",
+        "x": 108,
+        "y": 414.6,
+        "w": 264.8,
+        "h": 27.6,
+        "zh": "Llama-3-70B-Instruct。超过该间隔。总之，SimPO 具有以下性质："
+      },
+      {
+        "text": "• Simplicity: SimPO does not require a reference model, making it more lightweight and easier to implement compared to DPO and other reference-based methods. • Significant performance advantage: Despite its simplicity, SimPO significantly outperforms DPO and its latest variants (e.g., a recent reference-free objective ORPO [42]). The performance advantage is consistent across various training setups and extensive chat-based evaluations, including AlpacaEval 2 [55, 28] and the challenging Arena-Hard [54] benchmark. It achieves up to a 6.4 point improvement on AlpacaEval 2 and a 7.5 point improvement on Arena-Hard compared to",
+        "x": 108,
+        "y": 320.4,
+        "w": 397.7,
+        "h": 81.3,
+        "zh": "• 简单：SimPO 不需要参考模型，因此比 DPO 和其他依赖参考模型的方法更轻，也更容易实现。• 显著的性能优势：尽管简单，SimPO 仍显著优于 DPO 及其最新变体（例如最近提出的无参考目标 ORPO [42]）。这一优势在多种训练设定和大量对话评测中都一致，包括 AlpacaEval 2 [55, 28] 以及更难的 Arena-Hard [54]。相对而言，它在 AlpacaEval 2 上最多提高 6.4 个点，在 Arena-Hard 上提高 7.5 个点，相比"
+      },
+      {
+        "text": "• Minimal length exploitation: SimPO does not significantly increase response length compared to the SFT or DPO models (Table 1), indicating minimal length exploitation [28, 71, 85].",
+        "x": 108,
+        "y": 281.8,
+        "w": 396,
+        "h": 20.9,
+        "zh": "• 很少利用长度：与 SFT 或 DPO 模型相比，SimPO 并不会明显拉长回答（表 1），说明它对长度的利用很有限 [28, 71, 85]。"
+      },
+      {
+        "text": "Extensive analysis shows that SimPO utilizes preference data more effectively, leading to a more accurate likelihood ranking of winning and losing responses on a held-out validation set, which in turn translates to a better policy model. As shown in Table 1, our Gemma-2-9B-it-SimPO model achieves state-of-the-art performance, with a 72.4% length-controlled win rate on AlpacaEval 2 and a 59.1% win rate on Arena-Hard, establishing it as the strongest open-source model under 10B parameters. Most notably, when evaluated on Chatbot Arena [17] with real user votes, our model significantly improved upon the initial Gemma-2-9B-it model, advancing from 36th to 25th place and ranking first among all <10B models on the leaderboard.",
+        "x": 108,
+        "y": 182.6,
+        "w": 396,
+        "h": 86.3,
+        "zh": "进一步分析表明，SimPO 更能用好偏好数据，在留出的验证集上对获胜回答和落败回答的似然排序更准确，进而得到更好的策略模型。如表 1 所示，我们的 Gemma-2-9B-it-SimPO 达到了当前最强水平：AlpacaEval 2 上长度控制胜率为 72.4%，Arena-Hard 上胜率为 59.1%，成为 10B 参数以下最强的开源模型。更值得注意的是，在有真实用户投票的 Chatbot Arena [17] 上，该模型相对最初的 Gemma-2-9B-it 明显提升，名次从第 36 升到第 25，并在排行榜所有小于 10B 的模型中排名第一。"
+      },
+      {
+        "text": "In this section, we first introduce the background of DPO (§2.1). Then we identify the discrepancy between DPO’s reward and the likelihood metric used for generation, and propose an alternative reference-free reward formulation that mitigates this issue (§2.2). Finally, we derive the SimPO objective by incorporating a target reward margin term into the Bradley-Terry model (§2.3).",
+        "x": 108,
+        "y": 94.9,
+        "w": 396.4,
+        "h": 42.7,
+        "zh": "本节先介绍 DPO 的背景（§2.1）。接着指出 DPO 的奖励与生成所用似然指标之间的不一致，并提出一种无参考的奖励形式来缓解这一问题（§2.2）。最后，把目标奖励间隔项纳入 Bradley-Terry 模型，从而得到 SimPO 目标（§2.3）。"
+      }
+    ],
+    "3": [
+      {
+        "text": "Background: Direct Preference Optimization (DPO)",
+        "x": 130.4,
+        "y": 710,
+        "w": 222.3,
+        "h": 10,
+        "zh": "背景：直接偏好优化（DPO）"
+      },
+      {
+        "text": "DPO [66] is one of the most popular preference optimization methods. Instead of learning an explicit reward model [62], DPO reparameterizes the reward function r using a closed-form expression with",
+        "x": 108,
+        "y": 679.2,
+        "w": 396,
+        "h": 20.9,
+        "zh": "DPO [66] 是最常用的偏好优化方法之一。它不学习显式奖励模型 [62]，而是用闭式表达式把奖励函数 r 重新参数化，其中"
+      },
+      {
+        "text": "where πθ is the policy model, πref is the reference policy, typically the supervised fine-tuned (SFT) model, and Z(x) is the partition function. By incorporating this reward formulation into the BradleyTerry (BT) ranking objective [11], p(yw ≻ yl | x) = σ (r(x, yw) − r(x, yl)), DPO expresses the probability of preference data with the policy model rather than the reward model, yielding the following objective:",
+        "x": 107.6,
+        "y": 586.8,
+        "w": 398,
+        "h": 53.6,
+        "zh": "其中 πθ 是策略模型，πref 是参考策略，通常就是监督微调（SFT）模型，Z(x) 是配分函数。把这一奖励形式代入 Bradley-Terry（BT）排序目标 [11]，即 p(yw ≻ yl | x) = σ(r(x, yw) − r(x, yl))，DPO 就用策略模型而不是奖励模型来表示偏好数据的概率，得到如下目标："
+      },
+      {
+        "text": "where (x, yw, yl) are preference pairs consisting of the prompt, the winning response, and the losing response from the preference dataset D.",
+        "x": 107.6,
+        "y": 528.4,
+        "w": 396.4,
+        "h": 20.9,
+        "zh": "其中 (x, yw, yl) 是偏好对，分别是提示、获胜回答和落败回答，来自偏好数据集 D。"
+      },
+      {
+        "text": "A Simple Reference-Free Reward Aligned with Generation",
+        "x": 130.4,
+        "y": 504.1,
+        "w": 250.3,
+        "h": 10,
+        "zh": "一种与生成对齐的简单无参考奖励"
+      },
+      {
+        "text": "Using Eq. (1) as the implicit reward has the following drawbacks: (1) it requires a reference model πref during training, which incurs additional memory and computational costs; and (2) it creates a mismatch between the reward optimized in training and the log-likelihood optimized during inference, where no reference model is involved. This means that in DPO, for any triple (x, yw, yl), satisfying the reward ranking r(x, yw) > r(x, yl) does not necessarily mean that the likelihood ranking pθ(yw | x) > pθ(yl | x) is met (here pθ is the average log-likelihood in Eq. (3)). In our experiments, we observed that only ∼ 50% of the triples from the training set satisfy this condition when trained with DPO (Figure 4b). This observation aligns with a concurrent work [14], which finds that existing models trained with DPO exhibit random ranking accuracy in terms of average log-likelihood, even after extensive preference optimization. Length-normalized reward formulation.",
+        "x": 107.7,
+        "y": 368,
+        "w": 398.1,
+        "h": 126.1,
+        "zh": "把式 (1) 当作隐式奖励有两个缺点：（1）训练时需要参考模型 πref，带来额外的显存和计算开销；（2）训练中优化的奖励与推理时优化的对数似然并不一致，而推理并不使用参考模型。因此在 DPO 中，对任意三元组 (x, yw, yl)，即使奖励排序满足 r(x, yw) > r(x, yl)，也不一定满足似然排序 pθ(yw | x) > pθ(yl | x)（这里的 pθ 是式 (3) 中的平均对数似然）。实验中，用 DPO 训练后，训练集里只有约 50% 的三元组满足这一条件（图 4b）。这与一项同期工作 [14] 一致：该工作发现，即使用 DPO 做了大量偏好优化，现有模型按平均对数似然来看，排序准确率仍接近随机。按长度归一化的奖励形式。"
+      },
+      {
+        "text": "Discrepancy between reward and generation for DPO.",
+        "x": 108,
+        "y": 484.1,
+        "w": 228.7,
+        "h": 10,
+        "zh": "DPO 的奖励与生成之间的不一致。"
+      },
+      {
+        "text": "One solution is to use the summed token log probability as the reward, but this suffers from length bias–longer sequences tend to have lower log probabilities. Consequently, when yw is longer than yl, optimizing the summed log probability as a reward forces the model to artificially inflate probabilities for longer sequences to ensure yw receives a higher reward than yl. This overcompensation increases the risk of degeneration. To address this issue, we consider using the average log-likelihood as the implicit reward:",
+        "x": 108,
+        "y": 313.5,
+        "w": 397.7,
+        "h": 64.5,
+        "zh": "一种办法是把各 token 对数概率之和当作奖励，但这会受长度偏差影响：序列越长，对数概率往往越低。于是当 yw 比 yl 更长时，若优化对数概率之和，模型就不得不人为抬高长序列的概率，才能让 yw 的奖励高于 yl。这种过度补偿会增加退化风险。为解决这个问题，我们把平均对数似然当作隐式奖励："
+      },
+      {
+        "text": "This metric is commonly used for ranking options in beam search [35, 53] and multiple-choice tasks within language models [12, 41, 62]. Naturally, we consider replacing the reward formulation in DPO with pθ in Eq. (3), so that it aligns with the likelihood metric that guides generation. This results in a length-normalized reward:",
+        "x": 107.6,
+        "y": 225.1,
+        "w": 396.4,
+        "h": 42.7,
+        "zh": "这一指标常用于束搜索中的候选排序 [35, 53]，也用于语言模型中的多项选择任务 [12, 41, 62]。因此，我们用式 (3) 中的 pθ 替换 DPO 的奖励形式，使它与指导生成的似然指标对齐。这样就得到按长度归一化的奖励："
+      },
+      {
+        "text": "where β is a constant that controls the scaling of the reward difference. We find that normalizing the reward with response lengths is crucial; removing the length normalization term from the reward formulation results in a bias toward generating longer but lower-quality sequences (see Section 4.4 for more details). Consequently, this reward formulation eliminates the need for a reference model, enhancing memory and computational efficiency compared to reference-dependent algorithms.",
+        "x": 107.6,
+        "y": 127.2,
+        "w": 397.6,
+        "h": 53.6,
+        "zh": "其中 β 是常数，用来控制奖励差的尺度。我们发现，用回答长度归一化奖励至关重要；若从奖励中去掉长度归一化，模型会偏向生成更长但质量更低的序列（详见第 4.4 节）。于是，这种奖励不再需要参考模型，相对依赖参考模型的算法，显存和计算都更省。"
+      },
+      {
+        "text": "Additionally, we introduce a target reward margin term, γ > 0, to the Bradley-Terry objective to ensure that the reward for the winning response, r(x, yw), exceeds the",
+        "x": 108,
+        "y": 70.5,
+        "w": 396,
+        "h": 22.4,
+        "zh": "此外，我们在 Bradley-Terry 目标中加入目标奖励间隔 γ > 0，使获胜回答的奖励 r(x, yw) 至少超过"
+      }
+    ],
+    "4": [
+      {
+        "text": "reward for the losing response, r(x, yl), by at least γ:",
+        "x": 108,
+        "y": 708.5,
+        "w": 212.2,
+        "h": 11.5,
+        "zh": "落败回答的奖励 r(x, yl) 达 γ："
+      },
+      {
+        "text": "p(yw ≻ yl | x) = σ (r(x, yw) − r(x, yl) − γ) .",
+        "x": 212.4,
+        "y": 688.4,
+        "w": 187.1,
+        "h": 11.5,
+        "zh": ""
+      },
+      {
+        "text": "The margin between two classes is known to influence the generalization capabilities of classifiers [1,",
+        "x": 107.7,
+        "y": 664.2,
+        "w": 397.6,
+        "h": 10,
+        "zh": "两类之间的间隔已知会影响分类器的泛化能力 [1,"
+      },
+      {
+        "text": "In standard training settings with random model initialization, increasing the target margin typically improves generalization. In preference optimization, the two classes are the winning and losing responses for a single input. In practice, we observe that generation quality initially improves with an increasing target margin but degrades when the margin becomes too large (§4.3). One of DPO’s variants, IPO [6], also formulates a target reward margin similar to SimPO. However,",
+        "x": 108,
+        "y": 609.6,
+        "w": 397.7,
+        "h": 53.6,
+        "zh": "在随机初始化的常规训练中，增大目标间隔通常会改善泛化。在偏好优化里，这两个类就是同一输入的获胜回答和落败回答。实践中，生成质量起初随目标间隔增大而提高，但间隔过大后又会下降（§4.3）。DPO 的变体 IPO [6] 也写出了与 SimPO 类似的目标奖励间隔。不过，"
+      },
+      {
+        "text": "its full objective is not as effective as SimPO (§4.1).",
+        "x": 108,
+        "y": 598.7,
+        "w": 207.3,
+        "h": 10,
+        "zh": "它的完整目标不如 SimPO 有效（§4.1）。"
+      },
+      {
+        "text": "Finally, we obtain the SimPO objective by plugging Eq. (4) into Eq. (5):",
+        "x": 161.2,
+        "y": 573,
+        "w": 287.6,
+        "h": 10,
+        "zh": "最后，把式 (4) 代入式 (5)，就得到 SimPO 目标："
+      },
+      {
+        "text": "In summary, SimPO employs an implicit reward formulation that directly aligns with the generation metric, eliminating the need for a reference model. Additionally, it introduces a target reward margin γ to help separating the winning and losing responses. In Appendix F, we provide a gradient analysis of SimPO and DPO to further understand the differences between the two methods.",
+        "x": 108,
+        "y": 481.4,
+        "w": 396,
+        "h": 42.7,
+        "zh": "概括来说，SimPO 的隐式奖励与生成指标直接对齐，因此不需要参考模型。它还引入目标奖励间隔 γ，帮助分开获胜回答和落败回答。附录 F 比较了 SimPO 与 DPO 的梯度，以便进一步理解二者的差别。"
+      },
+      {
+        "text": "Although SimPO does not impose KL regularization, we find that a combination of practical factors ensures effective learning from preference data while maintaining generalization, leading to an empirically low KL divergence from the reference model. These factors are: (1) a small learning rate, (2) a preference dataset that covers diverse domains and tasks, and (3) the intrinsic robustness of LLMs to learn from new data without forgetting prior knowledge. We present KL divergence experiments in Section 4.4.",
+        "x": 108,
+        "y": 401.2,
+        "w": 396,
+        "h": 64.5,
+        "zh": "尽管 SimPO 没有加 KL 正则，我们发现若干实际因素合在一起，仍能从偏好数据中有效学习并保持泛化，使相对参考模型的 KL 散度在经验上保持较低。这些因素是：（1）较小的学习率；（2）覆盖多种领域和任务的偏好数据；（3）LLM 从新数据学习时不容易忘掉已有知识。KL 散度实验见第 4.4 节。"
+      },
+      {
+        "text": "Preventing catastrophic forgetting without KL regularization.",
+        "x": 108,
+        "y": 455.7,
+        "w": 254.6,
+        "h": 10,
+        "zh": "不用 KL 正则也能避免灾难性遗忘。"
+      },
+      {
+        "text": "We perform preference optimization with two families of models, Llama-3-8B [2] and Mistral-7B [44], under two setups: Base and Instruct. In this section, our goal is to understand the performance of SimPO vs. other preference optimization methods in different experimental setups. Our strongest model is based on Gemma-2-9B (Instruct setup) with a stronger reward model, RLHFlow/ArmoRM-Llama3-8B-v0.1 [84] (Table 1). We will present and discuss",
+        "x": 108,
+        "y": 301.9,
+        "w": 397.2,
+        "h": 53.6,
+        "zh": "我们在两个模型家族上做偏好优化：Llama-3-8B [2] 和 Mistral-7B [44]，各有 Base 和 Instruct 两种设定。本节希望了解，在不同实验设定下 SimPO 相对其他偏好优化方法的表现。我们最强的模型基于 Gemma-2-9B（Instruct 设定），并使用更强的奖励模型 RLHFlow/ArmoRM-Llama3-8B-v0.1 [84]（表 1）。我们将给出并讨论"
+      },
+      {
+        "text": "For the Base setup, we follow the training pipeline of Zephyr [80]. First, we train a base model (i.e., mistralai/Mistral-7B-v0.1, or meta-llama/Meta-Llama-3-8B) on the UltraChat-200k dataset [25] to obtain an SFT model. Then, we perform preference optimization on the UltraFeedback dataset [23] using the SFT model as the starting point. This setup provides a high level of transparency, as the",
+        "x": 108,
+        "y": 241.9,
+        "w": 397.2,
+        "h": 42.7,
+        "zh": "Base 设定遵循 Zephyr [80] 的训练流程。先在 UltraChat-200k 数据集 [25] 上训练基座模型（即 mistralai/Mistral-7B-v0.1 或 meta-llama/Meta-Llama-3-8B），得到 SFT 模型。再以该 SFT 模型为起点，在 UltraFeedback 数据集 [23] 上做偏好优化。这一设定透明度较高，因为"
+      },
+      {
+        "text": "SFT models are trained on open-source data.",
+        "x": 108,
+        "y": 231,
+        "w": 178.5,
+        "h": 10,
+        "zh": "SFT 模型是在开源数据上训练的。"
+      },
+      {
+        "text": "For the Instruct setup, we use an off-the-shelf instruction-tuned model (i.e., meta-llama/MetaLlama-3-8B-Instruct, or mistralai/Mistral-7B-Instruct-v0.2) as the SFT models. These models have undergone extensive instruction-tuning processes, making them more powerful and robust than the SFT models in the Base setup. However, they are also more opaque because their RLHF procedure is not publicly disclosed. To mitigate the distribution shift between SFT models and the preference optimization process, we generate the preference dataset using the SFT models following [79]. This makes our Instruct setup closer to an on-policy setting. Specifically, we use prompts from the UltraFeedback dataset and regenerate the chosen and rejected response pairs (yw, yl) with the SFT models. For each prompt x, we generate 5 responses using the SFT model with a sampling temperature of 0.8. We then use llm-blender/PairRM [45] to score the 5 responses, selecting the",
+        "x": 107.7,
+        "y": 116.4,
+        "w": 398.1,
+        "h": 108.1,
+        "zh": "Instruct 设定直接用现成的指令微调模型（即 meta-llama/Meta-Llama-3-8B-Instruct 或 mistralai/Mistral-7B-Instruct-v0.2）作为 SFT 模型。这些模型已经过大量指令微调，比 Base 设定中的 SFT 模型更强、更稳健，但也更不透明，因为其 RLHF 流程没有公开。为减轻 SFT 模型与后续偏好优化之间的分布偏移，我们按照 [79]，用 SFT 模型自己生成偏好数据，使 Instruct 设定更接近 on-policy。具体来说，我们使用 UltraFeedback 的提示，用 SFT 模型重新生成被选中与被拒绝的回答对 (yw, yl)。对每个提示 x，以温度 0.8 采样 5 条回答，再用 llm-blender/PairRM [45] 打分，选出"
+      },
+      {
+        "text": "This margin is termed home advantage in Bradley-Terry models [1, 31].",
+        "x": 123.9,
+        "y": 92.8,
+        "w": 258.4,
+        "h": 9,
+        "zh": "这一间隔在 Bradley-Terry 模型中称为主场优势 [1, 31]。"
+      },
+      {
+        "text": "It is unclear whether the released instruct checkpoints have undergone supervised fine-tuning (SFT) or the complete RLHF pipeline. For simplicity, we refer to these checkpoints as SFT models.",
+        "x": 108,
+        "y": 72,
+        "w": 396,
+        "h": 18.9,
+        "zh": "目前不清楚公开发布的 instruct 检查点是只做了监督微调（SFT），还是走完了完整的 RLHF 流程。为简单起见，我们把这些检查点称为 SFT 模型。"
+      }
+    ],
+    "5": [
+      {
+        "text": "Table 2: Evaluation details for AlpacaEval 2 [55], Arena-Hard [54], and MT-Bench [99]. The baseline model refers to the model compared against. GPT-4 Turbo corresponds to GPT-4-Preview-1106.",
+        "x": 107.7,
+        "y": 701.5,
+        "w": 396.3,
+        "h": 20.9,
+        "zh": "表 2：AlpacaEval 2 [55]、Arena-Hard [54] 和 MT-Bench [99] 的评测细节。基线模型指用来比较的对象。GPT-4 Turbo 对应 GPT-4-Preview-1106。"
+      },
+      {
+        "text": "highest-scoring one as yw and the lowest-scoring one as yl. We only generated data in a single pass",
+        "x": 108,
+        "y": 626.3,
+        "w": 396,
+        "h": 11.5,
+        "zh": "得分最高的作为 yw，得分最低的作为 yl。数据只生成了一轮"
+      },
+      {
+        "text": "In summary, we have four setups: Llama-3-Base, Llama-3-Instruct, Mistral-Base, and Mistral-Instruct. We believe these configurations represent the state-of-the-art, placing our models among the top performers on various leaderboards. We encourage future research to adopt these settings for better and fairer comparisons of different algorithms. Additionally, we find that tuning hyperparameters is crucial for achieving optimal performance with all the offline preference optimization algorithms, including DPO and SimPO. Generally, for SimPO, setting β between 2.0 and 2.5 and γ between 0.5 and 1.5 leads to good performance across all setups. For more details, please refer to Appendix B.",
+        "x": 107.5,
+        "y": 535,
+        "w": 398.2,
+        "h": 75.4,
+        "zh": "概括来说，我们有四种设定：Llama-3-Base、Llama-3-Instruct、Mistral-Base 和 Mistral-Instruct。这些配置代表当前的前沿做法，也使我们的模型处于各排行榜前列。我们建议后续研究采用这些设定，以便更公平地比较算法。此外，对包括 DPO 和 SimPO 在内的所有离线偏好优化算法，调节超参数都至关重要。一般而言，SimPO 取 β 在 2.0 到 2.5 之间、γ 在 0.5 到 1.5 之间，在所有设定下都能有较好表现。更多细节见附录 B。"
+      },
+      {
+        "text": "We primarily assess our models using three of the most popular openended instruction-following benchmarks: MT-Bench [99], AlpacaEval 2 [55], and Arena-Hard v0.1 [54]. These benchmarks evaluate the models’ versatile conversational abilities across a diverse set of queries and have been widely adopted by the community (details in Table 2). AlpacaEval 2 consists of 805 questions from 5 datasets, and MT-Bench covers 8 categories with 80 questions. The most recently released Arena-Hard is an enhanced version of an MT-Bench, incorporating 500 welldefined technical problem-solving queries. We report scores following each benchmark’s evaluation protocol. For AlpacaEval 2, we report both the raw win rate (WR) and the length-controlled win rate (LC) [28]. The LC metric is specifically designed to be robust against model verbosity. For Arena-Hard, we report the win rate (WR) against the baseline model. For MT-Bench, we report the average MT-Bench score with GPT-4 and GPT-4-Preview-1106 as the judge model. For decoding details, please refer to Appendix B. We also evaluate on downstream tasks from the Huggingface Open Leaderboard benchmarks [9], with additional details in in Appendix C.",
+        "x": 107.6,
+        "y": 376,
+        "w": 398,
+        "h": 140.9,
+        "zh": "我们主要用三个最常用的开放式指令遵循基准来评估：MT-Bench [99]、AlpacaEval 2 [55] 和 Arena-Hard v0.1 [54]。它们用多样的查询考察对话能力，并已被社区广泛采用（细节见表 2）。AlpacaEval 2 含来自 5 个数据集的 805 个问题，MT-Bench 覆盖 8 个类别、共 80 个问题。最新的 Arena-Hard 是 MT-Bench 的加强版，包含 500 个界定清楚的技术解题查询。我们按各基准自己的协议报告分数。对 AlpacaEval 2，同时报告原始胜率（WR）和长度控制胜率（LC）[28]。LC 用来减轻模型过于冗长带来的影响。对 Arena-Hard，报告相对基线的胜率（WR）。对 MT-Bench，报告以 GPT-4 和 GPT-4-Preview-1106 为裁判时的平均分。解码细节见附录 B。我们还评测了 Huggingface Open Leaderboard 上的下游任务 [9]，更多细节见附录 C。"
+      },
+      {
+        "text": "Table 3: Various preference optimization objectives given preference data D = (x, yw, yl), where x is an input, and yw and yl are the winning and losing responses.",
+        "x": 254.2,
+        "y": 326.1,
+        "w": 251.4,
+        "h": 31.8,
+        "zh": "表 3：给定偏好数据 D = (x, yw, yl) 时的多种偏好优化目标。x 是输入，yw 和 yl 分别是获胜回答和落败回答。"
+      },
+      {
+        "text": "logπθ(yl|x) − λlogπθ(yw|x) SLiC-HF [96] max (0, δ − logπθ(yw|x) + logπθ(yl|x)) − λlogπθ(yw|x)",
+        "x": 259.2,
+        "y": 274.5,
+        "w": 240.1,
+        "h": 22.2,
+        "zh": ""
+      },
+      {
+        "text": "HF uses log-likelihood directly and includes an SFT objective. IPO [6] is a theoretically grounded",
+        "x": 108,
+        "y": 238.7,
+        "w": 138.3,
+        "h": 31.8,
+        "zh": "HF 直接使用对数似然，并带有一个 SFT 目标。IPO [6] 在理论上有依据，"
+      },
+      {
+        "text": "−logσ(β logπθ(yw|x) − β logπθ(yl|x)) − λlogπθ(yw|x) −λ σ β log πθ(yw|x) − z",
+        "x": 305.5,
+        "y": 214.7,
+        "w": 173.3,
+        "h": 21.6,
+        "zh": ""
+      },
+      {
+        "text": "DPO’s assumption that pairwise preferences can be replaced with",
+        "x": 108,
+        "y": 206,
+        "w": 136.6,
+        "h": 20.9,
+        "zh": "DPO 所假设的、成对偏好可以被替换成"
+      },
+      {
+        "text": "+ λ σ z − β log πθ(yl|x) , where zref = E(x,y)∼D [βKL(πθ(y|x)||πref(y|x))] −logpθ(yw|x) − λlogσ log",
+        "x": 305.5,
+        "y": 188.9,
+        "w": 179.3,
+        "h": 34.4,
+        "zh": ""
+      },
+      {
+        "text": "uses sequence likelihood as a reward and trains alongside an SFT objective. KTO [29] learns from non-paired preference data.",
+        "x": 108,
+        "y": 151.4,
+        "w": 138.3,
+        "h": 42.7,
+        "zh": "把序列似然当作奖励，并与 SFT 目标一起训练。KTO [29] 从不配对的偏好数据中学习。"
+      },
+      {
+        "text": "We also experimented with using a stronger reward model, RLHFlow/ArmoRM-Llama3-8B-v0.1 [84], to rank generated data, which yields significantly improved performance (see Appendix H and Appendix J). This is the reward model we used in our Gemma 2 experiments. GPT-4-Preview-1106 produces more accurate reference answers and judgments compared to GPT-4. Many recent studies [90, 74] have extensively compared DPO and PPO [70]. We will leave the comparison",
+        "x": 108,
+        "y": 82,
+        "w": 396,
+        "h": 50.4,
+        "zh": "我们也用更强的奖励模型 RLHFlow/ArmoRM-Llama3-8B-v0.1 [84] 给生成数据排序，性能有明显提升（见附录 H 和附录 J）。这就是 Gemma 2 实验所用的奖励模型。相对 GPT-4，GPT-4-Preview-1106 给出的参考答案和评判更准确。许多近期工作 [90, 74] 已经广泛比较了 DPO 和 PPO [70]。比较将留到"
+      }
+    ],
+    "6": [
+      {
+        "text": "Table 4: AlpacaEval 2 [55], Arena-Hard [54], and MT-Bench [99] results under the four settings. LC and WR denote length-controlled and raw win rate, respectively. We train SFT models for Base settings on the UltraChat dataset. For Instruct settings, we use off-the-shelf models as the SFT model.",
+        "x": 107.7,
+        "y": 690.5,
+        "w": 398.1,
+        "h": 31.8,
+        "zh": "表 4：四种设定下 AlpacaEval 2 [55]、Arena-Hard [54] 和 MT-Bench [99] 的结果。LC 和 WR 分别是长度控制胜率和原始胜率。Base 设定的 SFT 模型在 UltraChat 上训练；Instruct 设定用现成模型作为 SFT 模型。"
+      },
+      {
+        "text": "Mistral-Instruct (7B) AlpacaEval 2 Arena-Hard",
+        "x": 165.7,
+        "y": 655.4,
+        "w": 290.7,
+        "h": 23.2,
+        "zh": "Mistral-Instruct（7B），AlpacaEval 2，Arena-Hard"
+      },
+      {
+        "text": "Llama-3-Instruct (8B) AlpacaEval 2 Arena-Hard",
+        "x": 165.7,
+        "y": 499.7,
+        "w": 292.6,
+        "h": 23.2,
+        "zh": "Llama-3-Instruct（8B），AlpacaEval 2，Arena-Hard"
+      },
+      {
+        "text": "ORPO [42] introduces a reference-model-free odd ratio term to directly contrast winning and losing responses with the policy model and jointly trains with the SFT objective. R-DPO [64] is a modified version of DPO that includes an additional regularization term to prevent exploitation of length. We thoroughly tune the hyperparameters for each baseline and report the best performance. We find that many variants of DPO do not empirically present an advantage over standard DPO. Further details can be found in Appendix B.",
+        "x": 107.8,
+        "y": 295.8,
+        "w": 396.3,
+        "h": 64.5,
+        "zh": "ORPO [42] 引入不依赖参考模型的 odd ratio 项，用策略模型直接对比获胜回答和落败回答，并与 SFT 目标联合训练。R-DPO [64] 是 DPO 的改版，额外加了一项正则来防止利用长度。我们为每个基线都仔细调了超参数，并报告最佳结果。我们发现，DPO 的许多变体在实验上并不优于标准 DPO。细节见附录 B。"
+      },
+      {
+        "text": "In this section, we present main results of our experiments, highlighting the superior performance of SimPO on various benchmarks and ablation studies (§4.1). We provide an in-depth understanding of the following components: (1) length normalization (§4.2), (2) the margin term γ (§4.3), and (3) why SimPO outperforms DPO (§4.4). Unless otherwise specified, the ablation studies are conducted using the Mistral-Base setting.",
+        "x": 107.6,
+        "y": 200.4,
+        "w": 397,
+        "h": 53.6,
+        "zh": "本节给出主要结果，说明 SimPO 在各基准上的优势，并做消融（§4.1）。我们进一步分析：（1）长度归一化（§4.2）；（2）间隔项 γ（§4.3）；（3）SimPO 为何优于 DPO（§4.4）。除非另有说明，消融都在 Mistral-Base 设定下进行。"
+      },
+      {
+        "text": "SimPO consistently and significantly outperforms existing preference optimization methods. As shown in Table 4, while all preference optimization algorithms enhance performance over the SFT model, SimPO, despite its simplicity, achieves the best overall performance across all benchmarks and settings. These consistent and significant improvements highlight the robustness and effectiveness of SimPO. Notably, SimPO outperforms the best baseline by 3.6 to 4.8 points on the AlpacaEval 2 LC win rate across various settings. On Arena-Hard, SimPO consistently achieves superior performance,",
+        "x": 107.6,
+        "y": 101.2,
+        "w": 398.1,
+        "h": 64.5,
+        "zh": "SimPO 稳定且显著地优于现有偏好优化方法。如表 4 所示，这些算法都能超过 SFT 模型，而 SimPO 尽管简单，仍在全部基准和设定上取得最好的整体表现。这种稳定而显著的提升说明它稳健、有效。尤其是，在各设定下，SimPO 的 AlpacaEval 2 LC 胜率比最强基线高出 3.6 到 4.8 个点。在 Arena-Hard 上，SimPO 也一直更强，"
+      },
+      {
+        "text": "ORPO can directly train on preference data without the SFT stage. For fair comparisons, we start ORPO from the same SFT checkpoints as other baselines, which yields better results than starting from base checkpoints.",
+        "x": 108,
+        "y": 72,
+        "w": 396,
+        "h": 18.9,
+        "zh": "ORPO 可以直接在偏好数据上训练，而不必先做 SFT。为公平比较，我们让 ORPO 与其他基线从同一个 SFT 检查点起步，这比从基座检查点起步更好。"
+      }
+    ],
+    "7": [
+      {
+        "text": "Table 5: Ablation studies under Mistral-Base and Mistral-Instruct settings. We ablate each key design of SimPO: (1) removing length normalization in Eq. (4) (i.e., w/o LN); (2) setting target reward margin γ to be 0 in Eq. (6) (i.e., γ = 0).",
+        "x": 107.7,
+        "y": 690.5,
+        "w": 396.3,
+        "h": 31.8,
+        "zh": "表 5：Mistral-Base 与 Mistral-Instruct 设定下的消融。我们逐一去掉 SimPO 的关键设计：（1）去掉式 (4) 的长度归一化（即 w/o LN）；（2）把式 (6) 的目标奖励间隔 γ 设为 0（即 γ = 0）。"
+      },
+      {
+        "text": "Mistral-Instruct (7B) Setting AlpacaEval 2 Arena-Hard",
+        "x": 150.4,
+        "y": 657.9,
+        "w": 318.6,
+        "h": 24.3,
+        "zh": "Mistral-Instruct（7B）设定，AlpacaEval 2，Arena-Hard"
+      },
+      {
+        "text": "(c) SimPO without LN. Figure 2: Effect of length normalization (LN). (a) Relationship between reward margin and length difference between winning and losing responses. (b) Spearman correlation between average log probability and response length for SimPO. (c) Spearman correlation for SimPO without LN.",
+        "x": 108,
+        "y": 449.6,
+        "w": 396,
+        "h": 48.4,
+        "zh": "（c）不带长度归一化的 SimPO。图 2：长度归一化（LN）的作用。（a）奖励间隔与获胜、落败回答长度差的关系。（b）SimPO 的平均对数概率与回答长度的 Spearman 相关。（c）不带 LN 的 SimPO 的 Spearman 相关。"
+      },
+      {
+        "text": "though it is occasionally surpassed by CPO [88]. We find that CPO generates responses that are, on average, 50% longer than those generated by SimPO (See Table 10). Arena-Hard might favor longer generations due to the absence of a length penalty in its evaluation.",
+        "x": 108,
+        "y": 408.1,
+        "w": 396.2,
+        "h": 31.8,
+        "zh": "不过偶尔会被 CPO [88] 超过。CPO 生成的回答平均比 SimPO 长 50%（见表 10）。Arena-Hard 的评测没有长度惩罚，因此可能更偏向更长的生成。"
+      },
+      {
+        "text": "Although all three benchmarks are widely adopted, we find that MTBench exhibits poor separability across different methods. Minor differences between methods on MT-Bench may be attributed to randomness, likely due to the limited scale of its evaluation data and its single-instance scoring protocol. This finding aligns with observations reported in [54]. In contrast, AlpacaEval 2 and Arena-Hard provide more meaningful distinctions between different methods. We observe that the win rate on Arena-Hard is significantly lower than on AlpacaEval 2, indicating that Arena-Hard is a more challenging benchmark.",
+        "x": 107.6,
+        "y": 319.9,
+        "w": 398,
+        "h": 75.4,
+        "zh": "尽管这三个基准都被广泛采用，MT-Bench 对不同方法的区分度很差。方法之间的微小差别可能来自随机性，原因多半是评测数据规模有限，而且采用单条打分。这与 [54] 的观察一致。AlpacaEval 2 和 Arena-Hard 则更能区分方法。Arena-Hard 上的胜率明显低于 AlpacaEval 2，说明它更难。"
+      },
+      {
+        "text": "The Instruct setting introduces significant performance gains.",
+        "x": 108,
+        "y": 297.1,
+        "w": 272.6,
+        "h": 10,
+        "zh": "Instruct 设定带来明显提升。"
+      },
+      {
+        "text": "Across all benchmarks, we observe that the Instruct setting consistently outperforms the Base setting. This improvement is likely due to the higher quality of SFT models used for initialization and the generation of more high-quality preference data by these models.",
+        "x": 108,
+        "y": 264.3,
+        "w": 396.4,
+        "h": 42.7,
+        "zh": "在所有基准上，Instruct 设定都稳定优于 Base 设定。这很可能是因为初始化用的 SFT 模型更好，而且这些模型能生成更高质量的偏好数据。"
+      },
+      {
+        "text": "In Table 5, we demonstrate results from ablating each key design of SimPO: (1) removing length normalization in Eq. (4) (i.e., w/o LN); (2) setting the target reward margin to be 0 in Eq. (6) (i.e., γ = 0). Removing the length normalization has the most negative impact on the results. Our examination reveals that this leads to the generation of long and repetitive patterns, substantially degrading the overall quality of the output (See Appendix E). Setting γ to 0 yields also leads to a performance degradation compared to SimPO, indicating that it is not the optimal target reward margin. In the following subsections, we conduct in-depth analyses to better understand both design choices.",
+        "x": 108,
+        "y": 165.2,
+        "w": 396.2,
+        "h": 86.3,
+        "zh": "表 5 给出去掉 SimPO 各项关键设计后的结果：（1）去掉式 (4) 的长度归一化（即 w/o LN）；（2）把式 (6) 的目标奖励间隔设为 0（即 γ = 0）。去掉长度归一化的伤害最大。检查后发现，模型会生成又长又重复的模式，整体质量明显下降（见附录 E）。把 γ 设为 0 也会比完整的 SimPO 更差，说明 0 并不是合适的目标间隔。下面进一步分析这两个设计。"
+      },
+      {
+        "text": "Length Normalization (LN) Prevents Length Exploitation",
+        "x": 130.4,
+        "y": 141.1,
+        "w": 244.5,
+        "h": 10,
+        "zh": "长度归一化（LN）防止利用长度"
+      },
+      {
+        "text": "LN leads to an increase in the reward difference for all preference pairs, regardless of their",
+        "x": 108,
+        "y": 121.1,
+        "w": 396.2,
+        "h": 10,
+        "zh": "无论偏好对本身如何，LN 都会增大所有偏好对的奖励差，"
+      },
+      {
+        "text": "The Bradley-Terry objective in Eq. (5) essentially aims to optimize the reward difference",
+        "x": 147.3,
+        "y": 110.2,
+        "w": 356.7,
+        "h": 10,
+        "zh": "式 (5) 的 Bradley-Terry 目标，本质上是要让奖励差"
+      },
+      {
+        "text": "Although our models excel on benchmarks, these evaluations have limitations, including restricted query space and potential biases from model-based evaluations. Efforts like WildBench [93] aim to expand these spaces, where SimPO models demonstrate competitive performance.",
+        "x": 108,
+        "y": 72,
+        "w": 396.3,
+        "h": 28.9,
+        "zh": "尽管模型在基准上表现很好，这些评测仍有局限，包括查询空间有限，以及基于模型的评测可能有偏差。WildBench [93] 等工作试图扩大这些空间，SimPO 模型在那里也同样有竞争力。"
+      }
+    ],
+    "8": [
+      {
+        "text": "(a) Performance w/ different γ. Figure 3: Study of the margin γ. (a) Reward accuracy and AlpacaEval2 LC win rate under different γ values. (b) Reward difference distribution under different γ values. (c) Log likelihood distribution on chosen responses under different γ values.",
+        "x": 108,
+        "y": 592.6,
+        "w": 396,
+        "h": 48.4,
+        "zh": "（a）不同 γ 下的表现。图 3：对间隔 γ 的研究。（a）不同 γ 下的奖励准确率，以及 AlpacaEval 2 的 LC 胜率。（b）不同 γ 下的奖励差分布。（c）不同 γ 下被选中回答的对数似然分布。"
+      },
+      {
+        "text": "∆r = r(x, yw) − r(x, yl) to exceed the target margin γ. We investigate the relationship between the learned reward differences and the length difference ∆l = |yw| − |yl| between the winning and losing responses from the training set of UltraFeedback. We measure the difference of reward (rSimPO; Eq. (4)) using the SFT model, the SimPO model, and a model trained with SimPO but without length normalization. We present the results in Figure 2a and observe that SimPO with LN consistently achieves a positive reward margin for all response pairs, regardless of their length difference, and consistently improves the margin over the SFT model. In contrast, SimPO without LN results in a negative reward difference for preference pairs when the winning response is shorter than the losing response, indicating that the model learns poorly for these instances.",
+        "x": 107.2,
+        "y": 486.9,
+        "w": 397.7,
+        "h": 97.2,
+        "zh": "∆r = r(x, yw) − r(x, yl)，并超过目标间隔 γ。我们考察学到的奖励差与长度差 ∆l = |yw| − |yl| 的关系，数据来自 UltraFeedback 训练集中的获胜回答和落败回答。奖励差用式 (4) 的 rSimPO，分别在 SFT 模型、SimPO 模型，以及去掉长度归一化训练的模型上计算。图 2a 显示，带 LN 的 SimPO 对所有回答对都能保持正的奖励间隔，与长度差无关，并且相对 SFT 持续拉大这一间隔。相反，不带 LN 时，一旦获胜回答短于落败回答，奖励差就会变成负数，说明这些样本没有学好。"
+      },
+      {
+        "text": "Removing LN results in a strong positive correlation between the reward and response length, leading to length exploitation. versus response length on a held-out set for models trained with SimPO and SimPO without LN. The model trained without LN exhibits a much stronger positive Spearman correlation between likelihood and response length compared to SimPO, indicating a tendency to exploit length bias and generate longer sequences (see Appendix E). In contrast, SimPO results in a Spearman correlation coefficient similar to the SFT model (see Figure 6a).",
+        "x": 107.8,
+        "y": 398,
+        "w": 397.5,
+        "h": 75.4,
+        "zh": "去掉 LN 会让奖励与回答长度呈很强的正相关，从而利用长度。相对留出集上、用 SimPO 以及不带 LN 的 SimPO 训练所得模型的回答长度。不带 LN 的模型，似然与回答长度的 Spearman 正相关比 SimPO 强得多，说明它倾向于利用长度偏差、生成更长的序列（见附录 E）。SimPO 的 Spearman 系数则与 SFT 模型相近（见图 6a）。"
+      },
+      {
+        "text": "Figures 2b and 2c illustrate the average log likelihood (pθ in Eq. (3))",
+        "x": 240.6,
+        "y": 451.1,
+        "w": 264.1,
+        "h": 11.5,
+        "zh": "图 2b 和图 2c 画出平均对数似然（式 (3) 中的 pθ）"
+      },
+      {
+        "text": "The Impact of Target Reward Margin in SimPO",
+        "x": 130.4,
+        "y": 373.3,
+        "w": 205,
+        "h": 10,
+        "zh": "SimPO 中目标奖励间隔的影响"
+      },
+      {
+        "text": "Influence of γ on reward accuracy and win rate. in SimPO affects the reward accuracy on a held-out set and win rate on AlpacaEval 2, presenting the results in Figure 3a. Reward accuracy is measured as the percentage of preference pairs where the winning response ends up having a higher reward for the winning response than the losing response (i.e., r(x, yw) > r(x, yl)). We observe that reward accuracy increases with γ on both benchmarks, indicating that enforcing a larger target reward margin effectively improves reward accuracy. However, the win rate on AlpacaEval 2 first increases and then decreases with γ, suggesting that generation quality is not solely determined by the reward margin.",
+        "x": 108,
+        "y": 276.9,
+        "w": 396,
+        "h": 86.3,
+        "zh": "γ 对奖励准确率和胜率的影响。会怎样影响留出集上的奖励准确率，以及 AlpacaEval 2 上的胜率，结果见图 3a。奖励准确率是指获胜回答的奖励最终高于落败回答的偏好对所占比例（即 r(x, yw) > r(x, yl)）。我们观察到，两个基准上奖励准确率都随 γ 升高，说明强制更大的目标奖励间隔确实能提高奖励准确率。但 AlpacaEval 2 的胜率先升后降，说明生成质量并不只由奖励间隔决定。"
+      },
+      {
+        "text": "We investigate how the target reward margin γ",
+        "x": 320,
+        "y": 353.3,
+        "w": 183.4,
+        "h": 10,
+        "zh": "我们研究目标奖励间隔 γ"
+      },
+      {
+        "text": "Impact of γ on the reward distribution. r(x, yw)−r(x, yl) and the reward of winning responses r(x, yw) under varying γ values in Figure 2b and Figure 2c. Notably, increasing γ tends to flatten both distributions and reduce the average log likelihood of winning sequences. This initially improves performance but can eventually lead to model degeneration. We hypothesize that there is a trade-off between accurately approximating the true reward distribution and maintaining a well-calibrated likelihood when setting the γ value. Further exploration of this balance is deferred to future work.",
+        "x": 108,
+        "y": 188.1,
+        "w": 397.7,
+        "h": 75.4,
+        "zh": "γ 对奖励分布的影响。在不同 γ 下，r(x, yw)−r(x, yl) 以及获胜回答的奖励 r(x, yw)，见图 2b 和图 2c。值得注意的是，增大 γ 往往会把两个分布都拉平，并降低获胜序列的平均对数似然。这起初会提升表现，但最终可能导致模型退化。我们推测，设定 γ 时，在准确逼近真实奖励分布与保持似然校准之间存在权衡。对这一平衡的进一步探索留待以后。"
+      },
+      {
+        "text": "We visualize the distribution of the learned reward margin",
+        "x": 279.6,
+        "y": 253.6,
+        "w": 224.4,
+        "h": 10,
+        "zh": "我们把学到的奖励间隔的分布画出来"
+      },
+      {
+        "text": "In this section, we compare SimPO to DPO in terms of (1) likelihood-length correlation, (2) reward formulation, (3) reward accuracy, and (4) algorithm efficiency. We demonstrate that SimPO outperforms DPO in terms of reward accuracy and efficiency.",
+        "x": 107.6,
+        "y": 121.5,
+        "w": 398,
+        "h": 31.8,
+        "zh": "本节从四个方面比较 SimPO 与 DPO：（1）似然与长度的相关；（2）奖励形式；（3）奖励准确率；（4）算法效率。我们表明，SimPO 在奖励准确率和效率上都优于 DPO。"
+      },
+      {
+        "text": "DPO reward implicitly facilitates length normalization.",
+        "x": 108,
+        "y": 98.1,
+        "w": 235.8,
+        "h": 10,
+        "zh": "DPO 的奖励会隐含地促成长度归一化。"
+      },
+      {
+        "text": "Although the DPO reward expression (with the partition function excluded) lacks an explicit term for length",
+        "x": 209.5,
+        "y": 84.9,
+        "w": 294.5,
+        "h": 23.2,
+        "zh": "尽管 DPO 的奖励表达式（不含配分函数）没有显式的长度"
+      },
+      {
+        "text": "normalization, the logarithmic ratio between the policy model and the reference model can serve to",
+        "x": 108,
+        "y": 72,
+        "w": 396,
+        "h": 10,
+        "zh": "归一化项，策略模型与参考模型之间的对数比仍然可以用来"
+      }
+    ],
+    "9": [
+      {
+        "text": "(c) Reward Accuracy. Figure 4: Comparison between SimPO and DPO, measured on UltraFeedback. (a) Spearman correlation between average log probability and response length for DPO. (b) Contingency table of rankings based on DPO rewards and the average log likelihood (measured on the training set). (c) Reward accuracy of DPO and SimPO.",
+        "x": 108,
+        "y": 583.4,
+        "w": 396.7,
+        "h": 57.3,
+        "zh": "（c）奖励准确率。图 4：SimPO 与 DPO 的比较，在 UltraFeedback 上测量。（a）DPO 的平均对数概率与回答长度的 Spearman 相关。（b）按 DPO 奖励与按平均对数似然排序的列联表（在训练集上测量）。（c）DPO 与 SimPO 的奖励准确率。"
+      },
+      {
+        "text": "(c) Efficiency of DPO vs. SimPO. Figure 5: Comparison between SimPO and DPO (continued). (a) With different β in DPO and SimPO, KL divergence from the policy model to the reference model on yw. (b) AlpacaEval2 LC win rate of DPO and SimPO with different β. (c) Runtime and memory usage for DPO and SimPO.",
+        "x": 107.6,
+        "y": 448.4,
+        "w": 396.4,
+        "h": 48.4,
+        "zh": "（c）DPO 与 SimPO 的效率。图 5：SimPO 与 DPO 的比较（续）。（a）DPO 与 SimPO 在不同 β 下，策略模型相对参考模型在 yw 上的 KL 散度。（b）不同 β 下 DPO 与 SimPO 的 AlpacaEval 2 LC 胜率。（c）DPO 与 SimPO 的运行时间和显存占用。"
+      },
+      {
+        "text": "implicitly counteract length bias. As shown in Table 6 and Figure 4a, employing DPO reduces the Spearman correlation coefficient between average log likelihood and response length compared to the approach without any length normalization (referred to as “SimPO w/o LN”). However, it still exhibits a stronger positive correlation when compared to SimPO.",
+        "x": 108,
+        "y": 391.2,
+        "w": 396,
+        "h": 42.7,
+        "zh": "隐含地抵消长度偏差。如表 6 和图 4a 所示，使用 DPO 后，平均对数似然与回答长度的 Spearman 相关系数低于完全不做长度归一化的做法（记为 “SimPO w/o LN”）。不过，相对 SimPO，它的正相关仍然更强。"
+      },
+      {
+        "text": "DPO reward mismatches generation likelihood.",
+        "x": 108,
+        "y": 366.7,
+        "w": 200,
+        "h": 10,
+        "zh": "DPO 的奖励与生成似然不一致。"
+      },
+      {
+        "text": "Table 6: Spearman correlation ρ beis a divergence between DPO’s reward formulation,",
+        "x": 108,
+        "y": 355.8,
+        "w": 397.7,
+        "h": 19.5,
+        "zh": ""
+      },
+      {
+        "text": "tween average log likelihood of different models and response length on a , and the average log likelihood 1 log πθ(y | x), which directly As shown in Figure 4b, among the instances on the UltraFeedback training set where rθ(x, yw) > rθ(x, yl) , almost half of the pairs have pθ(yw | x) < pθ(yl | x). In contrast, SimPO directly employs the average log likelihood (scaled by β) as the reward expression, thereby eliminating the discrepancy completely, as demonstrated in Figure 6b.",
+        "x": 108,
+        "y": 260.5,
+        "w": 397.7,
+        "h": 103.9,
+        "zh": "不同模型的平均对数似然与回答长度之间，在一个；以及平均对数似然 1 log πθ(y | x)，它直接。如图 4b 所示，在 UltraFeedback 训练集上满足 rθ(x, yw) > rθ(x, yl) 的实例中，几乎一半的配对反而有 pθ(yw | x) < pθ(yl | x)。SimPO 则直接把平均对数似然（乘以 β）当作奖励表达式，从而完全消除这种不一致，如图 6b 所示。"
+      },
+      {
+        "text": "DPO lags behind SimPO in terms of reward accuracy.",
+        "x": 108,
+        "y": 236,
+        "w": 235.3,
+        "h": 10,
+        "zh": "DPO 的奖励准确率落后于 SimPO。"
+      },
+      {
+        "text": "In Figure 4c, we compare the reward accuracy of SimPO and DPO, assessing how well their final learned rewards align with preference labels on a held-out set. SimPO consistently achieves higher reward accuracy than DPO, suggesting that our reward design facilitates better generalization and leads to higher quality generations.",
+        "x": 108,
+        "y": 203.3,
+        "w": 396,
+        "h": 42.7,
+        "zh": "图 4c 比较了 SimPO 与 DPO 的奖励准确率，看它们最终学到的奖励在留出集上与偏好标签有多一致。SimPO 的奖励准确率一直高于 DPO，说明这种奖励设计更好泛化，也能带来更高质量的生成。"
+      },
+      {
+        "text": "In Figure 5a, we present the KL divergence between the policy model trained with DPO and SimPO and the reference model with different β, measured on the winning responses from a held-out set during training. Figure 5b shows the corresponding AlpacaEval 2 LC win rate. Although SimPO does not apply any form of regularization against the reference model, the KL divergence of SimPO is reasonably small. Increasing β reduces the KL divergence for both DPO and SimPO, with DPO exhibiting a more pronounced reduction at higher β values. In this particular setting (Mistral-base), Figure 5b demonstrates that a smaller β can",
+        "x": 107.6,
+        "y": 113.4,
+        "w": 396.4,
+        "h": 75.4,
+        "zh": "图 5a 给出用 DPO 和 SimPO 训练的策略模型相对参考模型的 KL 散度，β 不同，并在训练过程的留出集获胜回答上测量。图 5b 是对应的 AlpacaEval 2 LC 胜率。SimPO 没有对参考模型加任何正则，它的 KL 散度仍然相当小。增大 β 会同时降低 DPO 和 SimPO 的 KL 散度，而 DPO 在较大 β 时下降更明显。在这一具体设定（Mistral-base）下，图 5b 表明更小的 β 可以"
+      },
+      {
+        "text": "Note that this correlation does not fully reflect the generation length. Despite DPO showing a stronger correlation, the length of its generated responses is comparable to or even slightly shorter than those of the SimPO models. Please find more details in Appendix E.",
+        "x": 108,
+        "y": 72,
+        "w": 396.2,
+        "h": 28.9,
+        "zh": "需要说明，这一相关并不能完全反映生成长度。尽管 DPO 的相关更强，它生成的回答长度与 SimPO 相当，甚至略短。更多细节见附录 E。"
+      }
+    ],
+    "10": [
+      {
+        "text": "improve AlpacaEval 2 performance, despite the higher KL divergence. the reference model is weak, strictly constraining the policy model to the reference model may not be beneficial. As a caveat, while we did not observe any training collapse or degeneration with proper tuning, in principle, SimPO could potentially lead to reward hacking without explicit regularization against the reference model. In such a scenario, the model might achieve a low loss but degenerate.",
+        "x": 108,
+        "y": 666.4,
+        "w": 396.2,
+        "h": 53.6,
+        "zh": "提高 AlpacaEval 2 的表现，尽管 KL 散度更高。参考模型较弱，把策略模型严格约束在参考模型上未必有益。需要说明的是，在调参得当的情况下，我们没有观察到训练崩溃或退化；但原则上，若没有针对参考模型的显式正则，SimPO 仍可能出现奖励黑客。那时模型损失可以很低，生成却已经退化。"
+      },
+      {
+        "text": "SimPO is more memory and compute-efficient than DPO. efficiency as it does not use a reference model. Figure 5c illustrates the overall run time and per-GPU peak memory usage of SimPO and DPO in the Llama-3-Base setting using 8×H100 GPUs. Compared",
+        "x": 108,
+        "y": 622.1,
+        "w": 396,
+        "h": 31.8,
+        "zh": "SimPO 比 DPO 更省显存，也更省计算。因为它不用参考模型，效率更高。图 5c 给出 Llama-3-Base 设定下、使用 8×H100 GPU 时 SimPO 与 DPO 的总运行时间和每卡峰值显存。相比"
+      },
+      {
+        "text": "SimPO cuts run time by roughly 20% and reduces GPU memory",
+        "x": 250,
+        "y": 611.2,
+        "w": 254.3,
+        "h": 10,
+        "zh": "SimPO 把运行时间大约缩短 20%，并把 GPU 显存"
+      },
+      {
+        "text": "usage by about 10%, thanks to eliminating forward passes with the reference model.",
+        "x": 108,
+        "y": 600.2,
+        "w": 335.8,
+        "h": 10,
+        "zh": "用量降低约 10%，因为省掉了参考模型的前向计算。"
+      },
+      {
+        "text": "Reinforcement learning from human feedback. models with human preferences and values [18, 102, 62, 7]. The classical RLHF pipeline typically comprises three phases: supervised fine-tuning [101, 76, 33, 21, 48, 25, 82, 15, 86], reward model training [32, 60, 16, 56, 37, 50], and policy optimization [70, 4]. Proximal Policy Optimization (PPO) [70] is a widely used algorithm in the third stage of RLHF. The RLHF framework is also widely applied to various applications, such as mitigating toxicity [3, 49, 97], ensuring safety [24], enhancing helpfulness [78, 83], searching and navigating the web [61], and improving model reasoning abilities [36]. Recently, [13] has highlighted challenges across the whole RLHF pipeline from preference data collection to model training. Further research has also demonstrated that RLHF can lead to biased outcomes, such as verbose outputs from the model [28, 71, 85].",
+        "x": 107.6,
+        "y": 456.7,
+        "w": 398,
+        "h": 108.1,
+        "zh": "基于人类反馈的强化学习。使模型对齐人类的偏好和价值观 [18, 102, 62, 7]。经典 RLHF 流程通常分三步：监督微调 [101, 76, 33, 21, 48, 25, 82, 15, 86]、奖励模型训练 [32, 60, 16, 56, 37, 50]，以及策略优化 [70, 4]。近端策略优化（PPO）[70] 是 RLHF 第三阶段的常用算法。这一框架也被广泛用于降低毒性 [3, 49, 97]、保障安全 [24]、增强有用性 [78, 83]、搜索和浏览网页 [61]，以及提高模型推理能力 [36]。最近，[13] 指出从收集偏好数据到训练模型的整条 RLHF 流程都有挑战。后续研究还表明，RLHF 可能带来有偏结果，例如模型输出过于冗长 [28, 71, 85]。"
+      },
+      {
+        "text": "RLHF is a technique that aligns large language",
+        "x": 317.1,
+        "y": 554.9,
+        "w": 186.9,
+        "h": 10,
+        "zh": "RLHF 是一种用来对齐大语言"
+      },
+      {
+        "text": "Offline vs. iterative preference optimization. rithms are complex and difficult to optimize [100, 69], researchers have been exploring more efficient and simpler alternative offline algorithms. Direct Preference Optimization (DPO) [66] is a notable example. However, the absence of an explicit reward model in DPO limits its ability to sample preference pairs from the optimal policy. To address this, researchers have explored augmenting preference data using a trained SFT policy [96] or a refined SFT policy with rejection sampling [59], enabling the policy to learn from data generated by the optimal policy. Further studies have extended this approach to an iterative training setup, by continuously updating the reference model with the most recent policy model or generating new preference pairs at each iteration [27, 46, 67, 87, 92]. In this work, we focus exclusively on offline settings, avoiding any iterative training processes.",
+        "x": 108,
+        "y": 336,
+        "w": 397.2,
+        "h": 108.1,
+        "zh": "离线偏好优化与迭代式偏好优化。算法复杂、难以优化 [100, 69]，研究者因而转向更高效、更简单的离线算法。直接偏好优化（DPO）[66] 是其中的代表。不过，DPO 没有显式奖励模型，难以从最优策略中采样偏好对。为此，研究者尝试用训练好的 SFT 策略 [96]，或经拒绝采样打磨过的 SFT 策略 [59] 来扩充偏好数据，让策略学习最优策略所生成的数据。后续工作进一步做成迭代训练：不断用最新策略更新参考模型，或在每一轮生成新的偏好对 [27, 46, 67, 87, 92]。本文只研究离线设定，不做任何迭代训练。"
+      },
+      {
+        "text": "Given that online preference optimization algo-",
+        "x": 311.2,
+        "y": 434.2,
+        "w": 194.4,
+        "h": 10,
+        "zh": "鉴于在线偏好优化算法"
+      },
+      {
+        "text": "Preference optimization objectives. proposed besides DPO. Ranking objectives allow for comparisons among more than two instances [26, 58, 72, 91]. Another line of work explores simpler preference optimization objectives that do not rely on a reference model [42, 89], similar to SimPO. [8] proposes a method to jointly optimize instructions and responses, finding it effectively improves DPO. [98] focuses on post-training extrapolation between the SFT and the aligned model to further enhance model performance. In this work, we compare SimPO to a series of offline algorithms, including RRHF [91], SLiC-HF [96], DPO [66], IPO [6], CPO [88], KTO [29], ORPO [42], and R-DPO [64], and find that SimPO can outperform them in both efficiency and performance. Recently, [75] proposed a generalized preference optimization framework unifying different offline algorithms, and SimPO can be seen as a special case.",
+        "x": 108,
+        "y": 215.3,
+        "w": 397.2,
+        "h": 108.1,
+        "zh": "偏好优化目标。在 DPO 之外被提出。排序目标可以比较两个以上的实例 [26, 58, 72, 91]。另一条线探索不依赖参考模型的更简单目标 [42, 89]，与 SimPO 类似。[8] 提出同时优化指令和回答，并发现这能有效改进 DPO。[98] 关注 SFT 模型与对齐后模型之间的训练后外推，以进一步提升表现。本文将 SimPO 与一系列离线算法比较，包括 RRHF [91]、SLiC-HF [96]、DPO [66]、IPO [6]、CPO [88]、KTO [29]、ORPO [42] 和 R-DPO [64]，发现 SimPO 在效率和性能上都能超过它们。最近，[75] 提出统一不同离线算法的广义偏好优化框架，SimPO 可视为其中的一个特例。"
+      },
+      {
+        "text": "A variety of preference optimization objectives have been",
+        "x": 269.5,
+        "y": 313.5,
+        "w": 234.5,
+        "h": 10,
+        "zh": "已经提出了多种偏好优化目标，"
+      },
+      {
+        "text": "In this work, we propose SimPO, a simple and effective preference optimization algorithm that consistently outperforms existing approaches across various training setups. By aligning the reward function with the generation likelihood and introducing a target reward margin, SimPO eliminates the need for a reference model and achieves strong performance without exploiting the length bias. Extensive analysis demonstrates that the key designs in SimPO are crucial and validates the efficiency and effectiveness of SimPO. A detailed discussion of the limitations can be found in Appendix A.",
+        "x": 108,
+        "y": 110.5,
+        "w": 397.7,
+        "h": 64.5,
+        "zh": "本文提出 SimPO，一种简单有效的偏好优化算法，在多种训练设定下都稳定优于现有方法。它让奖励函数与生成似然对齐，并引入目标奖励间隔，从而不再需要参考模型，也能在不利用长度偏差的情况下取得强表现。大量分析说明 SimPO 的关键设计是必要的，并验证了它的效率与效果。局限性的详细讨论见附录 A。"
+      },
+      {
+        "text": "We observe that in some settings (e.g., Llama-3-Instruct), a large β (e.g., β = 10) leads to better performance. DPO can be as memory efficient as SimPO if it were implemented to separate the forward passes of the reference model from the actual preference optimization. However, this implementation is not standard practice.",
+        "x": 108,
+        "y": 72,
+        "w": 396,
+        "h": 29.8,
+        "zh": "我们观察到，在某些设定下（例如 Llama-3-Instruct），较大的 β（例如 β = 10）表现更好。若把参考模型的前向与真正的偏好优化拆开实现，DPO 可以和 SimPO 一样省显存。不过这并不是常见做法。"
+      }
+    ],
+    "11": [
+      {
+        "text": "The authors would like to thank Li Dong, Tianyu Gao, Tanya Goyal, Di Jin, Yuchen Lin, Kaifeng Lyu, Sadhika Malladi, Eric Mitchell, Lewis Tunstall, Haoxiang Wang, Wei Xiong, Zhen Xu, Libing Yang, Zhiyu Zhao, and members of the Princeton NLP group for their valuable feedback and discussions. We thank Niklas Muennighoff for his advice on training and reproducing training KTO models. We thank Haoran Xu for helping verify our CPO runs. Mengzhou Xia is supported by an Apple Scholars in AIML Fellowship. This research is also funded by the National Science Foundation (IIS-2211779)",
+        "x": 107.5,
+        "y": 632,
+        "w": 398.2,
+        "h": 64.5,
+        "zh": "作者感谢 Li Dong、Tianyu Gao、Tanya Goyal、Di Jin、Yuchen Lin、Kaifeng Lyu、Sadhika Malladi、Eric Mitchell、Lewis Tunstall、Haoxiang Wang、Wei Xiong、Zhen Xu、Libing Yang、Zhiyu Zhao，以及普林斯顿 NLP 组的成员所提供的反馈和讨论。感谢 Niklas Muennighoff 在训练和复现 KTO 上的建议。感谢 Haoran Xu 帮助核对我们的 CPO 实验。Mengzhou Xia 得到 Apple Scholars in AIML Fellowship 的支持。本研究亦由美国国家科学基金会资助（IIS-2211779）。"
+      },
+      {
+        "text": "[1] Alan Agresti. Categorical data analysis, volume 792. John Wiley & Sons, 2012.",
+        "x": 118,
+        "y": 574,
+        "w": 339.2,
+        "h": 10,
+        "zh": "[1] Alan Agresti. 《分类数据分析》，第 792 卷。John Wiley & Sons，2012。"
+      },
+      {
+        "text": "[3] Afra Amini, Tim Vieira, and Ryan Cotterell. Direct preference optimization with an offset.",
+        "x": 118,
+        "y": 534,
+        "w": 387.8,
+        "h": 10,
+        "zh": "[3] Afra Amini, Tim Vieira, and Ryan Cotterell. 带偏移的直接偏好优化。"
+      },
+      {
+        "text": "[4] Thomas Anthony, Zheng Tian, and David Barber. Thinking fast and slow with deep learning and tree search. Advances in neural information processing systems, 30, 2017.",
+        "x": 118,
+        "y": 492.2,
+        "w": 386,
+        "h": 20.9,
+        "zh": "[4] Thomas Anthony, Zheng Tian, and David Barber. 用深度学习与树搜索实现快思与慢想。Advances in Neural Information Processing Systems，30，2017。"
+      },
+      {
+        "text": "[5] Amanda Askell, Yuntao Bai, Anna Chen, Dawn Drain, Deep Ganguli, Tom Henighan, Andy Jones, Nicholas Joseph, Benjamin Mann, Nova DasSarma, Nelson Elhage, Zac Hatfield-Dodds, Danny Hernandez, John Kernion, Kamal Ndousse, Catherine Olsson, Dario Amodei, Tom B. Brown, Jack Clark, Sam McCandlish, Christopher Olah, and Jared Kaplan. A general language assistant as a laboratory for alignment. ArXiv, abs/2112.00861, 2021.",
+        "x": 118,
+        "y": 428.5,
+        "w": 387.8,
+        "h": 53.6,
+        "zh": "[5] Amanda Askell, Yuntao Bai, Anna Chen, Dawn Drain, Deep Ganguli, Tom Henighan, Andy Jones, Nicholas Joseph, Benjamin Mann, Nova DasSarma, Nelson Elhage, Zac Hatfield-Dodds, Danny Hernandez, John Kernion, Kamal Ndousse, Catherine Olsson, Dario Amodei, Tom B. Brown, Jack Clark, Sam McCandlish, Christopher Olah, and Jared Kaplan. 把通用语言助手当作对齐的实验室。ArXiv, abs/2112.00861，2021。"
+      },
+      {
+        "text": "[6] Mohammad Gheshlaghi Azar, Mark Rowland, Bilal Piot, Daniel Guo, Daniele Calandriello, Michal Valko, and Rémi Munos. A general theoretical paradigm to understand learning from",
+        "x": 118,
+        "y": 397.6,
+        "w": 387.3,
+        "h": 20.9,
+        "zh": "[6] Mohammad Gheshlaghi Azar, Mark Rowland, Bilal Piot, Daniel Guo, Daniele Calandriello, Michal Valko, and Rémi Munos. 理解如何从……中学习的一般理论框架"
+      },
+      {
+        "text": "human preferences. ArXiv, abs/2310.12036, 2023.",
+        "x": 134.6,
+        "y": 386.7,
+        "w": 200.6,
+        "h": 10,
+        "zh": "人类偏好。ArXiv, abs/2310.12036，2023。"
+      },
+      {
+        "text": "[7] Yuntao Bai, Andy Jones, Kamal Ndousse, Amanda Askell, Anna Chen, Nova DasSarma, Dawn Drain, Stanislav Fort, Deep Ganguli, Tom Henighan, et al. Training a helpful and harmless assistant with reinforcement learning from human feedback. arXiv preprint arXiv:2204.05862,",
+        "x": 118,
+        "y": 344.8,
+        "w": 387.3,
+        "h": 31.8,
+        "zh": "[7] Yuntao Bai, Andy Jones, Kamal Ndousse, Amanda Askell, Anna Chen, Nova DasSarma, Dawn Drain, Stanislav Fort, Deep Ganguli, Tom Henighan, et al. 用基于人类反馈的强化学习训练有帮助且无害的助手。arXiv 预印本 arXiv:2204.05862，"
+      },
+      {
+        "text": "[8] Hritik Bansal, Ashima Suvarna, Gantavya Bhatt, Nanyun Peng, Kai-Wei Chang, and Aditya Grover. Comparing bad apples to good oranges: Aligning large language models via joint preference optimization. arXiv preprint arXiv:2404.00530, 2024.",
+        "x": 118,
+        "y": 292.1,
+        "w": 386,
+        "h": 31.8,
+        "zh": "[8] Hritik Bansal, Ashima Suvarna, Gantavya Bhatt, Nanyun Peng, Kai-Wei Chang, and Aditya Grover. 拿坏苹果比好橙子：通过联合偏好优化对齐大语言模型。arXiv 预印本 arXiv:2404.00530，2024。"
+      },
+      {
+        "text": "[9] Edward Beeching, Clémentine Fourrier, Nathan Habib, Sheon Han, Nathan Lambert, Nazneen Rajani, Omar Sanseviero, Lewis Tunstall, and Thomas Wolf. leaderboard. https://huggingface.co/spaces/HuggingFaceH4/open_llm_",
+        "x": 118,
+        "y": 250.3,
+        "w": 387.3,
+        "h": 31.8,
+        "zh": "[9] Edward Beeching, Clémentine Fourrier, Nathan Habib, Sheon Han, Nathan Lambert, Nazneen Rajani, Omar Sanseviero, Lewis Tunstall, and Thomas Wolf. 排行榜。https://huggingface.co/spaces/HuggingFaceH4/open_llm_"
+      },
+      {
+        "text": "[10] Bernhard E Boser, Isabelle M Guyon, and Vladimir N Vapnik. A training algorithm for optimal margin classifiers. In Proceedings of the fifth annual workshop on Computational learning",
+        "x": 113,
+        "y": 208.4,
+        "w": 391,
+        "h": 20.9,
+        "zh": "[10] Bernhard E Boser, Isabelle M Guyon, and Vladimir N Vapnik. 最优间隔分类器的一种训练算法。见第五届计算学习年度研讨会论文集"
+      },
+      {
+        "text": "[11] Ralph Allan Bradley and Milton E. Terry. Rank analysis of incomplete block designs: I. the",
+        "x": 113,
+        "y": 177.5,
+        "w": 391,
+        "h": 10,
+        "zh": "[11] Ralph Allan Bradley and Milton E. Terry. 不完全区组设计的秩分析：I."
+      },
+      {
+        "text": "method of paired comparisons. Biometrika, 39:324, 1952.",
+        "x": 134.6,
+        "y": 166.6,
+        "w": 231.3,
+        "h": 10,
+        "zh": "成对比较方法。Biometrika，39:324，1952。"
+      },
+      {
+        "text": "[12] Tom Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared D Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, et al. Language",
+        "x": 113,
+        "y": 135.7,
+        "w": 392.7,
+        "h": 20.9,
+        "zh": "[12] Tom Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared D Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, et al. 语言"
+      },
+      {
+        "text": "models are few-shot learners. In NeurIPS, 2020.",
+        "x": 134.6,
+        "y": 124.7,
+        "w": 193.1,
+        "h": 10,
+        "zh": "模型是少样本学习者。见 NeurIPS，2020。"
+      },
+      {
+        "text": "[13] Stephen Casper, Xander Davies, Claudia Shi, Thomas Krendl Gilbert, Jérémy Scheurer, Javier Rando, Rachel Freedman, Tomasz Korbak, David Lindner, Pedro Freire, et al. Open problems and fundamental limitations of reinforcement learning from human feedback. arXiv preprint",
+        "x": 113,
+        "y": 82.9,
+        "w": 391.2,
+        "h": 31.8,
+        "zh": "[13] Stephen Casper, Xander Davies, Claudia Shi, Thomas Krendl Gilbert, Jérémy Scheurer, Javier Rando, Rachel Freedman, Tomasz Korbak, David Lindner, Pedro Freire, et al. 基于人类反馈的强化学习：开放问题与根本局限。arXiv 预印本"
+      }
+    ],
+    "12": [
+      {
+        "text": "[14] Angelica Chen, Sadhika Malladi, Lily H Zhang, Xinyi Chen, Qiuyi Zhang, Rajesh Ranganath, and Kyunghyun Cho. Preference learning algorithms do not learn preference rankings.",
+        "x": 113,
+        "y": 699.1,
+        "w": 392.8,
+        "h": 20.9,
+        "zh": "[14] Angelica Chen, Sadhika Malladi, Lily H Zhang, Xinyi Chen, Qiuyi Zhang, Rajesh Ranganath, and Kyunghyun Cho. 偏好学习算法并没有学到偏好排序。"
+      },
+      {
+        "text": "[15] Lichang Chen, Shiyang Li, Jun Yan, Hai Wang, Kalpa Gunaratna, Vikas Yadav, Zheng Tang, Vijay Srinivasan, Tianyi Zhou, Heng Huang, and Hongxia Jin. AlpaGasus: Training a better Alpaca with fewer data. In ICLR, 2024.",
+        "x": 113,
+        "y": 646.4,
+        "w": 392.3,
+        "h": 31.8,
+        "zh": "[15] Lichang Chen, Shiyang Li, Jun Yan, Hai Wang, Kalpa Gunaratna, Vikas Yadav, Zheng Tang, Vijay Srinivasan, Tianyi Zhou, Heng Huang, and Hongxia Jin. AlpaGasus：用更少的数据训练出更好的 Alpaca。见 ICLR，2024。"
+      },
+      {
+        "text": "[16] Lichang Chen, Chen Zhu, Davit Soselia, Jiuhai Chen, Tianyi Zhou, Tom Goldstein, Heng Huang, Mohammad Shoeybi, and Bryan Catanzaro. ODIN: Disentangled reward mitigates hacking in RLHF. arXiv preprint arXiv:2402.07319, 2024.",
+        "x": 113,
+        "y": 604.6,
+        "w": 391,
+        "h": 31.8,
+        "zh": "[16] Lichang Chen, Chen Zhu, Davit Soselia, Jiuhai Chen, Tianyi Zhou, Tom Goldstein, Heng Huang, Mohammad Shoeybi, and Bryan Catanzaro. ODIN：解耦奖励以减轻 RLHF 中的奖励黑客。arXiv 预印本 arXiv:2402.07319，2024。"
+      },
+      {
+        "text": "[17] Wei-Lin Chiang, Lianmin Zheng, Ying Sheng, Anastasios Nikolas Angelopoulos, Tianle Li, Dacheng Li, Hao Zhang, Banghua Zhu, Michael Jordan, Joseph E Gonzalez, et al. Chatbot arena: An open platform for evaluating llms by human preference. arXiv preprint",
+        "x": 113,
+        "y": 562.8,
+        "w": 392.8,
+        "h": 31.8,
+        "zh": "[17] Wei-Lin Chiang, Lianmin Zheng, Ying Sheng, Anastasios Nikolas Angelopoulos, Tianle Li, Dacheng Li, Hao Zhang, Banghua Zhu, Michael Jordan, Joseph E Gonzalez, et al. Chatbot Arena：用人类偏好评测 LLM 的开放平台。arXiv 预印本"
+      },
+      {
+        "text": "[18] Paul F Christiano, Jan Leike, Tom Brown, Miljan Martic, Shane Legg, and Dario Amodei. Deep reinforcement learning from human preferences. Advances in neural information processing",
+        "x": 113,
+        "y": 521,
+        "w": 391,
+        "h": 20.9,
+        "zh": "[18] Paul F Christiano, Jan Leike, Tom Brown, Miljan Martic, Shane Legg, and Dario Amodei. 从人类偏好进行深度强化学习。Advances in Neural Information Processing"
+      },
+      {
+        "text": "[19] Peter Clark, Isaac Cowhey, Oren Etzioni, Tushar Khot, Ashish Sabharwal, Carissa Schoenick, and Oyvind Tafjord. Think you have solved question answering? try ARC, the AI2 reasoning challenge. ArXiv, abs/1803.05457, 2018.",
+        "x": 113,
+        "y": 468.3,
+        "w": 392.3,
+        "h": 31.8,
+        "zh": "[19] Peter Clark, Isaac Cowhey, Oren Etzioni, Tushar Khot, Ashish Sabharwal, Carissa Schoenick, and Oyvind Tafjord. 以为问答已经解决了吗？试试 ARC，AI2 推理挑战。ArXiv, abs/1803.05457，2018。"
+      },
+      {
+        "text": "[20] Karl Cobbe, Vineet Kosaraju, Mohammad Bavarian, Mark Chen, Heewoo Jun, Lukasz Kaiser, Matthias Plappert, Jerry Tworek, Jacob Hilton, Reiichiro Nakano, Christopher Hesse, and John Schulman. Training verifiers to solve math word problems. arXiv preprint arXiv:2110.14168,",
+        "x": 113,
+        "y": 426.5,
+        "w": 392.3,
+        "h": 31.8,
+        "zh": "[20] Karl Cobbe, Vineet Kosaraju, Mohammad Bavarian, Mark Chen, Heewoo Jun, Lukasz Kaiser, Matthias Plappert, Jerry Tworek, Jacob Hilton, Reiichiro Nakano, Christopher Hesse, and John Schulman. 训练验证器来解答数学应用题。arXiv 预印本 arXiv:2110.14168，"
+      },
+      {
+        "text": "[21] Mike Conover, Matt Hayes, Ankit Mathur, Jianwei Xie, Jun Wan, Sam Shah, Ali Ghodsi, Patrick Wendell, Matei Zaharia, and Reynold Xin. Free dolly: Introducing the world’s first truly open instruction-tuned LLM, 2023.",
+        "x": 113,
+        "y": 373.7,
+        "w": 392.3,
+        "h": 31.8,
+        "zh": "[21] Mike Conover, Matt Hayes, Ankit Mathur, Jianwei Xie, Jun Wan, Sam Shah, Ali Ghodsi, Patrick Wendell, Matei Zaharia, and Reynold Xin. Free Dolly：介绍世界上第一个真正开放的指令微调 LLM，2023。"
+      },
+      {
+        "text": "[22] Corinna Cortes and Vladimir Vapnik. Support-vector networks. Machine learning, 20:273–297,",
+        "x": 113,
+        "y": 353.8,
+        "w": 392.3,
+        "h": 10,
+        "zh": "[22] Corinna Cortes and Vladimir Vapnik. 支持向量网络。Machine Learning，20:273–297，"
+      },
+      {
+        "text": "[23] Ganqu Cui, Lifan Yuan, Ning Ding, Guanming Yao, Wei Zhu, Yuan Ni, Guotong Xie, Zhiyuan Liu, and Maosong Sun. UltraFeedback: Boosting language models with high-quality feedback.",
+        "x": 113,
+        "y": 311.9,
+        "w": 392.8,
+        "h": 20.9,
+        "zh": "[23] Ganqu Cui, Lifan Yuan, Ning Ding, Guanming Yao, Wei Zhu, Yuan Ni, Guotong Xie, Zhiyuan Liu, and Maosong Sun. UltraFeedback：用高质量反馈提升语言模型。"
+      },
+      {
+        "text": "[24] Josef Dai, Xuehai Pan, Ruiyang Sun, Jiaming Ji, Xinbo Xu, Mickel Liu, Yizhou Wang, and Yaodong Yang. Safe RLHF: Safe reinforcement learning from human feedback. arXiv preprint",
+        "x": 113,
+        "y": 270.1,
+        "w": 391,
+        "h": 20.9,
+        "zh": "[24] Josef Dai, Xuehai Pan, Ruiyang Sun, Jiaming Ji, Xinbo Xu, Mickel Liu, Yizhou Wang, and Yaodong Yang. Safe RLHF：安全的基于人类反馈的强化学习。arXiv 预印本"
+      },
+      {
+        "text": "[25] Ning Ding, Yulin Chen, Bokai Xu, Yujia Qin, Zhi Zheng, Shengding Hu, Zhiyuan Liu, Maosong Sun, and Bowen Zhou. Enhancing chat language models by scaling high-quality instructional conversations. In EMNLP, 2023.",
+        "x": 113,
+        "y": 217.4,
+        "w": 392.3,
+        "h": 31.8,
+        "zh": "[25] Ning Ding, Yulin Chen, Bokai Xu, Yujia Qin, Zhi Zheng, Shengding Hu, Zhiyuan Liu, Maosong Sun, and Bowen Zhou. 通过扩展高质量指令对话来增强聊天语言模型。见 EMNLP，2023。"
+      },
+      {
+        "text": "[26] Hanze Dong, Wei Xiong, Deepanshu Goyal, Yihan Zhang, Winnie Chow, Rui Pan, Shizhe Diao, Jipeng Zhang, SHUM KaShun, and Tong Zhang. RAFT: Reward ranked finetuning for generative foundation model alignment. Transactions on Machine Learning Research, 2023.",
+        "x": 113,
+        "y": 175.6,
+        "w": 391.2,
+        "h": 31.8,
+        "zh": "[26] Hanze Dong, Wei Xiong, Deepanshu Goyal, Yihan Zhang, Winnie Chow, Rui Pan, Shizhe Diao, Jipeng Zhang, SHUM KaShun, and Tong Zhang. RAFT：用奖励排序微调对齐生成式基础模型。Transactions on Machine Learning Research，2023。"
+      },
+      {
+        "text": "[27] Hanze Dong, Wei Xiong, Bo Pang, Haoxiang Wang, Han Zhao, Yingbo Zhou, Nan Jiang, Doyen Sahoo, Caiming Xiong, and Tong Zhang. Rlhf workflow: From reward modeling to online rlhf. arXiv preprint arXiv:2405.07863, 2024.",
+        "x": 113,
+        "y": 133.8,
+        "w": 392.3,
+        "h": 31.8,
+        "zh": "[27] Hanze Dong, Wei Xiong, Bo Pang, Haoxiang Wang, Han Zhao, Yingbo Zhou, Nan Jiang, Doyen Sahoo, Caiming Xiong, and Tong Zhang. RLHF 工作流：从奖励建模到在线 RLHF。arXiv 预印本 arXiv:2405.07863，2024。"
+      },
+      {
+        "text": "[28] Yann Dubois, Balázs Galambosi, Percy Liang, and Tatsunori B Hashimoto. Length-controlled AlpacaEval: A simple way to debias automatic evaluators. ArXiv, abs/2404.04475, 2024.",
+        "x": 113,
+        "y": 102.9,
+        "w": 391,
+        "h": 20.9,
+        "zh": "[28] Yann Dubois, Balázs Galambosi, Percy Liang, and Tatsunori B Hashimoto. 长度控制的 AlpacaEval：消除自动评测器偏差的一种简单方法。ArXiv, abs/2404.04475，2024。"
+      },
+      {
+        "text": "[29] Kawin Ethayarajh, Winnie Xu, Niklas Muennighoff, Dan Jurafsky, and Douwe Kiela. KTO: Model alignment as prospect theoretic optimization. ArXiv, abs/2402.01306, 2024.",
+        "x": 113,
+        "y": 72,
+        "w": 392.4,
+        "h": 20.9,
+        "zh": "[29] Kawin Ethayarajh, Winnie Xu, Niklas Muennighoff, Dan Jurafsky, and Douwe Kiela. KTO：把模型对齐做成前景理论优化。ArXiv, abs/2402.01306，2024。"
+      }
+    ],
+    "13": [
+      {
+        "text": "[30] Angela Fan, Mike Lewis, and Yann Dauphin. Hierarchical neural story generation. In Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics",
+        "x": 113,
+        "y": 699.1,
+        "w": 391,
+        "h": 20.9,
+        "zh": "[30] Angela Fan, Mike Lewis, and Yann Dauphin. 层次化的神经故事生成。见计算语言学协会第 56 届年会论文集"
+      },
+      {
+        "text": "(Volume 1: Long Papers), pages 889–898, 2018.",
+        "x": 133.9,
+        "y": 688.2,
+        "w": 192.6,
+        "h": 10,
+        "zh": "（第 1 卷：长文），第 889–898 页，2018。"
+      },
+      {
+        "text": "[31] David Firth and Heather Turner. Bradley-terry models in R: the BradleyTerry2 package.",
+        "x": 113,
+        "y": 668.8,
+        "w": 392.8,
+        "h": 10,
+        "zh": "[31] David Firth and Heather Turner. R 语言中的 Bradley-Terry 模型：BradleyTerry2 软件包。"
+      },
+      {
+        "text": "Journal of Statistical Software, 48(9), 2012.",
+        "x": 134.1,
+        "y": 657.9,
+        "w": 174.8,
+        "h": 10,
+        "zh": "Journal of Statistical Software，48(9)，2012。"
+      },
+      {
+        "text": "[32] Leo Gao, John Schulman, and Jacob Hilton. Scaling laws for reward model overoptimization. In International Conference on Machine Learning, pages 10835–10866. PMLR, 2023.",
+        "x": 113,
+        "y": 627.6,
+        "w": 392.8,
+        "h": 20.9,
+        "zh": "[32] Leo Gao, John Schulman, and Jacob Hilton. 奖励模型过度优化的缩放定律。见 International Conference on Machine Learning，第 10835–10866 页。PMLR，2023。"
+      },
+      {
+        "text": "[33] Xinyang Geng, Arnav Gudibande, Hao Liu, Eric Wallace, Pieter Abbeel, Sergey Levine, and Dawn Song. Koala: A dialogue model for academic research. Blog post, April, 1:6, 2023.",
+        "x": 113,
+        "y": 597.2,
+        "w": 391,
+        "h": 20.9,
+        "zh": "[33] Xinyang Geng, Arnav Gudibande, Hao Liu, Eric Wallace, Pieter Abbeel, Sergey Levine, and Dawn Song. Koala：面向学术研究的对话模型。博客文章，4 月，1:6，2023。"
+      },
+      {
+        "text": "[34] Ulrich Germann. Greedy decoding for statistical machine translation in almost linear time. In",
+        "x": 113,
+        "y": 577.8,
+        "w": 391,
+        "h": 10,
+        "zh": "[34] Ulrich Germann. 统计机器翻译中近线性时间的贪心解码。见"
+      },
+      {
+        "text": "[35] Alex Graves. Sequence transduction with recurrent neural networks. ArXiv, abs/1211.3711,",
+        "x": 113,
+        "y": 547.5,
+        "w": 392.3,
+        "h": 10,
+        "zh": "[35] Alex Graves. 用循环神经网络做序列转导。ArXiv, abs/1211.3711，"
+      },
+      {
+        "text": "[36] Alex Havrilla, Yuqing Du, Sharath Chandra Raparthy, Christoforos Nalmpantis, Jane DwivediYu, Maksym Zhuravinskyi, Eric Hambro, Sainbayar Sukhbaatar, and Roberta Raileanu. Teaching large language models to reason with reinforcement learning.",
+        "x": 113,
+        "y": 495.3,
+        "w": 392.8,
+        "h": 31.8,
+        "zh": "[36] Alex Havrilla, Yuqing Du, Sharath Chandra Raparthy, Christoforos Nalmpantis, Jane DwivediYu, Maksym Zhuravinskyi, Eric Hambro, Sainbayar Sukhbaatar, and Roberta Raileanu. 用强化学习教大语言模型推理。"
+      },
+      {
+        "text": "[37] Alex Havrilla, Sharath Raparthy, Christoforus Nalmpantis, Jane Dwivedi-Yu, Maksym Zhuravinskyi, Eric Hambro, and Roberta Railneau. GLoRe: When, where, and how to improve LLM reasoning via global and local refinements. arXiv preprint arXiv:2402.10963, 2024.",
+        "x": 113,
+        "y": 443.2,
+        "w": 392.7,
+        "h": 31.8,
+        "zh": "[37] Alex Havrilla, Sharath Raparthy, Christoforus Nalmpantis, Jane Dwivedi-Yu, Maksym Zhuravinskyi, Eric Hambro, and Roberta Railneau. GLoRe：何时、何处、如何通过全局与局部精修改进 LLM 的推理。arXiv 预印本 arXiv:2402.10963，2024。"
+      },
+      {
+        "text": "[38] Dan Hendrycks, Collin Burns, Steven Basart, Andy Zou, Mantas Mazeika, Dawn Song, and Jacob Steinhardt. Measuring massive multitask language understanding. In International",
+        "x": 113,
+        "y": 412.8,
+        "w": 391,
+        "h": 20.9,
+        "zh": "[38] Dan Hendrycks, Collin Burns, Steven Basart, Andy Zou, Mantas Mazeika, Dawn Song, and Jacob Steinhardt. 衡量大规模多任务语言理解。见国际"
+      },
+      {
+        "text": "Conference on Learning Representations, 2020.",
+        "x": 134.2,
+        "y": 401.9,
+        "w": 190.8,
+        "h": 10,
+        "zh": "学习表征会议，2020。"
+      },
+      {
+        "text": "[39] Ari Holtzman, Jan Buys, Li Du, Maxwell Forbes, and Yejin Choi. The curious case of neural text degeneration. In International Conference on Learning Representations, 2019.",
+        "x": 113,
+        "y": 371.6,
+        "w": 391,
+        "h": 20.9,
+        "zh": "[39] Ari Holtzman, Jan Buys, Li Du, Maxwell Forbes, and Yejin Choi. 神经文本退化的奇特案例。见 International Conference on Learning Representations，2019。"
+      },
+      {
+        "text": "[40] Ari Holtzman, Jan Buys, Maxwell Forbes, Antoine Bosselut, David Golub, and Yejin Choi. Learning to write with cooperative discriminators. In Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), pages 1638–1649,",
+        "x": 113,
+        "y": 330.4,
+        "w": 392.8,
+        "h": 31.8,
+        "zh": "[40] Ari Holtzman, Jan Buys, Maxwell Forbes, Antoine Bosselut, David Golub, and Yejin Choi. 用协作判别器学习写作。见计算语言学协会第 56 届年会论文集（第 1 卷：长文），第 1638–1649 页，"
+      },
+      {
+        "text": "[41] Ari Holtzman, Peter West, Vered Shwartz, Yejin Choi, and Luke Zettlemoyer. Surface form competition: Why the highest probability answer isn’t always right. In Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing, pages 7038–7051,",
+        "x": 113,
+        "y": 278.2,
+        "w": 392.3,
+        "h": 31.8,
+        "zh": "[41] Ari Holtzman, Peter West, Vered Shwartz, Yejin Choi, and Luke Zettlemoyer. 表层形式竞争：概率最高的答案为什么并不总是对的。见 2021 年自然语言处理经验方法会议论文集，第 7038–7051 页，"
+      },
+      {
+        "text": "[42] Jiwoo Hong, Noah Lee, and James Thorne. ORPO: Monolithic preference optimization",
+        "x": 113,
+        "y": 247.9,
+        "w": 391,
+        "h": 10,
+        "zh": "[42] Jiwoo Hong, Noah Lee, and James Thorne. ORPO：一体化偏好优化"
+      },
+      {
+        "text": "without reference model. ArXiv, abs/2403.07691, 2024.",
+        "x": 134.2,
+        "y": 237,
+        "w": 222.5,
+        "h": 10,
+        "zh": "无需参考模型。ArXiv, abs/2403.07691，2024。"
+      },
+      {
+        "text": "[43] Jiaming Ji, Mickel Liu, Juntao Dai, Xuehai Pan, Chi Zhang, Ce Bian, Ruiyang Sun, Yizhou Wang, and Yaodong Yang. BeaverTails: Towards improved safety alignment of LLM via a",
+        "x": 113,
+        "y": 206.6,
+        "w": 391,
+        "h": 20.9,
+        "zh": "[43] Jiaming Ji, Mickel Liu, Juntao Dai, Xuehai Pan, Chi Zhang, Ce Bian, Ruiyang Sun, Yizhou Wang, and Yaodong Yang. BeaverTails：借助一份……改进 LLM 的安全对齐"
+      },
+      {
+        "text": "human-preference dataset. ArXiv, abs/2307.04657, 2023.",
+        "x": 134.6,
+        "y": 195.7,
+        "w": 227.7,
+        "h": 10,
+        "zh": "人类偏好数据集。ArXiv, abs/2307.04657，2023。"
+      },
+      {
+        "text": "[44] Albert Qiaochu Jiang, Alexandre Sablayrolles, Arthur Mensch, Chris Bamford, Devendra Singh Chaplot, Diego de Las Casas, Florian Bressand, Gianna Lengyel, Guillaume Lample, Lucile Saulnier, L’elio Renard Lavaud, Marie-Anne Lachaux, Pierre Stock, Teven Le Scao, Thibaut Lavril, Thomas Wang, Timothée Lacroix, and William El Sayed. Mistral 7B. ArXiv,",
+        "x": 113,
+        "y": 143.6,
+        "w": 392.7,
+        "h": 42.7,
+        "zh": "[44] Albert Qiaochu Jiang, Alexandre Sablayrolles, Arthur Mensch, Chris Bamford, Devendra Singh Chaplot, Diego de Las Casas, Florian Bressand, Gianna Lengyel, Guillaume Lample, Lucile Saulnier, L’elio Renard Lavaud, Marie-Anne Lachaux, Pierre Stock, Teven Le Scao, Thibaut Lavril, Thomas Wang, Timothée Lacroix, and William El Sayed. Mistral 7B。ArXiv，"
+      },
+      {
+        "text": "[45] Dongfu Jiang, Xiang Ren, and Bill Yuchen Lin. LLM-Blender: Ensembling large language models with pairwise ranking and generative fusion. In ACL, 2023.",
+        "x": 113,
+        "y": 102.3,
+        "w": 391,
+        "h": 20.9,
+        "zh": "[45] Dongfu Jiang, Xiang Ren, and Bill Yuchen Lin. LLM-Blender：用成对排序与生成式融合来集成大语言模型。见 ACL，2023。"
+      },
+      {
+        "text": "[46] Dahyun Kim, Yungi Kim, Wonho Song, Hyeonwoo Kim, Yunsu Kim, Sanghoon Kim, and Chanjun Park. sDPO: Don’t use your data all at once. ArXiv, abs/2403.19270, 2024.",
+        "x": 113,
+        "y": 72,
+        "w": 391,
+        "h": 20.9,
+        "zh": "[46] Dahyun Kim, Yungi Kim, Wonho Song, Hyeonwoo Kim, Yunsu Kim, Sanghoon Kim, and Chanjun Park. sDPO：不要一次用完全部数据。ArXiv, abs/2403.19270，2024。"
+      }
+    ],
+    "14": [
+      {
+        "text": "[47] Diederik P Kingma and Jimmy Ba. Adam: A method for stochastic optimization. arXiv",
+        "x": 113,
+        "y": 710,
+        "w": 391,
+        "h": 10,
+        "zh": "[47] Diederik P Kingma and Jimmy Ba. Adam：一种随机优化方法。arXiv"
+      },
+      {
+        "text": "[48] Andreas Köpf, Yannic Kilcher, Dimitri von Rütte, Sotiris Anagnostidis, Zhi Rui Tam, Keith Stevens, Abdullah Barhoum, Duc Minh Nguyen, Oliver Stanley, Richárd Nagyfi, et al. Openassistant conversations-democratizing large language model alignment. In Thirty-seventh Conference on Neural Information Processing Systems Datasets and Benchmarks Track, 2023.",
+        "x": 113,
+        "y": 646.5,
+        "w": 392.7,
+        "h": 42.7,
+        "zh": "[48] Andreas Köpf, Yannic Kilcher, Dimitri von Rütte, Sotiris Anagnostidis, Zhi Rui Tam, Keith Stevens, Abdullah Barhoum, Duc Minh Nguyen, Oliver Stanley, Richárd Nagyfi, et al. OpenAssistant 对话：让大语言模型对齐更开放。见第 37 届神经信息处理系统会议数据集与基准轨道，2023。"
+      },
+      {
+        "text": "[49] Tomasz Korbak, Kejian Shi, Angelica Chen, Rasika Vinayak Bhalerao, Christopher Buckley, Jason Phang, Samuel R Bowman, and Ethan Perez. Pretraining language models with human preferences. In International Conference on Machine Learning, pages 17506–17533. PMLR,",
+        "x": 113,
+        "y": 604.9,
+        "w": 392.3,
+        "h": 31.8,
+        "zh": "[49] Tomasz Korbak, Kejian Shi, Angelica Chen, Rasika Vinayak Bhalerao, Christopher Buckley, Jason Phang, Samuel R Bowman, and Ethan Perez. 用人类偏好预训练语言模型。见 International Conference on Machine Learning，第 17506–17533 页。PMLR，"
+      },
+      {
+        "text": "[50] Nathan Lambert, Valentina Pyatkin, Jacob Daniel Morrison, Lester James Validad Miranda, Bill Yuchen Lin, Khyathi Raghavi Chandu, Nouha Dziri, Sachin Kumar, Tom Zick, Yejin Choi, Noah A. Smith, and Hanna Hajishirzi. RewardBench: Evaluating reward models for language",
+        "x": 113,
+        "y": 552.3,
+        "w": 392.3,
+        "h": 31.8,
+        "zh": "[50] Nathan Lambert, Valentina Pyatkin, Jacob Daniel Morrison, Lester James Validad Miranda, Bill Yuchen Lin, Khyathi Raghavi Chandu, Nouha Dziri, Sachin Kumar, Tom Zick, Yejin Choi, Noah A. Smith, and Hanna Hajishirzi. RewardBench：评测语言模型所用的奖励模型"
+      },
+      {
+        "text": "[51] Jan Leike, David Krueger, Tom Everitt, Miljan Martic, Vishal Maini, and Shane Legg. Scalable agent alignment via reward modeling: a research direction. arXiv preprint arXiv:1811.07871,",
+        "x": 113,
+        "y": 510.6,
+        "w": 392.3,
+        "h": 20.9,
+        "zh": "[51] Jan Leike, David Krueger, Tom Everitt, Miljan Martic, Vishal Maini, and Shane Legg. 通过奖励建模实现可扩展的智能体对齐：一个研究方向。arXiv 预印本 arXiv:1811.07871，"
+      },
+      {
+        "text": "[52] Hector Levesque, Ernest Davis, and Leora Morgenstern. The Winograd schema challenge. In Thirteenth international conference on the principles of knowledge representation and",
+        "x": 113,
+        "y": 468.9,
+        "w": 392.8,
+        "h": 20.9,
+        "zh": "[52] Hector Levesque, Ernest Davis, and Leora Morgenstern. Winograd 模式挑战。见第十三届知识表示原理国际会议，以及"
+      },
+      {
+        "text": "[53] Jiwei Li, Will Monroe, Alan Ritter, Dan Jurafsky, Michel Galley, and Jianfeng Gao. Deep reinforcement learning for dialogue generation. In Jian Su, Kevin Duh, and Xavier Carreras, editors, Proceedings of the 2016 Conference on Empirical Methods in Natural Language Processing, pages 1192–1202, Austin, Texas, November 2016. Association for Computational",
+        "x": 113,
+        "y": 405.4,
+        "w": 392.3,
+        "h": 42.7,
+        "zh": "[53] Jiwei Li, Will Monroe, Alan Ritter, Dan Jurafsky, Michel Galley, and Jianfeng Gao. 面向对话生成的深度强化学习。见 Jian Su、Kevin Duh、Xavier Carreras 编，2016 年自然语言处理经验方法会议论文集，第 1192–1202 页，美国得克萨斯州奥斯汀，2016 年 11 月。Association for Computational"
+      },
+      {
+        "text": "[54] Tianle Li, Wei-Lin Chiang, Evan Frick, Lisa Dunlap, Banghua Zhu, Joseph E. Gonzalez, and Ion Stoica. From live data to high-quality benchmarks: The Arena-Hard pipeline, April 2024.",
+        "x": 113,
+        "y": 363.7,
+        "w": 392.6,
+        "h": 20.9,
+        "zh": "[54] Tianle Li, Wei-Lin Chiang, Evan Frick, Lisa Dunlap, Banghua Zhu, Joseph E. Gonzalez, and Ion Stoica. 从线上数据到高质量基准：Arena-Hard 流水线，2024 年 4 月。"
+      },
+      {
+        "text": "[55] Xuechen Li, Tianyi Zhang, Yann Dubois, Rohan Taori, Ishaan Gulrajani, Carlos Guestrin, Percy Liang, and Tatsunori B. Hashimoto. AlpacaEval: An automatic evaluator of instructionfollowing models. https://github.com/tatsu-lab/alpaca_eval, 2023.",
+        "x": 113,
+        "y": 322.1,
+        "w": 392.7,
+        "h": 31.8,
+        "zh": "[55] Xuechen Li, Tianyi Zhang, Yann Dubois, Rohan Taori, Ishaan Gulrajani, Carlos Guestrin, Percy Liang, and Tatsunori B. Hashimoto. AlpacaEval：指令遵循模型的自动评测器。https://github.com/tatsu-lab/alpaca_eval，2023。"
+      },
+      {
+        "text": "[56] Hunter Lightman, Vineet Kosaraju, Yura Burda, Harri Edwards, Bowen Baker, Teddy Lee, Jan Leike, John Schulman, Ilya Sutskever, and Karl Cobbe. Let’s verify step by step. arXiv",
+        "x": 113,
+        "y": 291.3,
+        "w": 392.3,
+        "h": 20.9,
+        "zh": "[56] Hunter Lightman, Vineet Kosaraju, Yura Burda, Harri Edwards, Bowen Baker, Teddy Lee, Jan Leike, John Schulman, Ilya Sutskever, and Karl Cobbe. 让我们一步步验证。arXiv"
+      },
+      {
+        "text": "[57] Stephanie Lin, Jacob Hilton, and Owain Evans. TruthfulQA: Measuring how models mimic human falsehoods. In ACL, pages 3214–3252, 2022.",
+        "x": 113,
+        "y": 249.6,
+        "w": 391,
+        "h": 20.9,
+        "zh": "[57] Stephanie Lin, Jacob Hilton, and Owain Evans. TruthfulQA：衡量模型如何模仿人类的错误说法。见 ACL，第 3214–3252 页，2022。"
+      },
+      {
+        "text": "[58] Tianqi Liu, Zhen Qin, Junru Wu, Jiaming Shen, Misha Khalman, Rishabh Joshi, Yao Zhao, Mohammad Saleh, Simon Baumgartner, Jialu Liu, et al. LiPO: Listwise preference optimization through learning-to-rank. arXiv preprint arXiv:2402.01878, 2024.",
+        "x": 113,
+        "y": 207.9,
+        "w": 392.7,
+        "h": 31.8,
+        "zh": "[58] Tianqi Liu, Zhen Qin, Junru Wu, Jiaming Shen, Misha Khalman, Rishabh Joshi, Yao Zhao, Mohammad Saleh, Simon Baumgartner, Jialu Liu, et al. LiPO：通过 learning-to-rank 做列表式偏好优化。arXiv 预印本 arXiv:2402.01878，2024。"
+      },
+      {
+        "text": "[59] Tianqi Liu, Yao Zhao, Rishabh Joshi, Misha Khalman, Mohammad Saleh, Peter J Liu, and Jialu Liu. Statistical rejection sampling improves preference optimization. In The Twelfth International Conference on Learning Representations, 2024.",
+        "x": 113,
+        "y": 166.3,
+        "w": 391,
+        "h": 31.8,
+        "zh": "[59] Tianqi Liu, Yao Zhao, Rishabh Joshi, Misha Khalman, Mohammad Saleh, Peter J Liu, and Jialu Liu. 统计拒绝采样能改进偏好优化。见第十二届国际学习表征会议，2024。"
+      },
+      {
+        "text": "[60] Haipeng Luo, Qingfeng Sun, Can Xu, Pu Zhao, Jianguang Lou, Chongyang Tao, Xiubo Geng, Qingwei Lin, Shifeng Chen, and Dongmei Zhang. Wizardmath: Empowering mathematical reasoning for large language models via reinforced evol-instruct. arXiv preprint",
+        "x": 113,
+        "y": 124.6,
+        "w": 392.7,
+        "h": 31.8,
+        "zh": "[60] Haipeng Luo, Qingfeng Sun, Can Xu, Pu Zhao, Jianguang Lou, Chongyang Tao, Xiubo Geng, Qingwei Lin, Shifeng Chen, and Dongmei Zhang. WizardMath：通过强化版 Evol-Instruct 增强大语言模型的数学推理。arXiv 预印本"
+      },
+      {
+        "text": "[61] Reiichiro Nakano, Jacob Hilton, Suchir Balaji, Jeff Wu, Long Ouyang, Christina Kim, Christopher Hesse, Shantanu Jain, Vineet Kosaraju, William Saunders, et al. Webgpt: Browser-assisted question-answering with human feedback. arXiv preprint arXiv:2112.09332, 2021.",
+        "x": 113,
+        "y": 72,
+        "w": 392.7,
+        "h": 31.8,
+        "zh": "[61] Reiichiro Nakano, Jacob Hilton, Suchir Balaji, Jeff Wu, Long Ouyang, Christina Kim, Christopher Hesse, Shantanu Jain, Vineet Kosaraju, William Saunders, et al. WebGPT：带人类反馈、由浏览器辅助的问答。arXiv 预印本 arXiv:2112.09332，2021。"
+      }
+    ],
+    "15": [
+      {
+        "text": "[62] Long Ouyang, Jeff Wu, Xu Jiang, Diogo Almeida, Carroll L. Wainwright, Pamela Mishkin, Chong Zhang, Sandhini Agarwal, Katarina Slama, Alex Ray, John Schulman, Jacob Hilton, Fraser Kelton, Luke E. Miller, Maddie Simens, Amanda Askell, Peter Welinder, Paul Francis Christiano, Jan Leike, and Ryan J. Lowe. Training language models to follow instructions with human feedback. In NeurIPS, 2022.",
+        "x": 113,
+        "y": 666.4,
+        "w": 392.3,
+        "h": 53.6,
+        "zh": "[62] Long Ouyang, Jeff Wu, Xu Jiang, Diogo Almeida, Carroll L. Wainwright, Pamela Mishkin, Chong Zhang, Sandhini Agarwal, Katarina Slama, Alex Ray, John Schulman, Jacob Hilton, Fraser Kelton, Luke E. Miller, Maddie Simens, Amanda Askell, Peter Welinder, Paul Francis Christiano, Jan Leike, and Ryan J. Lowe. 用人类反馈训练语言模型遵循指令。见 NeurIPS，2022。"
+      },
+      {
+        "text": "[63] Arka Pal, Deep Karkhanis, Samuel Dooley, Manley Roberts, Siddartha Naidu, and Colin White. Smaug: Fixing failure modes of preference optimisation with dpo-positive. arXiv preprint arXiv:2402.13228, 2024.",
+        "x": 113,
+        "y": 624,
+        "w": 391,
+        "h": 31.8,
+        "zh": "[63] Arka Pal, Deep Karkhanis, Samuel Dooley, Manley Roberts, Siddartha Naidu, and Colin White. Smaug：用 DPO-Positive 修复偏好优化的失败模式。arXiv 预印本 arXiv:2402.13228，2024。"
+      },
+      {
+        "text": "[64] Ryan Park, Rafael Rafailov, Stefano Ermon, and Chelsea Finn. Disentangling length from quality in direct preference optimization. ArXiv, abs/2403.19159, 2024.",
+        "x": 113,
+        "y": 592.6,
+        "w": 391,
+        "h": 20.9,
+        "zh": "[64] Ryan Park, Rafael Rafailov, Stefano Ermon, and Chelsea Finn. 在直接偏好优化中把长度与质量分开。ArXiv, abs/2403.19159，2024。"
+      },
+      {
+        "text": "[65] Alec Radford, Jeffrey Wu, Rewon Child, David Luan, Dario Amodei, Ilya Sutskever, et al. Language models are unsupervised multitask learners. OpenAI blog, 1(8):9, 2019.",
+        "x": 113,
+        "y": 561.1,
+        "w": 392.8,
+        "h": 20.9,
+        "zh": "[65] Alec Radford, Jeffrey Wu, Rewon Child, David Luan, Dario Amodei, Ilya Sutskever, et al. 语言模型是无监督的多任务学习者。OpenAI 博客，1(8):9，2019。"
+      },
+      {
+        "text": "[66] Rafael Rafailov, Archit Sharma, Eric Mitchell, Stefano Ermon, Christopher D. Manning, and Chelsea Finn. Direct preference optimization: Your language model is secretly a reward model.",
+        "x": 113,
+        "y": 529.6,
+        "w": 392.8,
+        "h": 20.9,
+        "zh": "[66] Rafael Rafailov, Archit Sharma, Eric Mitchell, Stefano Ermon, Christopher D. Manning, and Chelsea Finn. 直接偏好优化：你的语言模型其实就是一个奖励模型。"
+      },
+      {
+        "text": "[67] Corby Rosset, Ching-An Cheng, Arindam Mitra, Michael Santacroce, Ahmed Awadallah, and Tengyang Xie. Direct nash optimization: Teaching language models to self-improve with general preferences. ArXiv, abs/2404.03715, 2024.",
+        "x": 113,
+        "y": 476.3,
+        "w": 391,
+        "h": 31.8,
+        "zh": "[67] Corby Rosset, Ching-An Cheng, Arindam Mitra, Michael Santacroce, Ahmed Awadallah, and Tengyang Xie. 直接 Nash 优化：用一般偏好教语言模型自我改进。ArXiv, abs/2404.03715，2024。"
+      },
+      {
+        "text": "[68] Sebastian Ruder. An overview of gradient descent optimization algorithms. arXiv preprint",
+        "x": 113,
+        "y": 455.8,
+        "w": 391,
+        "h": 10,
+        "zh": "[68] Sebastian Ruder. 梯度下降优化算法综述。arXiv 预印本"
+      },
+      {
+        "text": "[69] Michael Santacroce, Yadong Lu, Han Yu, Yuanzhi Li, and Yelong Shen. Efficient RLHF: Reducing the memory usage of PPO. arXiv preprint arXiv:2309.00754, 2023.",
+        "x": 113,
+        "y": 413.4,
+        "w": 392.4,
+        "h": 20.9,
+        "zh": "[69] Michael Santacroce, Yadong Lu, Han Yu, Yuanzhi Li, and Yelong Shen. 高效 RLHF：降低 PPO 的显存占用。arXiv 预印本 arXiv:2309.00754，2023。"
+      },
+      {
+        "text": "[70] John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov. Proximal policy optimization algorithms. arXiv preprint arXiv:1707.06347, 2017.",
+        "x": 113,
+        "y": 381.9,
+        "w": 391,
+        "h": 20.9,
+        "zh": "[70] John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov. 近端策略优化算法。arXiv 预印本 arXiv:1707.06347，2017。"
+      },
+      {
+        "text": "[71] Prasann Singhal, Tanya Goyal, Jiacheng Xu, and Greg Durrett. A long way to go: Investigating length correlations in RLHF. arXiv preprint arXiv:2310.03716, 2023.",
+        "x": 113,
+        "y": 350.5,
+        "w": 391,
+        "h": 20.9,
+        "zh": "[71] Prasann Singhal, Tanya Goyal, Jiacheng Xu, and Greg Durrett. 还有很长的路：考察 RLHF 中的长度相关。arXiv 预印本 arXiv:2310.03716，2023。"
+      },
+      {
+        "text": "[72] Feifan Song, Bowen Yu, Minghao Li, Haiyang Yu, Fei Huang, Yongbin Li, and Houfeng Wang. Preference ranking optimization for human alignment. In AAAI, 2024.",
+        "x": 113,
+        "y": 319,
+        "w": 392.8,
+        "h": 20.9,
+        "zh": "[72] Feifan Song, Bowen Yu, Minghao Li, Haiyang Yu, Fei Huang, Yongbin Li, and Houfeng Wang. 面向人类对齐的偏好排序优化。见 AAAI，2024。"
+      },
+      {
+        "text": "[73] Nisan Stiennon, Long Ouyang, Jeffrey Wu, Daniel Ziegler, Ryan Lowe, Chelsea Voss, Alec Radford, Dario Amodei, and Paul F Christiano. Learning to summarize with human feedback. Advances in Neural Information Processing Systems, 33:3008–3021, 2020.",
+        "x": 113,
+        "y": 276.6,
+        "w": 392.8,
+        "h": 31.8,
+        "zh": "[73] Nisan Stiennon, Long Ouyang, Jeffrey Wu, Daniel Ziegler, Ryan Lowe, Chelsea Voss, Alec Radford, Dario Amodei, and Paul F Christiano. 借助人类反馈学习做摘要。Advances in Neural Information Processing Systems，33:3008–3021，2020。"
+      },
+      {
+        "text": "[74] Yunhao Tang, Daniel Zhaohan Guo, Zeyu Zheng, Daniele Calandriello, Yuan Cao, Eugene Tarassov, Rémi Munos, Bernardo Ávila Pires, Michal Valko, Yong Cheng, et al. Understanding the performance gap between online and offline alignment algorithms. arXiv preprint",
+        "x": 113,
+        "y": 233.1,
+        "w": 392.7,
+        "h": 33,
+        "zh": "[74] Yunhao Tang, Daniel Zhaohan Guo, Zeyu Zheng, Daniele Calandriello, Yuan Cao, Eugene Tarassov, Rémi Munos, Bernardo Ávila Pires, Michal Valko, Yong Cheng, et al. 理解在线与离线对齐算法之间的性能差距。arXiv 预印本"
+      },
+      {
+        "text": "[75] Yunhao Tang, Zhaohan Daniel Guo, Zeyu Zheng, Daniele Calandriello, Rémi Munos, Mark Rowland, Pierre Harvey Richemond, Michal Valko, Bernardo Ávila Pires, and Bilal Piot. Generalized preference optimization: A unified approach to offline alignment. arXiv preprint",
+        "x": 113,
+        "y": 178.6,
+        "w": 392.8,
+        "h": 33,
+        "zh": "[75] Yunhao Tang, Zhaohan Daniel Guo, Zeyu Zheng, Daniele Calandriello, Rémi Munos, Mark Rowland, Pierre Harvey Richemond, Michal Valko, Bernardo Ávila Pires, and Bilal Piot. 广义偏好优化：离线对齐的统一做法。arXiv 预印本"
+      },
+      {
+        "text": "[76] Rohan Taori, Ishaan Gulrajani, Tianyi Zhang, Yann Dubois, Xuechen Li, Carlos Guestrin, Percy Liang, and Tatsunori B Hashimoto. Stanford alpaca: An instruction-following llama",
+        "x": 113,
+        "y": 136.2,
+        "w": 392.3,
+        "h": 20.9,
+        "zh": "[76] Rohan Taori, Ishaan Gulrajani, Tianyi Zhang, Yann Dubois, Xuechen Li, Carlos Guestrin, Percy Liang, and Tatsunori B Hashimoto. Stanford Alpaca：一个遵循指令的 LLaMA"
+      },
+      {
+        "text": "[77] Gemma Team, Morgane Riviere, Shreya Pathak, Pier Giuseppe Sessa, Cassidy Hardin, Surya Bhupatiraju, Léonard Hussenot, Thomas Mesnard, Bobak Shahriari, Alexandre Ramé,",
+        "x": 113,
+        "y": 93.8,
+        "w": 392.3,
+        "h": 20.9,
+        "zh": "[77] Gemma Team, Morgane Riviere, Shreya Pathak, Pier Giuseppe Sessa, Cassidy Hardin, Surya Bhupatiraju, Léonard Hussenot, Thomas Mesnard, Bobak Shahriari, Alexandre Ramé,"
+      },
+      {
+        "text": "Gemma 2: Improving open language models at a practical size.",
+        "x": 164.2,
+        "y": 82.9,
+        "w": 271.9,
+        "h": 10,
+        "zh": "Gemma 2：在实用规模上改进开放语言模型。"
+      }
+    ],
+    "16": [
+      {
+        "text": "[78] Katherine Tian, Eric Mitchell, Huaxiu Yao, Christopher D Manning, and Chelsea Finn. Finetuning language models for factuality. In The Twelfth International Conference on Learning",
+        "x": 113,
+        "y": 699.1,
+        "w": 392.7,
+        "h": 20.9,
+        "zh": "[78] Katherine Tian, Eric Mitchell, Huaxiu Yao, Christopher D Manning, and Chelsea Finn. 为事实性微调语言模型。见第十二届国际学习"
+      },
+      {
+        "text": "[79] Hoang Tran, Chris Glaze, and Braden Hancock. Iterative DPO alignment. Technical report,",
+        "x": 113,
+        "y": 669,
+        "w": 392.3,
+        "h": 10,
+        "zh": "[79] Hoang Tran, Chris Glaze, and Braden Hancock. 迭代式 DPO 对齐。技术报告，"
+      },
+      {
+        "text": "[80] Lewis Tunstall, Edward Beeching, Nathan Lambert, Nazneen Rajani, Kashif Rasul, Younes Belkada, Shengyi Huang, Leandro von Werra, Clémentine Fourrier, Nathan Habib, Nathan Sarrazin, Omar Sanseviero, Alexander M. Rush, and Thomas Wolf. Zephyr: Direct distillation of LM alignment. ArXiv, abs/2310.16944, 2023.",
+        "x": 113,
+        "y": 606.1,
+        "w": 391,
+        "h": 42.7,
+        "zh": "[80] Lewis Tunstall, Edward Beeching, Nathan Lambert, Nazneen Rajani, Kashif Rasul, Younes Belkada, Shengyi Huang, Leandro von Werra, Clémentine Fourrier, Nathan Habib, Nathan Sarrazin, Omar Sanseviero, Alexander M. Rush, and Thomas Wolf. Zephyr：语言模型对齐的直接蒸馏。ArXiv, abs/2310.16944，2023。"
+      },
+      {
+        "text": "[81] Boxin Wang, Weixin Chen, Hengzhi Pei, Chulin Xie, Mintong Kang, Chenhui Zhang, Chejian Xu, Zidi Xiong, Ritik Dutta, Rylan Schaeffer, Sang Truong, Simran Arora, Mantas Mazeika, Dan Hendrycks, Zi-Han Lin, Yuk-Kit Cheng, Sanmi Koyejo, Dawn Xiaodong Song, and Bo Li. DecodingTrust: A comprehensive assessment of trustworthiness in GPT models. In NeurIPS,",
+        "x": 113,
+        "y": 554.1,
+        "w": 392.8,
+        "h": 42.7,
+        "zh": "[81] Boxin Wang, Weixin Chen, Hengzhi Pei, Chulin Xie, Mintong Kang, Chenhui Zhang, Chejian Xu, Zidi Xiong, Ritik Dutta, Rylan Schaeffer, Sang Truong, Simran Arora, Mantas Mazeika, Dan Hendrycks, Zi-Han Lin, Yuk-Kit Cheng, Sanmi Koyejo, Dawn Xiaodong Song, and Bo Li. DecodingTrust：对 GPT 模型可信度的全面评估。见 NeurIPS，"
+      },
+      {
+        "text": "[82] Guan Wang, Sijie Cheng, Xianyuan Zhan, Xiangang Li, Sen Song, and Yang Liu. OpenChat: Advancing open-source language models with mixed-quality data. In ICLR, 2024.",
+        "x": 113,
+        "y": 513,
+        "w": 392.4,
+        "h": 20.9,
+        "zh": "[82] Guan Wang, Sijie Cheng, Xianyuan Zhan, Xiangang Li, Sen Song, and Yang Liu. OpenChat：用混合质量数据推进开源语言模型。见 ICLR，2024。"
+      },
+      {
+        "text": "[83] Haoxiang Wang, Yong Lin, Wei Xiong, Rui Yang, Shizhe Diao, Shuang Qiu, Han Zhao, and Tong Zhang. Arithmetic control of LLMs for diverse user preferences: Directional preference alignment with multi-objective rewards. ArXiv, abs/2402.18571, 2024.",
+        "x": 113,
+        "y": 471.9,
+        "w": 391,
+        "h": 31.8,
+        "zh": "[83] Haoxiang Wang, Yong Lin, Wei Xiong, Rui Yang, Shizhe Diao, Shuang Qiu, Han Zhao, and Tong Zhang. 面向多样用户偏好的 LLM 算术控制：用多目标奖励做方向性偏好对齐。ArXiv, abs/2402.18571，2024。"
+      },
+      {
+        "text": "[84] Haoxiang Wang, Wei Xiong, Tengyang Xie, Han Zhao, and Tong Zhang. Interpretable preferences via multi-objective reward modeling and mixture-of-experts. arXiv preprint",
+        "x": 113,
+        "y": 441.7,
+        "w": 391,
+        "h": 20.9,
+        "zh": "[84] Haoxiang Wang, Wei Xiong, Tengyang Xie, Han Zhao, and Tong Zhang. 通过多目标奖励建模与混合专家得到可解释的偏好。arXiv 预印本"
+      },
+      {
+        "text": "[85] Yizhong Wang, Hamish Ivison, Pradeep Dasigi, Jack Hessel, Tushar Khot, Khyathi Chandu, David Wadden, Kelsey MacMillan, Noah A Smith, Iz Beltagy, et al. How far can camels go? exploring the state of instruction tuning on open resources. In Thirty-seventh Conference on Neural Information Processing Systems Datasets and Benchmarks Track, 2023.",
+        "x": 113,
+        "y": 378.8,
+        "w": 392.3,
+        "h": 42.7,
+        "zh": "[85] Yizhong Wang, Hamish Ivison, Pradeep Dasigi, Jack Hessel, Tushar Khot, Khyathi Chandu, David Wadden, Kelsey MacMillan, Noah A Smith, Iz Beltagy, et al. 骆驼能走多远？探究开放资源上指令微调的现状。见第 37 届神经信息处理系统会议数据集与基准轨道，2023。"
+      },
+      {
+        "text": "[86] Mengzhou Xia, Sadhika Malladi, Suchin Gururangan, Sanjeev Arora, and Danqi Chen. LESS: Selecting influential data for targeted instruction tuning. In ICML, 2024.",
+        "x": 113,
+        "y": 348.7,
+        "w": 392.4,
+        "h": 20.9,
+        "zh": "[86] Mengzhou Xia, Sadhika Malladi, Suchin Gururangan, Sanjeev Arora, and Danqi Chen. LESS：为定向指令微调挑选有影响力的数据。见 ICML，2024。"
+      },
+      {
+        "text": "[87] Wei Xiong, Hanze Dong, Chenlu Ye, Ziqi Wang, Han Zhong, Heng Ji, Nan Jiang, and Tong Zhang. Iterative preference learning from human feedback: Bridging theory and practice for rlhf under kl-constraint. In Forty-first International Conference on Machine Learning, 2024.",
+        "x": 113,
+        "y": 307.6,
+        "w": 391.2,
+        "h": 31.8,
+        "zh": "[87] Wei Xiong, Hanze Dong, Chenlu Ye, Ziqi Wang, Han Zhong, Heng Ji, Nan Jiang, and Tong Zhang. 从人类反馈做迭代偏好学习：在 KL 约束下连接 RLHF 的理论与实践。见第四十一届国际机器学习会议，2024。"
+      },
+      {
+        "text": "[88] Haoran Xu, Amr Sharaf, Yunmo Chen, Weiting Tan, Lingfeng Shen, Benjamin Van Durme, Kenton Murray, and Young Jin Kim. Contrastive preference optimization: Pushing the boundaries of LLM performance in machine translation. ArXiv, abs/2401.08417, 2024.",
+        "x": 113,
+        "y": 266.5,
+        "w": 392.3,
+        "h": 31.8,
+        "zh": "[88] Haoran Xu, Amr Sharaf, Yunmo Chen, Weiting Tan, Lingfeng Shen, Benjamin Van Durme, Kenton Murray, and Young Jin Kim. 对比偏好优化：推动 LLM 在机器翻译上的性能边界。ArXiv, abs/2401.08417，2024。"
+      },
+      {
+        "text": "[89] Jing Xu, Andrew Lee, Sainbayar Sukhbaatar, and Jason Weston. Some things are more cringe than others: Preference optimization with the pairwise cringe loss. arXiv preprint",
+        "x": 113,
+        "y": 236.3,
+        "w": 391,
+        "h": 20.9,
+        "zh": "[89] Jing Xu, Andrew Lee, Sainbayar Sukhbaatar, and Jason Weston. 有些东西比另一些更令人尴尬：用成对 cringe 损失做偏好优化。arXiv 预印本"
+      },
+      {
+        "text": "[90] Shusheng Xu, Wei Fu, Jiaxuan Gao, Wenjie Ye, Weilin Liu, Zhiyu Mei, Guangju Wang, Chao Yu, and Yi Wu. Is DPO superior to PPO for LLM alignment? a comprehensive study. arXiv preprint arXiv:2404.10719, 2024.",
+        "x": 113,
+        "y": 184.3,
+        "w": 391,
+        "h": 31.8,
+        "zh": "[90] Shusheng Xu, Wei Fu, Jiaxuan Gao, Wenjie Ye, Weilin Liu, Zhiyu Mei, Guangju Wang, Chao Yu, and Yi Wu. 对 LLM 对齐而言，DPO 优于 PPO 吗？一项综合研究。arXiv 预印本 arXiv:2404.10719，2024。"
+      },
+      {
+        "text": "[91] Hongyi Yuan, Zheng Yuan, Chuanqi Tan, Wei Wang, Songfang Huang, and Fei Huang. RRHF: Rank responses to align language models with human feedback. In NeurIPS, 2023.",
+        "x": 113,
+        "y": 154.2,
+        "w": 392.4,
+        "h": 20.9,
+        "zh": "[91] Hongyi Yuan, Zheng Yuan, Chuanqi Tan, Wei Wang, Songfang Huang, and Fei Huang. RRHF：对回答排序，使语言模型对齐人类反馈。见 NeurIPS，2023。"
+      },
+      {
+        "text": "[92] Weizhe Yuan, Richard Yuanzhe Pang, Kyunghyun Cho, Sainbayar Sukhbaatar, Jing Xu, and Jason Weston. Self-rewarding language models. arXiv preprint arXiv:2401.10020, 2024.",
+        "x": 113,
+        "y": 124,
+        "w": 391,
+        "h": 20.9,
+        "zh": "[92] Weizhe Yuan, Richard Yuanzhe Pang, Kyunghyun Cho, Sainbayar Sukhbaatar, Jing Xu, and Jason Weston. 自我奖励的语言模型。arXiv 预印本 arXiv:2401.10020，2024。"
+      },
+      {
+        "text": "[93] Bill Yuchen Lin, Yuntian Deng, Khyathi Chandu, Faeze Brahman, Abhilasha Ravichander, Valentina Pyatkin, Nouha Dziri, Ronan Le Bras, and Yejin Choi. WildBench: Benchmarking LLMs with challenging tasks from real users in the wild. arXiv e-prints, pages arXiv–2406,",
+        "x": 113,
+        "y": 82.9,
+        "w": 392.3,
+        "h": 31.8,
+        "zh": "[93] Bill Yuchen Lin, Yuntian Deng, Khyathi Chandu, Faeze Brahman, Abhilasha Ravichander, Valentina Pyatkin, Nouha Dziri, Ronan Le Bras, and Yejin Choi. WildBench：用真实用户的困难任务评测 LLM。arXiv e-prints，页码 arXiv–2406，"
+      }
+    ],
+    "17": [
+      {
+        "text": "[94] Rowan Zellers, Ari Holtzman, Yonatan Bisk, Ali Farhadi, and Yejin Choi. HellaSwag: Can a machine really finish your sentence? In Anna Korhonen, David Traum, and Lluís Màrquez, editors, Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics, pages 4791–4800, Florence, Italy, July 2019. Association for Computational Linguistics.",
+        "x": 113,
+        "y": 677.3,
+        "w": 392.7,
+        "h": 42.7,
+        "zh": "[94] Rowan Zellers, Ari Holtzman, Yonatan Bisk, Ali Farhadi, and Yejin Choi. HellaSwag：机器真的能把你的句子说完吗？见 Anna Korhonen、David Traum、Lluís Màrquez 编，计算语言学协会第 57 届年会论文集，第 4791–4800 页，意大利佛罗伦萨，2019 年 7 月。Association for Computational Linguistics。"
+      },
+      {
+        "text": "[95] Wenting Zhao, Xiang Ren, Jack Hessel, Claire Cardie, Yejin Choi, and Yuntian Deng. Wildchat: 1m chatGPT interaction logs in the wild. In The Twelfth International Conference on Learning",
+        "x": 113,
+        "y": 647.5,
+        "w": 392.4,
+        "h": 20.9,
+        "zh": "[95] Wenting Zhao, Xiang Ren, Jack Hessel, Claire Cardie, Yejin Choi, and Yuntian Deng. WildChat：真实环境中的 100 万条 ChatGPT 交互日志。见第十二届国际学习"
+      },
+      {
+        "text": "[96] Yao Zhao, Rishabh Joshi, Tianqi Liu, Misha Khalman, Mohammad Saleh, and Peter J. Liu. SLiC-HF: Sequence likelihood calibration with human feedback. ArXiv, abs/2305.10425,",
+        "x": 113,
+        "y": 606.8,
+        "w": 392.8,
+        "h": 20.9,
+        "zh": "[96] Yao Zhao, Rishabh Joshi, Tianqi Liu, Misha Khalman, Mohammad Saleh, and Peter J. Liu. SLiC-HF：用人类反馈校准序列似然。ArXiv, abs/2305.10425，"
+      },
+      {
+        "text": "[97] Chujie Zheng, Pei Ke, Zheng Zhang, and Minlie Huang. Click: Controllable text generation with sequence likelihood contrastive learning. In Findings of ACL, 2023.",
+        "x": 113,
+        "y": 566.1,
+        "w": 391,
+        "h": 20.9,
+        "zh": "[97] Chujie Zheng, Pei Ke, Zheng Zhang, and Minlie Huang. Click：用序列似然对比学习做可控文本生成。见 ACL Findings，2023。"
+      },
+      {
+        "text": "[98] Chujie Zheng, Ziqi Wang, Heng Ji, Minlie Huang, and Nanyun Peng. Weak-to-strong extrapolation expedites alignment. arXiv preprint arXiv:2404.16792, 2024.",
+        "x": 113,
+        "y": 536.3,
+        "w": 392.7,
+        "h": 20.9,
+        "zh": "[98] Chujie Zheng, Ziqi Wang, Heng Ji, Minlie Huang, and Nanyun Peng. 从弱到强的外推会加快对齐。arXiv 预印本 arXiv:2404.16792，2024。"
+      },
+      {
+        "text": "[99] Lianmin Zheng, Wei-Lin Chiang, Ying Sheng, Siyuan Zhuang, Zhanghao Wu, Yonghao Zhuang, Zi Lin, Zhuohan Li, Dacheng Li, Eric Xing, et al. Judging LLM-as-a-judge with MT-Bench and Chatbot Arena. In NeurIPS Datasets and Benchmarks Track, 2023.",
+        "x": 113,
+        "y": 495.6,
+        "w": 391,
+        "h": 31.8,
+        "zh": "[99] Lianmin Zheng, Wei-Lin Chiang, Ying Sheng, Siyuan Zhuang, Zhanghao Wu, Yonghao Zhuang, Zi Lin, Zhuohan Li, Dacheng Li, Eric Xing, et al. 用 MT-Bench 和 Chatbot Arena 来检验“以 LLM 为裁判”。见 NeurIPS 数据集与基准轨道，2023。"
+      },
+      {
+        "text": "[100] Rui Zheng, Shihan Dou, Songyang Gao, Yuan Hua, Wei Shen, Binghai Wang, Yan Liu, Senjie Jin, Qin Liu, Yuhao Zhou, et al. Secrets of RLHF in large language models part I: PPO. arXiv preprint arXiv:2307.04964, 2023.",
+        "x": 108,
+        "y": 454.9,
+        "w": 396,
+        "h": 31.8,
+        "zh": "[100] Rui Zheng, Shihan Dou, Songyang Gao, Yuan Hua, Wei Shen, Binghai Wang, Yan Liu, Senjie Jin, Qin Liu, Yuhao Zhou, et al. 大语言模型中 RLHF 的秘密（一）：PPO。arXiv 预印本 arXiv:2307.04964，2023。"
+      },
+      {
+        "text": "[101] Chunting Zhou, Pengfei Liu, Puxin Xu, Srinivasan Iyer, Jiao Sun, Yuning Mao, Xuezhe Ma, Avia Efrat, Ping Yu, Lili Yu, et al. LIMA: Less is more for alignment. NeurIPS, 2023.",
+        "x": 108,
+        "y": 425.2,
+        "w": 397.2,
+        "h": 20.9,
+        "zh": "[101] Chunting Zhou, Pengfei Liu, Puxin Xu, Srinivasan Iyer, Jiao Sun, Yuning Mao, Xuezhe Ma, Avia Efrat, Ping Yu, Lili Yu, et al. LIMA：对齐上，少即是多。NeurIPS，2023。"
+      },
+      {
+        "text": "[102] Daniel M Ziegler, Nisan Stiennon, Jeffrey Wu, Tom B Brown, Alec Radford, Dario Amodei, Paul Christiano, and Geoffrey Irving. Fine-tuning language models from human preferences. arXiv preprint arXiv:1909.08593, 2019.",
+        "x": 108,
+        "y": 384.5,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "[102] Daniel M Ziegler, Nisan Stiennon, Jeffrey Wu, Tom B Brown, Alec Radford, Dario Amodei, Paul Christiano, and Geoffrey Irving. 根据人类偏好微调语言模型。arXiv 预印本 arXiv:1909.08593，2019。"
+      }
+    ],
+    "18": [
+      {
+        "text": "More in-depth theoretical analysis. Despite the empirical success and intuitive motivation of SimPO, a more rigorous theoretical analysis is necessary to fully understand the factors contributing to its effectiveness. Additionally, we introduce an additional hyperparameter, the target reward margin, which requires manual tuning. Future work could explore how to determine the optimal margin automatically and provide a more theoretical understanding of SimPO. Safety and honesty. SimPO is designed to optimize the generation quality of language models by pushing the margin between the average log likelihood of the winning response and the losing response to exceed a target reward margin. However, it does not explicitly consider safety and honesty aspects, which are crucial for real-world applications. Future work should explore integrating safety and honesty constraints into SimPO to ensure that the generated responses are not only high-quality but also safe and honest. The dataset used in this work, UltraFeedback [23], primarily focuses on helpfulness, and future research may consider a more comprehensive study utilizing larger-scale preference datasets [43, 95] and evaluation benchmarks [81] that place a strong emphasis on safety aspects. Nonetheless, we observe that this method consistently achieves high TruthfulQA [57] performance compared to other objectives in Table 9, suggesting its potential for safety alignment. Performance drop on math. We observed that preference optimization algorithms generally decrease downstream task performance, particularly on reasoning-heavy tasks like GSM8k, as shown in Table 9. SimPO occasionally results in performance comparable to or worse than DPO. We hypothesize that this may be related to the choice of training datasets, hyperparameters used for training, or a mismatch of chat templates used for downstream task evaluations. One explanation is that the preference optimization objective may not be effectively increasing the likelihood of preferred sequences despite increasing the reward margin. [63] first observed this phenomenon and point out that this can hinder learning from math preference pairs where changing one token can flip the label (e.g., changing 2 + 2 = 4 to 2 + 2 = 5). They propose a simple regularization strategy to add back a reference-model calibrated supervised fine-tuning loss to the preference optimization objective, and effectively mitigate this issue. Future work may consider integrating this regularization strategy into SimPO to improve performance on reasoning-heavy tasks.",
+        "x": 107.7,
+        "y": 390.9,
+        "w": 396.7,
+        "h": 304.6,
+        "zh": "更深入的理论分析。尽管 SimPO 在实验上成功，动机也很直观，仍需要更严格的理论分析，才能充分理解它为何有效。此外，我们额外引入了目标奖励间隔这个超参数，需要手工调节。未来工作可以研究如何自动确定最优间隔，并对 SimPO 给出更理论化的理解。安全与诚实。SimPO 通过把获胜回答与落败回答的平均对数似然之差推过目标奖励间隔，来优化语言模型的生成质量。但它没有显式考虑安全与诚实，而这两者对真实应用至关重要。未来工作应探索把安全与诚实约束纳入 SimPO，使生成既高质量，又安全、诚实。本文使用的数据集 UltraFeedback [23] 主要关注有用性；后续可以用更大规模、且更强调安全的偏好数据集 [43, 95] 和评测基准 [81] 做更全面的研究。尽管如此，相对表 9 中的其他目标，该方法在 TruthfulQA [57] 上一直表现较高，说明它有用于安全对齐的潜力。数学性能下降。我们观察到，偏好优化算法通常会降低下游任务表现，尤其是 GSM8k 这类重推理任务，见表 9。SimPO 有时与 DPO 相当，有时更差。我们推测，这可能与训练数据的选择、训练用的超参数，或下游评测所用对话模板不匹配有关。一种解释是：偏好优化目标虽然拉大了奖励间隔，却未必真正提高偏好序列的似然。[63] 首先观察到这一现象，并指出它会妨碍从数学偏好对中学习，因为改一个 token 就可能翻转标签（例如把 2 + 2 = 4 改成 2 + 2 = 5）。他们提出一种简单正则：把经参考模型校准的监督微调损失加回偏好优化目标，从而有效缓解该问题。未来工作可以考虑把这一正则并入 SimPO，以改善重推理任务上的表现。"
+      },
+      {
+        "text": "We find that hyperparameter tuning is crucial for achieving optimal performance of preference optimization methods. However, the importance of careful hyperparameter tuning may have been underestimated in prior research, potentially leading to suboptimal baseline results. To ensure a fair comparison, we conduct thorough hyperparameter tuning for all methods compared in our",
+        "x": 107.5,
+        "y": 302.9,
+        "w": 396.6,
+        "h": 42.7,
+        "zh": "我们发现，要让偏好优化方法达到最佳表现，超参数调节至关重要。但以往研究可能低估了仔细调参的重要性，从而使基线结果偏弱。为公平比较，我们对所比较的全部方法都做了充分的超参数调节，"
+      },
+      {
+        "text": "General training hyperparameters. Base training setups, we train SFT models using the UltraChat-200k dataset [25] with the following hyperparameters: a learning rate of 2e-5, a batch size of 128, a max sequence length of 2048, and a cosine learning rate schedule with 10% warmup steps for 1 epoch. All the models are trained with",
+        "x": 108,
+        "y": 201.1,
+        "w": 201.8,
+        "h": 75.4,
+        "zh": "通用训练超参数。在 Base 训练设定下，我们用 UltraChat-200k 数据集 [25] 训练 SFT 模型，超参数为：学习率 2e-5，批大小 128，最大序列长度 2048，余弦学习率日程，10% 的预热步，训练 1 个 epoch。所有模型都用"
+      },
+      {
+        "text": "Table 8: The hyperparameter values in SimPO used for each training setting.",
+        "x": 319.4,
+        "y": 255.3,
+        "w": 184.6,
+        "h": 20.9,
+        "zh": "表 8：各训练设定下 SimPO 使用的超参数取值。"
+      },
+      {
+        "text": "For the preference optimization stage, we conduct preliminary experiments to search for batch sizes in [32, 64, 128] and training epochs in [1, 2, 3]. We find that a batch size of 128 and a single training epoch generally yield the best results across all methods. Therefore, we fix these values for all preference optimization experiments. Additionally, we set the max sequence length to be 2048 and apply a cosine learning rate schedule with 10% warmup steps on the preference optimization dataset.",
+        "x": 107.5,
+        "y": 119.3,
+        "w": 398.2,
+        "h": 64.5,
+        "zh": "在偏好优化阶段，我们先做初步实验，在批大小 [32, 64, 128] 和训练轮数 [1, 2, 3] 中搜索。我们发现批大小 128、只训练一个 epoch，对所有方法通常最好。因此所有偏好优化实验都固定这两个取值。此外，最大序列长度设为 2048，并在偏好优化数据上使用带 10% 预热步的余弦学习率日程。"
+      },
+      {
+        "text": "Method-specific training hyperparameters. for different preference optimization methods and greatly influences the benchmark performance. Therefore, we individually search the learning rates in the range of [3e-7, 5e-7, 6e-7, 1e-6] for each",
+        "x": 107.7,
+        "y": 72,
+        "w": 398.1,
+        "h": 31.8,
+        "zh": "各方法自己的训练超参数。会随不同的偏好优化方法而变化，并极大地影响基准表现。因此，我们为每一种方法分别在 [3e-7, 5e-7, 6e-7, 1e-6] 范围内搜索学习率，"
+      },
+      {
+        "text": "We have noticed that the optimal learning rate varies",
+        "x": 297.7,
+        "y": 93.8,
+        "w": 206.3,
+        "h": 10,
+        "zh": "我们注意到，最优学习率并不相同"
+      }
+    ],
+    "19": [
+      {
+        "text": "Table 7: Various preference optimization objectives and hyperparameter search range.",
+        "x": 134.6,
+        "y": 722.3,
+        "w": 342.4,
+        "h": 10,
+        "zh": "表 7：多种偏好优化目标及其超参数搜索范围。"
+      },
+      {
+        "text": "λ ∈ [0.1,0.5,1.0,10.0] max (0, δ − logπθ(yw|x) + logπθ(yl|x)) − λlogπθ(yw|x)",
+        "x": 169.9,
+        "y": 665.7,
+        "w": 303.4,
+        "h": 13.1,
+        "zh": ""
+      },
+      {
+        "text": "− zref + λlσ zref − β log where zref = E(x,y)∼D [βKL(πθ(y|x)||πref(y|x))]",
+        "x": 169.9,
+        "y": 582.1,
+        "w": 164.1,
+        "h": 20.2,
+        "zh": ""
+      },
+      {
+        "text": "(b) Contingency table (SimPO). Figure 6: (a) Likelihood-length correlation plot for Mistral-SFT fine-tuned on UltraChat-200k. (a) Contingency table rankings based on SimPO rewards and the average log likelihood (measured on",
+        "x": 108,
+        "y": 337.2,
+        "w": 396.7,
+        "h": 37.5,
+        "zh": "（b）列联表（SimPO）。图 6：（a）在 UltraChat-200k 上微调得到的 Mistral-SFT 的似然–长度相关图。（a）按 SimPO 奖励与平均对数似然所作排序的列联表（测量于"
+      },
+      {
+        "text": "method. Table 7 shows the detailed information on method-specific hyperparameters search ranges",
+        "x": 108,
+        "y": 289.9,
+        "w": 396,
+        "h": 10,
+        "zh": "方法。表 7 给出各方法超参数搜索范围的具体信息"
+      },
+      {
+        "text": "Table 8 shows SimPO’s hyperparameters used under each setting.",
+        "x": 171.7,
+        "y": 279,
+        "w": 261.5,
+        "h": 10,
+        "zh": "表 8 列出各设定下 SimPO 使用的超参数。"
+      },
+      {
+        "text": "For AlpacaEval 2, we use a sampling decoding strategy to generate responses, with a temperature of 0.7 for the Mistral-Base setting following zephyr-7b-beta, temperature of 0.5 for the Mistral-Instruct setting following Snorkel-Mistral-PairRM-DPO, and a temperature of 0.9 for both Llama 3 settings.",
+        "x": 108,
+        "y": 219.5,
+        "w": 397.2,
+        "h": 42.7,
+        "zh": "对 AlpacaEval 2，我们用采样解码生成回答：Mistral-Base 设定温度为 0.7，沿用 zephyr-7b-beta；Mistral-Instruct 设定温度为 0.5，沿用 Snorkel-Mistral-PairRM-DPO；两种 Llama 3 设定的温度都是 0.9。"
+      },
+      {
+        "text": "For Arena-Hard, we use the default greedy decoding for all settings and methods. For MT-Bench, we follow the official decoding configuration which defines different sampling temperatures for different categories.",
+        "x": 107.6,
+        "y": 197.6,
+        "w": 396.7,
+        "h": 31.8,
+        "zh": "对 Arena-Hard，所有设定和方法都使用默认的贪心解码。对 MT-Bench，我们遵循官方解码配置，不同类别使用不同的采样温度。"
+      },
+      {
+        "text": "All the training experiments in this paper were conducted on 8×H100 GPUs based on the alignment-handbook repo.",
+        "x": 108,
+        "y": 159.9,
+        "w": 396,
+        "h": 20.9,
+        "zh": "本文所有训练实验都在 8×H100 GPU 上完成，代码基于 alignment-handbook 仓库。"
+      },
+      {
+        "text": "There is a discrepancy between the KTO runs in their original paper, where the original runs use a RMSProp optimizer [68]. We use an Adam optimizer [47] for all the experiments. https://github.com/tatsu-lab/alpaca_eval/blob/main/src/alpaca_eval/ models_configs/zephyr-7b-beta/configs.yaml We grid search the temperature hyperparameter for the Llama-3-Base setting with DPO over 0.1, 0.3, 0.5, 0.7, 0.9, and fix it for all different methods. https://github.com/huggingface/alignment-handbook",
+        "x": 108,
+        "y": 72,
+        "w": 396.2,
+        "h": 71.4,
+        "zh": "与原论文中的 KTO 实验有一处差别：原文使用 RMSProp 优化器 [68]。我们的全部实验都使用 Adam 优化器 [47]。https://github.com/tatsu-lab/alpaca_eval/blob/main/src/alpaca_eval/ models_configs/zephyr-7b-beta/configs.yaml 我们在 Llama-3-Base 设定下，用 DPO 对温度在 0.1、0.3、0.5、0.7、0.9 上做网格搜索，然后对所有方法固定该温度。https://github.com/huggingface/alignment-handbook"
+      }
+    ],
+    "20": [
+      {
+        "text": "To examine how preference optimization methods affect downstream task performance, we evaluate models trained with different methods on various tasks listed on the Huggingface Open Leaderboard [9]. These tasks include MMLU [38], ARC [19], HellaSwag [94], TruthfulQA [57], Winograd [52], and GSM8K [20]. We follow the established evaluation protocols and present the results for all models in Table 9. Generally, we find that preference optimization’s effect varies across tasks.",
+        "x": 107.7,
+        "y": 644,
+        "w": 398,
+        "h": 53.6,
+        "zh": "为考察偏好优化如何影响下游任务，我们在 Huggingface Open Leaderboard [9] 的多项任务上评估不同方法训练出的模型。这些任务包括 MMLU [38]、ARC [19]、HellaSwag [94]、TruthfulQA [57]、Winograd [52] 和 GSM8K [20]。我们遵循既有评测协议，并在表 9 给出全部模型的结果。总体来看，偏好优化的影响因任务而异。"
+      },
+      {
+        "text": "Knowledge is largely retained with a small loss.",
+        "x": 108,
+        "y": 621.5,
+        "w": 201.2,
+        "h": 10,
+        "zh": "知识大体得以保留，只有少量损失。"
+      },
+      {
+        "text": "Compared to the SFT checkpoint, we find that",
+        "x": 319.1,
+        "y": 621.5,
+        "w": 184.9,
+        "h": 10,
+        "zh": "相对 SFT 检查点，我们发现"
+      },
+      {
+        "text": "all preference optimization methods generally maintain MMLU performance with minimal decline. In this aspect, SimPO is largely comparable to DPO.",
+        "x": 108,
+        "y": 599.7,
+        "w": 397.7,
+        "h": 20.9,
+        "zh": "所有偏好优化方法大体都能维持 MMLU 表现，下降很小。在这一点上，SimPO 与 DPO 大体相当。"
+      },
+      {
+        "text": "Reading comprehension and commonsense reasoning improves. preference optimization methods generally improve performance compared to the SFT checkpoint. One hypothesis is that the preference optimization dataset contains similar prompts to these tasks, which helps the model better understand the context and improve reading comprehension and",
+        "x": 107.6,
+        "y": 544.5,
+        "w": 398.1,
+        "h": 42.7,
+        "zh": "阅读理解与常识推理有所提高。相对 SFT 检查点，偏好优化方法通常能提高表现。一种假设是，偏好优化数据中含有与这些任务相似的提示，从而帮助模型更好地理解上下文，并提高阅读理解以及"
+      },
+      {
+        "text": "Surprisingly, we find that preference optimization methods consistently improve TruthfulQA performance compared to the SFT checkpoint, and the improvement could be as high as over 10% in some cases. Similarly, we hypothesize that the preference dataset contains instances that emphasize truthfulness, which helps the model better understand the context and",
+        "x": 108,
+        "y": 478.5,
+        "w": 396.4,
+        "h": 42.7,
+        "zh": "出乎意料的是，相对 SFT 检查点，偏好优化方法都能稳定提高 TruthfulQA 的表现，有些情况下提升可以超过 10%。类似地，我们推测偏好数据里有强调真实性的样本，从而帮助模型更好地理解上下文，并且"
+      },
+      {
+        "text": "GSM8K is the benchmark that shows the most volatility across methods. Notably, except for ORPO, almost all approaches lead to consistent drops in one or more settings. We hypothesize that ORPO retains performance largely due to its supervised fine-tuning loss for regulation. [63] adds a reference-model calibrated supervised fine-tuning loss to the preference optimization objective, and find that it effectively solves the issue and maintains performance on",
+        "x": 107.5,
+        "y": 401.5,
+        "w": 398.2,
+        "h": 53.6,
+        "zh": "GSM8K 是各方法之间波动最大的基准。值得注意的是，除 ORPO 外，几乎所有方法都在一个或多个设定上持续下降。我们推测 ORPO 能保住表现，主要是因为它有用于调节的监督微调损失。[63] 在偏好优化目标中加入经参考模型校准的监督微调损失，并发现这能有效解决该问题，同时维持在"
+      },
+      {
+        "text": "Overall, identifying a pattern in downstream performance is challenging. Comprehensive analysis is difficult due to using different pretrained models, preference optimization datasets, and objectives. Recent works indicate that gradient-based approaches could be effective in finding relevant data for downstream tasks [86], and could possibly extended to understand the effect of preference optimization. We believe a thorough study on how preference optimization affects downstream performance would be valuable and call for a rigorous and more comprehensive analysis in future",
+        "x": 108,
+        "y": 319.6,
+        "w": 397.7,
+        "h": 64.5,
+        "zh": "总体而言，下游表现很难找出稳定规律。由于所用的预训练模型、偏好优化数据和目标各不相同，全面分析很困难。近期工作表明，基于梯度的方法可以有效找出与下游任务相关的数据 [86]，或许也能扩展来理解偏好优化的影响。我们认为，深入研究会很有价值，并呼吁未来对偏好优化如何影响下游表现做更严格、更全面的分析"
+      },
+      {
+        "text": "Standard Deviation of AlpacaEval 2 and Arena-Hard",
+        "x": 128.6,
+        "y": 281,
+        "w": 271.8,
+        "h": 12,
+        "zh": "AlpacaEval 2 与 Arena-Hard 的标准差"
+      },
+      {
+        "text": "We present the standard deviation of AlpacaEval 2 and the 95% confidence interval of Arena-Hard in Table 10. All these metrics are reasonable and do not exhibit any significant outliers or instability.",
+        "x": 107.5,
+        "y": 247.6,
+        "w": 396.5,
+        "h": 20.9,
+        "zh": "我们在表 10 给出 AlpacaEval 2 的标准差，以及 Arena-Hard 的 95% 置信区间。这些指标都在合理范围内，没有明显的离群，也没有不稳定。"
+      },
+      {
+        "text": "Length normalization decreases generation length and improves generation quality. ing length normalization from the SimPO objective results in an approach similar to Contrastive Preference Optimization (CPO) [88], which interpolates reward maximization with a supervised fine-tuning loss and has demonstrated strong performance in machine translation. However, without the supervised fine-tuning loss, the reward maximization objective without length normalization is",
+        "x": 108,
+        "y": 153.8,
+        "w": 396,
+        "h": 53.6,
+        "zh": "长度归一化会缩短生成长度，并提高生成质量。从 SimPO 目标里去掉长度归一化，会得到一种接近对比偏好优化（CPO）[88] 的做法。CPO 把奖励最大化与监督微调损失做插值，并在机器翻译上表现强劲。然而，若没有这项监督微调损失，不带长度归一化的奖励最大化目标就会"
+      },
+      {
+        "text": "We analyze the generation length of models trained with or without length normalization on AlpacaEval 2 and Arena-Hard. As shown in Figure 6, length normalization significantly decrease the generation length by up to 25% compared to when it is not used in most cases. However, even though the generation length is shorter, the models with length normalization consistently achieve much higher win rates on both benchmarks. This suggests that length normalization can effectively control the verbosity of the generated responses, and meanwhile improve the generation quality.",
+        "x": 107.5,
+        "y": 72,
+        "w": 398.1,
+        "h": 64.5,
+        "zh": "我们分析了在 AlpacaEval 2 和 Arena-Hard 上，带或不带长度归一化所训练模型的生成长度。如图 6 所示，在多数情况下，长度归一化能把生成长度显著缩短，最多比不用它时短 25%。尽管更短，带长度归一化的模型在两个基准上的胜率都一直高得多。这说明长度归一化既能压住生成的冗长，又能提高生成质量。"
+      }
+    ],
+    "21": [
+      {
+        "text": "Table 9: Downstream task evaluation results of tasks on the huggingface open leaderboard.",
+        "x": 123.2,
+        "y": 705.4,
+        "w": 362.2,
+        "h": 10,
+        "zh": "表 9：Huggingface Open Leaderboard 上各项下游任务的评测结果。"
+      },
+      {
+        "text": "Length is not a reliable indicator of generation quality. of models trained with different methods on AlpacaEval 2 and Arena-Hard, as shown in Table 10. Generally, we find that no single method consistently generates longer or shorter responses across all settings. Additionally, even though some methods may generate longer responses, they do not necessarily achieve better win rates on the benchmarks. This indicates that the length of the generated responses is not a reliable indicator of generation quality.",
+        "x": 108,
+        "y": 167.8,
+        "w": 397.7,
+        "h": 64.5,
+        "zh": "长度并不是生成质量的可靠指标。用不同方法训练的模型，在 AlpacaEval 2 和 Arena-Hard 上，如表 10 所示。总体来看，没有任何一种方法在所有设定下都稳定地生成更长或更短的回答。此外，有些方法即使生成更长的回答，也不一定在基准上取得更高胜率。这说明生成长度并不是生成质量的可靠指标。"
+      },
+      {
+        "text": "We further analyze the generation length",
+        "x": 345.1,
+        "y": 222.4,
+        "w": 158.9,
+        "h": 10,
+        "zh": "我们进一步分析生成长度"
+      },
+      {
+        "text": "SimPO demonstrates minimal exploitation of response length. a shorter generation length compared to DPO in the Llama-3-Instruct case but exhibits a higher generation length in other settings, with up to 26% longer responses on AlpacaEval 2. Conversely, SimPO only increases length by only around 5% on Arena-Hard compared to DPO. It is fair to say that the generation length heavily depends on the evaluation benchmark. A stronger indicator is that SimPO consistently achieves a higher length-controlled win rate on AlpacaEval 2 compared to the raw win rate, demonstrating minimal exploitation of response length.",
+        "x": 108,
+        "y": 72,
+        "w": 397.2,
+        "h": 75.4,
+        "zh": "SimPO 对回答长度的利用很少。在 Llama-3-Instruct 上比 DPO 更短，但在其他设定下更长，在 AlpacaEval 2 上最多长出 26%。反过来，在 Arena-Hard 上，SimPO 相对 DPO 只把长度增加大约 5%。可以说，生成长度强烈依赖于所评测的基准。一个更有力的迹象是：SimPO 在 AlpacaEval 2 上的长度控制胜率一直高于原始胜率，说明它对回答长度的利用很有限。"
+      }
+    ],
+    "22": [
+      {
+        "text": "(b) Mistral-Instruct. Figure 7: Win rate heatmap of Mistral-Base and Mistral-Instruct on AlpacaEval 2. B represents the baseline model (i.e., GPT-4-Preview-1106).",
+        "x": 108,
+        "y": 563.4,
+        "w": 396,
+        "h": 37.5,
+        "zh": "（b）Mistral-Instruct。图 7：Mistral-Base 与 Mistral-Instruct 在 AlpacaEval 2 上的胜率热图。B 表示基线模型（即 GPT-4-Preview-1106）。"
+      },
+      {
+        "text": "(b) Mistral-Instruct. Figure 8: Win rate heatmap of Mistral-Base and Mistral-Instruct on Arena-Hard. B represents the baseline model (i.e., GPT-4-0314).",
+        "x": 108,
+        "y": 382.4,
+        "w": 396,
+        "h": 37.5,
+        "zh": "（b）Mistral-Instruct。图 8：Mistral-Base 与 Mistral-Instruct 在 Arena-Hard 上的胜率热图。B 表示基线模型（即 GPT-4-0314）。"
+      },
+      {
+        "text": "We examine the gradients of SimPO and DPO to understand their different impact on the training",
+        "x": 107.5,
+        "y": 318.4,
+        "w": 396.5,
+        "h": 10,
+        "zh": "我们考察 SimPO 与 DPO 的梯度，以便理解它们对训练的不同影响"
+      },
+      {
+        "text": "∇θLDPO(πθ) = −βE(x,yw,y )∼D dθ · ∇θ log πθ(yw|x) − ∇θ log πθ(yl|x)  ,",
+        "x": 141.5,
+        "y": 219.4,
+        "w": 306.7,
+        "h": 11.4,
+        "zh": ""
+      },
+      {
+        "text": "represent the gradient weight in SimPO and DPO, respectively. It can be seen that the differences are twofold: (1) comparing the gradient weights sθ and dθ, SimPO’s gradient weight sθ does not involve the reference model and has a straightforward interpretation: the weights will be higher for samples where the policy model incorrectly assigns higher likelihood to yl than yw; (2) comparing the gradient updates, SimPO’s gradients on yl and yw are length-normalized, while DPO’s are not. This corresponds to the empirical findings [64] that DPO may exploit length bias: longer sequences with more tokens will receive larger gradient updates in DPO, dominating the training process.",
+        "x": 107.6,
+        "y": 72,
+        "w": 398.1,
+        "h": 75.4,
+        "zh": "分别表示 SimPO 和 DPO 中的梯度权重。可以看出差别有两方面：（1）比较梯度权重 sθ 与 dθ，SimPO 的 sθ 不涉及参考模型，含义也很直接：若策略模型错误地给 yl 赋予比 yw 更高的似然，这些样本的权重就会更大；（2）比较梯度更新本身，SimPO 在 yl 和 yw 上的梯度做了长度归一化，DPO 则没有。这与已有的经验发现一致 [64]：DPO 可能利用长度偏差，token 更多的长序列会得到更大的梯度更新，从而主导训练。"
+      }
+    ],
+    "23": [
+      {
+        "text": "We present the win rate heatmap of Mistral-Base and Mistral-Instruct on AlpacaEval 2 and ArenaHard in Figure 7 and Figure 8, respectively. Based on this analysis, we present qualitative examples of responses generated by a SimPO model, a DPO model and the baseline model GPT-4-Preview-1106",
+        "x": 107.5,
+        "y": 665.1,
+        "w": 398.1,
+        "h": 31.8,
+        "zh": "我们分别在图 7 和图 8 给出 Mistral-Base 与 Mistral-Instruct 在 AlpacaEval 2 和 Arena-Hard 上的胜率热图。基于这一分析，我们展示由 SimPO 模型、DPO 模型以及基线模型 GPT-4-Preview-1106 生成的定性例子"
+      },
+      {
+        "text": "In Figure 9 and Figure 10, we present an example where MistralBase-SimPO generates a better-structured answer compared to Mistral-Base-DPO. Given the question, \"How can you determine if a person is genuinely interested in a conversation or simply being polite?\", the DPO model generates a response with a long list of bullet points, making it difficult to understand the relationships between different points. In contrast, the SimPO model produces a well-structured answer with high-level categorization of different behaviors, followed by detailed suggestions for each category. This makes the answer more readable and easier to understand.",
+        "x": 108,
+        "y": 565.6,
+        "w": 397.7,
+        "h": 75.4,
+        "zh": "图 9 和图 10 给出一个例子：相对 Mistral-Base-DPO，Mistral-Base-SimPO 的回答结构更好。问题是：“你如何判断一个人对谈话是真心感兴趣，还是仅仅出于礼貌？”DPO 模型给出一长串要点，各点之间的关系很难看清。SimPO 模型则先对不同行为做高层分类，再针对每一类给出具体建议，因此更好读，也更好懂。"
+      },
+      {
+        "text": "Comparing Instruct models with Base models when trained with SimPO. present an example where Llama-3-Instruct generates a more detailed and well-formatted answer compared to the baseline model, and as well as the Llama-3-Base-SimPO model. Given the question: What language does Argentina people speak? Llama-3-Base-SimPO only gives a very brief answer. GPT-4-Preview-1106 gives a more detailed answer in explaining how the Argentina Spanish differs from standard Spanish. However, the answer is not well formatted and a bit hard to parse. Llama-3Instruct-SimPO gives a detailed and well-formatted answer, which is easier to read and understand,",
+        "x": 107.5,
+        "y": 477.1,
+        "w": 398.2,
+        "h": 75.4,
+        "zh": "在同样用 SimPO 训练时，比较 Instruct 模型与 Base 模型。这里给出一个例子：相对基线模型，以及 Llama-3-Base-SimPO，Llama-3-Instruct 的回答更详细，格式也更好。问题是：阿根廷人说什么语言？Llama-3-Base-SimPO 只给了很简短的回答。GPT-4-Preview-1106 更详细地解释了阿根廷西班牙语与标准西班牙语的差别，但格式不好，读起来有点费劲。Llama-3-Instruct-SimPO 的回答既详细又排版清楚，更容易阅读和理解，"
+      }
+    ],
+    "24": [
+      {
+        "text": "Figure 9: An AlpacaEval 2 generation from the MistralBase model after training with DPO.",
+        "x": 122.9,
+        "y": 657.7,
+        "w": 366.1,
+        "h": 10,
+        "zh": "图 9：Mistral-Base 模型经 DPO 训练后，在 AlpacaEval 2 上的一条生成。"
+      },
+      {
+        "text": "Q: How can you determine if a person is genuinely interested in a conversation or simply being",
+        "x": 226.6,
+        "y": 626.8,
+        "w": 263.6,
+        "h": 18.9,
+        "zh": "问：你如何判断一个人对谈话是真心感兴趣，还是仅仅在"
+      },
+      {
+        "text": "As an AI, I don´t have access to contextual information or nonverbal cues, but here are some general signs that may indicate whether someone is genuinely interested in a conversation or being",
+        "x": 226.6,
+        "y": 571.6,
+        "w": 269,
+        "h": 38.9,
+        "zh": "作为 AI，我无法获得上下文信息或非语言线索，但下面这些一般迹象，可以表明对方对谈话是真心感兴趣，还是只是在"
+      },
+      {
+        "text": "person will actively listen to what you´re saying, ask questions, and provide feedback or comments. They may also maintain eye contact, nod, or use verbal cues like \"uh-huh\" or \"I see\" to show",
+        "x": 226.3,
+        "y": 501.8,
+        "w": 263.9,
+        "h": 38.9,
+        "zh": "对方会认真听你在说什么，提出问题，并给出反馈或评论。他们也可能保持眼神接触、点头，或用“嗯哼”“我明白了”这类口头提示来表示"
+      },
+      {
+        "text": "Follow-up questions: in the conversation often leads to follow-up",
+        "x": 226.6,
+        "y": 462,
+        "w": 236.7,
+        "h": 18.9,
+        "zh": "追问：谈话进行中常常会引出后续的"
+      },
+      {
+        "text": "show they´re interested in learning more about the topic, it´s a good sign they´re engaged.",
+        "x": 226.6,
+        "y": 432.1,
+        "w": 263.6,
+        "h": 18.9,
+        "zh": "说明他们想进一步了解这个话题，这是他们投入进来的好迹象。"
+      },
+      {
+        "text": "in, smiling, and mirroring your body language can indicate genuine interest. some people may have different body language styles, so this may not always be a reliable",
+        "x": 226.6,
+        "y": 372.3,
+        "w": 263.6,
+        "h": 38.9,
+        "zh": "前倾、微笑，以及镜像你的肢体语言，可以表示真心的兴趣。有些人的肢体语言风格不同，所以这并不总是可靠的"
+      },
+      {
+        "text": "naturally, and both parties are contributing equally, it´s a sign of mutual interest. one person dominates the conversation or keeps steering it back to their own interests, it may indicate a lack of genuine interest.",
+        "x": 226.6,
+        "y": 292.6,
+        "w": 252.9,
+        "h": 48.8,
+        "zh": "自然地进行，而且双方贡献相当，这是相互感兴趣的迹象。如果一个人主导谈话，或总把话题拉回自己的兴趣，可能说明缺乏真心的兴趣。"
+      },
+      {
+        "text": "than expected or planned, it´s a sign that both parties are engaged and interested.",
+        "x": 226.6,
+        "y": 252.8,
+        "w": 247.5,
+        "h": 18.9,
+        "zh": "比预期或原计划更久，说明双方都投入并且感兴趣。"
+      },
+      {
+        "text": "interest, they may follow up with you after the conversation, whether it´s through a message, email, or phone call.",
+        "x": 226.6,
+        "y": 202.9,
+        "w": 252.9,
+        "h": 28.9,
+        "zh": "有兴趣，他们可能会在谈话之后跟进你，无论是通过消息、邮件还是电话。"
+      },
+      {
+        "text": "Remember, however, that sometimes people may be polite or professional, even if they´re not genuinely interested. the context and the relationship you have with the person to determine their level of interest",
+        "x": 226.6,
+        "y": 143.2,
+        "w": 252.9,
+        "h": 48.8,
+        "zh": "不过要记住，有时人们即使并非真心感兴趣，也会表现得礼貌或专业。要结合情境以及你和对方的关系，来判断他们的兴趣程度"
+      }
+    ],
+    "25": [
+      {
+        "text": "Table 10: Detailed results of AlpacaEval 2 and Arena-Hard. LC means length-controlled win rate, WR means raw win rate, and STD means standard deviation of win rate. Length is the average generation length. For Arena-Hard, we report the win rate and 95% confidence interval.",
+        "x": 107.5,
+        "y": 645.3,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "表 10：AlpacaEval 2 与 Arena-Hard 的详细结果。LC 表示长度控制胜率，WR 表示原始胜率，STD 表示胜率的标准差。Length 是平均生成长度。对 Arena-Hard，我们报告胜率和 95% 置信区间。"
+      }
+    ],
+    "26": [
+      {
+        "text": "Table 11: Average response lengths on AlpacaEval 2 and Arena-Hard trained with Mistral-Base or",
+        "x": 107.7,
+        "y": 439.8,
+        "w": 396.5,
+        "h": 10,
+        "zh": "表 11：AlpacaEval 2 与 Arena-Hard 上的平均回答长度，模型用 Mistral-Base 训练，或"
+      }
+    ],
+    "27": [
+      {
+        "text": "Figure 10: An AlpacaEval 2 generation from the Mistral-Base model after training with SimPO. Compared to the output generated by the DPO model, as shown in Figure 9, the generation by SimPO is better structured with hierarchical discussions, making the information more clearly presented and",
+        "x": 108,
+        "y": 690.5,
+        "w": 397.7,
+        "h": 31.8,
+        "zh": "图 10：Mistral-Base 模型经 SimPO 训练后，在 AlpacaEval 2 上的一条生成。与图 9 中 DPO 模型的输出相比，SimPO 的生成以层次化讨论来组织，信息因此呈现得更清楚，并且"
+      },
+      {
+        "text": "Q: How can you determine if a person is genuinely interested in a conversation or simply",
+        "x": 237.4,
+        "y": 648.7,
+        "w": 258.2,
+        "h": 18.9,
+        "zh": "问：你如何判断一个人对谈话是真心感兴趣，还是仅仅"
+      },
+      {
+        "text": "Does the person maintain eye contact, nod, ask follow-up questions, and respond thoughtfully to what you say? individuals tend to show genuine interest by demonstrating attentiveness and participation in",
+        "x": 237.4,
+        "y": 553.9,
+        "w": 258.2,
+        "h": 48.8,
+        "zh": "对方是否保持眼神接触、点头、提出追问，并对你说的话做出有思考的回应？这类人往往会靠专注和参与来表现出真心兴趣，"
+      },
+      {
+        "text": "Does the person take the lead in steering the conversation, expressing enthusiasm, sharing personal experiences, or asking questions beyond polite small talk? Someone who genuinely cares about the topic or connection may show initiative in keeping the discussion engaging.",
+        "x": 237.4,
+        "y": 474.2,
+        "w": 247.5,
+        "h": 68.7,
+        "zh": "对方是否主动引导谈话、表达热情、分享个人经历，或提出超出礼貌寒暄的问题？真正在意这个话题或这段关系的人，会主动让讨论保持有吸引力。"
+      },
+      {
+        "text": "Observe nonverbal cues such as leaning in, mirroring posture, facial expressions, and gestures that convey enthusiasm, curiosity, or openness. signals suggest a deeper level of interest beyond mere politeness.",
+        "x": 237.4,
+        "y": 414.4,
+        "w": 236.7,
+        "h": 58.8,
+        "zh": "观察非语言线索，例如前倾、镜像姿态、面部表情，以及传达热情、好奇或开放的手势。这些信号说明兴趣超出了单纯的礼貌。"
+      },
+      {
+        "text": "Does the person show genuine curiosity or passion about the subject matter, asking relevant questions, sharing insights, or expressing opinions?",
+        "x": 237.4,
+        "y": 354.6,
+        "w": 258.2,
+        "h": 38.9,
+        "zh": "对方是否对话题表现出真正的好奇或热情，会提出相关问题、分享见解，或表达自己的看法？"
+      },
+      {
+        "text": "If they seem invested in exploring the topic’s nuances, it indicates a genuine interest beyond mere politeness.",
+        "x": 237.4,
+        "y": 334.7,
+        "w": 247.5,
+        "h": 28.9,
+        "zh": "如果他们看起来愿意探究话题中的细微差别，那就说明兴趣超出了单纯的礼貌。"
+      },
+      {
+        "text": "Does the person provide specific examples, personal anecdotes, or elaborate on their thoughts, indicating a deeper level of engagement and investment in",
+        "x": 237.4,
+        "y": 294.8,
+        "w": 236.7,
+        "h": 38.9,
+        "zh": "对方是否给出具体例子、个人经历，或把想法展开，从而表明投入更深，并且把精力放在"
+      },
+      {
+        "text": "- Continued communication: initiate further conversations, send follow-up messages, or suggest meeting up outside the initial interaction?",
+        "x": 237.4,
+        "y": 225.1,
+        "w": 247.5,
+        "h": 38.9,
+        "zh": "- 持续的沟通：是否会再发起谈话、发送跟进消息，或提议在初次互动之外见面？"
+      },
+      {
+        "text": "Such actions suggest a genuine desire to maintain the connection and explore further topics, indicating a genuine interest beyond mere politeness.",
+        "x": 237.4,
+        "y": 195.2,
+        "w": 242.1,
+        "h": 38.9,
+        "zh": "这类做法说明他们真心想维持这段联系，并继续谈下去，兴趣因此超出了单纯的礼貌。"
+      },
+      {
+        "text": "Does the person remember details discussed earlier, reference shared interests, or show interest in learning more about your life or experiences? interactions indicate a genuine interest in building a relationship beyond mere politeness.",
+        "x": 237.4,
+        "y": 135.4,
+        "w": 252.9,
+        "h": 58.8,
+        "zh": "对方是否记得先前提到的细节、提起共同的兴趣，或想更多了解你的生活和经历？这类互动说明，他们想建立的是超出礼貌的关系。"
+      },
+      {
+        "text": "Overall, genuine interest in a conversation involves active participation, enthusiasm, depth, and follow-up actions that demonstrate a genuine desire to connect and engage beyond",
+        "x": 237.4,
+        "y": 85.6,
+        "w": 242.1,
+        "h": 38.9,
+        "zh": "总的来说，对一场谈话真正感兴趣，意味着积极参与、有热情、谈得有深度，并且会有后续行动，表明对方真心想继续联系和交流，而不只是"
+      }
+    ],
+    "28": [
+      {
+        "text": "Figure 11: A case study on AlpacaEval 2 demonstrates that Llama-3-Instruct, trained with SimPO, provides a better formatted and more detailed answer than both Llama-3-Base, also trained with SimPO, and the baseline model GPT-4-1106-Preview. This illustrates how the instruction setting",
+        "x": 108,
+        "y": 647.4,
+        "w": 397.2,
+        "h": 31.8,
+        "zh": "图 11：AlpacaEval 2 上的这个案例表明，用 SimPO 训练的 Llama-3-Instruct，回答比同样用 SimPO 训练的 Llama-3-Base 以及基线 GPT-4-1106-Preview 格式更好，也更具体。这说明指令设定会如何"
+      },
+      {
+        "text": "The official language spoken in Argentina is Spanish, specifically Argentine Spanish, which shares similarities with other varieties of Spanish spoken in neighboring countries like Uruguay, Chile,",
+        "x": 264.3,
+        "y": 550.6,
+        "w": 226,
+        "h": 48.8,
+        "zh": "阿根廷的官方语言是西班牙语，具体说是阿根廷西班牙语。它和乌拉圭、智利等邻国的其他西班牙语变体有相似之处，"
+      },
+      {
+        "text": "Specifically, the dialect spoken in Argentina is known as Rioplatense Spanish, which is a variation of Spanish with some unique characteristics and influences from Italian, German, and other immigrant languages.",
+        "x": 264,
+        "y": 465.7,
+        "w": 226.2,
+        "h": 58.8,
+        "zh": "具体而言，阿根廷所说的方言叫里奥普拉滕塞西班牙语（Rioplatense Spanish）。它是西班牙语的一种变体，有若干独特之处，并受到意大利语、德语和其他移民语言的影响。"
+      },
+      {
+        "text": "Rioplatense Spanish is distinguished by:",
+        "x": 264.3,
+        "y": 445.7,
+        "w": 215.2,
+        "h": 9,
+        "zh": "里奥普拉滕塞西班牙语的区别在于："
+      },
+      {
+        "text": "Instead of using tú (you) as the informal singular pronoun, Argentines use vos and its associated verb",
+        "x": 264,
+        "y": 415.9,
+        "w": 226,
+        "h": 28.9,
+        "zh": "非正式的单数“你”，阿根廷人不用 tú，而用 vos，以及与之配套的动词"
+      },
+      {
+        "text": "A slang vocabulary derived from Italian, Corsican, and other immigrant languages, which has been incorporated into",
+        "x": 264.3,
+        "y": 376,
+        "w": 231.3,
+        "h": 28.9,
+        "zh": "一套来自意大利语、科西嘉语和其他移民语言的俚语，已经被吸收进"
+      },
+      {
+        "text": "Accent and pronunciation: tend to pronounce the \"c\" and \"z\" sounds with a soft \"s\" or \"sh\" sound, rather than a hard \"th\" sound like in standard Spanish.",
+        "x": 264,
+        "y": 326.2,
+        "w": 231.6,
+        "h": 38.9,
+        "zh": "口音和发音：往往把 “c” 和 “z” 发成较软的 “s” 或 “sh”，而不是标准西班牙语里较硬的 “th”。"
+      },
+      {
+        "text": "Overall, Argentine Spanish is known for its distinctive flavor and is widely understood throughout the Spanish-speaking world. However, it’s worth noting that there may be regional variations within Argentina, and some dialects may differ slightly from the standard Rioplatense variety. The primary language spoken in Argentina",
+        "x": 264.3,
+        "y": 231.3,
+        "w": 231.3,
+        "h": 83.9,
+        "zh": "总体来说，阿根廷西班牙语以味道鲜明著称，在整个西班牙语世界都很容易听懂。不过也要注意，阿根廷内部会有地区差别，有些方言和标准的里奥普拉滕塞变体略有不同。阿根廷主要说的语言"
+      },
+      {
+        "text": "Specifically, the variety of Spanish spoken there is known as Rioplatense Spanish, which is characterized by its unique accent and the use of the pronoun \"vos\" instead of \"tú\" for the second person singular. there are various indigenous languages spoken in different regions of the country, as well as immigrant languages such as Italian, German, and English, but these are much less widespread than Spanish.",
+        "x": 264.3,
+        "y": 121.7,
+        "w": 231.3,
+        "h": 108.6,
+        "zh": "具体而言，那里说的西班牙语变体叫里奥普拉滕塞西班牙语，特点是口音独特，以及第二人称单数用 “vos” 而不用 “tú”。国内不同地区还说多种原住民语言，也有意大利语、德语和英语这类移民语言，但都远没有西班牙语普遍。"
+      }
+    ],
+    "29": [
+      {
+        "text": "Table 12: Results of Llama-3-Instruct (8B) setting, utilizing preference labels annotated by a stronger",
+        "x": 107.7,
+        "y": 680.1,
+        "w": 396.5,
+        "h": 10,
+        "zh": "表 12：Llama-3-Instruct（8B）设定的结果。偏好标签由一个更强的"
+      },
+      {
+        "text": "reward model (ArmoRM [84], we term it as version 0.2).",
+        "x": 108,
+        "y": 669.2,
+        "w": 226.9,
+        "h": 10,
+        "zh": "奖励模型来标注（ArmoRM [84]，我们把它称作版本 0.2）。"
+      },
+      {
+        "text": "Table 13: Downstream task evaluation results of tasks on the huggingface open leaderboard.",
+        "x": 120.7,
+        "y": 462,
+        "w": 367.2,
+        "h": 10,
+        "zh": "表 13：Huggingface Open Leaderboard 上各项下游任务的评测结果。"
+      },
+      {
+        "text": "In this section, we update the Llama-3-Instruct setting, primarily by utilizing a stronger reward model",
+        "x": 108,
+        "y": 210.7,
+        "w": 396,
+        "h": 10,
+        "zh": "本节更新了 Llama-3-Instruct 设定，主要是改用一个更强的奖励模型"
+      },
+      {
+        "text": "to annotate our generated preference dataset.",
+        "x": 108,
+        "y": 199.8,
+        "w": 178.2,
+        "h": 10,
+        "zh": "来给我们生成的偏好数据打标签。"
+      },
+      {
+        "text": "Enhanced reward model yields significantly better results.",
+        "x": 108,
+        "y": 175.7,
+        "w": 255.3,
+        "h": 10,
+        "zh": "更强的奖励模型会带来明显更好的结果。"
+      },
+      {
+        "text": "PairRM [45] as our reward model to rank generated candidate responses. The results, presented in Table 12, show that switching the reward model from PairRM [45] to ArmoRM [84] for ranking the data markedly improves model performance. This underscores the importance of a high-quality preference optimization dataset for enhancing performance. Notably, SimPO has achieved a 53.7 LC win rate on AlpacaEval 2 and 36.5 on Arena-Hard, surpassing the previous version by 9.0 and 2.7",
+        "x": 107.6,
+        "y": 121.1,
+        "w": 396.9,
+        "h": 53.6,
+        "zh": "用 PairRM [45] 作为奖励模型，给生成的候选回答排序。表 12 的结果表明，把排序用的奖励模型从 PairRM [45] 换成 ArmoRM [84] 之后，模型表现明显提高。这说明，高质量的偏好优化数据对提升表现很重要。值得注意的是，SimPO 在 AlpacaEval 2 上达到 53.7 的 LC 胜率，在 Arena-Hard 上达到 36.5，分别比上一版高出 9.0 和 2.7"
+      },
+      {
+        "text": "We use the following hyperparameters for SimPO under the Llama-3 Instruct v0.2 setting: β = 10 and γ = 3. The other hyperparameters (e.g., learning rate, batch size, max sequence lengths) are kept",
+        "x": 107.5,
+        "y": 82.9,
+        "w": 396.7,
+        "h": 20.9,
+        "zh": "在 Llama-3 Instruct v0.2 设定下，SimPO 使用的超参数是 β = 10、γ = 3。其余超参数（如学习率、批大小、最大序列长度）保持"
+      },
+      {
+        "text": "the same as the original Llama-3-8B-Instruct setting.",
+        "x": 108,
+        "y": 72,
+        "w": 210.6,
+        "h": 10,
+        "zh": "与原来的 Llama-3-8B-Instruct 设定相同。"
+      }
+    ],
+    "30": [
+      {
+        "text": "Strong SFT model and high-quality policy data diminish algorithm differences. SFT model like Llama-3-8B-Instruct, and as the preference optimization data quality improves, the differences between algorithms become less pronounced. For instance, DPO achieved a similar win rate as SimPO in terms of raw win rate, and DPO, IPO, and R-DPO all exhibited comparable raw win rates on Arena-Hard. However, SimPO maintains an advantage by producing shorter sequences, resulting in a significantly better LC win rate on AlpacaEval 2.",
+        "x": 107.6,
+        "y": 655.5,
+        "w": 397.6,
+        "h": 64.5,
+        "zh": "强 SFT 模型加上高质量的策略数据，会缩小算法之间的差别。像 Llama-3-8B-Instruct 这样的 SFT 模型，再随着偏好优化数据质量提高，各算法的差距就没那么明显。例如，按原始胜率看，DPO 和 SimPO 接近；在 Arena-Hard 上，DPO、IPO 和 R-DPO 的原始胜率也彼此相当。不过 SimPO 仍有优势：它生成的序列更短，因此在 AlpacaEval 2 上的 LC 胜率明显更好。"
+      },
+      {
+        "text": "The v0.2 ver- Table 14: AlpacaEval 2 performance of sion also shows improved performance in downstream tasks",
+        "x": 108,
+        "y": 622,
+        "w": 396,
+        "h": 20.9,
+        "zh": "v0.2 版。表 14：AlpacaEval 2 上的表现。在下游任务上的表现也有提高"
+      },
+      {
+        "text": "SimPO and SimPO with an SFT loss. across various objectives. However, DPO, IPO, R-DPO, and SimPO continue to experience a decline in reasoningintensive domains such as GSM8K. In contrast, objectives that include an SFT component maintain their performance in mathematical tasks.",
+        "x": 108,
+        "y": 567.4,
+        "w": 392.1,
+        "h": 63.1,
+        "zh": "SimPO，以及带 SFT 损失的 SimPO。在各个目标上都是如此。不过，DPO、IPO、R-DPO 和 SimPO 在 GSM8K 这类重推理领域仍然下降。相反，目标里带有 SFT 成分的方法，能在数学任务上保住表现。"
+      },
+      {
+        "text": "Incorporating SFT regularization in SimPO.",
+        "x": 108,
+        "y": 545.8,
+        "w": 200.7,
+        "h": 10,
+        "zh": "在 SimPO 中加入 SFT 正则。"
+      },
+      {
+        "text": "Several reference-free algorithms, including RRHF [91], SLiC-HF [96], CPO [88], and ORPO [42], employ SFT regularization in their objectives. SFT regularization can be an effective method to prevent reward hacking, ensuring that the solution maintains low loss without resulting in degraded generations. We also experiment with the integration of an SFT loss in SimPO, yielding the following objective:",
+        "x": 108,
+        "y": 505.9,
+        "w": 397.6,
+        "h": 49.8,
+        "zh": "一些不使用参考模型的算法，包括 RRHF [91]、SLiC-HF [96]、CPO [88] 和 ORPO [42]，都在目标里使用 SFT 正则。SFT 正则可以有效防止奖励黑客：解的损失可以保持很低，生成却不至于变差。我们也试了把 SFT 损失加进 SimPO，得到下面的目标："
+      },
+      {
+        "text": "LSimPO w/ SFT(πθ) = −E(x,yw,y )∼D log σ As shown in Table 14, the addition of the SFT regularization leads to a decrease in performance on AlpacaEval 2. However, we note that SFT regularization provides substantial benefits to certain tasks such as GSM8K, as shown in Table 12. These contrasting results suggest that the impact of SFT in preference optimization may vary depending on the training setup and the nature of the task. Further comprehensive studies on this topic are left for future research.",
+        "x": 107.6,
+        "y": 422.4,
+        "w": 396.5,
+        "h": 72.6,
+        "zh": "LSimPO w/ SFT(πθ) = −E(x,yw,y)∼D log σ。如表 14 所示，加上 SFT 正则后，AlpacaEval 2 上的表现下降。不过，SFT 正则对 GSM8K 等部分任务帮助很大，见表 12。这两种相反的结果说明，SFT 在偏好优化里的作用会随训练设定和任务性质而变。更全面的研究留待以后。"
+      },
+      {
+        "text": "Applying Length Normalization and Target Reward Margin to DPO (Jul 7,",
+        "x": 124.6,
+        "y": 394.5,
+        "w": 380.9,
+        "h": 12,
+        "zh": "把长度归一化和目标奖励间隔用到 DPO 上（7 月 7 日，"
+      },
+      {
+        "text": "Since the release of the paper, we have had inquiries from researchers about whether the key design elements of SimPO—length normalization and target reward margin—could benefit DPO. By doing so, we will derive the following two objectives:",
+        "x": 108,
+        "y": 336.1,
+        "w": 396,
+        "h": 31.8,
+        "zh": "论文发布之后，有研究者问：SimPO 的两个关键设计，也就是长度归一化和目标奖励间隔，能不能也让 DPO 受益。若这样做，会得到下面两个目标："
+      },
+      {
+        "text": "LDPO w/ LN(πθ; πref) = −E(x,yw,yl)∼D log σ",
+        "x": 116.6,
+        "y": 311.5,
+        "w": 177.4,
+        "h": 12.8,
+        "zh": ""
+      },
+      {
+        "text": "LDPO w/ γ(πθ; πref) = −E(x,yw,yl)∼D log σ An intuitive understanding of how length normalization could benefit DPO is that, despite DPO’s reward design being implicitly normalized by the reference model, the policy model might still exploit length bias from the data, resulting in a disproportionately high probability for longer sequences. Applying length normalization could help mitigate this effect. We train models with the objectives mentioned above and compare their performance to that of DPO and SimPO, as shown in Table 15. The results indicate that, unlike SimPO, length normalization and target reward margin do not consistently benefit DPO. Specifically, length normalization significantly improves DPO performance only in the Mistral-Base setting, where the preference optimization dataset shows a strong length bias. However, it does not provide a benefit in the Mistral-Instruct setting, where the lengths of winning and losing responses are comparable. This is likely because DPO already includes an implicit instance-wise target reward margin via the reference model, as shown in the derivation below.",
+        "x": 107.5,
+        "y": 134.8,
+        "w": 398.2,
+        "h": 160.4,
+        "zh": "LDPO w/ γ(πθ; πref) = −E(x,yw,yl)∼D log σ。长度归一化为什么可能对 DPO 有帮助，可以这样理解：DPO 的奖励虽然已经被参考模型隐含地归一化，策略模型仍可能利用数据里的长度偏差，给更长的序列过高的概率。再加上长度归一化，有助于减轻这一效应。我们用上面这些目标训练模型，并与 DPO 和 SimPO 比较，见表 15。结果是，和 SimPO 不同，长度归一化与目标奖励间隔并不总是让 DPO 受益。具体来说，长度归一化只在 Mistral-Base 设定下明显提高 DPO，因为这一设定的偏好数据有很强的长度偏差。在 Mistral-Instruct 设定下则没有好处，那里获胜回答和落败回答的长度差不多。原因很可能是，DPO 已经通过参考模型带上了逐条样本的隐含目标奖励间隔，推导见下。"
+      },
+      {
+        "text": "= log σ β log πθ(yw | x) − β log πθ(yl | x) − β log πref(yw | x) − β log πref(yl | x)",
+        "x": 139.1,
+        "y": 83.7,
+        "w": 341.6,
+        "h": 11.5,
+        "zh": ""
+      }
+    ],
+    "31": [
+      {
+        "text": "Table 15: Applying length normalization (LN) and target reward margin (γ) to DPO.",
+        "x": 137,
+        "y": 712.4,
+        "w": 337.7,
+        "h": 10,
+        "zh": "表 15：把长度归一化（LN）和目标奖励间隔（γ）用到 DPO 上。"
+      },
+      {
+        "text": "Mistral-Instruct (7B) Setting AlpacaEval 2 Arena-Hard",
+        "x": 147.7,
+        "y": 675.9,
+        "w": 321.1,
+        "h": 24.5,
+        "zh": "Mistral-Instruct（7B）设定，AlpacaEval 2，Arena-Hard"
+      },
+      {
+        "text": "Applying SimPO to Gemma 2 Models (Sept 16, 2024)",
+        "x": 125.9,
+        "y": 581.6,
+        "w": 270.4,
+        "h": 12,
+        "zh": "把 SimPO 用到 Gemma 2 模型上（2024 年 9 月 16 日）"
+      },
+      {
+        "text": "Performance degradation on other benchmarks for Llama-3-SimPO checkpoints. ing the Llama-3-SimPO checkpoints, we received extensive feedback about performance degradation on benchmarks measuring specific capabilities, such as MMLU and GSM8K. To investigate this issue, we continued training the Llama-3-8B-Instruct model with different learning rates, as reported in Table 16. We find that using a higher learning rate results in a stronger model in chat-oriented benchmarks, at the cost of catastrophic forgetting on GSM8K and MMLU.",
+        "x": 108,
+        "y": 504,
+        "w": 396,
+        "h": 64.5,
+        "zh": "Llama-3-SimPO 检查点在其他基准上的性能下降。这些 Llama-3-SimPO 检查点放出来之后，我们收到大量反馈，指出在衡量特定能力的基准上表现变差，例如 MMLU 和 GSM8K。为查清这个问题，我们用不同学习率继续训练 Llama-3-8B-Instruct，结果见表 16。我们发现，学习率更高时，对话类基准上的模型更强，代价是 GSM8K 和 MMLU 上出现灾难性遗忘。"
+      },
+      {
+        "text": "With a smaller learning rate, the model’s performance on chat benchmarks is slightly worse, but its performance on GSM8K and MMLU is better retained. This demonstrates a trade-off between chat-oriented benchmarks and other benchmarks when continuing training from a strong instruction-tuned model.",
+        "x": 108,
+        "y": 471.2,
+        "w": 396.4,
+        "h": 42.7,
+        "zh": "学习率较小时，模型在对话基准上略差一点，但 GSM8K 和 MMLU 保留得更好。这说明，从一个很强的指令微调模型继续训练时，对话类基准和其他基准之间有取舍。"
+      },
+      {
+        "text": "Table 16: Results on AlpacaEval 2, ZeroEval GSM, and ZeroEval MMLU when continuing training from Llama-3-8B-Instruct with different learning rates. * indicates the released checkpoint.",
+        "x": 107.7,
+        "y": 431.6,
+        "w": 396.3,
+        "h": 20.9,
+        "zh": "表 16：从 Llama-3-8B-Instruct 继续训练、学习率不同时，在 AlpacaEval 2、ZeroEval GSM 和 ZeroEval MMLU 上的结果。* 表示已经发布的检查点。"
+      },
+      {
+        "text": "We evaluate SimPO using Google’s recently released Gemma-2-9B-it model [77], which represents a strong open-source model. For training data, we generate up to 5 responses per prompt from the UltraFeedback dataset [23] and use the ArmoRM model [84] to annotate preferences between responses. We compare our SimPO against a DPO-trained variant, both fine-tuned from the Gemma-2-9B-it base model. As shown in Appendix J, SimPO demonstrates superior performance on chat benchmarks like AlpacaEval 2 and Arena-Hard while maintaining the model’s original zero-shot capabilities on tasks like GSM8K and MMLU. Notably, we find that varying the learning rate during fine-tuning has minimal impact on the model’s performance. These results suggest an underlying property difference between the Llama-3 checkpoints and the Gemma 2 checkpoints, and might be worth further investigation.",
+        "x": 107.6,
+        "y": 215.8,
+        "w": 398.1,
+        "h": 108.1,
+        "zh": "我们用谷歌近期发布的 Gemma-2-9B-it [77] 来评估 SimPO。它是一个很强的开源模型。训练数据上，我们从 UltraFeedback [23] 的每个提示最多生成 5 条回答，并用 ArmoRM [84] 标注回答之间的偏好。SimPO 与一个用 DPO 训练的变体作比较，二者都从 Gemma-2-9B-it 微调而来。如附录 J 所示，SimPO 在 AlpacaEval 2、Arena-Hard 这类对话基准上更好，同时保住了原模型在 GSM8K、MMLU 上的零样本能力。值得注意的是，微调时改变学习率，对模型表现影响很小。这些结果说明，Llama-3 检查点与 Gemma 2 检查点在性质上可能不同，值得再研究。"
+      },
+      {
+        "text": "Applying SimPO to Gemma 2 models presents a different trend.",
+        "x": 108,
+        "y": 314,
+        "w": 279.5,
+        "h": 10,
+        "zh": "把 SimPO 用到 Gemma 2 上，趋势并不一样。"
+      },
+      {
+        "text": "Gemma-2-9B-it-SimPO significantly improved the ranking of the Gemma-2-9B-it model on",
+        "x": 108,
+        "y": 192.7,
+        "w": 396,
+        "h": 10,
+        "zh": "Gemma-2-9B-it-SimPO 明显提高了 Gemma-2-9B-it 在"
+      },
+      {
+        "text": "During the development stage, we relied solely on automated metrics to evaluate the model’s performance. To determine if these metrics aligned with real user preferences, we submitted our best-performing model, Gemma-2-9B-it-SimPO, to the Chatbot Arena leaderboard hosted by LMSYS [17]. We find that our model improved the original Gemma-2-9B-it ranking from 36th to 25th, making the SimPO variant the top-ranked <10B model on the Chatbot Arena leaderboard based on real user votes as of September 16th, 2024.",
+        "x": 108,
+        "y": 127.2,
+        "w": 396,
+        "h": 64.5,
+        "zh": "开发阶段，我们只靠自动指标评估模型。为了看这些指标是否符合真实用户的偏好，我们把表现最好的 Gemma-2-9B-it-SimPO 提交到 LMSYS 托管的 Chatbot Arena 排行榜 [17]。该模型把原来的 Gemma-2-9B-it 从第 36 名提升到第 25 名，并在截至 2024 年 9 月 16 日、按真实用户投票统计的 Chatbot Arena 上，成为小于 10B 模型中的第一名。"
+      },
+      {
+        "text": "We evaluate the zero-shot performance of the models on GSM8K and MMLU using the ZeroEval repository which adopts a unified setup.",
+        "x": 107.7,
+        "y": 72,
+        "w": 396.6,
+        "h": 18.9,
+        "zh": "我们用采用统一设定的 ZeroEval 仓库，评估模型在 GSM8K 和 MMLU 上的零样本表现。"
+      }
+    ],
+    "32": [
+      {
+        "text": "Table 17: Benchmark performance of Gemma-2-9B trained with DPO and SimPO on UltraFeedback (responses regenerated with Gemma-2-9B-it, following the same dataset construction process as Llama-3-Instruct (8B) described in Section 3). SimPO results in better instruction following performance than DPO without degrading math abilities (GSM) or general knowledge (MMLU) of the original model. * indicates the released checkpoint.",
+        "x": 107.7,
+        "y": 668.7,
+        "w": 398,
+        "h": 53.6,
+        "zh": "表 17：Gemma-2-9B 在 UltraFeedback 上分别用 DPO 和 SimPO 训练后的基准表现（回答由 Gemma-2-9B-it 重新生成，数据集构造与第 3 节的 Llama-3-Instruct（8B）相同）。SimPO 的指令遵循优于 DPO，同时没有拉低原模型的数学能力（GSM）或一般知识（MMLU）。* 表示已经发布的检查点。"
+      },
+      {
+        "text": "Instruction Following AlpacaEval 2 LC Arena-Hard",
+        "x": 258.2,
+        "y": 632.8,
+        "w": 120.8,
+        "h": 23.9,
+        "zh": "指令遵循，AlpacaEval 2 的 LC，Arena-Hard"
+      }
+    ]
+  }
+}

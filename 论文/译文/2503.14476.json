@@ -1,0 +1,1223 @@
+{
+  "id": "2503.14476",
+  "title": "2503.14476",
+  "note": "手写译文。空的 zh 表示这段还没译，阅读器里不会出现高亮。",
+  "pages": {
+    "1": [
+      {
+        "text": "DAPO: An Open-Source LLM Reinforcement Learning",
+        "x": 84.6,
+        "y": 674.7,
+        "w": 442.7,
+        "h": 16.9,
+        "zh": "DAPO：一个开源的大语言模型强化学习"
+      },
+      {
+        "text": "Institute for AI Industry Research (AIR), Tsinghua University The University of Hong Kong SIA-Lab of Tsinghua AIR and ByteDance Seed",
+        "x": 195.4,
+        "y": 584.2,
+        "w": 305.3,
+        "h": 33.9,
+        "zh": "清华大学智能产业研究院（AIR），香港大学，清华 AIR 与字节跳动 Seed 的 SIA-Lab"
+      },
+      {
+        "text": "Inference scaling empowers LLMs with unprecedented reasoning ability, with reinforcement learning as the core technique to elicit complex reasoning. However, key technical details of state-of-the-art reasoning LLMs are concealed (such as in OpenAI o1 blog and DeepSeek R1 technical report), thus the community still struggles to reproduce their RL training results. We propose the Decoupled Clip and Dynamic sAmpling Policy Optimization (DAPO) algorithm, and fully open-source a state-of-the-art large-scale RL system that achieves 50 points on AIME 2024 using Qwen2.5-32B base model. Unlike previous works that withhold training details, we introduce four key techniques of our algorithm that make large-scale LLM RL a success. In addition, we open-source our training code, which is built on the verl framework",
+        "x": 95.4,
+        "y": 401.8,
+        "w": 421.5,
+        "h": 105.6,
+        "zh": "推理扩展让大语言模型获得了前所未有的推理能力，强化学习则是引出复杂推理的核心技术。然而，最先进推理大模型的关键技术细节仍被藏着（例如 OpenAI o1 的博客和 DeepSeek R1 的技术报告），社区因此一直难以复现它们的 RL 训练结果。我们提出解耦截断与动态采样策略优化（Decoupled Clip and Dynamic sAmpling Policy Optimization，DAPO）算法，并完整开源一套最先进的大规模 RL 系统：以 Qwen2.5-32B 基座模型，在 AIME 2024 上拿到 50 分。不同于以往隐瞒训练细节的工作，我们介绍了算法里让大规模 LLM RL 能够成功的四项关键技术。此外，我们开源了构建在 verl 框架之上的训练代码"
+      },
+      {
+        "text": ", along with a carefully curated and processed dataset. These components of our open-source system enhance reproducibility and support future research in large-scale LLM RL.",
+        "x": 95,
+        "y": 377.9,
+        "w": 423.5,
+        "h": 33.9,
+        "zh": "，以及一份经过仔细整理和加工的数据集。开源系统的这些部分提高了可复现性，也能支持今后的大规模 LLM RL 研究。"
+      },
+      {
+        "text": "Date: March 17, 2025 Correspondence: zhouhao@air.tsinghua.edu.cn, wangmingxuan.89@bytedance.com Project Page: https://dapo-sia.github.io/",
+        "x": 95.4,
+        "y": 333.5,
+        "w": 340,
+        "h": 32.9,
+        "zh": "日期：2025 年 3 月 17 日。通信：zhouhao@air.tsinghua.edu.cn，wangmingxuan.89@bytedance.com。项目主页：https://dapo-sia.github.io/"
+      },
+      {
+        "text": "Figure 1 AIME 2024 scores of DAPO on the Qwen2.5-32B base model, outperforming the previous SoTA DeepSeekR1-Zero-Qwen-32B using 50% training steps. The x-axis represents the gradient update steps.",
+        "x": 70.9,
+        "y": 76.5,
+        "w": 471.8,
+        "h": 19.9,
+        "zh": "图 1：DAPO 在 Qwen2.5-32B 基座模型上的 AIME 2024 得分，只用 50% 的训练步数就超过了此前的最优模型 DeepSeekR1-Zero-Qwen-32B。横轴是梯度更新步数。"
+      }
+    ],
+    "2": [
+      {
+        "text": "Test-time scaling such as OpenAI’s o1 [1] and DeepSeek’s R1 [2] brings a profound paradigm shift to Large Language Models (LLMs) [3–7]. Test-time scaling enables longer Chain-of-Thought thinking and induces sophisticated reasoning behaviors, which makes the models superior in competitive math and coding tasks like AIME and Codeforces. The central technique driving the revolution is large-scale Reinforcement Learning (RL), which elicits complex reasoning behaviors such as self-verification and iterative refinement. However, the actual algorithm and key recipe for scalable RL training remains a myth, hidden from technical reports of existing reasoning models [1, 2, 8–11]. In this paper, we reveal significant obstacles in large-scale RL training and open-source a scalable RL system with fully open-sourced algorithm, training code and dataset that provides democratized solutions with industry-level RL results. We experiment over Qwen2.5-32B [12] as the pretrained model for RL. In our initial GRPO run, we achieved only 30 points on AIME — a performance significantly below DeepSeek’s RL (47 points). A thorough analysis reveals that the naive GRPO baseline suffers from several key issues such as entropy collapse, reward noise, and training instability. The broader community has encountered similar challenges in reproducing DeepSeek’s results [13–19] suggesting that critical training details may have been omitted in the R1 paper that are required to develop an industry-level, large-scale, and reproducible RL system. To close this gap, we release an open-source state-of-the-art system for large-scale LLM RL, which achieves 50 points on AIME 2024 based on Qwen2.5-32B model, outperforming previous state-of-the-art results achieved by DeepSeek-R1-Zero-Qwen-32B [2] (47 points) using 50% training steps (Figure 1). We propose the Decoupled Clip and Dynamic sAmpling Policy Optimization (DAPO) algorithm, and introduce 4 key techniques to make RL shine in the long-CoT RL scenario. Details are presented in Section 3. 1. Clip-Higher, which promotes the diversity of the system and avoids entropy collapse; 2. Dynamic Sampling, which improves training efficiency and stability; 3. Token-Level Policy Gradient Loss, which is critical in long-CoT RL scenarios; 4. Overlong Reward Shaping, which reduces reward noise and stabilizes training. Our implementation is based on verl [20]. By fully releasing our state-of-the-art RL system including training code and data, we aim to reveal valuable insights to large-scale LLM RL that benefit the larger community.",
+        "x": 70.4,
+        "y": 301.3,
+        "w": 472.2,
+        "h": 368.6,
+        "zh": "以 OpenAI 的 o1 [1] 和 DeepSeek 的 R1 [2] 为代表的测试时扩展，给大语言模型（LLM）[3–7] 带来了一次深刻的范式转变。测试时扩展让模型可以进行更长的思维链（Chain-of-Thought）思考，并诱发复杂的推理行为，从而在 AIME、Codeforces 这类竞赛数学和编程任务上更强。推动这场变化的核心技术是大规模强化学习（RL），它能引出自我验证、迭代改进这类复杂推理行为。然而，可扩展 RL 训练真正用的算法和关键配方仍是一个谜，藏在现有推理模型的技术报告里 [1, 2, 8–11]。本文指出大规模 RL 训练中的几处重大障碍，并开源一套可扩展的 RL 系统：算法、训练代码和数据集全部公开，向社区提供人人可用、且达到工业水平的 RL 方案。我们用 Qwen2.5-32B [12] 作为 RL 的预训练模型做实验。最初一次 GRPO 运行在 AIME 上只得到 30 分，明显低于 DeepSeek 的 RL（47 分）。仔细分析后发现，朴素的 GRPO 基线有几个关键问题，包括熵崩溃、奖励噪声和训练不稳定。更广的社区在复现 DeepSeek 的结果时也碰到了类似困难 [13–19]，这说明要把 RL 做成工业级、大规模、可复现的系统，R1 论文里可能漏掉了必需的关键训练细节。为了补上这个缺口，我们发布一套开源的大规模 LLM RL 系统，基于 Qwen2.5-32B 在 AIME 2024 上达到 50 分，只用 50% 的训练步数，就超过了 DeepSeek-R1-Zero-Qwen-32B [2] 此前 47 分的最优结果（图 1）。我们提出解耦截断与动态采样策略优化（DAPO）算法，并引入 4 项关键技术，让 RL 在长思维链（long-CoT）的 RL 场景里真正起作用。细节见第 3 节。1. Clip-Higher，提高系统的多样性，避免熵崩溃；2. Dynamic Sampling（动态采样），提高训练效率和稳定性；3. Token-Level Policy Gradient Loss（token 级策略梯度损失），在 long-CoT 的 RL 场景里至关重要；4. Overlong Reward Shaping（超长奖励整形），降低奖励噪声并稳住训练。我们的实现基于 verl [20]。把包括训练代码和数据在内的这套最先进 RL 系统全部放出，是为了把大规模 LLM RL 里真正有用的经验公开出来，让更大的社区受益。"
+      },
+      {
+        "text": "Proximal Policy Optimization (PPO) PPO [21] introduces a clipped surrogate objective for policy optimization. By constraining the policy updates within a proximal region of the previous policy using clip, PPO stabilizes training and improves sample efficiency. Specifically, PPO updates the policy by maximizing the following objective:",
+        "x": 70.5,
+        "y": 210.2,
+        "w": 470.6,
+        "h": 53.3,
+        "zh": "近端策略优化（PPO）。PPO [21] 为策略优化引入了带截断的替代目标。它用 clip 把策略更新限制在旧策略附近的一个近端区域里，从而稳住训练，并提高样本效率。具体来说，PPO 通过最大化下面这个目标来更新策略："
+      },
+      {
+        "text": "where (q, a) is a question-answer pair from the data distribution D, ε is the clipping range of importance sampling ratio, and Aˆt is an estimator of the advantage at time step t. Given the value function V and the reward function R, Aˆt is computed using the Generalized Advantage Estimation (GAE) [22]:",
+        "x": 70.5,
+        "y": 123.6,
+        "w": 470.6,
+        "h": 35.4,
+        "zh": "其中 (q, a) 是数据分布 D 里的一个问答对，ε 是重要性采样比的截断范围，Â_t 是时刻 t 的优势估计。给定价值函数 V 和奖励函数 R，Â_t 用广义优势估计（GAE）[22] 来计算："
+      }
+    ],
+    "3": [
+      {
+        "text": "Figure 2 The accuracy on the AIME test set and the entropy of the actor model’s generated probabilities during the RL training process, both before and after applying Clip-Higher strategy.",
+        "x": 70.9,
+        "y": 492.6,
+        "w": 470.3,
+        "h": 19.9,
+        "zh": "图 2：RL 训练过程中，actor 模型在 AIME 测试集上的准确率，以及它生成概率的熵；图中同时给出使用 Clip-Higher 策略之前和之后的结果。"
+      },
+      {
+        "text": "Group Relative Policy Optimization (GRPO) Compared to PPO, GRPO eliminates the value function and estimates the advantage in a group-relative manner. For a specific question-answer pair (q, a), the behavior policy πθ responses {oi}i=1. Then, the advantage of the i-th response is calculated by normalizing the group-level",
+        "x": 70.9,
+        "y": 414.6,
+        "w": 470.3,
+        "h": 55.9,
+        "zh": "组相对策略优化（GRPO）。和 PPO 相比，GRPO 去掉了价值函数，用组内相对的方式估计优势。对一个具体的问答对 (q, a)，行为策略 πθ 给出回答 {o_i}_{i=1}。然后，第 i 个回答的优势，是把组层面的量做归一化之后算出来的。"
+      },
+      {
+        "text": "Similar to PPO, GRPO adopts a clipped objective, together with a directly imposed KL penalty term:",
+        "x": 70.9,
+        "y": 356.8,
+        "w": 448.9,
+        "h": 10,
+        "zh": "和 PPO 一样，GRPO 使用带截断的目标，并直接加上一项 KL 惩罚："
+      },
+      {
+        "text": "min ri,t(θ) Ai,t, clip ri,t(θ), 1 − ε, 1 + ε Ai,t",
+        "x": 218.6,
+        "y": 305.4,
+        "w": 195.4,
+        "h": 11.5,
+        "zh": ""
+      },
+      {
+        "text": "It is also worth noting that GRPO computes the objective at the sample-level. To be exact, GRPO first calculates the mean loss within each generated sequence, before averaging the loss of different samples. As we will be discussing in Section 3.3, such difference may have an impact on the performance of the algorithm.",
+        "x": 70.5,
+        "y": 207.7,
+        "w": 470.9,
+        "h": 33.9,
+        "zh": "还需要注意，GRPO 是在样本层面计算目标的。具体而言，GRPO 先在每条生成序列内部对损失取平均，再对不同样本的损失取平均。我们会在第 3.3 节讨论，这种差别可能会影响算法的表现。"
+      },
+      {
+        "text": "The KL penalty term is used to regulate the divergence between the online policy and the frozen reference policy. In the RLHF scenario [23], the goal of RL is to align the model behavior without diverging too far from the initial model. However, during training the long-CoT reasoning model, the model distribution can diverge significantly from the initial model, thus this restriction is not necessary. Therefore, we will exclude the KL term from our proposed algorithm.",
+        "x": 70.5,
+        "y": 117.6,
+        "w": 470.8,
+        "h": 57.8,
+        "zh": "KL 惩罚项用来限制在线策略和冻结的参考策略差得太远。在 RLHF 场景 [23] 里，RL 的目标是对齐模型行为，同时不要偏离初始模型太多。可是在训练 long-CoT 推理模型时，模型分布可以明显离开初始模型，这个限制就没有必要。因此，我们在提出的算法里去掉 KL 项。"
+      }
+    ],
+    "4": [
+      {
+        "text": "The use of reward model usually suffers from the reward hacking problem [24–29]. Instead, we directly use the final accuracy of a verifiable task as the outcome reward, computed using the following rule:",
+        "x": 70.5,
+        "y": 651.5,
+        "w": 470.6,
+        "h": 21.9,
+        "zh": "使用奖励模型通常会碰上奖励黑客问题 [24–29]。我们改为直接把可验证任务的最终正确率当作结果奖励，按下面的规则计算："
+      },
+      {
+        "text": "where y is the ground-truth answer and yˆ is the predicted answer. This is proved to be an effective approach to activating the base model’s reasoning capability, as shown in multiple domains such as automated theorem proving [30–33], computer programming [34–37], and mathematics competition [2].",
+        "x": 70.5,
+        "y": 566.9,
+        "w": 470.6,
+        "h": 33.9,
+        "zh": "其中 y 是标准答案，ŷ 是模型给出的答案。已有工作表明，这是激活基座模型推理能力的有效做法，自动定理证明 [30–33]、计算机编程 [34–37] 和数学竞赛 [2] 等多个领域都是如此。"
+      },
+      {
+        "text": "We propose the Decouple Clip and Dynamic sAmpling Policy Optimization (DAPO) algorithm. DAPO samples a group of outputs {oi}i=1 for each question q paired with the answer a, and optimizes the policy via the",
+        "x": 70.4,
+        "y": 503.5,
+        "w": 470.8,
+        "h": 24.5,
+        "zh": "我们提出解耦截断与动态采样策略优化（Decouple Clip and Dynamic sAmpling Policy Optimization，DAPO）算法。对每个配有答案 a 的问题 q，DAPO 采样一组输出 {o_i}_{i=1}，并通过下面的目标优化策略："
+      },
+      {
+        "text": "min ri,t(θ) Aˆi,t, clip ri,t(θ), 1 − εlow, 1 + εhigh Aˆi,t",
+        "x": 260.7,
+        "y": 442.7,
+        "w": 223.1,
+        "h": 14,
+        "zh": ""
+      },
+      {
+        "text": "The full algorithm can be found in Algorithm 1. In this section, we will introduce the key techniques associated",
+        "x": 70.5,
+        "y": 351.9,
+        "w": 470.6,
+        "h": 10,
+        "zh": "完整算法见算法 1。在这一节里，我们将介绍与之相关的关键技术。"
+      },
+      {
+        "text": "In our initial experiments using naive PPO [21] or GRPO [38], we observed the entropy collapse phenomenon: the entropy of the policy decreases quickly as training progresses (Figure 2b). The sampled responses of certain groups tend to be nearly identical. This indicates limited exploration and early deterministic policy,",
+        "x": 70.9,
+        "y": 273.8,
+        "w": 471.7,
+        "h": 33.9,
+        "zh": "在用朴素 PPO [21] 或 GRPO [38] 做的初步实验里，我们看到了熵崩溃：训练往前走，策略的熵很快下降（图 2b）。某些组里采到的回答几乎完全一样。这说明探索很有限，策略过早变得确定，"
+      },
+      {
+        "text": "We propose the Clip-Higher strategy to address this issue. Clipping over the importance sampling ratio is introduced in Clipped Proximal Policy Optimization (PPO-Clip) [21] to restrict the trust region and enhance the stability of RL. We identify that the upper clip can restrict the exploration of the policy, where making an ‘exploitation’ token more probable is much easier yet the probability of an unlikely ‘exploration’ token is",
+        "x": 70.4,
+        "y": 208,
+        "w": 470.8,
+        "h": 45.8,
+        "zh": "我们用 Clip-Higher 策略来处理这个问题。对重要性采样比做截断，是截断近端策略优化（PPO-Clip）[21] 里引入的，用来限制信任域、增强 RL 的稳定性。我们发现上截断会限制策略的探索：让一个“利用”token 变得更可能，要容易得多；而一个本来不太可能出现的“探索”token，它的概率"
+      },
+      {
+        "text": "Concretely, when ε = 0.2 (the default value of most algorithms) and Aˆi,t > 0 (the system tries to increase",
+        "x": 70.9,
+        "y": 176.6,
+        "w": 470.3,
+        "h": 14,
+        "zh": "具体来说，当 ε = 0.2（大多数算法的默认值），并且 Â_{i,t} > 0（系统试图提高"
+      },
+      {
+        "text": "(oi | q) = 0.01 and 0.9. The upper bounds of the increased probabilities πθ(oi | q) are 0.012 and 1.08, respectively (πθ ‘exploitation’ tokens with a higher probability (e.g., 0.9) are not constrained to get even extremely larger probabilities like 0.999. Conversely, for low-probability ‘exploration’ tokens, achieving a non-trivial increase in probability is considerably more challenging. Empirically, we also observe that the mean probability of up-clipped tokens is low: πθ(oi | q) < 0.2 (Figure 3a). This finding supports our intuition that the upper clipping threshold indeed restricts the probability increase of low-probability ‘exploration’ tokens, thereby",
+        "x": 69.5,
+        "y": 94.4,
+        "w": 472,
+        "h": 81.7,
+        "zh": "(o_i | q) = 0.01 和 0.9。概率提高之后，πθ(o_i | q) 的上界分别是 0.012 和 1.08。概率已经比较高的“利用”token（例如 0.9）并不会被卡住，仍然可以变得极大，比如到 0.999。反过来，低概率的“探索”token 要想把概率切实抬上去，则困难得多。经验上我们还看到，被上截断的 token 平均概率很低：πθ(o_i | q) < 0.2（图 3a）。这支持了我们的直觉：上截断阈值确实限制了低概率“探索”token 的概率增幅，从而"
+      },
+      {
+        "text": "the probability), consider two actions with probabilities πθ",
+        "x": 70.9,
+        "y": 164.7,
+        "w": 265,
+        "h": 11.5,
+        "zh": "概率）时，考虑概率取 πθ 的两个动作"
+      },
+      {
+        "text": "potentially constraining the exploration of the system.",
+        "x": 70.9,
+        "y": 82.5,
+        "w": 237.1,
+        "h": 10,
+        "zh": "有可能限制系统的探索。"
+      }
+    ],
+    "5": [
+      {
+        "text": "(b) The proportion of samples with an accuracy of 1.",
+        "x": 317.4,
+        "y": 524.5,
+        "w": 216.8,
+        "h": 9,
+        "zh": "（b）准确率为 1 的样本所占的比例。"
+      },
+      {
+        "text": "Figure 3 The mean up-clipped probability as well as the ratio of prompts with accuracy=1.",
+        "x": 119.5,
+        "y": 503.6,
+        "w": 373.1,
+        "h": 9,
+        "zh": "图 3：被上截断概率的均值，以及准确率等于 1 的 prompt 所占的比例。"
+      },
+      {
+        "text": "Adhering to the Clip-Higher strategy, we decouple the lower and higher clipping range as εlow and εhigh, as highlighted in Equation 10:",
+        "x": 70.5,
+        "y": 458.5,
+        "w": 470.6,
+        "h": 21.9,
+        "zh": "按照 Clip-Higher 的做法，我们把较低和较高的截断范围拆成 ε_low 和 ε_high，如式 10："
+      },
+      {
+        "text": "min ri,t(θ) Aˆi,t, clip ri,t(θ), 1 − εlow, 1 + εhigh Aˆi,t",
+        "x": 260.7,
+        "y": 407,
+        "w": 223.1,
+        "h": 14,
+        "zh": ""
+      },
+      {
+        "text": "We increase the value of εhigh to leave more room for the increase of low-probability tokens. As shown in Figure 2, this adjustment effectively enhances the policy’s entropy and facilitates the generation of more diverse samples. We keep εlow as it is, because increasing it will suppress the probability of these tokens to 0, resulting in the collapse of the sampling space.",
+        "x": 70.4,
+        "y": 320.2,
+        "w": 472.2,
+        "h": 45.8,
+        "zh": "我们把 ε_high 加大，给低概率 token 的概率上升留出更多余地。如图 2 所示，这样调整之后，策略的熵确实提高了，也更容易生成更多样的样本。ε_low 保持原值，因为若把它加大，这些 token 的概率会被压到 0，采样空间随之崩溃。"
+      },
+      {
+        "text": "The More the Merrier: Dynamic Sampling Existing RL algorithm suffers from the gradient-decreasing problem when some prompts have accuracy equal to 1. For example for GRPO, if all outputs {oi}i=1 of a particular prompt are correct and receive the same reward, the resulting advantage for this group is zero. A zero advantage results in zero policy gradients, shrinking the magnitude and increasing the noise sensitivity of the batch gradient, thereby degrading sample efficiency. Empirically, the number of samples with accuracy equal to 1 continues to increase, as shown in Figure 3b. This means that the effective number of prompts in each batch keeps decreasing, which can lead to larger variance in gradient and dampens the gradient signals for model training. To this end, we propose to over-sample and filter out prompts with the accuracy equal to 1 and 0 as illustrated in Equation 11, leaving all prompts in the batch with effective gradients and keeping a consistent number of prompts. The sampling cost for each batch is dynamic. Before training, we keep sampling until the batch is fully filled with samples whose accuracy is neither 0 nor 1.",
+        "x": 70.5,
+        "y": 152.4,
+        "w": 472,
+        "h": 154.9,
+        "zh": "多多益善：动态采样。现有的 RL 算法里，一旦某些 prompt 的准确率等于 1，梯度就会变小。以 GRPO 为例，如果某个 prompt 的全部输出 {o_i}_{i=1} 都做对了、奖励也相同，这一组的优势就是 0。优势为 0，策略梯度也是 0，批次梯度的幅度变小，对噪声更敏感，样本效率因此下降。经验上，准确率等于 1 的样本会越来越多，如图 3b。这意味着每个批次里真正起作用的 prompt 越来越少，梯度方差变大，训练时的梯度信号被冲淡。为此，我们提出先过采样，再滤掉准确率等于 1 和等于 0 的 prompt，如式 11。这样批次里留下的 prompt 都带有有效梯度，prompt 的数量也保持一致。每个批次的采样开销是动态的。训练开始之前，我们一直采样，直到这个批次被准确率既不是 0 也不是 1 的样本填满。"
+      },
+      {
+        "text": "min ri,t(θ) Aˆi,t, clip ri,t(θ), 1 − εlow, 1 + εhigh Aˆi,t",
+        "x": 260.7,
+        "y": 94.9,
+        "w": 223.1,
+        "h": 14,
+        "zh": ""
+      }
+    ],
+    "6": [
+      {
+        "text": "(a) Entropy of actor model’s generation probabilities.",
+        "x": 76.8,
+        "y": 524.5,
+        "w": 218.2,
+        "h": 9,
+        "zh": "（a）actor 模型生成概率的熵。"
+      },
+      {
+        "text": "(b) Average length of actor model-generated responses",
+        "x": 315,
+        "y": 524.5,
+        "w": 221.5,
+        "h": 9,
+        "zh": "（b）actor 模型所生成回答的平均长度。"
+      },
+      {
+        "text": "Figure 4 The entropy of the probability distribution of the actor model, as well as the changes in response length.",
+        "x": 74,
+        "y": 503.6,
+        "w": 464.1,
+        "h": 9,
+        "zh": "图 4：actor 模型概率分布的熵，以及回答长度的变化。"
+      },
+      {
+        "text": "Note that this strategy does not necessarily impede training efficiency, because the generation time is typically dominated by the generation of long-tail samples if the RL system is synchronized and the generation stage is not pipelined. Besides, we find that with dynamic sampling the experiment achieves the same performance",
+        "x": 70.9,
+        "y": 447.6,
+        "w": 470.6,
+        "h": 33.9,
+        "zh": "需要说明，这一策略并不必然损害训练效率。因为当 RL 系统是同步的、生成阶段又没有做成流水线时，生成时间通常由那些长尾样本占掉。此外，我们发现加上动态采样之后，实验达到了同样的表现"
+      },
+      {
+        "text": "Rebalancing Act: Token-Level Policy Gradient Loss The original GRPO algorithm employs a sample-level loss calculation, which involves first averaging the losses by token within each sample and then aggregating the losses across samples. In this approach, each sample is assigned an equal weight in the final loss computation. However, we find that this method of loss reduction introduces several challenges in the context of long-CoT RL scenarios. Since all samples are assigned the same weight in the loss calculation, tokens within longer responses (which contain more tokens) may have a disproportionately lower contribution to the overall loss, which can lead to two adverse effects. First, for high-quality long samples, this effect can impede the model’s ability to learn reasoning-relevant patterns within them. Second, we observe that excessively long samples often exhibit low-quality patterns such as gibberish and repetitive words. Thus, sample-level loss calculation, due to its inability to effectively penalize those undesirable patterns in long samples, leads to an unhealthy increase in entropy and response length, as shown in Figure 4a and Figure 4b. We introduce a Token-level Policy Gradient Loss in the long-CoT RL scenario to address the above limitations:",
+        "x": 70.4,
+        "y": 250.2,
+        "w": 472.2,
+        "h": 172.8,
+        "zh": "再平衡：token 级策略梯度损失。原始 GRPO 按样本算损失：先在每个样本内部对各个 token 的损失取平均，再把不同样本的损失加总。这样，每个样本在最终损失里的权重相同。我们发现，放到 long-CoT 的 RL 场景里，这种归约会带来几个问题。因为每个样本权重相同，较长回答（token 更多）里的单个 token 对总损失的贡献会被不成比例地摊薄，由此产生两种不利影响。第一，对那些高质量的长样本，模型更难从中学到和推理有关的模式。第二，我们观察到过长的样本里常常出现低质量模式，比如胡言乱语和词语重复。样本级损失惩罚不到长样本里的这些坏模式，熵和回答长度就会不健康地涨上去，如图 4a 和图 4b。针对上述局限，我们在 long-CoT 的 RL 场景里引入 token 级策略梯度损失："
+      },
+      {
+        "text": "min ri,t(θ) Aˆi,t, clip ri,t(θ), 1 − εlow, 1 + εhigh Aˆi,t",
+        "x": 258.5,
+        "y": 200,
+        "w": 223.1,
+        "h": 14,
+        "zh": ""
+      },
+      {
+        "text": "In this setting, longer sequences can have more influence on the overall gradient update compared to shorter sequences. Moreover, from the perspective of individual tokens, if a particular generation pattern can lead to an increase or decrease in reward, it will be equally prompted or suppressed, regardless of the length of the",
+        "x": 70.9,
+        "y": 126.5,
+        "w": 470.5,
+        "h": 33.9,
+        "zh": "在这个设定下，长序列对整体梯度更新的影响可以超过短序列。而且从单个 token 来看，如果某种生成模式会让奖励上升或下降，它就会被同等地鼓励或抑制，与序列的长度无关。"
+      },
+      {
+        "text": "Hide and Seek: Overlong Reward Shaping In RL training, we typically set a maximum length for generation, with overlong samples truncated accordingly. We find that improper reward shaping for truncated samples can introduce reward noise and significantly",
+        "x": 70.4,
+        "y": 60.6,
+        "w": 472.7,
+        "h": 41.3,
+        "zh": "捉迷藏：超长奖励整形。RL 训练里，我们通常会给生成设一个最大长度，超长的样本就按这个长度截断。我们发现，截断样本的奖励如果整形不当，会带进奖励噪声，并且显著地"
+      }
+    ],
+    "7": [
+      {
+        "text": "Figure 5 The accuracy of the actor model on AIME and the entropy of its generation probabilities, both before and",
+        "x": 70.9,
+        "y": 503.6,
+        "w": 470.3,
+        "h": 9,
+        "zh": "图 5：actor 模型在 AIME 上的准确率，以及它生成概率的熵，图中给出使用之前和"
+      },
+      {
+        "text": "after applying Overlong Reward Shaping strategy.",
+        "x": 70.9,
+        "y": 492.6,
+        "w": 211.7,
+        "h": 9,
+        "zh": "使用超长奖励整形（Overlong Reward Shaping）策略之后的结果。"
+      },
+      {
+        "text": "By default, we assign a punitive reward to truncated samples. This approach may introduce noise into the training process, as a sound reasoning process can be penalized solely due to its excessive length. Such penalties can potentially confuse the model regarding the validity of its reasoning process.",
+        "x": 70.9,
+        "y": 435.5,
+        "w": 470.3,
+        "h": 33.9,
+        "zh": "默认情况下，我们给被截断的样本一个惩罚性奖励。这种做法可能给训练带进噪声，因为一段本身说得通的推理，可能只是因为太长就被罚了。这样的惩罚有可能让模型分不清自己的推理过程到底成不成立。"
+      },
+      {
+        "text": "To investigate the impact of this reward noise, we first apply an Overlong Filtering strategy which masks the loss of truncated samples. We find that this approach significantly stabilizes training and enhances",
+        "x": 70.5,
+        "y": 400.7,
+        "w": 470.6,
+        "h": 21.9,
+        "zh": "为了看清这种奖励噪声的影响，我们先用超长过滤（Overlong Filtering）：把截断样本的损失遮掉。我们发现这样做能明显稳住训练，并提升"
+      },
+      {
+        "text": "performance, as demonstrated in Figure 5.",
+        "x": 70.9,
+        "y": 388.7,
+        "w": 185.4,
+        "h": 10,
+        "zh": "表现，如图 5 所示。"
+      },
+      {
+        "text": "DAPO: Decoupled Clip and Dynamic sAmpling Policy Optimization Input initial policy model πθ; reawrd model R; task prompts D; hyperparameters εlow, εhigh",
+        "x": 70.9,
+        "y": 344.4,
+        "w": 397.2,
+        "h": 28.4,
+        "zh": "DAPO：解耦截断与动态采样策略优化。输入：初始策略模型 πθ；奖励模型 R；任务 prompt 集 D；超参数 ε_low、ε_high"
+      },
+      {
+        "text": "1: for step = 1,...,M do Sample a batch Db from D Update the old policy model πθold ← πθ Sample G outputs {oi}i=1 ∼ πθ",
+        "x": 73.6,
+        "y": 295.5,
+        "w": 198,
+        "h": 48.4,
+        "zh": "1：对 step = 1, …, M 执行：从 D 中采样一个批次 D_b；把旧策略模型更新为 πθ_old ← πθ；采样 G 个输出 {o_i}_{i=1} ∼ πθ"
+      },
+      {
+        "text": "(·|q) for each question q ∈ Db Compute rewards {ri}i=1 for each sampled output oi by running R Filter out oi and add the remaining to the dynamic sampling buffer (Dynamic Sampling Equation (11))",
+        "x": 98.2,
+        "y": 272.7,
+        "w": 442.9,
+        "h": 35.4,
+        "zh": "（·|q），对 D_b 中的每个问题 q。对每个采样输出 o_i 运行 R，算出奖励 {r_i}_{i=1}。滤掉 o_i，把剩下的放进动态采样缓冲区（动态采样，式 (11)）"
+      },
+      {
+        "text": "For each oi in the buffer, compute Aˆi,t for the t-th token of oi (Equation (9))",
+        "x": 98.5,
+        "y": 235.7,
+        "w": 337.8,
+        "h": 14,
+        "zh": "对缓冲区里的每个 o_i，计算它第 t 个 token 的 Â_{i,t}（式 (9)）"
+      },
+      {
+        "text": "Update the policy model πθ by maximizing the DAPO objective (Equation (8))",
+        "x": 114.6,
+        "y": 211.8,
+        "w": 347.9,
+        "h": 11.5,
+        "zh": "通过最大化 DAPO 目标来更新策略模型 πθ（式 (8)）"
+      },
+      {
+        "text": "Furthermore, we propose Soft Overlong Punishment (Equation 13), a length-aware penalty mechanism designed to shape the reward for truncated samples. Specifically, when the response length exceeds the predefined maximum value, we define a punishment interval. Within this interval, the longer the response, the greater the punishment it receives. This penalty is added to the original rule-based correctness reward, thereby signaling",
+        "x": 70.9,
+        "y": 126.5,
+        "w": 470.3,
+        "h": 45.8,
+        "zh": "进一步，我们提出软超长惩罚（Soft Overlong Punishment，式 13），一种看长度的惩罚，用来给截断样本做奖励整形。具体来说，当回答长度超过预先定下的最大值时，我们划出一个惩罚区间。在这个区间里，回答越长，受到的惩罚越大。这项惩罚加到原来按规则判定对错的奖励上，从而告诉模型"
+      },
+      {
+        "text": "to the model to avoid excessively long responses.",
+        "x": 70.9,
+        "y": 114.5,
+        "w": 212.5,
+        "h": 10,
+        "zh": "要避免过长的回答。"
+      }
+    ],
+    "8": [
+      {
+        "text": "Figure 6 The training progress before and after applying dynamic sampling on a baseline setting.",
+        "x": 107.7,
+        "y": 509.6,
+        "w": 396.6,
+        "h": 9,
+        "zh": "图 6：在基线设定下，使用动态采样之前和之后的训练进程。"
+      },
+      {
+        "text": "Our dataset is sourced from the web and official competition homepages through a combination of web scraping and manual annotation. The answers of math dataset typically come in a variety of formats, such as expression, formula and number, which makes it challenging to design comprehensive rules to parse them. To provide accurate reward signals using rules and minimize errors introduced by formula parsers, inspired by AIME, we select and transform the answers into integers, which are easy to parse. For example, if the original answer is expressed in the form of expected answer becomes a + b + c. After selection and transformation, we obtained the DAPO-Math-17K dataset, which consists of 17K prompts, each paired with an integer as the answer.",
+        "x": 70.5,
+        "y": 372.9,
+        "w": 472.6,
+        "h": 95.2,
+        "zh": "我们的数据来自网页和官方竞赛主页，靠网页抓取和人工标注一起收集。数学数据的答案格式通常很杂，有表达式、公式，也有数字，很难设计一套够全的规则去解析。为了用规则给出准确的奖励，并尽量减少公式解析器带来的错误，我们借鉴 AIME，把答案筛选并转换成容易解析的整数。例如，若原始答案写成某种形式，期望的答案就变成 a + b + c。筛选和变换之后，我们得到 DAPO-Math-17K 数据集，共 17K 条 prompt，每条都配一个整数答案。"
+      },
+      {
+        "text": ", we instruct the LLM to modify the question so that the",
+        "x": 285.4,
+        "y": 396.8,
+        "w": 255.8,
+        "h": 10,
+        "zh": "，我们让 LLM 去改题目，使得"
+      },
+      {
+        "text": "In this work, we focus specifically on mathematical tasks to evaluate our algorithm, which can be readily transferred to other tasks. We adopt the verl framework [20] for training. We use naive GRPO [38] as our baseline algorithm and estimate advantages using group reward normalization. For hyper-parameters, we utilize the AdamW [39] optimizer with a constant learning rate of 1 × 10 incorporating a linear warm-up over 20 rollout steps. For rollout, the prompt batch size is 512 and we sample 16 responses for each prompt. For training, the mini-batch size is set to 512, i.e., 16 gradient updates for each rollout step. For Overlong Reward Shaping, we set the expected maximum length as 16,384 tokens and allocate additional 4,096 tokens as the soft punish cache. Therefore, the maximum number of tokens for generation is set to 20,480 tokens. As for the Clip-Higher mechanism, we set the clipping parameter εlow to 0.2 and εhigh to 0.28, which effectively balance the trade-off between exploration and exploitation. For evaluation on AIME, we repeat the evaluation set for 32 times and report avg@32 for results stability. The inference hyperparameters of evaluation are set to temperature 1.0 and topp 0.7.",
+        "x": 70.4,
+        "y": 168.6,
+        "w": 471.1,
+        "h": 147.4,
+        "zh": "本文专门在数学任务上评估这套算法，它也可以比较容易地迁到别的任务上。训练使用 verl 框架 [20]。基线算法用朴素 GRPO [38]，优势用组内奖励归一化来估计。超参数上，优化器用 AdamW [39]，学习率恒定为 1 × 10，并在 20 个 rollout 步上做线性预热。Rollout 时，prompt 的批次大小是 512，每个 prompt 采样 16 条回答。训练时 mini-batch 大小设为 512，也就是每个 rollout 步做 16 次梯度更新。超长奖励整形方面，期望的最大长度设为 16,384 个 token，另外留出 4,096 个 token 作为软惩罚的缓冲。因此，生成时的 token 上限设为 20,480。Clip-Higher 里，截断参数 ε_low 取 0.2，ε_high 取 0.28，用来在探索和利用之间取得平衡。AIME 评测时，把评测集重复 32 次，报告 avg@32，让结果更稳。评测的推理超参数是 temperature 1.0、top-p 0.7。"
+      },
+      {
+        "text": "Experiments on AIME 2024 demonstrate that DAPO has successfully trained the Qwen-32B Base model into a powerful reasoning model, achieving performance superior to DeepSeek’s experiments on Qwen2.5-32B using the R1 approach. In Figure 1, we observe a substantial improvement of performance on AIME 2024, with accuracy increasing from near 0% to 50%. Notably, this improvement is achieved with only 50% of the training steps required by DeepSeek-R1-Zero-Qwen-32B. We analyze the contributions of each training technique in our methodology, as detailed in Table 1. The observed improvements demonstrate the effectiveness of these techniques in RL training, each contributing",
+        "x": 70.4,
+        "y": 48.6,
+        "w": 472.2,
+        "h": 87.7,
+        "zh": "AIME 2024 上的实验表明，DAPO 把 Qwen-32B Base 训练成了很强的推理模型，表现好于 DeepSeek 用 R1 方法在 Qwen2.5-32B 上的实验。从图 1 可以看到，AIME 2024 的准确率从接近 0% 升到 50%，提升很大。而且，这只用了 DeepSeek-R1-Zero-Qwen-32B 所需训练步数的 50%。我们逐项分析这些训练技术各自的贡献，详见表 1。看到的提升说明这些技术在 RL 训练里是有效的，每一项都有贡献"
+      }
+    ],
+    "9": [
+      {
+        "text": "Table 1 Main results of progressive techniques applied to DAPO",
+        "x": 175.3,
+        "y": 684.1,
+        "w": 261,
+        "h": 9,
+        "zh": "表 1：逐步加到 DAPO 上的各项技术的主要结果"
+      },
+      {
+        "text": "several accuracy points in AIME 2024. Notably, given the vanilla GRPO setting, only 30% accuracy can be",
+        "x": 70.9,
+        "y": 529.2,
+        "w": 470.3,
+        "h": 10,
+        "zh": "在 AIME 2024 上各带来几个准确率点。值得注意的是，在朴素 GRPO 的设定下，准确率只能到 30%，"
+      },
+      {
+        "text": "reached by training from a Qwen2.5-32B base model.",
+        "x": 70.9,
+        "y": 517.3,
+        "w": 231.8,
+        "h": 10,
+        "zh": "从 Qwen2.5-32B 基座模型训练才能达到。"
+      },
+      {
+        "text": "For token-level loss, although it brings less performance improvement, we find it enhances training stability",
+        "x": 70.9,
+        "y": 499.3,
+        "w": 470.6,
+        "h": 10,
+        "zh": "token 级损失带来的性能提升不算大，但我们发现它让训练更稳，"
+      },
+      {
+        "text": "and makes the length increase more healthily.",
+        "x": 70.9,
+        "y": 487.4,
+        "w": 199.4,
+        "h": 10,
+        "zh": "也让长度的增长更健康。"
+      },
+      {
+        "text": "When applying Dynamic Sampling, although more data needs to be sampled due to the filtering out of zero-gradient data, the overall training time is not significantly affected. As shown in Figure 6, although the number of sampling instances increases, the model’s convergence time is even reduced, due to fewer training",
+        "x": 70.4,
+        "y": 445.5,
+        "w": 470.8,
+        "h": 33.9,
+        "zh": "用上动态采样之后，因为零梯度的数据被滤掉了，需要采样的数据更多，但总的训练时间并没有受到明显影响。如图 6 所示，采样的实例数虽然增加了，模型收敛所用的时间反而更短，因为训练更少"
+      },
+      {
+        "text": "Reinforcement learning on large language models is not only a cutting-edge research direction but also an intrinsically complex systems engineering challenge, characterized by the interdependence of its various subsystems. Modifications to any single subsystem can propagate through the system, leading to unforeseen consequences due to the intricate interplay among these components. Even seemingly minor changes in initial conditions, such as variations in data and hyperparameters, can amplify through iterative reinforcement learning processes, yielding substantial deviations in outcomes. This complexity often confronts researchers with a dilemma: even after meticulous analysis and well-founded expectations that a modification will enhance specific aspects of the training process, the actual results frequently diverge from the anticipated trajectory. Therefore, monitoring of key intermediate results during experimentation is essential for swiftly identifying",
+        "x": 70.5,
+        "y": 295.7,
+        "w": 472.6,
+        "h": 105.6,
+        "zh": "在大语言模型上做强化学习，既是前沿研究方向，本身也是一件复杂的系统工程，各个子系统彼此牵连。改动其中任何一个，都可能顺着这些部分之间错综的相互作用传到整个系统，带来事先想不到的后果。就算初始条件只是看起来很小的差别，比如数据和超参数变了一点，也会在一轮轮强化学习里被放大，最后的结果可以差出很多。这种复杂性常常让研究者两难：即便仔细分析过，也有充足的理由预期某项改动会改善训练的某些方面，实际结果还是经常偏离预想的轨迹。因此，实验过程中监控关键的中间结果是必要的，这样才能尽快找出"
+      },
+      {
+        "text": "the sources of discrepancies and, ultimately, for refining the system.",
+        "x": 70.9,
+        "y": 283.7,
+        "w": 295.7,
+        "h": 10,
+        "zh": "偏差从哪里来，并最终把系统改好。"
+      },
+      {
+        "text": "• The Length of Generated Responses is a metric closely related to training stability and performance, as shown in Figure 7a. The increase in length provides the model with a larger space for exploration, allowing more complex reasoning behaviors to be sampled and gradually reinforced through training. However, it is important to note that length does not always maintain a continuous upward trend during training. In some considerable periods, it can exhibit a trend of stagnation or even decline, which has also been demonstrated in [2]. We typically use length in conjunction with validation accuracy as",
+        "x": 85.8,
+        "y": 206,
+        "w": 457.3,
+        "h": 69.7,
+        "zh": "• 生成回答的长度是一项和训练稳定性、性能都紧密相关的指标，如图 7a。长度变长，模型就有更大的空间去探索，更复杂的推理行为才有机会被采样到，并在训练中被逐步加强。但要注意，长度在训练过程中并不总是一直往上走。在相当长的一些阶段里，它可能停滞，甚至下降，[2] 里也出现过这种情况。我们通常把长度和验证准确率放在一起，当作"
+      },
+      {
+        "text": "indicators to assess whether an experiment is deteriorating.",
+        "x": 95.8,
+        "y": 194,
+        "w": 259.2,
+        "h": 10,
+        "zh": "判断一次实验是不是在变差的指标。"
+      },
+      {
+        "text": "• The Dynamics of Reward during training has always been one of the crucial monitoring indicators in reinforcement learning, as shown in Figure 7b. In the majority of our experiments, the trend of reward increase is relatively stable and does not fluctuate or decline significantly due to adjustments in experimental settings. This indicates that, given a reliable reward signal, language models can robustly fit the distribution of training set. However, we find that the final reward on the training set often exhibits little correlation with the accuracy on the validation set, which indicates overfitting to the",
+        "x": 85.8,
+        "y": 116.3,
+        "w": 455.7,
+        "h": 69.7,
+        "zh": "• 训练过程中奖励怎么变，一直是强化学习里最需要盯住的指标之一，如图 7b。在我们的大多数实验里，奖励上升的趋势比较稳，不会因为实验设定一调整就明显波动或掉下去。这说明，只要奖励信号可靠，语言模型就能比较稳地拟合训练集的分布。不过我们发现，训练集上的最终奖励往往和验证集准确率没什么关系，这说明模型过拟合到了"
+      },
+      {
+        "text": "• The Entropy of the Actor Model and Generation Probability are related to the model’s exploration capability and are key metrics that we closely monitor in our experiments. Intuitively, the model’s entropy needs to be maintained within an appropriate range. An excessively low entropy indicates that the probability distribution is overly sharp, leading to a loss of exploration capability. Conversely, an",
+        "x": 85.8,
+        "y": 50.6,
+        "w": 455.6,
+        "h": 45.8,
+        "zh": "• actor 模型的熵和生成概率，关系到模型还能不能探索，是我们在实验里紧盯的关键指标。直观上，模型的熵要保持在一个合适的范围里。熵太低，说明概率分布过于尖锐，探索能力就没了。反过来，一个"
+      }
+    ],
+    "10": [
+      {
+        "text": "Figure 7 The metric curves of response length, reward score, generation entropy, and the mean probability of DAPO, which show the dynamics of RL training and serve as essential monitoring indicators to identify potential issues.",
+        "x": 70.5,
+        "y": 346.2,
+        "w": 471.9,
+        "h": 19.9,
+        "zh": "图 7：DAPO 的回答长度、奖励分数、生成熵和平均概率曲线。这些曲线展示 RL 训练的动态，也是用来发现潜在问题的必要监控指标。"
+      },
+      {
+        "text": "excessively high entropy is often associated with issues of over-exploration such as gibberish and repetitive generation. For the generation probability, the situation is exactly the opposite. As demonstrated in Section 3.1, by applying the Clip-Higher strategy, we effectively addressed the issue of entropy collapse. In subsequent experiments, we find that maintaining a slow upward trend in entropy is conducive to the improvement of model performance, shown in Figure 7c and Figure 7d.",
+        "x": 95.8,
+        "y": 265.2,
+        "w": 447.3,
+        "h": 57.8,
+        "zh": "过高的熵则常常和探索过度连在一起，比如胡言乱语和重复生成。生成概率的情况正好相反。如第 3.1 节所示，用上 Clip-Higher 之后，我们有效解决了熵崩溃。在后面的实验里，我们发现让熵保持缓慢上升，有利于模型性能变好，见图 7c 和图 7d。"
+      },
+      {
+        "text": "During the RL training process, we observe an interesting phenomenon: the reasoning patterns of the actor model evolve dynamically over time. Specifically, the algorithm not only reinforces existing reasoning patterns that facilitate correct problem-solving but also gradually gives rise to entirely new modes of reasoning that were initially absent. This finding reveals the adaptability and exploration capability of RL algorithms and offers new insights into the learning mechanisms of the model. For example, in the early stages of model training, there was virtually no occurrence of checking and reflecting on previous reasoning steps. However, as training progresses, the model exhibits distinct behaviors of reflection and backtracking, as shown in Table 2. This observation sheds light on further exploration into interpreting the emergence of reasoning abilities during RL, which we leave for future research.",
+        "x": 70.5,
+        "y": 121.3,
+        "w": 470.9,
+        "h": 111.6,
+        "zh": "RL 训练过程中，我们观察到一个有意思的现象：actor 模型的推理模式会随时间变化。具体来说，算法不只会加强那些已经能帮着做对题的推理模式，还会慢慢生出训练一开始根本没有的全新推理方式。这说明 RL 算法既能适应，也能探索，也为理解模型怎么学习提供了新的线索。例如，训练早期，模型几乎不会去检查、反思前面的推理步骤。训练往前走之后，模型会明显地反思和回溯，如表 2。这一观察有助于进一步解释，推理能力是怎么在 RL 里涌现出来的，我们把它留给以后的研究。"
+      },
+      {
+        "text": "In this paper, we release a fully open-sourced system for large-scale LLM RL, including algorithm, code infrastructure, and dataset. The system achieves state-of-the-art large-scale LLM RL performance (AIME",
+        "x": 70.9,
+        "y": 60.8,
+        "w": 470.3,
+        "h": 21.9,
+        "zh": "本文放出一套完全开源的大规模 LLM RL 系统，包括算法、代码基础设施和数据集。这套系统在大规模 LLM RL 上达到了最先进的性能（AIME"
+      },
+      {
+        "text": "We propose the Decoupled Clip and Dynamic sAmpling Policy",
+        "x": 256.3,
+        "y": 48.9,
+        "w": 285.2,
+        "h": 10,
+        "zh": "我们提出解耦截断与动态采样策略（Decoupled Clip and Dynamic sAmpling Policy"
+      }
+    ],
+    "11": [
+      {
+        "text": "Given that the base ABC of the tetrahedron S − ABC is an equilateral triangle, the projection H of point A on the face SBC is the orthocenter of △SBC, the dihedral angle H − AB − C is 30 , and SA = 2, find the volume of the tetrahedron. The answer is in the form",
+        "x": 94.4,
+        "y": 644,
+        "w": 424.6,
+        "h": 33.9,
+        "zh": "已知四面体 S − ABC 的底面 ABC 是等边三角形，点 A 在面 SBC 上的投影 H 是 △SBC 的垂心，二面角 H − AB − C 为 30，且 SA = 2，求这个四面体的体积。答案的形式是"
+      },
+      {
+        "text": "Let us consider the given problem: We need to determine ...",
+        "x": 94.4,
+        "y": 603.1,
+        "w": 262.6,
+        "h": 10,
+        "zh": "我们来看这道题：需要确定……"
+      },
+      {
+        "text": "Since SA = 2, the distance formula gives us = 2, so we can write x0 + y0 + z0 = 4.",
+        "x": 199.2,
+        "y": 564.8,
+        "w": 318.4,
+        "h": 24.4,
+        "zh": "由于 SA = 2，距离公式给出的结果等于 2，因此可以写成 x_0 + y_0 + z_0 = 4。"
+      },
+      {
+        "text": "However, wait a moment, let’s rethink about the dihedral angle involving planes in a more thoughtful geometric way. Consider the plane α1 = ABC, which lies entirely on the xy coordinate plane (as z = 0). Let the plane α2 = SBC. The point A projected perpendicularly to plane α2 lands on H.",
+        "x": 94.4,
+        "y": 506,
+        "w": 425.2,
+        "h": 35.4,
+        "zh": "不过先等一下，让我们用更审慎的几何方式，重新考虑涉及这些平面的二面角。考虑平面 α_1 = ABC，它完全落在 xy 坐标平面上（因为 z = 0）。令平面 α_2 = SBC。点 A 向平面 α_2 作垂线，垂足落在 H 上。"
+      },
+      {
+        "text": "Table 2 Emergence of Reflective Behavior in Reinforcement Learning",
+        "x": 164.5,
+        "y": 459.8,
+        "w": 282.8,
+        "h": 9,
+        "zh": "表 2：强化学习中反思行为的涌现"
+      },
+      {
+        "text": "Optimization (DAPO) algorithm, and introduce 4 key techniques to make RL powerfully effective and efficient in the long-CoT RL scenario. Additionally, by open-sourcing the training code and dataset, we provide the broader research community and society with practical access to a scalable reinforcement learning solution,",
+        "x": 70.9,
+        "y": 402.7,
+        "w": 471.7,
+        "h": 33.9,
+        "zh": "优化（DAPO）算法，并引入 4 项关键技术，让 RL 在 long-CoT 的 RL 场景里既有力又高效。另外，通过开源训练代码和数据集，我们让更广的研究社区和社会都能实际用上一套可扩展的强化学习方案，"
+      },
+      {
+        "text": "enabling all to benefit from these advancements.",
+        "x": 70.9,
+        "y": 390.8,
+        "w": 211,
+        "h": 10,
+        "zh": "让所有人都能从这些进展里受益。"
+      }
+    ],
+    "12": [
+      {
+        "text": ", Zheng Zhang , Ruofei Zhu , Yufeng Yuan , Xiaochen Zuo , Yu Yue",
+        "x": 132.6,
+        "y": 606.2,
+        "w": 301.9,
+        "h": 10,
+        "zh": "，Zheng Zhang、Ruofei Zhu、Yufeng Yuan、Xiaochen Zuo、Yu Yue"
+      },
+      {
+        "text": ", Tiantian Fan , Gaohong Liu , Juncai Liu , Lingjun Liu , Xin Liu , Haibin Lin , Zhiqi Lin ,",
+        "x": 138.2,
+        "y": 570.3,
+        "w": 404.4,
+        "h": 10,
+        "zh": "，Tiantian Fan、Gaohong Liu、Juncai Liu、Lingjun Liu、Xin Liu、Haibin Lin、Zhiqi Lin、"
+      },
+      {
+        "text": "Bole Ma , Guangming Sheng Wang Zhang , Hang Zhu , Jinhua Zhu Last-Name in Alphabetical Order",
+        "x": 70.4,
+        "y": 528.5,
+        "w": 169,
+        "h": 39.9,
+        "zh": "Bole Ma、Guangming Sheng、Wang Zhang、Hang Zhu、Jinhua Zhu。姓氏按字母顺序排列"
+      },
+      {
+        "text": "Institute for AI Industry Research (AIR), Tsinghua University The University of Hong Kong SIA-Lab of Tsinghua AIR and ByteDance Seed",
+        "x": 75.1,
+        "y": 343.2,
+        "w": 272.4,
+        "h": 45.8,
+        "zh": "清华大学智能产业研究院（AIR），香港大学，清华 AIR 与字节跳动 Seed 的 SIA-Lab"
+      },
+      {
+        "text": "We thank Zhengyin Du, Shengding Hu, Kai Shen, Tianyang Zhan, Zhen Xiao, Renjie Zheng, Li Han, Kaihua Jiang as well as other colleagues at ByteDance for their support for the DAPO project.",
+        "x": 70.4,
+        "y": 283,
+        "w": 470.8,
+        "h": 21.9,
+        "zh": "感谢 Zhengyin Du、Shengding Hu、Kai Shen、Tianyang Zhan、Zhen Xiao、Renjie Zheng、Li Han、Kaihua Jiang，以及字节跳动的其他同事对 DAPO 项目的支持。"
+      }
+    ],
+    "13": [
+      {
+        "text": "[1] OpenAI. Learning to reason with llms, 2024.",
+        "x": 75.5,
+        "y": 661,
+        "w": 195.9,
+        "h": 9,
+        "zh": "[1] OpenAI。学会用大语言模型进行推理，2024。"
+      },
+      {
+        "text": "[2] Daya Guo, Dejian Yang, Haowei Zhang, Junxiao Song, Ruoyu Zhang, Runxin Xu, Qihao Zhu, Shirong Ma, Peiyi Wang, Xiao Bi, et al. Deepseek-r1: Incentivizing reasoning capability in llms via reinforcement learning. arXiv",
+        "x": 75.5,
+        "y": 633.1,
+        "w": 466.1,
+        "h": 19.9,
+        "zh": "[2] Daya Guo、Dejian Yang、Haowei Zhang、Junxiao Song、Ruoyu Zhang、Runxin Xu、Qihao Zhu、Shirong Ma、Peiyi Wang、Xiao Bi 等。DeepSeek-R1：用强化学习激励大语言模型的推理能力。arXiv"
+      },
+      {
+        "text": "[3] OpenAI. GPT4 technical report. arXiv preprint arXiv:2303.08774, 2023.",
+        "x": 75.5,
+        "y": 605.2,
+        "w": 308.3,
+        "h": 9,
+        "zh": "[3] OpenAI。GPT4 技术报告。arXiv preprint arXiv:2303.08774，2023。"
+      },
+      {
+        "text": "[5] Tom Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared D Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, et al. Language models are few-shot learners. Advances in neural information processing systems, 33:1877–1901, 2020.",
+        "x": 75.5,
+        "y": 549.4,
+        "w": 467.4,
+        "h": 30.9,
+        "zh": "[5] Tom Brown、Benjamin Mann、Nick Ryder、Melanie Subbiah、Jared D Kaplan、Prafulla Dhariwal、Arvind Neelakantan、Pranav Shyam、Girish Sastry、Amanda Askell 等。语言模型是少样本学习者。Advances in Neural Information Processing Systems，33:1877–1901，2020。"
+      },
+      {
+        "text": "[6] Aakanksha Chowdhery, Sharan Narang, Jacob Devlin, Maarten Bosma, Gaurav Mishra, Adam Roberts, Paul Barham, Hyung Won Chung, Charles Sutton, Sebastian Gehrmann, et al. Palm: Scaling language modeling with pathways. Journal of Machine Learning Research, 24(240):1–113, 2023.",
+        "x": 75.5,
+        "y": 510.6,
+        "w": 465.7,
+        "h": 30.9,
+        "zh": "[6] Aakanksha Chowdhery、Sharan Narang、Jacob Devlin、Maarten Bosma、Gaurav Mishra、Adam Roberts、Paul Barham、Hyung Won Chung、Charles Sutton、Sebastian Gehrmann 等。PaLM：用 Pathways 扩展语言建模。Journal of Machine Learning Research，24(240):1–113，2023。"
+      },
+      {
+        "text": "[7] Aixin Liu, Bei Feng, Bing Xue, Bingxuan Wang, Bochao Wu, Chengda Lu, Chenggang Zhao, Chengqi Deng, Chenyu Zhang, Chong Ruan, et al. Deepseek-v3 technical report. arXiv preprint arXiv:2412.19437, 2024.",
+        "x": 75.5,
+        "y": 482.7,
+        "w": 466.9,
+        "h": 19.9,
+        "zh": "[7] Aixin Liu、Bei Feng、Bing Xue、Bingxuan Wang、Bochao Wu、Chengda Lu、Chenggang Zhao、Chengqi Deng、Chenyu Zhang、Chong Ruan 等。DeepSeek-V3 技术报告。arXiv preprint arXiv:2412.19437，2024。"
+      },
+      {
+        "text": "[8] XAI. Grok 3 beta — the age of reasoning agents, 2024.",
+        "x": 75.5,
+        "y": 465.7,
+        "w": 238.3,
+        "h": 9,
+        "zh": "[8] XAI。Grok 3 beta——推理智能体的时代，2024。"
+      },
+      {
+        "text": "[9] Google DeepMind. Gemini 2.0 flash thinking, 2024.",
+        "x": 75.5,
+        "y": 448.8,
+        "w": 222.8,
+        "h": 9,
+        "zh": "[9] Google DeepMind。Gemini 2.0 Flash Thinking，2024。"
+      },
+      {
+        "text": "[10] Qwen. Qwq-32b: Embracing the power of reinforcement learning, 2024.",
+        "x": 70.9,
+        "y": 431.9,
+        "w": 308,
+        "h": 9,
+        "zh": "[10] Qwen。Qwq-32b：拥抱强化学习的力量，2024。"
+      },
+      {
+        "text": "[11] Kimi Team, Angang Du, Bofei Gao, Bowei Xing, Changjiu Jiang, Cheng Chen, Cheng Li, Chenjun Xiao, Chenzhuang Du, Chonghua Liao, et al. Kimi k1. 5: Scaling reinforcement learning with llms. arXiv preprint",
+        "x": 70.9,
+        "y": 404,
+        "w": 471.6,
+        "h": 19.9,
+        "zh": "[11] Kimi Team、Angang Du、Bofei Gao、Bowei Xing、Changjiu Jiang、Cheng Chen、Cheng Li、Chenjun Xiao、Chenzhuang Du、Chonghua Liao 等。Kimi k1.5：用大语言模型扩展强化学习。arXiv preprint"
+      },
+      {
+        "text": "[12] An Yang, Baosong Yang, Beichen Zhang, Binyuan Hui, Bo Zheng, Bowen Yu, Chengyuan Li, Dayiheng Liu, Fei Huang, Haoran Wei, et al. Qwen2. 5 technical report. arXiv preprint arXiv:2412.15115, 2024.",
+        "x": 70.9,
+        "y": 365.1,
+        "w": 470.3,
+        "h": 19.9,
+        "zh": "[12] An Yang、Baosong Yang、Beichen Zhang、Binyuan Hui、Bo Zheng、Bowen Yu、Chengyuan Li、Dayiheng Liu、Fei Huang、Haoran Wei 等。Qwen2.5 技术报告。arXiv preprint arXiv:2412.15115，2024。"
+      },
+      {
+        "text": "[13] Zhipeng Chen, Yingqian Min, Beichen Zhang, Jie Chen, Jinhao Jiang, Daixuan Cheng, Wayne Xin Zhao, Zheng Liu, Xu Miao, Yang Lu, et al. An empirical study on eliciting and improving r1-like reasoning models. arXiv",
+        "x": 70.9,
+        "y": 337.2,
+        "w": 471,
+        "h": 19.9,
+        "zh": "[13] Zhipeng Chen、Yingqian Min、Beichen Zhang、Jie Chen、Jinhao Jiang、Daixuan Cheng、Wayne Xin Zhao、Zheng Liu、Xu Miao、Yang Lu 等。关于引出并改进类 R1 推理模型的实证研究。arXiv"
+      },
+      {
+        "text": "[14] Jingcheng Hu, Yinmin Zhang, Qi Han, Daxin Jiang, and Heung-Yeung Shum Xiangyu Zhang. Open-reasonerzero: An open source approach to scaling reinforcement learning on the base model. https://github.com/",
+        "x": 70.9,
+        "y": 298.4,
+        "w": 471.8,
+        "h": 19.9,
+        "zh": "[14] Jingcheng Hu、Yinmin Zhang、Qi Han、Daxin Jiang、Heung-Yeung Shum、Xiangyu Zhang。Open-Reasoner-Zero：在基座模型上扩展强化学习的开源做法。https://github.com/"
+      },
+      {
+        "text": "Open-Reasoner-Zero/Open-Reasoner-Zero, 2025.",
+        "x": 90.2,
+        "y": 287.4,
+        "w": 202.7,
+        "h": 9,
+        "zh": ""
+      },
+      {
+        "text": "[15] Jian Hu. Reinforce++: A simple and efficient approach for aligning large language models. arXiv preprint",
+        "x": 70.9,
+        "y": 270.5,
+        "w": 470.5,
+        "h": 9,
+        "zh": "[15] Jian Hu。REINFORCE++：一种简单高效的大语言模型对齐方法。arXiv preprint"
+      },
+      {
+        "text": "[16] Ganqu Cui, Lifan Yuan, Zefan Wang, Hanbin Wang, Wendi Li, Bingxiang He, Yuchen Fan, Tianyu Yu, Qixin Xu, Weize Chen, et al. Process reinforcement through implicit rewards. arXiv preprint arXiv:2502.01456, 2025.",
+        "x": 70.9,
+        "y": 231.6,
+        "w": 471.5,
+        "h": 19.9,
+        "zh": "[16] Ganqu Cui、Lifan Yuan、Zefan Wang、Hanbin Wang、Wendi Li、Bingxiang He、Yuchen Fan、Tianyu Yu、Qixin Xu、Weize Chen 等。借助隐式奖励做过程强化学习。arXiv preprint arXiv:2502.01456，2025。"
+      },
+      {
+        "text": "[17] Jung Hyun Lee, June Yong Yang, Byeongho Heo, Dongyoon Han, and Kang Min Yoo. Token-supervised value models for enhancing mathematical reasoning capabilities of large language models.",
+        "x": 70.9,
+        "y": 203.7,
+        "w": 470.3,
+        "h": 19.9,
+        "zh": "[17] Jung Hyun Lee、June Yong Yang、Byeongho Heo、Dongyoon Han、Kang Min Yoo。用 token 监督的价值模型，增强大语言模型的数学推理能力。"
+      },
+      {
+        "text": "[18] Amirhossein Kazemnejad, Milad Aghajohari, Eva Portelance, Alessandro Sordoni, Siva Reddy, Aaron Courville, and Nicolas Le Roux. Vineppo: Unlocking rl potential for llm reasoning through refined credit assignment. arXiv",
+        "x": 70.9,
+        "y": 164.9,
+        "w": 471.5,
+        "h": 19.9,
+        "zh": "[18] Amirhossein Kazemnejad、Milad Aghajohari、Eva Portelance、Alessandro Sordoni、Siva Reddy、Aaron Courville、Nicolas Le Roux。VinePPO：用更精细的信用分配，释放 RL 在大语言模型推理上的潜力。arXiv"
+      },
+      {
+        "text": "[19] Yufeng Yuan, Yu Yue, Ruofei Zhu, Tiantian Fan, and Lin Yan. What’s behind ppo’s collapse in long-cot? value",
+        "x": 70.9,
+        "y": 137,
+        "w": 470.3,
+        "h": 9,
+        "zh": "[19] Yufeng Yuan、Yu Yue、Ruofei Zhu、Tiantian Fan、Lin Yan。长思维链里 PPO 为什么会崩溃？价值"
+      },
+      {
+        "text": "optimization holds the secret. arXiv preprint arXiv:2503.01491, 2025.",
+        "x": 90.2,
+        "y": 126,
+        "w": 280.4,
+        "h": 9,
+        "zh": "优化藏着答案。arXiv preprint arXiv:2503.01491，2025。"
+      },
+      {
+        "text": "[20] Guangming Sheng, Chi Zhang, Zilingfeng Ye, Xibin Wu, Wang Zhang, Ru Zhang, Yanghua Peng, Haibin Lin, and Chuan Wu. Hybridflow: A flexible and efficient rlhf framework. arXiv preprint arXiv:2409.19256, 2024.",
+        "x": 70.9,
+        "y": 98.1,
+        "w": 470.3,
+        "h": 19.9,
+        "zh": "[20] Guangming Sheng、Chi Zhang、Zilingfeng Ye、Xibin Wu、Wang Zhang、Ru Zhang、Yanghua Peng、Haibin Lin、Chuan Wu。HybridFlow：一个灵活高效的 RLHF 框架。arXiv preprint arXiv:2409.19256，2024。"
+      },
+      {
+        "text": "[21] John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov. Proximal policy optimization",
+        "x": 70.9,
+        "y": 81.2,
+        "w": 470.3,
+        "h": 9,
+        "zh": "[21] John Schulman、Filip Wolski、Prafulla Dhariwal、Alec Radford、Oleg Klimov。近端策略优化"
+      },
+      {
+        "text": "algorithms. arXiv preprint arXiv:1707.06347, 2017.",
+        "x": 90.2,
+        "y": 70.2,
+        "w": 206.2,
+        "h": 9,
+        "zh": "算法。arXiv preprint arXiv:1707.06347，2017。"
+      }
+    ],
+    "14": [
+      {
+        "text": "[22] John Schulman, Philipp Moritz, Sergey Levine, Michael Jordan, and Pieter Abbeel. High-dimensional continuous",
+        "x": 70.9,
+        "y": 681.8,
+        "w": 470.3,
+        "h": 9,
+        "zh": "[22] John Schulman、Philipp Moritz、Sergey Levine、Michael Jordan、Pieter Abbeel。高维连续"
+      },
+      {
+        "text": "control using generalized advantage estimation, 2018.",
+        "x": 90.2,
+        "y": 670.9,
+        "w": 214.9,
+        "h": 9,
+        "zh": "控制中的广义优势估计，2018。"
+      },
+      {
+        "text": "[23] Long Ouyang, Jeffrey Wu, Xu Jiang, Diogo Almeida, Carroll Wainwright, Pamela Mishkin, Chong Zhang, Sandhini Agarwal, Katarina Slama, Alex Ray, John Schulman, Jacob Hilton, Fraser Kelton, Luke Miller, Maddie Simens, Amanda Askell, Peter Welinder, Paul F Christiano, Jan Leike, and Ryan Lowe. Training language models to follow instructions with human feedback. In S. Koyejo, S. Mohamed, A. Agarwal, D. Belgrave, K. Cho, and A. Oh, editors, Advances in Neural Information Processing Systems, volume 35, pages 27730–27744. Curran Associates,",
+        "x": 70.9,
+        "y": 610.1,
+        "w": 471.5,
+        "h": 52.8,
+        "zh": "[23] Long Ouyang、Jeffrey Wu、Xu Jiang、Diogo Almeida、Carroll Wainwright、Pamela Mishkin、Chong Zhang、Sandhini Agarwal、Katarina Slama、Alex Ray、John Schulman、Jacob Hilton、Fraser Kelton、Luke Miller、Maddie Simens、Amanda Askell、Peter Welinder、Paul F Christiano、Jan Leike、Ryan Lowe。用人类反馈训练语言模型遵循指令。见 S. Koyejo、S. Mohamed、A. Agarwal、D. Belgrave、K. Cho、A. Oh 编，Advances in Neural Information Processing Systems，第 35 卷，第 27730–27744 页。Curran Associates，"
+      },
+      {
+        "text": "[24] Dario Amodei, Chris Olah, Jacob Steinhardt, Paul Christiano, John Schulman, and Dan Mané. Concrete problems",
+        "x": 70.9,
+        "y": 582.2,
+        "w": 470.3,
+        "h": 9,
+        "zh": "[24] Dario Amodei、Chris Olah、Jacob Steinhardt、Paul Christiano、John Schulman、Dan Mané。具体问题"
+      },
+      {
+        "text": "[25] Tom Everitt, Victoria Krakovna, Laurent Orseau, Marcus Hutter, and Shane Legg. Reinforcement learning with a",
+        "x": 70.9,
+        "y": 554.3,
+        "w": 470.3,
+        "h": 9,
+        "zh": "[25] Tom Everitt、Victoria Krakovna、Laurent Orseau、Marcus Hutter、Shane Legg。强化学习，带有一种"
+      },
+      {
+        "text": "[26] Victoria Krakovna, Jonathan Uesato, Vladimir Mikulik, Matthew Rahtz, Tom Everitt, Ramana Kumar, Zac Kenton, Jan Leike, and Shane Legg. Specification gaming: the flip side of ai ingenuity, 2020.",
+        "x": 70.9,
+        "y": 515.4,
+        "w": 470.3,
+        "h": 19.9,
+        "zh": "[26] Victoria Krakovna、Jonathan Uesato、Vladimir Mikulik、Matthew Rahtz、Tom Everitt、Ramana Kumar、Zac Kenton、Jan Leike、Shane Legg。规格博弈：人工智能机智的另一面，2020。"
+      },
+      {
+        "text": "[27] Tom Everitt, Marcus Hutter, Ramana Kumar, and Victoria Krakovna. Reward tampering problems and solutions in reinforcement learning: A causal influence diagram perspective, 2021.",
+        "x": 70.9,
+        "y": 487.6,
+        "w": 470.3,
+        "h": 19.9,
+        "zh": "[27] Tom Everitt、Marcus Hutter、Ramana Kumar、Victoria Krakovna。强化学习中的奖励篡改：问题与办法，因果影响图的视角，2021。"
+      },
+      {
+        "text": "[28] Leo Gao, John Schulman, and Jacob Hilton. Scaling laws for reward model overoptimization, 2022.",
+        "x": 70.9,
+        "y": 470.6,
+        "w": 420.2,
+        "h": 9,
+        "zh": "[28] Leo Gao、John Schulman、Jacob Hilton。奖励模型过度优化的缩放定律，2022。"
+      },
+      {
+        "text": "[29] Lilian Weng. Reward hacking in reinforcement learning. lilianweng.github.io, Nov 2024.",
+        "x": 70.9,
+        "y": 453.7,
+        "w": 373.6,
+        "h": 9,
+        "zh": "[29] Lilian Weng。强化学习中的奖励黑客。lilianweng.github.io，2024 年 11 月。"
+      },
+      {
+        "text": "[30] Stanislas Polu and Ilya Sutskever. Generative language modeling for automated theorem proving, 2020.",
+        "x": 70.9,
+        "y": 436.7,
+        "w": 438,
+        "h": 9,
+        "zh": "[30] Stanislas Polu、Ilya Sutskever。面向自动定理证明的生成式语言建模，2020。"
+      },
+      {
+        "text": "[31] Trieu H Trinh, Yuhuai Wu, Quoc V Le, He He, and Thang Luong. Solving olympiad geometry without human",
+        "x": 70.9,
+        "y": 419.8,
+        "w": 470.3,
+        "h": 9,
+        "zh": "[31] Trieu H Trinh、Yuhuai Wu、Quoc V Le、He He、Thang Luong。在没有人类的情况下解决奥林匹克几何"
+      },
+      {
+        "text": "demonstrations. Nature, 625(7995):476–482, 2024.",
+        "x": 90.2,
+        "y": 408.8,
+        "w": 202.6,
+        "h": 9,
+        "zh": "示范。Nature，625(7995):476–482，2024。"
+      },
+      {
+        "text": "[32] Trieu Trinh and Thang Luong. Alphageometry: An olympiad-level ai system for geometry, 2024.",
+        "x": 70.9,
+        "y": 391.9,
+        "w": 410.2,
+        "h": 9,
+        "zh": "[32] Trieu Trinh、Thang Luong。AlphaGeometry：达到奥林匹克水平的几何人工智能系统，2024。"
+      },
+      {
+        "text": "[33] AlphaProof and AlphaGeometry Teams. Ai achieves silver-medal standard solving international mathematical",
+        "x": 70.9,
+        "y": 375,
+        "w": 470.3,
+        "h": 9,
+        "zh": "[33] AlphaProof 与 AlphaGeometry 团队。人工智能达到银牌标准，解出国际数学"
+      },
+      {
+        "text": "[34] Hung Le, Yue Wang, Akhilesh Deepak Gotmare, Silvio Savarese, and Steven Chu Hong Hoi. Coderl: Mastering code generation through pretrained models and deep reinforcement learning. Advances in Neural Information",
+        "x": 70.9,
+        "y": 336.1,
+        "w": 472.7,
+        "h": 19.9,
+        "zh": "[34] Hung Le、Yue Wang、Akhilesh Deepak Gotmare、Silvio Savarese、Steven Chu Hong Hoi。CodeRL：借助预训练模型与深度强化学习掌握代码生成。Advances in Neural Information"
+      },
+      {
+        "text": "Processing Systems, 35:21314–21328, 2022.",
+        "x": 90.2,
+        "y": 325.2,
+        "w": 172.8,
+        "h": 9,
+        "zh": "Processing Systems，35:21314–21328，2022。"
+      },
+      {
+        "text": "[35] Noah Shinn, Federico Cassano, Edward Berman, Ashwin Gopinath, Karthik Narasimhan, and Shunyu Yao. Reflexion: Language agents with verbal reinforcement learning, 2023.",
+        "x": 70.9,
+        "y": 297.3,
+        "w": 472.1,
+        "h": 19.9,
+        "zh": "[35] Noah Shinn、Federico Cassano、Edward Berman、Ashwin Gopinath、Karthik Narasimhan、Shunyu Yao。Reflexion：带言语强化学习的语言智能体，2023。"
+      },
+      {
+        "text": "[36] Xinyun Chen, Maxwell Lin, Nathanael Schärli, and Denny Zhou. Teaching large language models to self-debug,",
+        "x": 70.9,
+        "y": 280.3,
+        "w": 471.5,
+        "h": 9,
+        "zh": "[36] Xinyun Chen、Maxwell Lin、Nathanael Schärli、Denny Zhou。教大语言模型自我调试，"
+      },
+      {
+        "text": "[37] Jonas Gehring, Kunhao Zheng, Jade Copet, Vegard Mella, Quentin Carbonneaux, Taco Cohen, and Gabriel Synnaeve. Rlef: Grounding code llms in execution feedback with reinforcement learning, 2025.",
+        "x": 70.9,
+        "y": 241.5,
+        "w": 470.3,
+        "h": 19.9,
+        "zh": "[37] Jonas Gehring、Kunhao Zheng、Jade Copet、Vegard Mella、Quentin Carbonneaux、Taco Cohen、Gabriel Synnaeve。RLEF：用强化学习把代码大模型建立在执行反馈上，2025。"
+      },
+      {
+        "text": "[38] Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Mingchuan Zhang, YK Li, Y Wu, and Daya Guo. Deepseekmath: Pushing the limits of mathematical reasoning in open language models. arXiv preprint",
+        "x": 70.9,
+        "y": 213.6,
+        "w": 471.6,
+        "h": 19.9,
+        "zh": "[38] Zhihong Shao、Peiyi Wang、Qihao Zhu、Runxin Xu、Junxiao Song、Mingchuan Zhang、YK Li、Y Wu、Daya Guo。DeepSeekMath：把开放语言模型的数学推理推向极限。arXiv preprint"
+      },
+      {
+        "text": "[39] Ilya Loshchilov and Frank Hutter. Decoupled weight decay regularization. In International Conference on Learning",
+        "x": 70.9,
+        "y": 185.7,
+        "w": 467.4,
+        "h": 9,
+        "zh": "[39] Ilya Loshchilov、Frank Hutter。解耦的权重衰减正则。见 International Conference on Learning"
+      }
+    ],
+    "15": [
+      {
+        "text": "Here is an example of data transformation, where we demonstrate the original problem, the transformed problem, and the model outputs during the transformation process (the original is in markdown text, which has been rendered for readability). To ensure the model can complete this task with high accuracy, our goal is to have it perform comprehensive reasoning while avoiding hallucinations. We achieve this by providing a clear thinking framework that encourages thorough reasoning. Specifically, we employ Chain of Thought (CoT) reasoning along with four well-defined steps: extract the answer format, rewrite the problem statement, solve the modified problem and provide an integer as the final answer. For each step, we provide few-shot solutions or detailed guidelines to guide the model’s reasoning. Through this approach, we have observed that in most cases, the LLM can generate reformulations with both format and quality that are satisfactory.",
+        "x": 70.5,
+        "y": 497.3,
+        "w": 470.9,
+        "h": 141.5,
+        "zh": "下面是一个数据变换的例子。我们给出原始题目、变换后的题目，以及变换过程中模型的输出（原文是 Markdown，为了便于阅读已经渲染过）。为了让模型能以很高的准确率完成这项任务，我们希望它把推理做充分，同时不要产生幻觉。做法是给它一套清楚的思考框架，促使它把推理做透。具体来说，我们使用思维链（CoT），并配上四个界定清楚的步骤：抽出答案的格式、改写题目、求解改过的题目，并给出一个整数作为最终答案。每一步都提供少样本解答或详细说明，用来引导模型推理。按这个做法，我们观察到在大多数情况下，LLM 给出的改写在格式和质量上都令人满意。"
+      },
+      {
+        "text": "Let x and y be real numbers such that x + y − 22x − 16y + 113 = 0. Determine the smallest possible value of x. Answer: 11 − 2 6",
+        "x": 86.2,
+        "y": 444.5,
+        "w": 439.3,
+        "h": 21.9,
+        "zh": "设 x 和 y 为实数，满足 x + y − 22x − 16y + 113 = 0。求 x 可能取到的最小值。答案：11 − 2 6"
+      },
+      {
+        "text": "Let x and y be real numbers such that x + y − 22x − 16y + 113 = 0. Determine the smallest possible value of x. The original answer is in the form k − m",
+        "x": 86.2,
+        "y": 389.2,
+        "w": 439.3,
+        "h": 21.9,
+        "zh": "设 x 和 y 为实数，满足 x + y − 22x − 16y + 113 = 0。求 x 可能取到的最小值。原始答案的形式是 k − m"
+      },
+      {
+        "text": "n, where k, m, and n are integers. Please find the value of k + m + n. Answer: 19",
+        "x": 86.5,
+        "y": 377.3,
+        "w": 439.1,
+        "h": 21.9,
+        "zh": "n，其中 k、m、n 都是整数。请算出 k + m + n 的值。答案：19"
+      },
+      {
+        "text": "Model’s output (Markdown Text) Transformation Thought Process The original answer to the problem is an algebraic expression 11 − 2",
+        "x": 86.1,
+        "y": 315.9,
+        "w": 303.6,
+        "h": 42.4,
+        "zh": "模型输出（Markdown 文本）。变换时的思考过程：这道题的原始答案是一个代数式 11 − 2"
+      },
+      {
+        "text": "6. We need to transform this into an integer form. First, note that the answer consists of an integer part and a square root term. According to the given rule, we replace the integer and square root components with undetermined coefficients. The original problem uses x and y as variables, so we choose other letters as undetermined coefficients. We express the answer in the form k − m",
+        "x": 86.1,
+        "y": 268.1,
+        "w": 441.4,
+        "h": 57.8,
+        "zh": "6。我们需要把它变成整数形式。首先注意到，这个答案由整数部分和平方根项组成。按照给定的规则，我们把整数部分和平方根部分换成待定系数。原题用 x 和 y 作变量，所以待定系数改用别的字母。我们把答案写成 k − m 的形式"
+      },
+      {
+        "text": "n and require the student to find k + m + n.",
+        "x": 329.8,
+        "y": 268.1,
+        "w": 194.5,
+        "h": 10,
+        "zh": "n，并要求学生求出 k + m + n。"
+      },
+      {
+        "text": "Let x and y be real numbers such that x + y − 22x − 16y + 113 = 0. Determine the smallest possible value of x. The original answer is in the form k − m",
+        "x": 86.2,
+        "y": 205.4,
+        "w": 439.3,
+        "h": 21.9,
+        "zh": "设 x 和 y 为实数，满足 x + y − 22x − 16y + 113 = 0。求 x 可能取到的最小值。原始答案的形式是 k − m"
+      },
+      {
+        "text": "n, where k, m, and n are integers. Please find the value of k + m + n. Answer Calculation for the Transformed Problem • The original answer is: 11 − 2 • The required format is: k − m • Matching the coefficients: k = 11, m = 2, n = 6. • The final result is: k + m + n = 11 + 2 + 6 = 19.",
+        "x": 86.5,
+        "y": 130.6,
+        "w": 439.1,
+        "h": 84.8,
+        "zh": "n，其中 k、m、n 都是整数。请算出 k + m + n 的值。变换后题目的答案计算：• 原始答案是：11 − 2 • 要求的格式是：k − m • 对应的系数：k = 11，m = 2，n = 6。• 最终结果是：k + m + n = 11 + 2 + 6 = 19。"
+      }
+    ],
+    "16": [
+      {
+        "text": "Among the 900 residents of Aimeville, there are 195 who own a diamond ring, 367 who own a set of golf clubs, and 562 who own a garden spade. In addition, each of the 900 residents owns a bag of candy hearts. There are 437 residents who own exactly two of these things, and 234 residents who own exactly three of these things. Find the number of residents of Aimeville who own all four",
+        "x": 94,
+        "y": 603.2,
+        "w": 423.9,
+        "h": 45.8,
+        "zh": "在 Aimeville 的 900 名居民里，有 195 人有一枚钻戒，367 人有一套高尔夫球杆，562 人有一把园艺铲。此外，这 900 人每人有一袋爱心糖果。有 437 人恰好拥有其中两样，234 人恰好拥有其中三样。求 Aimeville 里拥有全部四样的居民人数"
+      },
+      {
+        "text": "Step by Step Solution: 1. Let’s define the following variables:",
+        "x": 94.4,
+        "y": 550.4,
+        "w": 165.4,
+        "h": 21.9,
+        "zh": "逐步解答：1. 定义下面这些变量："
+      },
+      {
+        "text": "Let A be the set of residents who own a diamond ring. Let B be the set of residents who own a set of golf clubs. Let C be the set of residents who own a garden spade. Let D be the set of residents who own a bag of candy hearts. Since all 900 residents own a bag of",
+        "x": 94.4,
+        "y": 502.6,
+        "w": 423.2,
+        "h": 45.8,
+        "zh": "设 A 为拥有钻戒的居民集合。设 B 为拥有一套高尔夫球杆的居民集合。设 C 为拥有一把园艺铲的居民集合。设 D 为拥有一袋爱心糖果的居民集合。由于全部 900 名居民都拥有一袋"
+      },
+      {
+        "text": "Let ai denote the number of residents who own exactly i out of the 4 items. Let’s use the principle of inclusion-exclusion for the union of 4 sets A, B, C, D.",
+        "x": 94.4,
+        "y": 466.7,
+        "w": 342.3,
+        "h": 21.9,
+        "zh": "设 a_i 表示在这 4 件物品中恰好拥有 i 件的居民人数。下面对四个集合 A、B、C、D 的并使用容斥原理。"
+      },
+      {
+        "text": "Since a4, the number of people owning all four items, must be a whole number, our current approach needs to be reconsidered in terms of the combinatorial counting of people owning different",
+        "x": 94.4,
+        "y": 418.2,
+        "w": 423.5,
+        "h": 21.9,
+        "zh": "由于 a_4，也就是拥有全部四件物品的人数，必须是整数，当前的做法需要重新考虑，改从组合计数来看那些拥有不同"
+      },
+      {
+        "text": "Instead of directly using the inclusion-exclusion principle, we can use a different approach involving the number of people owning combinations of the items A, B, C, and D. Let xi be the number of people owning exactly i item among A, B, C (excluding the item D which",
+        "x": 94.4,
+        "y": 368.8,
+        "w": 423.2,
+        "h": 35.4,
+        "zh": "不必直接套容斥原理，可以换一种做法，去数拥有物品 A、B、C、D 各种组合的人数。设 x_i 为在 A、B、C 中恰好拥有 i 件的人数（不含物品 D，而 D"
+      },
+      {
+        "text": "Then the total number of people owning exactly k items among the A, B, C, and D can be broken",
+        "x": 94.4,
+        "y": 346.4,
+        "w": 423.2,
+        "h": 10,
+        "zh": "于是，在 A、B、C 和 D 中恰好拥有 k 件物品的总人数，可以拆开"
+      },
+      {
+        "text": "Table 3 A case of reflective behavior emergence.",
+        "x": 206.8,
+        "y": 298.8,
+        "w": 198.1,
+        "h": 9,
+        "zh": "表 3：反思行为涌现的一个例子。"
+      }
+    ]
+  }
+}
